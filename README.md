@@ -1,63 +1,111 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Natanem Engineering ERP
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modular Laravel 12 ERP platform designed for construction companies to manage Inventory, Employees, Finance, and Item Lending workflows with built-in role-based access control.
 
-## About Laravel
+📌 Features
+🔐 Authentication
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Custom login page (app.blade + home.blade).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Role-based dashboard routing.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Prevent-back-history middleware to avoid cached pages after logout.
 
-## Learning Laravel
+👥 User & Role Management
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Administrators can:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Create, edit, update, and delete users.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Assign roles (Administrator, Human Resource Manager, Inventory Manager, Financial Manager).
 
-## Laravel Sponsors
+Uses Spatie Laravel Permission behind the scenes.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+🏗 Modules
+1️⃣ Human Resource Module
 
-### Premium Partners
+Manage Employees (CRUD).
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Manage Leave Requests.
 
-## Contributing
+Admin approval system for submitted leave.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+View approved leaves history.
 
-## Code of Conduct
+2️⃣ Inventory Module
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Manage inventory items (CRUD).
 
-## Security Vulnerabilities
+Track quantities dynamically.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Create item lending (loan) requests to employees.
 
-## License
+View pending, approved, returned, and rejected loans.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Admin approval workflow:
 
-# Construction_ERP
+Approve loan → deduct quantity.
+
+Reject loan → no quantity change.
+
+Mark returned → restore quantity.
+
+3️⃣ Finance Module
+
+Finance dashboard ready for expansion (invoices, payments, expenses).
+
+4️⃣ Admin Module
+
+System overview dashboard.
+
+User management.
+
+All approvals in one place:
+
+Leave approvals
+
+Item lending approvals
+
+🧱 Tech Stack
+Category	Technology
+Backend	Laravel 12 (PHP 8.2)
+Frontend	Blade, TailwindCSS
+Database	PostgreSQL
+Permissions	Spatie/laravel-permission
+UI	Tailwind, Bootstrap Icons
+Authentication	Laravel Auth
+Logging	Laravel logging + custom controllers
+Deployment	Laravel artisan + environment configs
+📁 Project Structure
+app/
+ ├── Http/
+ │    ├── Controllers/
+ │    │     ├── AdminUserController.php
+ │    │     ├── DashboardController.php
+ │    │     ├── Admin/
+ │    │     │     └── InventoryLoanApprovalController.php
+ │    │     ├── HR/
+ │    │     │     ├── EmployeeController.php
+ │    │     │     └── LeaveRequestController.php
+ │    │     ├── Inventory/
+ │    │     │     ├── InventoryItemController.php
+ │    │     │     └── InventoryLoanController.php
+ │    ├── Middleware/
+ │    │     ├── RoleMiddleware.php
+ │    │     └── PreventBackHistory.php
+ ├── Models/
+ │    ├── User.php
+ │    ├── Employee.php
+ │    ├── InventoryItem.php
+ │    ├── InventoryLoan.php
+ │    └── EmployeeOnLeave.php
+resources/
+ ├── views/
+ │    ├── layouts/app.blade.php
+ │    ├── dashboards/
+ │    ├── admin/
+ │    ├── inventory/
+ │    ├── hr/
+ │    └── finance/
+routes/
+ └── web.php
