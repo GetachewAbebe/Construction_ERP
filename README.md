@@ -60,7 +60,7 @@ System overview dashboard.
 
 User management.
 
-All approvals in one place:
+All approvals in one place
 
 Leave approvals
 
