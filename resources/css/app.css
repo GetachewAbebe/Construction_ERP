@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* Bootstrap + your theme overrides */
+@import "bootstrap/scss/bootstrap";
+
+
+:root{
+  --brand-100:#eef2ff; --brand-200:#e0e7ff; --brand-300:#c7d2fe;
+  --brand-400:#a5b4fc; --brand-500:#6366f1; --brand-600:#4f46e5;
+}
+
+/* Subtle gradient page background */
+body{
+  background:
+    radial-gradient(1000px 700px at 10% -10%, rgba(99,102,241,.07), transparent 60%),
+    radial-gradient(900px 600px at 110% 10%, rgba(139,92,246,.07), transparent 60%),
+    linear-gradient(to bottom right,#f8fafc,#fff 40%,#f1f5f9);
+}
+
+/* Chrome bars */
+.navbar-gradient{
+  background: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-600) 100%);
+  box-shadow: 0 16px 36px -18px rgba(2,6,23,.35);
+}
+.footer-gradient{
+  background: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-600) 100%);
+}
+
+/* Card polish */
+.card{ border:1px solid #e5e7eb; border-radius:1rem; }
+.card .card-title{ font-weight: 700; }
+
+/* Buttons */
+.btn-brand{ background:var(--brand-600); border-color:var(--brand-600); }
+.btn-brand:hover{ background:#4338ca; border-color:#4338ca; }
+
+/* Square login box */
+.login-square{
+  width: 360px; height: 360px; border-radius: 1rem;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 1.25rem;
+}
