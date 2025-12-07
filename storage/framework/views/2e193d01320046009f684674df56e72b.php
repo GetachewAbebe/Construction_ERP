@@ -235,6 +235,18 @@
                               Add Item
                           </a>
                       </li>
+                      <li class="nav-item">
+                          <a class="nav-link <?php echo e(request()->routeIs('inventory.loans.create') ? 'active' : ''); ?>"
+                             href="<?php echo e(route('inventory.loans.create')); ?>">
+                              Lend Item
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link <?php echo e(request()->routeIs('inventory.loans.index') ? 'active' : ''); ?>"
+                             href="<?php echo e(route('inventory.loans.index')); ?>">
+                              Loan History
+                          </a>
+                      </li>
 
                   
                   <?php elseif($role === 'financialmanager'): ?>

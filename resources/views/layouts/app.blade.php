@@ -235,6 +235,18 @@
                               Add Item
                           </a>
                       </li>
+                      <li class="nav-item">
+                          <a class="nav-link {{ request()->routeIs('inventory.loans.create') ? 'active' : '' }}"
+                             href="{{ route('inventory.loans.create') }}">
+                              Lend Item
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link {{ request()->routeIs('inventory.loans.index') ? 'active' : '' }}"
+                             href="{{ route('inventory.loans.index') }}">
+                              Loan History
+                          </a>
+                      </li>
 
                   {{-- Financial Manager --}}
                   @elseif ($role === 'financialmanager')
