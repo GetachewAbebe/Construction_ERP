@@ -87,7 +87,7 @@
                                         </td>
                                         <td>
                                             <div class="fw-semibold">
-                                                {{ $loan->employee->full_name ?? '—' }}
+                                                {{ $loan->employee->name ?? '—' }}
                                             </div>
                                             <div class="small text-muted">
                                                 {{ $loan->employee->position ?? '' }}

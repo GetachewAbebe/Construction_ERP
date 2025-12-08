@@ -92,7 +92,7 @@
                                         </td>
                                         <td>
                                             <div class="fw-semibold">
-                                                <?php echo e($loan->employee->full_name ?? '—'); ?>
+                                                <?php echo e($loan->employee->name ?? '—'); ?>
 
                                             </div>
                                             <div class="small text-muted">

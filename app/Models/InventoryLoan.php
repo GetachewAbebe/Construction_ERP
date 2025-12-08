@@ -14,19 +14,27 @@ class InventoryLoan extends Model
         'employee_id',
         'requested_by_user_id',
         'approved_by_user_id',
-        'quantity',                // Added by migration
-        'status',                  // pending | approved | rejected | returned
+        'quantity',
+        'status',
         'requested_at',
         'due_date',
-        'approved_at',
-        'returned_at',
-        'remarks',                 // Original column from migration
-        'notes',                   // Added by migration
+        'remarks',
+        'notes',
         'approved_by',
         'approved_at',
         'rejected_by',
         'rejected_at',
+        'returned_at',
         'rejection_reason',
+    ];
+
+    protected $casts = [
+        'requested_at' => 'datetime',
+        'due_date'     => 'date',
+        'approved_at'  => 'datetime',
+        'returned_at'  => 'datetime',
+        'rejected_at'  => 'datetime',
+        'quantity'     => 'integer',
     ];
 
     // Relationships
