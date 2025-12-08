@@ -31,19 +31,19 @@
                     <li class="nav-item">
                         <a class="nav-link"
                            href="<?php echo e(route('hr.dashboard')); ?>">
-                            HR Section
+                            HR Resource
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link"
                            href="<?php echo e(route('inventory.dashboard')); ?>">
-                            Inventory Section
+                            Inventory
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link"
                            href="<?php echo e(route('finance.dashboard')); ?>">
-                            Finance Section
+                            Finance
                         </a>
                     </li>
                     <li class="nav-item">

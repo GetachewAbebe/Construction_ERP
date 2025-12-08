@@ -167,19 +167,19 @@
                       <li class="nav-item">
                           <a class="nav-link <?php echo e(request()->routeIs('hr.*') ? 'active' : ''); ?>"
                              href="<?php echo e(route('hr.dashboard')); ?>">
-                              HR Section
+                              HR Resource
                           </a>
                       </li>
                       <li class="nav-item">
                           <a class="nav-link <?php echo e(request()->routeIs('inventory.*') ? 'active' : ''); ?>"
                              href="<?php echo e(route('inventory.dashboard')); ?>">
-                              Inventory Section
+                              Inventory
                           </a>
                       </li>
                       <li class="nav-item">
                           <a class="nav-link <?php echo e(request()->routeIs('finance.*') ? 'active' : ''); ?>"
                              href="<?php echo e(route('finance.dashboard')); ?>">
-                              Finance Section
+                              Finance
                           </a>
                       </li>
                       <li class="nav-item">

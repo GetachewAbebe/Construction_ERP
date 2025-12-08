@@ -17,9 +17,13 @@
                     </p>
 
                     <?php if($errors->any()): ?>
-                        <div class="alert alert-danger">
-                            <?php echo e($errors->first()); ?>
+                        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-start" role="alert">
+                            <div class="me-2" style="font-size: 1.5rem;">⚠️</div>
+                            <div class="flex-grow-1">
+                                <strong>Oops!</strong> <?php echo e($errors->first()); ?>
 
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     <?php endif; ?>
 
@@ -58,8 +62,28 @@
                         <div class="mb-3">
                             <label class="form-label">Quantity</label>
                             <input type="number" name="quantity" min="1"
-                                   class="form-control"
+                                   class="form-control <?php $__errorArgs = ['quantity'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                    value="<?php echo e(old('quantity', 1)); ?>" required>
+                            <?php $__errorArgs = ['quantity'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div class="invalid-feedback d-block">
+                                    <?php echo e($message); ?>
+
+                                </div>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <div class="mb-3">
@@ -69,9 +93,9 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Remarks (optional)</label>
-                            <textarea name="remarks" class="form-control" rows="3"
-                                      placeholder="Purpose, site, special notes..."><?php echo e(old('remarks')); ?></textarea>
+                            <label class="form-label">Notes (optional)</label>
+                            <textarea name="notes" class="form-control" rows="3"
+                                      placeholder="Purpose, site, special notes..."><?php echo e(old('notes')); ?></textarea>
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center">

@@ -17,8 +17,12 @@
                     </p>
 
                     @if ($errors->any())
-                        <div class="alert alert-danger">
-                            {{ $errors->first() }}
+                        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-start" role="alert">
+                            <div class="me-2" style="font-size: 1.5rem;">⚠️</div>
+                            <div class="flex-grow-1">
+                                <strong>Oops!</strong> {{ $errors->first() }}
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
 
@@ -55,8 +59,13 @@
                         <div class="mb-3">
                             <label class="form-label">Quantity</label>
                             <input type="number" name="quantity" min="1"
-                                   class="form-control"
+                                   class="form-control @error('quantity') is-invalid @enderror"
                                    value="{{ old('quantity', 1) }}" required>
+                            @error('quantity')
+                                <div class="invalid-feedback d-block">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
 
                         <div class="mb-3">
@@ -66,9 +75,9 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Remarks (optional)</label>
-                            <textarea name="remarks" class="form-control" rows="3"
-                                      placeholder="Purpose, site, special notes...">{{ old('remarks') }}</textarea>
+                            <label class="form-label">Notes (optional)</label>
+                            <textarea name="notes" class="form-control" rows="3"
+                                      placeholder="Purpose, site, special notes...">{{ old('notes') }}</textarea>
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center">

@@ -61,15 +61,27 @@ class InventoryLoanController extends Controller
             'notes'             => ['nullable', 'string', 'max:2000'],
         ]);
 
+        // Check if item has sufficient stock (accounting for items already on loan)
+        $item = InventoryItem::findOrFail($data['inventory_item_id']);
+        
+        if ($item->available_quantity < $data['quantity']) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'quantity' => "⚠️ Not enough stock available! You requested {$data['quantity']} item(s), but only {$item->available_quantity} are available. (Total stock: {$item->quantity}, Currently on loan: {$item->on_loan_quantity})"
+                ]);
+        }
+
         DB::transaction(function () use ($data) {
             InventoryLoan::create([
-                'inventory_item_id' => $data['inventory_item_id'],
-                'employee_id'       => $data['employee_id'],
-                'quantity'          => $data['quantity'],
-                'requested_at'      => $data['requested_at'] ?? now(),
-                'due_date'          => $data['due_date'] ?? null,
-                'notes'             => $data['notes'] ?? null,
-                'status'            => 'pending',   // default
+                'inventory_item_id'     => $data['inventory_item_id'],
+                'employee_id'           => $data['employee_id'],
+                'requested_by_user_id'  => auth()->id(),  // Current logged-in user
+                'quantity'              => $data['quantity'],
+                'requested_at'          => $data['requested_at'] ?? now(),
+                'due_date'              => $data['due_date'] ?? null,
+                'notes'                 => $data['notes'] ?? null,
+                'status'                => 'pending',   // default
             ]);
         });
 
@@ -122,6 +134,18 @@ class InventoryLoanController extends Controller
             'due_date'          => ['nullable', 'date'],
             'notes'             => ['nullable', 'string', 'max:2000'],
         ]);
+
+        // Check if item has sufficient stock (accounting for items already on loan)
+        $item = InventoryItem::findOrFail($data['inventory_item_id']);
+        
+        if ($item->available_quantity < $data['quantity']) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'quantity' => "⚠️ Not enough stock available! You requested {$data['quantity']} item(s), but only {$item->available_quantity} are available. (Total stock: {$item->quantity}, Currently on loan: {$item->on_loan_quantity})"
+                ]);
+        }
+
 
         DB::transaction(function () use ($loan, $data) {
             $loan->inventory_item_id = $data['inventory_item_id'];

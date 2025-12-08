@@ -12,13 +12,16 @@ class InventoryLoan extends Model
     protected $fillable = [
         'inventory_item_id',
         'employee_id',
-        'requested_quantity',
-        'approved_quantity',
-        'status',              // pending | approved | rejected | returned
+        'requested_by_user_id',
+        'approved_by_user_id',
+        'quantity',                // Added by migration
+        'status',                  // pending | approved | rejected | returned
         'requested_at',
-        'expected_return_date',
+        'due_date',
+        'approved_at',
         'returned_at',
-        'notes',
+        'remarks',                 // Original column from migration
+        'notes',                   // Added by migration
         'approved_by',
         'approved_at',
         'rejected_by',

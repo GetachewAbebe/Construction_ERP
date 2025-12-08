@@ -1,4 +1,4 @@
-<?php $__env->startSection('title', 'Sign in – Natanem Engineering'); ?>
+<?php $__env->startSection('title', 'Natanem Engineering'); ?>
 
 <?php $__env->startSection('content'); ?>
 <div class="bg-erp-soft min-vh-100 d-flex align-items-center py-4 py-md-5">
