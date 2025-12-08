@@ -11,14 +11,15 @@ class Employee extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',        // present but unused in forms
-        'first_name',
-        'last_name',
+        'user_id',
+        'name',
         'email',
-        'department_id',  // kept null for now (no UI mapping provided)
-        'position_id',    // kept null for now
+        'department',
+        'position',
+        'phone',
         'hire_date',
         'salary',
+        'status',
     ];
 
     protected $casts = [
@@ -31,9 +32,5 @@ class Employee extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Convenience accessor if you want to show full name
-    public function getNameAttribute(): string
-    {
-        return trim(($this->first_name ?? '').' '.($this->last_name ?? ''));
-    }
+
 }
