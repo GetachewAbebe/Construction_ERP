@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Sign in – Natanem Engineering')
+@section('title', 'Natanem Engineering')
 
 @section('content')
 <div class="bg-erp-soft min-vh-100 d-flex align-items-center py-4 py-md-5">
