@@ -21,6 +21,7 @@ class Employee extends Model
         'position',
         'position_id',   // Added
         'phone',
+        'profile_picture', // Image path
         'hire_date',
         'salary',
         'status',

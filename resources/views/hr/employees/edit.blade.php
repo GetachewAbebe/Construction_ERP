@@ -24,11 +24,18 @@
             <div class="col-12">
                 <div class="card shadow-soft border-0">
                     <div class="card-body">
-                        <form method="POST" action="{{ route('hr.employees.update', $employee) }}">
+                        <form method="POST" action="{{ route('hr.employees.update', $employee) }}" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
 
                             <div class="row g-3">
+                                {{-- Current Profile Picture Preview --}}
+                                @if($employee->profile_picture)
+                                    <div class="col-12 text-center mb-2">
+                                        <img src="{{ asset('storage/' . $employee->profile_picture) }}" alt="Profile" class="rounded-circle" width="100" height="100" style="object-fit: cover;">
+                                    </div>
+                                @endif
+
                                 <div class="col-md-6">
                                     <label class="form-label small text-muted">First name</label>
                                     <input
@@ -141,6 +148,35 @@
                                         class="form-control form-control-sm @error('salary') is-invalid @enderror"
                                     >
                                     @error('salary')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small text-muted">Profile Picture</label>
+                                    <input 
+                                        type="file" 
+                                        name="profile_picture" 
+                                        class="form-control form-control-sm @error('profile_picture') is-invalid @enderror"
+                                        accept="image/*"
+                                    >
+                                    @error('profile_picture')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small text-muted">Status</label>
+                                    <select 
+                                        name="status" 
+                                        class="form-select form-select-sm @error('status') is-invalid @enderror"
+                                    >
+                                        <option value="Active" {{ old('status', $employee->status) == 'Active' ? 'selected' : '' }}>Active</option>
+                                        <option value="On Leave" {{ old('status', $employee->status) == 'On Leave' ? 'selected' : '' }}>On Leave</option>
+                                        <option value="Terminated" {{ old('status', $employee->status) == 'Terminated' ? 'selected' : '' }}>Terminated</option>
+                                        <option value="Resigned" {{ old('status', $employee->status) == 'Resigned' ? 'selected' : '' }}>Resigned</option>
+                                    </select>
+                                    @error('status')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>

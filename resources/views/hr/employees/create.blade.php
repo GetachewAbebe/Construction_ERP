@@ -24,7 +24,7 @@
             <div class="col-12">
                 <div class="card shadow-soft border-0">
                     <div class="card-body">
-                        <form method="POST" action="{{ route('hr.employees.store') }}">
+                        <form method="POST" action="{{ route('hr.employees.store') }}" enctype="multipart/form-data">
                             @csrf
 
                             <div class="row g-3">
@@ -138,6 +138,35 @@
                                         class="form-control form-control-sm @error('salary') is-invalid @enderror"
                                     >
                                     @error('salary')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small text-muted">Profile Picture</label>
+                                    <input 
+                                        type="file" 
+                                        name="profile_picture" 
+                                        class="form-control form-control-sm @error('profile_picture') is-invalid @enderror"
+                                        accept="image/*"
+                                    >
+                                    @error('profile_picture')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small text-muted">Status</label>
+                                    <select 
+                                        name="status" 
+                                        class="form-select form-select-sm @error('status') is-invalid @enderror"
+                                    >
+                                        <option value="Active" {{ old('status') == 'Active' ? 'selected' : '' }}>Active</option>
+                                        <option value="On Leave" {{ old('status') == 'On Leave' ? 'selected' : '' }}>On Leave</option>
+                                        <option value="Terminated" {{ old('status') == 'Terminated' ? 'selected' : '' }}>Terminated</option>
+                                        <option value="Resigned" {{ old('status') == 'Resigned' ? 'selected' : '' }}>Resigned</option>
+                                    </select>
+                                    @error('status')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>

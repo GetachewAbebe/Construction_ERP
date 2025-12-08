@@ -1,5 +1,5 @@
 
-<?php $__env->startSection('title','Edit Employee'); ?>
+<?php $__env->startSection('title','New Employee'); ?>
 
 <?php $__env->startSection('content'); ?>
     <div class="container py-4">
@@ -8,9 +8,9 @@
         <div class="row mb-3">
             <div class="col d-flex align-items-center justify-content-between">
                 <div>
-                    <h1 class="h4 mb-1 text-erp-deep">Edit Employee</h1>
+                    <h1 class="h4 mb-1 text-erp-deep">New Employee</h1>
                     <p class="text-muted small mb-0">
-                        Update basic details for this employee.
+                        Register a new employee in the Human Resource system.
                     </p>
                 </div>
                 <a href="<?php echo e(route('hr.employees.index')); ?>" class="btn btn-sm btn-outline-secondary">
@@ -24,24 +24,16 @@
             <div class="col-12">
                 <div class="card shadow-soft border-0">
                     <div class="card-body">
-                        <form method="POST" action="<?php echo e(route('hr.employees.update', $employee)); ?>" enctype="multipart/form-data">
+                        <form method="POST" action="<?php echo e(route('hr.employees.store')); ?>" enctype="multipart/form-data">
                             <?php echo csrf_field(); ?>
-                            <?php echo method_field('PUT'); ?>
 
                             <div class="row g-3">
-                                
-                                <?php if($employee->profile_picture): ?>
-                                    <div class="col-12 text-center mb-2">
-                                        <img src="<?php echo e(asset('storage/' . $employee->profile_picture)); ?>" alt="Profile" class="rounded-circle" width="100" height="100" style="object-fit: cover;">
-                                    </div>
-                                <?php endif; ?>
-
                                 <div class="col-md-6">
                                     <label class="form-label small text-muted">First name</label>
                                     <input
                                         name="first_name"
                                         required
-                                        value="<?php echo e(old('first_name', $employee->first_name)); ?>"
+                                        value="<?php echo e(old('first_name')); ?>"
                                         class="form-control form-control-sm <?php $__errorArgs = ['first_name'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -68,7 +60,7 @@ unset($__errorArgs, $__bag); ?>
                                     <input
                                         name="last_name"
                                         required
-                                        value="<?php echo e(old('last_name', $employee->last_name)); ?>"
+                                        value="<?php echo e(old('last_name')); ?>"
                                         class="form-control form-control-sm <?php $__errorArgs = ['last_name'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -98,7 +90,7 @@ unset($__errorArgs, $__bag); ?>
                                         list="departmentList" 
                                         class="form-control form-control-sm" 
                                         placeholder="Type or select department..."
-                                        value="<?php echo e(old('department_name', $employee->department)); ?>"
+                                        value="<?php echo e(old('department_name')); ?>"
                                     >
                                     <datalist id="departmentList">
                                         <?php $__currentLoopData = $departments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dept): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -115,7 +107,7 @@ unset($__errorArgs, $__bag); ?>
                                         list="positionList" 
                                         class="form-control form-control-sm" 
                                         placeholder="Type or select position..."
-                                        value="<?php echo e(old('position_title', $employee->position)); ?>"
+                                        value="<?php echo e(old('position_title')); ?>"
                                     >
                                     <datalist id="positionList">
                                         <?php $__currentLoopData = $positions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pos): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -137,7 +129,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                        value="<?php echo e(old('phone', $employee->phone)); ?>"
+                                        value="<?php echo e(old('phone')); ?>"
                                     >
                                     <?php $__errorArgs = ['phone'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -151,15 +143,13 @@ endif;
 unset($__errorArgs, $__bag); ?>
                                 </div>
 
-
-
                                 <div class="col-md-6">
                                     <label class="form-label small text-muted">Email</label>
                                     <input
                                         type="email"
                                         name="email"
                                         required
-                                        value="<?php echo e(old('email', $employee->email)); ?>"
+                                        value="<?php echo e(old('email')); ?>"
                                         class="form-control form-control-sm <?php $__errorArgs = ['email'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -186,7 +176,7 @@ unset($__errorArgs, $__bag); ?>
                                     <input
                                         type="date"
                                         name="hire_date"
-                                        value="<?php echo e(old('hire_date', optional($employee->hire_date)->format('Y-m-d'))); ?>"
+                                        value="<?php echo e(old('hire_date')); ?>"
                                         class="form-control form-control-sm <?php $__errorArgs = ['hire_date'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -214,7 +204,7 @@ unset($__errorArgs, $__bag); ?>
                                         type="number"
                                         step="0.01"
                                         name="salary"
-                                        value="<?php echo e(old('salary', $employee->salary)); ?>"
+                                        value="<?php echo e(old('salary')); ?>"
                                         class="form-control form-control-sm <?php $__errorArgs = ['salary'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -276,10 +266,10 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
                                     >
-                                        <option value="Active" <?php echo e(old('status', $employee->status) == 'Active' ? 'selected' : ''); ?>>Active</option>
-                                        <option value="On Leave" <?php echo e(old('status', $employee->status) == 'On Leave' ? 'selected' : ''); ?>>On Leave</option>
-                                        <option value="Terminated" <?php echo e(old('status', $employee->status) == 'Terminated' ? 'selected' : ''); ?>>Terminated</option>
-                                        <option value="Resigned" <?php echo e(old('status', $employee->status) == 'Resigned' ? 'selected' : ''); ?>>Resigned</option>
+                                        <option value="Active" <?php echo e(old('status') == 'Active' ? 'selected' : ''); ?>>Active</option>
+                                        <option value="On Leave" <?php echo e(old('status') == 'On Leave' ? 'selected' : ''); ?>>On Leave</option>
+                                        <option value="Terminated" <?php echo e(old('status') == 'Terminated' ? 'selected' : ''); ?>>Terminated</option>
+                                        <option value="Resigned" <?php echo e(old('status') == 'Resigned' ? 'selected' : ''); ?>>Resigned</option>
                                     </select>
                                     <?php $__errorArgs = ['status'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -303,7 +293,7 @@ unset($__errorArgs, $__bag); ?>
 
                             <div class="mt-4 d-flex gap-2">
                                 <button class="btn btn-sm btn-success">
-                                    Update
+                                    Create Employee
                                 </button>
                                 <a href="<?php echo e(route('hr.employees.index')); ?>" class="btn btn-sm btn-outline-secondary">
                                     Cancel
@@ -319,4 +309,4 @@ unset($__errorArgs, $__bag); ?>
     </div>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Projects\Natanem\resources\views/hr/employees/edit.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Projects\Natanem\resources\views/hr/employees/create.blade.php ENDPATH**/ ?>

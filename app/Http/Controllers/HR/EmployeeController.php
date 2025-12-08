@@ -29,11 +29,31 @@ class EmployeeController extends Controller
             'last_name'       => ['required','string','max:120'],
             'email'           => ['required','email','max:255','unique:employees,email'],
             'phone'           => ['nullable','string','max:20'],
+            'profile_picture' => ['nullable','image','max:2048'], // Max 2MB
             'hire_date'       => ['nullable','date'],
             'salary'          => ['nullable','numeric'],
+            'status'          => ['required','in:Active,On Leave,Terminated,Resigned'],
             'department_name' => ['nullable','string','max:255'],
             'position_title'  => ['nullable','string','max:255'],
         ]);
+
+        // Auto-Capitalize Names
+        $data['first_name'] = ucwords(strtolower($data['first_name']));
+        $data['last_name']  = ucwords(strtolower($data['last_name']));
+
+        // Handle File Upload
+        if ($request->hasFile('profile_picture')) {
+            $path = $request->file('profile_picture')->store('employees', 'public');
+            $data['profile_picture'] = $path;
+        }
+
+        // Auto-Capitalize Department & Position Inputs
+        if (!empty($data['department_name'])) {
+            $data['department_name'] = ucwords(strtolower($data['department_name']));
+        }
+        if (!empty($data['position_title'])) {
+            $data['position_title'] = ucwords(strtolower($data['position_title']));
+        }
 
         // Process Department
         $departmentId = null;
@@ -99,11 +119,34 @@ class EmployeeController extends Controller
             'last_name'       => ['required','string','max:120'],
             'email'           => ['required','email','max:255','unique:employees,email,'.$employee->id],
             'phone'           => ['nullable','string','max:20'],
+            'profile_picture' => ['nullable','image','max:2048'],
             'hire_date'       => ['nullable','date'],
             'salary'          => ['nullable','numeric'],
+            'status'          => ['required','in:Active,On Leave,Terminated,Resigned'],
             'department_name' => ['nullable','string','max:255'],
             'position_title'  => ['nullable','string','max:255'],
         ]);
+
+        // Auto-Capitalize Names
+        $data['first_name'] = ucwords(strtolower($data['first_name']));
+        $data['last_name']  = ucwords(strtolower($data['last_name']));
+
+        // Handle File Upload
+        if ($request->hasFile('profile_picture')) {
+            // Delete old valid picture if exists (optional logic, good for cleanup)
+            // if ($employee->profile_picture) { Storage::disk('public')->delete($employee->profile_picture); }
+
+            $path = $request->file('profile_picture')->store('employees', 'public');
+            $data['profile_picture'] = $path;
+        }
+
+        // Auto-Capitalize Department & Position Inputs
+        if (!empty($data['department_name'])) {
+            $data['department_name'] = ucwords(strtolower($data['department_name']));
+        }
+        if (!empty($data['position_title'])) {
+            $data['position_title'] = ucwords(strtolower($data['position_title']));
+        }
 
         // Process Department
         $departmentId = $employee->department_id; 

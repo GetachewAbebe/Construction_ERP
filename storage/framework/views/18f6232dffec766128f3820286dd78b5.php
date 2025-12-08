@@ -1,10 +1,10 @@
-@extends('layouts.app')
-@section('title','Employees')
 
-@section('content')
+<?php $__env->startSection('title','Employees'); ?>
+
+<?php $__env->startSection('content'); ?>
     <div class="container py-4">
 
-        {{-- HEADER --}}
+        
         <div class="row mb-3">
             <div class="col d-flex align-items-center justify-content-between">
                 <div>
@@ -13,14 +13,14 @@
                         View and manage employee records.
                     </p>
                 </div>
-                <a href="{{ route('hr.employees.create') }}"
+                <a href="<?php echo e(route('hr.employees.create')); ?>"
                    class="btn btn-sm btn-success">
                     New Employee
                 </a>
             </div>
         </div>
 
-        {{-- TABLE CARD --}}
+        
         <div class="row">
             <div class="col">
                 <div class="card shadow-soft border-0">
@@ -40,29 +40,30 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($employees as $e)
+                                    <?php $__empty_1 = true; $__currentLoopData = $employees; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $e): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                         <tr>
                                             <td>
-                                                @if($e->profile_picture)
-                                                    <img src="{{ asset('storage/' . $e->profile_picture) }}" 
+                                                <?php if($e->profile_picture): ?>
+                                                    <img src="<?php echo e(asset('storage/' . $e->profile_picture)); ?>" 
                                                          class="rounded-circle border" 
                                                          width="32" height="32" 
                                                          style="object-fit: cover;">
-                                                @else
+                                                <?php else: ?>
                                                     <div class="rounded-circle bg-light border d-flex align-items-center justify-content-center text-muted small" 
                                                          style="width: 32px; height: 32px;">
-                                                        {{ substr($e->first_name, 0, 1) }}
+                                                        <?php echo e(substr($e->first_name, 0, 1)); ?>
+
                                                     </div>
-                                                @endif
+                                                <?php endif; ?>
                                             </td>
                                             <td>
-                                                <div class="fw-bold text-dark">{{ $e->first_name }} {{ $e->last_name }}</div>
-                                                <div class="small text-muted">{{ $e->email }}</div>
+                                                <div class="fw-bold text-dark"><?php echo e($e->first_name); ?> <?php echo e($e->last_name); ?></div>
+                                                <div class="small text-muted"><?php echo e($e->email); ?></div>
                                             </td>
-                                            <td>{{ $e->department }}</td>
-                                            <td>{{ $e->position }}</td>
+                                            <td><?php echo e($e->department); ?></td>
+                                            <td><?php echo e($e->position); ?></td>
                                             <td>
-                                                @php
+                                                <?php
                                                     $badgeClass = match($e->status) {
                                                         'Active' => 'bg-success',
                                                         'On Leave' => 'bg-warning text-dark',
@@ -70,21 +71,21 @@
                                                         'Resigned' => 'bg-secondary',
                                                         default => 'bg-secondary'
                                                     };
-                                                @endphp
-                                                <span class="badge {{ $badgeClass }}">{{ $e->status ?? 'N/A' }}</span>
+                                                ?>
+                                                <span class="badge <?php echo e($badgeClass); ?>"><?php echo e($e->status ?? 'N/A'); ?></span>
                                             </td>
-                                            <td>{{ $e->phone ?? '-' }}</td>
+                                            <td><?php echo e($e->phone ?? '-'); ?></td>
                                             <td class="text-center">
                                                 <div class="d-inline-flex gap-2">
-                                                    <a href="{{ route('hr.employees.edit', $e) }}"
+                                                    <a href="<?php echo e(route('hr.employees.edit', $e)); ?>"
                                                        class="btn btn-sm btn-outline-secondary">
                                                         Edit
                                                     </a>
                                                     <form method="POST"
-                                                          action="{{ route('hr.employees.destroy', $e) }}"
+                                                          action="<?php echo e(route('hr.employees.destroy', $e)); ?>"
                                                           onsubmit="return confirm('Delete this employee?')">
-                                                        @csrf
-                                                        @method('DELETE')
+                                                        <?php echo csrf_field(); ?>
+                                                        <?php echo method_field('DELETE'); ?>
                                                         <button class="btn btn-sm btn-outline-danger">
                                                             Delete
                                                         </button>
@@ -92,20 +93,21 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                    @empty
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                         <tr>
                                             <td colspan="5" class="text-center text-muted py-4">
                                                 No employees yet.
                                             </td>
                                         </tr>
-                                    @endforelse
+                                    <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
 
-                        {{-- PAGINATION --}}
+                        
                         <div class="mt-3">
-                            {{ $employees->links() }}
+                            <?php echo e($employees->links()); ?>
+
                         </div>
 
                     </div>
@@ -114,4 +116,6 @@
         </div>
 
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Projects\Natanem\resources\views/hr/employees/index.blade.php ENDPATH**/ ?>
