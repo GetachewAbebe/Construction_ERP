@@ -16,17 +16,22 @@ class EmployeeController extends Controller
 
     public function create()
     {
-        return view('hr.employees.create');
+        $departments = \Illuminate\Support\Facades\DB::table('departments')->orderBy('name')->get();
+        $positions = \Illuminate\Support\Facades\DB::table('positions')->orderBy('title')->get();
+        
+        return view('hr.employees.create', compact('departments', 'positions'));
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            'first_name' => ['required','string','max:120'],
-            'last_name'  => ['required','string','max:120'],
-            'email'      => ['required','email','max:255','unique:employees,email'],
-            'hire_date'  => ['nullable','date'],
-            'salary'     => ['nullable','numeric'],
+            'first_name'    => ['required','string','max:120'],
+            'last_name'     => ['required','string','max:120'],
+            'email'         => ['required','email','max:255','unique:employees,email'],
+            'hire_date'     => ['nullable','date'],
+            'salary'        => ['nullable','numeric'],
+            'department_id' => ['nullable','exists:departments,id'],
+            'position_id'   => ['nullable','exists:positions,id'],
         ]);
 
         Employee::create($data);
@@ -37,17 +42,22 @@ class EmployeeController extends Controller
 
     public function edit(Employee $employee)
     {
-        return view('hr.employees.edit', compact('employee'));
+        $departments = \Illuminate\Support\Facades\DB::table('departments')->orderBy('name')->get();
+        $positions = \Illuminate\Support\Facades\DB::table('positions')->orderBy('title')->get();
+
+        return view('hr.employees.edit', compact('employee', 'departments', 'positions'));
     }
 
     public function update(Request $request, Employee $employee)
     {
         $data = $request->validate([
-            'first_name' => ['required','string','max:120'],
-            'last_name'  => ['required','string','max:120'],
-            'email'      => ['required','email','max:255','unique:employees,email,'.$employee->id],
-            'hire_date'  => ['nullable','date'],
-            'salary'     => ['nullable','numeric'],
+            'first_name'    => ['required','string','max:120'],
+            'last_name'     => ['required','string','max:120'],
+            'email'         => ['required','email','max:255','unique:employees,email,'.$employee->id],
+            'hire_date'     => ['nullable','date'],
+            'salary'        => ['nullable','numeric'],
+            'department_id' => ['nullable','exists:departments,id'],
+            'position_id'   => ['nullable','exists:positions,id'],
         ]);
 
         $employee->update($data);

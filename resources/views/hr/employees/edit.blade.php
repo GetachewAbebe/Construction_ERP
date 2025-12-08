@@ -55,6 +55,32 @@
                                     @enderror
                                 </div>
 
+                                <div class="col-md-6">
+                                    <label class="form-label small text-muted">Department</label>
+                                    <select name="department_id" class="form-select form-select-sm">
+                                        <option value="">Select Department...</option>
+                                        @foreach($departments as $dept)
+                                            <option value="{{ $dept->id }}"
+                                                {{ old('department_id', $employee->department_id) == $dept->id ? 'selected' : '' }}>
+                                                {{ $dept->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small text-muted">Position</label>
+                                    <select name="position_id" class="form-select form-select-sm">
+                                        <option value="">Select Position...</option>
+                                        @foreach($positions as $pos)
+                                            <option value="{{ $pos->id }}"
+                                                {{ old('position_id', $employee->position_id) == $pos->id ? 'selected' : '' }}>
+                                                {{ $pos->title }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
                                 <div class="col-12">
                                     <label class="form-label small text-muted">Email</label>
                                     <input
