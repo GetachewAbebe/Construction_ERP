@@ -85,33 +85,68 @@ unset($__errorArgs, $__bag); ?>
 
                                 <div class="col-md-6">
                                     <label class="form-label small text-muted">Department</label>
-                                    <select name="department_id" class="form-select form-select-sm">
-                                        <option value="">Select Department...</option>
+                                    <input 
+                                        type="text" 
+                                        name="department_name" 
+                                        list="departmentList" 
+                                        class="form-control form-control-sm" 
+                                        placeholder="Type or select department..."
+                                        value="<?php echo e(old('department_name', $employee->department)); ?>"
+                                    >
+                                    <datalist id="departmentList">
                                         <?php $__currentLoopData = $departments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dept): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($dept->id); ?>"
-                                                <?php echo e(old('department_id', $employee->department_id) == $dept->id ? 'selected' : ''); ?>>
-                                                <?php echo e($dept->name); ?>
-
-                                            </option>
+                                            <option value="<?php echo e($dept->name); ?>">
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                    </select>
+                                    </datalist>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label small text-muted">Position</label>
-                                    <select name="position_id" class="form-select form-select-sm">
-                                        <option value="">Select Position...</option>
+                                    <input 
+                                        type="text" 
+                                        name="position_title" 
+                                        list="positionList" 
+                                        class="form-control form-control-sm" 
+                                        placeholder="Type or select position..."
+                                        value="<?php echo e(old('position_title', $employee->position)); ?>"
+                                    >
+                                    <datalist id="positionList">
                                         <?php $__currentLoopData = $positions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pos): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($pos->id); ?>"
-                                                <?php echo e(old('position_id', $employee->position_id) == $pos->id ? 'selected' : ''); ?>>
-                                                <?php echo e($pos->title); ?>
-
-                                            </option>
+                                            <option value="<?php echo e($pos->title); ?>">
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                    </select>
+                                    </datalist>
                                 </div>
 
-                                <div class="col-12">
+                                <div class="col-md-6">
+                                    <label class="form-label small text-muted">Phone Number</label>
+                                    <input 
+                                        type="text" 
+                                        name="phone" 
+                                        class="form-control form-control-sm <?php $__errorArgs = ['phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                        value="<?php echo e(old('phone', $employee->phone)); ?>"
+                                    >
+                                    <?php $__errorArgs = ['phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                </div>
+
+
+
+                                <div class="col-md-6">
                                     <label class="form-label small text-muted">Email</label>
                                     <input
                                         type="email"

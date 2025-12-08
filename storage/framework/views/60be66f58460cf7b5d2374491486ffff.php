@@ -84,7 +84,7 @@ unset($__errorArgs, $__bag); ?>
 
                                 <div class="col-md-6">
                                     <label class="form-label small text-muted">Department</label>
-                                    <select name="department_id" class="form-select form-select-sm">
+                                    <select name="department_id" class="form-select form-select-sm mb-1">
                                         <option value="">Select Department...</option>
                                         <?php $__currentLoopData = $departments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dept): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <option value="<?php echo e($dept->id); ?>" <?php echo e(old('department_id') == $dept->id ? 'selected' : ''); ?>>
@@ -93,11 +93,12 @@ unset($__errorArgs, $__bag); ?>
                                             </option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
+                                    <input type="text" name="new_department" class="form-control form-control-sm text-muted" placeholder="Or type new department name" value="<?php echo e(old('new_department')); ?>">
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label small text-muted">Position</label>
-                                    <select name="position_id" class="form-select form-select-sm">
+                                    <select name="position_id" class="form-select form-select-sm mb-1">
                                         <option value="">Select Position...</option>
                                         <?php $__currentLoopData = $positions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pos): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <option value="<?php echo e($pos->id); ?>" <?php echo e(old('position_id') == $pos->id ? 'selected' : ''); ?>>
@@ -106,6 +107,7 @@ unset($__errorArgs, $__bag); ?>
                                             </option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
+                                    <input type="text" name="new_position" class="form-control form-control-sm text-muted" placeholder="Or type new position title" value="<?php echo e(old('new_position')); ?>">
                                 </div>
 
                                 <div class="col-12">

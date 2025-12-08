@@ -25,14 +25,58 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'first_name'    => ['required','string','max:120'],
-            'last_name'     => ['required','string','max:120'],
-            'email'         => ['required','email','max:255','unique:employees,email'],
-            'hire_date'     => ['nullable','date'],
-            'salary'        => ['nullable','numeric'],
-            'department_id' => ['nullable','exists:departments,id'],
-            'position_id'   => ['nullable','exists:positions,id'],
+            'first_name'      => ['required','string','max:120'],
+            'last_name'       => ['required','string','max:120'],
+            'email'           => ['required','email','max:255','unique:employees,email'],
+            'phone'           => ['nullable','string','max:20'],
+            'hire_date'       => ['nullable','date'],
+            'salary'          => ['nullable','numeric'],
+            'department_name' => ['nullable','string','max:255'],
+            'position_title'  => ['nullable','string','max:255'],
         ]);
+
+        // Process Department
+        $departmentId = null;
+        if (!empty($data['department_name'])) {
+            $existing = \Illuminate\Support\Facades\DB::table('departments')
+                ->where('name', $data['department_name'])
+                ->first();
+            
+            if ($existing) {
+                $departmentId = $existing->id;
+            } else {
+                $departmentId = \Illuminate\Support\Facades\DB::table('departments')->insertGetId([
+                    'name' => $data['department_name'],
+                    'created_at' => now(), 
+                    'updated_at' => now()
+                ]);
+            }
+        }
+        $data['department_id'] = $departmentId;
+        unset($data['department_name']);
+
+        // Process Position
+        $positionId = null;
+        if (!empty($data['position_title'])) {
+            $existingPos = \Illuminate\Support\Facades\DB::table('positions')
+                ->where('title', $data['position_title'])
+                ->first();
+            
+            if ($existingPos) {
+                $positionId = $existingPos->id;
+            } else {
+                $positionId = \Illuminate\Support\Facades\DB::table('positions')->insertGetId([
+                    'title' => $data['position_title'],
+                    'created_at' => now(), 
+                    'updated_at' => now()
+                ]);
+            }
+        }
+        $data['position_id'] = $positionId;
+        unset($data['position_title']);
+
+        // Clean up any other temporary fields if necessary (already unset above)
+        // Note: 'new_department' and 'new_position' are gone from validation
 
         Employee::create($data);
 
@@ -51,14 +95,65 @@ class EmployeeController extends Controller
     public function update(Request $request, Employee $employee)
     {
         $data = $request->validate([
-            'first_name'    => ['required','string','max:120'],
-            'last_name'     => ['required','string','max:120'],
-            'email'         => ['required','email','max:255','unique:employees,email,'.$employee->id],
-            'hire_date'     => ['nullable','date'],
-            'salary'        => ['nullable','numeric'],
-            'department_id' => ['nullable','exists:departments,id'],
-            'position_id'   => ['nullable','exists:positions,id'],
+            'first_name'      => ['required','string','max:120'],
+            'last_name'       => ['required','string','max:120'],
+            'email'           => ['required','email','max:255','unique:employees,email,'.$employee->id],
+            'phone'           => ['nullable','string','max:20'],
+            'hire_date'       => ['nullable','date'],
+            'salary'          => ['nullable','numeric'],
+            'department_name' => ['nullable','string','max:255'],
+            'position_title'  => ['nullable','string','max:255'],
         ]);
+
+        // Process Department
+        $departmentId = $employee->department_id; // Keep existing if not changed/provided? 
+        // Logic: if provided, update it. If empty string provided, maybe clear it?
+        // Let's assume input always sends value if set.
+        if (isset($data['department_name'])) {
+            if (empty($data['department_name'])) {
+                $departmentId = null; 
+            } else {
+                $existing = \Illuminate\Support\Facades\DB::table('departments')
+                    ->where('name', $data['department_name'])
+                    ->first();
+
+                if ($existing) {
+                    $departmentId = $existing->id;
+                } else {
+                    $departmentId = \Illuminate\Support\Facades\DB::table('departments')->insertGetId([
+                        'name' => $data['department_name'],
+                        'created_at' => now(), 
+                        'updated_at' => now()
+                    ]);
+                }
+            }
+        }
+        $data['department_id'] = $departmentId;
+        unset($data['department_name']);
+
+        // Process Position
+        $positionId = $employee->position_id;
+        if (isset($data['position_title'])) {
+            if (empty($data['position_title'])) {
+                $positionId = null;
+            } else {
+                $existingPos = \Illuminate\Support\Facades\DB::table('positions')
+                    ->where('title', $data['position_title'])
+                    ->first();
+
+                if ($existingPos) {
+                    $positionId = $existingPos->id;
+                } else {
+                    $positionId = \Illuminate\Support\Facades\DB::table('positions')->insertGetId([
+                        'title' => $data['position_title'],
+                        'created_at' => now(), 
+                        'updated_at' => now()
+                    ]);
+                }
+            }
+        }
+        $data['position_id'] = $positionId;
+        unset($data['position_title']);
 
         $employee->update($data);
 
@@ -71,5 +166,53 @@ class EmployeeController extends Controller
         $employee->delete();
         return redirect()->route('hr.employees.index')
             ->with('status','Employee deleted.');
+    }
+
+    // ==========================================
+    // DEPARTMENT MANAGEMENT
+    // ==========================================
+    public function indexDepartments()
+    {
+        $departments = \Illuminate\Support\Facades\DB::table('departments')->orderBy('name')->paginate(20);
+        return view('hr.departments.create', compact('departments'));
+    }
+
+    public function storeDepartment(Request $request)
+    {
+        $data = $request->validate(['name' => 'required|string|max:255|unique:departments,name']);
+        $data['created_at'] = now();
+        $data['updated_at'] = now();
+        \Illuminate\Support\Facades\DB::table('departments')->insert($data);
+        return redirect()->route('hr.departments.index')->with('status', 'Department added.');
+    }
+
+    public function destroyDepartment($id)
+    {
+        \Illuminate\Support\Facades\DB::table('departments')->where('id', $id)->delete();
+        return redirect()->route('hr.departments.index')->with('status', 'Department deleted.');
+    }
+
+    // ==========================================
+    // POSITION MANAGEMENT
+    // ==========================================
+    public function indexPositions()
+    {
+        $positions = \Illuminate\Support\Facades\DB::table('positions')->orderBy('title')->paginate(20);
+        return view('hr.positions.create', compact('positions'));
+    }
+
+    public function storePosition(Request $request)
+    {
+        $data = $request->validate(['title' => 'required|string|max:255|unique:positions,title']);
+        $data['created_at'] = now();
+        $data['updated_at'] = now();
+        \Illuminate\Support\Facades\DB::table('positions')->insert($data);
+        return redirect()->route('hr.positions.index')->with('status', 'Position added.');
+    }
+
+    public function destroyPosition($id)
+    {
+        \Illuminate\Support\Facades\DB::table('positions')->where('id', $id)->delete();
+        return redirect()->route('hr.positions.index')->with('status', 'Position deleted.');
     }
 }

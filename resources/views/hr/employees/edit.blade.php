@@ -57,31 +57,54 @@
 
                                 <div class="col-md-6">
                                     <label class="form-label small text-muted">Department</label>
-                                    <select name="department_id" class="form-select form-select-sm">
-                                        <option value="">Select Department...</option>
+                                    <input 
+                                        type="text" 
+                                        name="department_name" 
+                                        list="departmentList" 
+                                        class="form-control form-control-sm" 
+                                        placeholder="Type or select department..."
+                                        value="{{ old('department_name', $employee->department) }}"
+                                    >
+                                    <datalist id="departmentList">
                                         @foreach($departments as $dept)
-                                            <option value="{{ $dept->id }}"
-                                                {{ old('department_id', $employee->department_id) == $dept->id ? 'selected' : '' }}>
-                                                {{ $dept->name }}
-                                            </option>
+                                            <option value="{{ $dept->name }}">
                                         @endforeach
-                                    </select>
+                                    </datalist>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label small text-muted">Position</label>
-                                    <select name="position_id" class="form-select form-select-sm">
-                                        <option value="">Select Position...</option>
+                                    <input 
+                                        type="text" 
+                                        name="position_title" 
+                                        list="positionList" 
+                                        class="form-control form-control-sm" 
+                                        placeholder="Type or select position..."
+                                        value="{{ old('position_title', $employee->position) }}"
+                                    >
+                                    <datalist id="positionList">
                                         @foreach($positions as $pos)
-                                            <option value="{{ $pos->id }}"
-                                                {{ old('position_id', $employee->position_id) == $pos->id ? 'selected' : '' }}>
-                                                {{ $pos->title }}
-                                            </option>
+                                            <option value="{{ $pos->title }}">
                                         @endforeach
-                                    </select>
+                                    </datalist>
                                 </div>
 
-                                <div class="col-12">
+                                <div class="col-md-6">
+                                    <label class="form-label small text-muted">Phone Number</label>
+                                    <input 
+                                        type="text" 
+                                        name="phone" 
+                                        class="form-control form-control-sm @error('phone') is-invalid @enderror"
+                                        value="{{ old('phone', $employee->phone) }}"
+                                    >
+                                    @error('phone')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+
+
+                                <div class="col-md-6">
                                     <label class="form-label small text-muted">Email</label>
                                     <input
                                         type="email"
