@@ -106,10 +106,10 @@ class EmployeeController extends Controller
         ]);
 
         // Process Department
-        $departmentId = $employee->department_id; // Keep existing if not changed/provided? 
-        // Logic: if provided, update it. If empty string provided, maybe clear it?
-        // Let's assume input always sends value if set.
-        if (isset($data['department_name'])) {
+        $departmentId = $employee->department_id; 
+        
+        // Check if department_name is present in the request
+        if (array_key_exists('department_name', $data)) {
             if (empty($data['department_name'])) {
                 $departmentId = null; 
             } else {
@@ -127,13 +127,15 @@ class EmployeeController extends Controller
                     ]);
                 }
             }
+            unset($data['department_name']);
         }
         $data['department_id'] = $departmentId;
-        unset($data['department_name']);
 
         // Process Position
         $positionId = $employee->position_id;
-        if (isset($data['position_title'])) {
+        
+        // Check if position_title is present in the request
+        if (array_key_exists('position_title', $data)) {
             if (empty($data['position_title'])) {
                 $positionId = null;
             } else {
@@ -151,9 +153,9 @@ class EmployeeController extends Controller
                     ]);
                 }
             }
+            unset($data['position_title']);
         }
         $data['position_id'] = $positionId;
-        unset($data['position_title']);
 
         $employee->update($data);
 
