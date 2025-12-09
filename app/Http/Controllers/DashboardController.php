@@ -33,7 +33,33 @@ class DashboardController extends Controller
      */
     public function hr()
     {
-        return view('dashboards.hr');
+        $employeeCount = \App\Models\Employee::count();
+        $activeEmployees = \App\Models\Employee::where('status', 'Active')->count();
+        $onLeaveCount = \App\Models\Employee::where('status', 'On Leave')->count();
+        $pendingLeaveApprovals = \App\Models\LeaveRequest::where('status', 'pending')->count();
+        $recentHires = \App\Models\Employee::where('hire_date', '>=', now()->subDays(30))->count();
+        
+        // Latest 5 employees
+        $latestEmployees = \App\Models\Employee::latest('created_at')->take(5)->get();
+
+        // Department Breakdown (Top 5 largest departments)
+        $departmentStats = \Illuminate\Support\Facades\DB::table('departments')
+            ->join('employees', 'departments.id', '=', 'employees.department_id')
+            ->select('departments.name', \Illuminate\Support\Facades\DB::raw('count(employees.id) as total'))
+            ->groupBy('departments.name')
+            ->orderByDesc('total')
+            ->take(5)
+            ->get();
+
+        return view('dashboards.hr', compact(
+            'employeeCount', 
+            'activeEmployees', 
+            'onLeaveCount', 
+            'pendingLeaveApprovals',
+            'recentHires',
+            'latestEmployees',
+            'departmentStats'
+        ));
     }
 
     /**
