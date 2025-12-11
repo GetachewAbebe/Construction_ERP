@@ -4,7 +4,9 @@
   <meta charset="utf-8">
   <title><?php echo $__env->yieldContent('title','Natanem Engineering'); ?></title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <?php echo app('Illuminate\Foundation\Vite')(['resources/sass/app.scss','resources/js/app.js']); ?>
+    
+  <link rel="stylesheet" href="<?php echo e(asset('build/assets/app.css')); ?>">
+  <script type="module" src="<?php echo e(asset('build/assets/app.js')); ?>"></script>
   <style>
       :root {
           /* Theme colors */
