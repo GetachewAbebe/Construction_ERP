@@ -5,8 +5,8 @@
   <title>@yield('title','Natanem Engineering')</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
     {{-- Manual Asset Linking (User renamed files on server) --}}
-  <link rel="stylesheet" href="{{ asset('build/assets/app.css') }}?v={{ filemtime(public_path('build/assets/app.css')) }}">
-  <script type="module" src="{{ asset('build/assets/app.js') }}?v={{ filemtime(public_path('build/assets/app.js')) }}"></script>
+  <link rel="stylesheet" href="{{ asset('build/assets/app.css') }}?v={{ file_exists(public_path('build/assets/app.css')) ? filemtime(public_path('build/assets/app.css')) : 0 }}">
+  <script type="module" src="{{ asset('build/assets/app.js') }}?v={{ file_exists(public_path('build/assets/app.js')) ? filemtime(public_path('build/assets/app.js')) : 0 }}"></script>
   <style>
       :root {
           /* Theme colors */
