@@ -7,7 +7,6 @@ npm-debug.log
 .env.local
 
 # Build output
-dist/
 
 # OS generated files
 .DS_Store
