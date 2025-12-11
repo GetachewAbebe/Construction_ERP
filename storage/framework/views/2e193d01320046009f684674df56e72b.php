@@ -5,8 +5,8 @@
   <title><?php echo $__env->yieldContent('title','Natanem Engineering'); ?></title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
     
-  <link rel="stylesheet" href="<?php echo e(asset('build/assets/app.css')); ?>?v=1.2">
-  <script type="module" src="<?php echo e(asset('build/assets/app.js')); ?>?v=1.2"></script>
+  <link rel="stylesheet" href="<?php echo e(asset('build/assets/app-main.css')); ?>?v=1.2">
+  <script type="module" src="<?php echo e(asset('build/assets/app-main.js')); ?>?v=1.2"></script>
   <style>
       :root {
           /* Theme colors */
