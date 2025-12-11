@@ -4,7 +4,9 @@
   <meta charset="utf-8">
   <title>@yield('title','Natanem Engineering')</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  @vite(['resources/sass/app.scss','resources/js/app.js'])
+    {{-- Manual Asset Linking (User renamed files on server) --}}
+  <link rel="stylesheet" href="{{ asset('build/assets/app.css') }}">
+  <script type="module" src="{{ asset('build/assets/app.js') }}"></script>
   <style>
       :root {
           /* Theme colors */
