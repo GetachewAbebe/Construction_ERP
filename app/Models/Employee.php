@@ -101,4 +101,11 @@ class Employee extends Model
         
         return 'N/A';
     }
+    /**
+     * Get the attendances for the employee.
+     */
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }

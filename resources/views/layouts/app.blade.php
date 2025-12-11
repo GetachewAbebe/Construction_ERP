@@ -4,9 +4,7 @@
   <meta charset="utf-8">
   <title>@yield('title','Natanem Engineering')</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   @vite(['resources/sass/app.scss','resources/js/app.js'])
-
   <style>
       :root {
           /* Theme colors */
@@ -105,7 +103,6 @@
   @unless(request()->routeIs('home'))
       <header class="navbar navbar-expand-lg navbar-dark navbar-gradient shadow-soft py-2">
         <div class="container position-relative d-flex align-items-center justify-content-between">
-
           @php
               // Decide where the brand should point
               $dashboardRoute = 'home';
@@ -165,9 +162,16 @@
                           </a>
                       </li>
                       <li class="nav-item">
-                          <a class="nav-link {{ request()->routeIs('hr.*') ? 'active' : '' }}"
+                          <a class="nav-link {{ request()->routeIs('hr.dashboard') ? 'active' : '' }}"
                              href="{{ route('hr.dashboard') }}">
                               HR Resource
+                          </a>
+                      </li>
+                      {{-- NEW: Admin access to Attendance --}}
+                      <li class="nav-item">
+                          <a class="nav-link {{ request()->routeIs('hr.attendance.*') ? 'active' : '' }}"
+                             href="{{ route('hr.attendance.index') }}">
+                              Attendance
                           </a>
                       </li>
                       <li class="nav-item">
@@ -200,6 +204,13 @@
                           <a class="nav-link {{ request()->routeIs('hr.employees.*') ? 'active' : '' }}"
                              href="{{ route('hr.employees.index') }}">
                               Employees
+                          </a>
+                      </li>
+                      {{-- NEW: HR access to Attendance --}}
+                      <li class="nav-item">
+                          <a class="nav-link {{ request()->routeIs('hr.attendance.*') ? 'active' : '' }}"
+                             href="{{ route('hr.attendance.index') }}">
+                              Attendance
                           </a>
                       </li>
                       <li class="nav-item">

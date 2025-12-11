@@ -183,6 +183,25 @@ Route::middleware([
 
             return view('hr.leaves.approved', compact('approved'));
         })->name('leaves.approved');
+
+        // Attendance
+        Route::get('/attendance', [App\Http\Controllers\HR\AttendanceController::class, 'index'])
+            ->name('attendance.index');
+
+        Route::post('/attendance/check-in', [App\Http\Controllers\HR\AttendanceController::class, 'checkIn'])
+            ->name('attendance.check-in');
+
+        Route::post('/attendance/check-out/{id}', [App\Http\Controllers\HR\AttendanceController::class, 'checkOut'])
+            ->name('attendance.check-out');
+
+        // ✅ NEW: Monthly summary & export (Admin + HR only, via gate)
+        Route::get('/attendance/monthly-summary', [App\Http\Controllers\HR\AttendanceController::class, 'monthlySummary'])
+            ->middleware('can:manage-attendance')
+            ->name('attendance.monthly-summary');
+
+        Route::get('/attendance/monthly-summary/export', [App\Http\Controllers\HR\AttendanceController::class, 'exportMonthlySummaryCsv'])
+            ->middleware('can:manage-attendance')
+            ->name('attendance.monthly-summary.export');
     });
 });
 
