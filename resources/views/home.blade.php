@@ -209,7 +209,7 @@
 
                         {{-- Centered helper text under the form --}}
                         <p class="text-muted small mb-0 text-center">
-                            Having trouble signing in? <span class="fw-semibold">Contact the Admin.</span>
+                            Having trouble signing in? <span class="fw-semibold">Contact the Admin at <a href="mailto:administrator@natanemengineering.com" class="text-decoration-none" style="color: var(--erp-green);">administrator@natanemengineering.com</a></span>
                         </p>
                     </div>
                 </div>
