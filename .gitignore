@@ -8,10 +8,6 @@ npm-debug.log
 /storage/framework/cache
 /storage/framework/sessions
 /storage/framework/testing
-
-
 /vendor/*
-
 # OS generated files
-.DS_Store
 Thumbs.db
