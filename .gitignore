@@ -4,6 +4,13 @@ npm-debug.log
 
 # Environment Variables
 .env
+/storage/framework/views
+/storage/framework/cache
+/storage/framework/sessions
+/storage/framework/testing
+
+
+/vendor
 
 # OS generated files
 .DS_Store
