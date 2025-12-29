@@ -15,11 +15,11 @@
       }
 
       .navbar-gradient {
-          background: linear-gradient(135deg, var(--erp-green), var(--erp-orange));
+          background: var(--erp-green);
       }
 
       .footer-gradient {
-          background: linear-gradient(135deg, var(--erp-green), var(--erp-orange));
+          background: var(--erp-green);
       }
 
       .bg-erp-soft {
@@ -74,7 +74,7 @@
           box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
       }
 
-      /* Brand pill (center) */
+      /* Brand pill */
       .brand-pill {
           border-radius: 999px;
           border: 1px solid rgba(255,255,255,0.7);
@@ -143,21 +143,18 @@
 <body class="bg-light d-flex flex-column min-vh-100">
 
   {{-- HEADER --}}
+  @unless (request()->routeIs('home'))
   <header class="navbar navbar-expand-lg navbar-dark navbar-gradient shadow-soft py-2">
-    <div class="container position-relative d-flex align-items-center justify-content-between">
+    <div class="container d-flex align-items-center">
 
-      {{-- Centered brand pill --}}
-      <a class="brand-pill position-absolute top-50 start-50 translate-middle"
-         href="{{ route('home') }}">
+      {{-- Brand pill (left) --}}
+      <a class="brand-pill me-3" href="{{ route('home') }}">
         <span class="erp-pill-dot"></span>
-        <span class="label">Natanem Engineering - Enterprise Resource Planning</span>
+        <span class="label">Natanem Engineering</span>
       </a>
 
-      {{-- Left spacer --}}
-      <div></div>
-
       {{-- Toggler --}}
-      <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
         <span class="navbar-toggler-icon"></span>
       </button>
 
@@ -385,6 +382,7 @@
       </div>
     </div>
   </header>
+  @endunless
 
   {{-- MAIN CONTENT --}}
   <main class="flex-fill">
