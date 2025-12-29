@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Finance Dashboard – Natanem Engineering')
+@section('title', 'Finance Dashboard - Natanem Engineering')
 
 @section('content')
 <div class="container py-3 py-md-4">
@@ -31,6 +31,26 @@
         </li>
         <li class="nav-item">
             <a href="#" class="nav-link disabled" aria-disabled="true">Reports</a>
+        </li>
+    </ul>
+
+    {{-- Project finance menus --}}
+    <div class="d-flex align-items-center mb-2">
+        <span class="text-uppercase small text-muted fw-semibold">Project Finance</span>
+    </div>
+    <ul class="nav nav-pills flex-wrap mb-4">
+        {{-- Add real project routes as you build the module --}}
+        <li class="nav-item">
+            <a href="#" class="nav-link disabled" aria-disabled="true">Project 01</a>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link disabled" aria-disabled="true">Project 02</a>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link disabled" aria-disabled="true">Project 03</a>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link disabled" aria-disabled="true">Project 04</a>
         </li>
     </ul>
 
