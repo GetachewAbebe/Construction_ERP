@@ -25,9 +25,11 @@
                         Browse and manage materials, equipment and other inventory items.
                     </p>
                 </div>
+                @unless(Auth::user()->hasRole('Administrator'))
                 <a href="{{ route('inventory.items.create') }}" class="btn btn-sm btn-success">
                     Add Item
                 </a>
+                @endunless
             </div>
         </div>
 
@@ -110,6 +112,7 @@
                                                 @endif
                                             </td>
                                             <td class="text-end">
+                                                @unless(Auth::user()->hasRole('Administrator'))
                                                 <div class="d-inline-flex gap-2">
                                                     <a href="{{ route('inventory.items.edit', $item) }}"
                                                        class="btn btn-sm btn-outline-secondary">
@@ -126,6 +129,9 @@
                                                         </button>
                                                     </form>
                                                 </div>
+                                                @else
+                                                <span class="text-muted x-small">View Only</span>
+                                                @endunless
                                             </td>
                                         </tr>
                                     @empty

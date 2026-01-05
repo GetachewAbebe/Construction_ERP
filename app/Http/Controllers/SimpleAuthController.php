@@ -27,20 +27,33 @@ class SimpleAuthController extends Controller
         $request->session()->regenerate();
 
         $user    = Auth::user();
-        $rawRole = $user->role ?? null;
-        // Normalize: lowercase AND remove spaces
-        // e.g. "Human Resource Manager" -> "humanresourcemanager"
-        $role    = $rawRole ? strtolower(str_replace(' ', '', $rawRole)) : null;
+        $rawRole = $user->role; // Get the role from the 'role' column in users table
 
-        // Redirect based on your 4 roles
-        if ($role === 'administrator') {
+        // Redirect based on roles using Spatie's hasRole
+        if ($user->hasRole('Administrator')) {
             return redirect()->route('admin.dashboard');
-        } elseif ($role === 'humanresourcemanager') {
+        } elseif ($user->hasRole('Human Resource Manager')) {
             return redirect()->route('hr.dashboard');
-        } elseif ($role === 'inventorymanager') {
+        } elseif ($user->hasRole('Inventory Manager')) {
             return redirect()->route('inventory.dashboard');
-        } elseif ($role === 'financialmanager') {
+        } elseif ($user->hasRole('Financial Manager')) {
             return redirect()->route('finance.dashboard');
+        }
+
+        // Fallback: If Spatie hasRole fails, try checking the 'role' column (for backward compatibility or misconfiguration)
+        $roleMap = [
+            'Administrator'           => 'admin.dashboard',
+            'administrator'           => 'admin.dashboard',
+            'Human Resource Manager'  => 'hr.dashboard',
+            'HumanResourceManager'    => 'hr.dashboard',
+            'Inventory Manager'       => 'inventory.dashboard',
+            'InventoryManager'        => 'inventory.dashboard',
+            'Financial Manager'       => 'finance.dashboard',
+            'FinancialManager'        => 'finance.dashboard',
+        ];
+
+        if (isset($roleMap[$rawRole])) {
+            return redirect()->route($roleMap[$rawRole]);
         }
 
         // Unknown role → show a clear error

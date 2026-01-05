@@ -59,11 +59,14 @@ class AdminUserController extends Controller
             ->when($q !== '', function ($query) use ($q) {
                 // Postgres-friendly case-insensitive search
                 $query->where(function ($sub) use ($q) {
-                    $sub->where('name', 'ILIKE', "%{$q}%")
+                    $sub->where('first_name', 'ILIKE', "%{$q}%")
+                        ->orWhere('middle_name', 'ILIKE', "%{$q}%")
+                        ->orWhere('last_name', 'ILIKE', "%{$q}%")
                         ->orWhere('email', 'ILIKE', "%{$q}%");
                 });
             })
-            ->orderBy('name')
+            ->orderBy('first_name')
+            ->orderBy('last_name')
             ->paginate(10)
             ->withQueryString();
 
@@ -94,17 +97,31 @@ class AdminUserController extends Controller
         $this->enforceAdmin();
 
         $validated = $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'confirmed', Password::min(8)],
-            'role'     => ['required', Rule::in($this->allowedRoles)],
+            'first_name'   => ['required', 'string', 'max:50'],
+            'middle_name'  => ['nullable', 'string', 'max:50'],
+            'last_name'    => ['required', 'string', 'max:50'],
+            'email'        => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password'     => ['required', Password::min(8)],
+            'role'         => ['required', Rule::in($this->allowedRoles)],
+            'phone_number' => ['nullable', 'string', 'max:20'],
+            'position'     => ['nullable', 'string', 'max:100'],
+            'department'   => ['nullable', 'string', 'max:100'],
+            'status'       => ['nullable', 'string', 'in:Active,Inactive,Suspended'],
+            'bio'          => ['nullable', 'string', 'max:1000'],
         ]);
 
         $user = User::create([
-            'name'              => $validated['name'],
+            'first_name'        => $validated['first_name'],
+            'middle_name'       => $validated['middle_name'] ?? null,
+            'last_name'         => $validated['last_name'],
             'email'             => $validated['email'],
             'password'          => Hash::make($validated['password']),
-            'role'              => $validated['role'],   // 👈 important
+            'role'              => $validated['role'],
+            'phone_number'      => $validated['phone_number'] ?? null,
+            'position'          => $validated['position'] ?? null,
+            'department'        => $validated['department'] ?? null,
+            'status'            => $validated['status'] ?? 'Active',
+            'bio'               => $validated['bio'] ?? null,
             'email_verified_at' => now(),
         ]);
 
@@ -136,7 +153,9 @@ class AdminUserController extends Controller
         $this->enforceAdmin();
 
         $validated = $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
+            'first_name'   => ['required', 'string', 'max:50'],
+            'middle_name'  => ['nullable', 'string', 'max:50'],
+            'last_name'    => ['required', 'string', 'max:50'],
             'email'    => [
                 'required',
                 'string',
@@ -144,13 +163,25 @@ class AdminUserController extends Controller
                 'max:255',
                 Rule::unique('users', 'email')->ignore($user->id),
             ],
-            'password' => ['nullable', 'confirmed', Password::min(8)],
-            'role'     => ['required', Rule::in($this->allowedRoles)],
+            'password' => ['nullable', Password::min(8)],
+            'role'         => ['required', Rule::in($this->allowedRoles)],
+            'phone_number' => ['nullable', 'string', 'max:20'],
+            'position'     => ['nullable', 'string', 'max:100'],
+            'department'   => ['nullable', 'string', 'max:100'],
+            'status'       => ['nullable', 'string', 'in:Active,Inactive,Suspended'],
+            'bio'          => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $user->name  = $validated['name'];
-        $user->email = $validated['email'];
-        $user->role  = $validated['role'];  // 👈 keep column in sync
+        $user->first_name   = $validated['first_name'];
+        $user->middle_name  = $validated['middle_name'] ?? null;
+        $user->last_name    = $validated['last_name'];
+        $user->email        = $validated['email'];
+        $user->role         = $validated['role'];
+        $user->phone_number = $validated['phone_number'] ?? null;
+        $user->position     = $validated['position'] ?? null;
+        $user->department   = $validated['department'] ?? null;
+        $user->status       = $validated['status'] ?? 'Active';
+        $user->bio          = $validated['bio'] ?? null;
 
         if (!empty($validated['password'])) {
             $user->password = Hash::make($validated['password']);

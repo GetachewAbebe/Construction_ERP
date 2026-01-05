@@ -13,10 +13,12 @@
                         View and manage employee records.
                     </p>
                 </div>
+                @unless(Auth::user()->hasRole('Administrator'))
                 <a href="{{ route('hr.employees.create') }}"
                    class="btn btn-sm btn-success">
                     New Employee
                 </a>
+                @endunless
             </div>
         </div>
 
@@ -75,6 +77,7 @@
                                             </td>
                                             <td>{{ $e->phone ?? '-' }}</td>
                                             <td class="text-center">
+                                                @unless(Auth::user()->hasRole('Administrator'))
                                                 <div class="d-inline-flex gap-2">
                                                     <a href="{{ route('hr.employees.edit', $e) }}"
                                                        class="btn btn-sm btn-outline-secondary">
@@ -90,6 +93,9 @@
                                                         </button>
                                                     </form>
                                                 </div>
+                                                @else
+                                                <span class="text-muted x-small">View Only</span>
+                                                @endunless
                                             </td>
                                         </tr>
                                     @empty

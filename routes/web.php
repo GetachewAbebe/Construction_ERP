@@ -30,26 +30,42 @@ use App\Models\InventoryLoan;
 Route::get('/', function () {
     // If user is already logged in, send them straight to their dashboard
     if (Auth::check()) {
-        $user     = Auth::user();
-        $rawRole  = $user->role ?? null;
-        $roleSlug = $rawRole ? strtolower(trim($rawRole)) : null;
+        $user = Auth::user();
+        $rawRole = $user->role;
 
-        if ($roleSlug === 'administrator') {
+        if ($user->hasRole('Administrator')) {
             return redirect()->route('admin.dashboard');
-        } elseif ($roleSlug === 'humanresourcemanager') {
+        } elseif ($user->hasRole('Human Resource Manager')) {
             return redirect()->route('hr.dashboard');
-        } elseif ($roleSlug === 'inventorymanager') {
+        } elseif ($user->hasRole('Inventory Manager')) {
             return redirect()->route('inventory.dashboard');
-        } elseif ($roleSlug === 'financialmanager') {
+        } elseif ($user->hasRole('Financial Manager')) {
             return redirect()->route('finance.dashboard');
+        }
+
+        // Fallback check
+        $roleMap = [
+            'Administrator'           => 'admin.dashboard',
+            'administrator'           => 'admin.dashboard',
+            'Human Resource Manager'  => 'hr.dashboard',
+            'HumanResourceManager'    => 'hr.dashboard',
+            'Inventory Manager'       => 'inventory.dashboard',
+            'InventoryManager'        => 'inventory.dashboard',
+            'Financial Manager'       => 'finance.dashboard',
+            'FinancialManager'        => 'finance.dashboard',
+        ];
+
+        if (isset($roleMap[$rawRole])) {
+            return redirect()->route($roleMap[$rawRole]);
         }
 
         // Unknown / unmapped role → block access clearly
         abort(
             403,
-            "Unknown or unmapped role '{$rawRole}'. Please check the user's role value in the database."
+            "Unknown or unmapped role '{$rawRole}'. Please check the user's role assignment."
         );
     }
+
 
     // Guest: show the login form
     return view('home');
@@ -92,12 +108,10 @@ Route::middleware([
     Route::get('/admin',      [DashboardController::class, 'admin'])->name('admin.dashboard');
     Route::get('/admin/home', [DashboardController::class, 'admin'])->name('admin.home');
 
-    // Admin “sections” (HR, Inventory, Finance) if you use them
-    Route::prefix('admin/section')->name('admin.section.')->group(function () {
-        Route::view('/hr',        'admin.sections.hr')->name('hr');
-        Route::view('/inventory', 'admin.sections.inventory')->name('inventory');
-        Route::view('/finance',   'admin.sections.finance')->name('finance');
-    });
+    // Admin "sections" - reusing the same dashboards but keeping /admin prefix for sidebar context
+    Route::get('/admin/hr',        [DashboardController::class, 'hr'])->name('admin.hr');
+    Route::get('/admin/inventory', [DashboardController::class, 'inventory'])->name('admin.inventory');
+    Route::get('/admin/finance',   [DashboardController::class, 'finance'])->name('admin.finance');
 
     /**
      * Admin: requests / approvals (leave, purchases, items, finance)
@@ -145,6 +159,45 @@ Route::middleware([
         Route::get('/users/{user}/edit',  [AdminUserController::class, 'edit'])->name('users.edit');
         Route::put('/users/{user}',       [AdminUserController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}',    [AdminUserController::class, 'destroy'])->name('users.destroy');
+
+        // Attendance Settings
+        Route::get('/attendance-settings', [App\Http\Controllers\Admin\AttendanceSettingsController::class, 'index'])
+            ->name('attendance-settings.index');
+        Route::post('/attendance-settings', [App\Http\Controllers\Admin\AttendanceSettingsController::class, 'update'])
+            ->name('attendance-settings.update');
+    });
+
+    // === SHADOW ROUTES FOR ADMIN CONTEXT (Read-Only / Management View) ===
+    Route::prefix('admin')->name('admin.')->group(function () {
+        // HR Shadow
+        Route::prefix('hr')->name('hr.')->group(function () {
+            Route::get('/employees',      [EmployeeController::class, 'index'])->name('employees.index');
+            Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit'); // Keep edit accessible for viewing? Or just index. User said "approval and viewer". Let's keep index/show mostly. The controller limits write.
+            // Actually, the Views check for Admin role to hide edit buttons. So we can map the generic routes or specific ones. 
+            // Lets map index and generic read pages.
+            Route::get('/leaves',         [LeaveRequestController::class, 'index'])->name('leaves.index');
+            Route::get('/attendance',     [App\Http\Controllers\HR\AttendanceController::class, 'index'])->name('attendance.index');
+            Route::get('/leaves/approved', function () {
+                $approved = EmployeeOnLeave::with('employee', 'approver')
+                    ->latest('approved_at')
+                    ->paginate(20);
+                return view('hr.leaves.approved', compact('approved'));
+            })->name('leaves.approved');
+        });
+
+        // Inventory Shadow
+        Route::prefix('inventory')->name('inventory.')->group(function () {
+            Route::get('/items',          [InventoryItemController::class, 'index'])->name('items.index');
+            Route::get('/loans',          [InventoryLoanController::class, 'index'])->name('loans.index');
+            Route::get('/logs',           [App\Http\Controllers\Inventory\InventoryLogController::class, 'index'])->name('logs.index');
+        });
+
+        // Finance Shadow
+        Route::prefix('finance')->name('finance.')->group(function () {
+            Route::get('/projects',       [App\Http\Controllers\Finance\ProjectController::class, 'index'])->name('projects.index');
+            Route::get('/projects/{project}', [App\Http\Controllers\Finance\ProjectController::class, 'show'])->name('projects.show');
+            Route::get('/expenses',       [App\Http\Controllers\Finance\ExpenseController::class, 'index'])->name('expenses.index');
+        });
     });
 });
 
@@ -230,6 +283,10 @@ Route::middleware([
         Route::put('/items/{item}',       [InventoryItemController::class, 'update'])->name('items.update');
         Route::delete('/items/{item}',    [InventoryItemController::class, 'destroy'])->name('items.destroy');
 
+        // Inventory Audit Trail (Logs)
+        Route::get('/logs', [App\Http\Controllers\Inventory\InventoryLogController::class, 'index'])
+            ->name('logs.index');
+
         /**
          * LOANS (lending items to employees)
          */
@@ -259,7 +316,12 @@ Route::middleware([
     'role:Administrator,FinancialManager',
     'prevent-back-history',
 ])->group(function () {
-    Route::get('/finance', [DashboardController::class, 'finance'])->name('finance.dashboard');
+    // Finance Management
+    Route::prefix('finance')->name('finance.')->group(function () {
+        Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'finance'])->name('dashboard');
 
-    // Add more finance routes later if needed
+        // Projects & Expenses
+        Route::resource('projects', App\Http\Controllers\Finance\ProjectController::class);
+        Route::resource('expenses', App\Http\Controllers\Finance\ExpenseController::class);
+    });
 });

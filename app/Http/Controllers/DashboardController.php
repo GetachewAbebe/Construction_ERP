@@ -35,8 +35,15 @@ class DashboardController extends Controller
     {
         $employeeCount = \App\Models\Employee::count();
         $activeEmployees = \App\Models\Employee::where('status', 'Active')->count();
-        $onLeaveCount = \App\Models\Employee::where('status', 'On Leave')->count();
-        $pendingLeaveApprovals = \App\Models\LeaveRequest::where('status', 'pending')->count();
+        
+        // Calculate real-time "On Leave Today"
+        $today = now()->toDateString();
+        $onLeaveTodayCount = \App\Models\EmployeeOnLeave::where('start_date', '<=', $today)
+            ->where('end_date', '>=', $today)
+            ->distinct('employee_id')
+            ->count();
+
+        $pendingLeaveApprovals = \App\Models\LeaveRequest::where('status', 'Pending')->count();
         $recentHires = \App\Models\Employee::where('hire_date', '>=', now()->subDays(30))->count();
         
         // Latest 5 employees
@@ -54,7 +61,7 @@ class DashboardController extends Controller
         return view('dashboards.hr', compact(
             'employeeCount', 
             'activeEmployees', 
-            'onLeaveCount', 
+            'onLeaveTodayCount', 
             'pendingLeaveApprovals',
             'recentHires',
             'latestEmployees',

@@ -1,197 +1,228 @@
 @extends('layouts.app')
-@section('title','New Employee')
+
+@section('title', 'New Employee | Natanem Engineering')
+
+@push('head')
+<style>
+    .form-container {
+        padding: 3rem 0;
+    }
+    .glass-form-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+    }
+    .input-group-modern {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    .input-group-modern:focus-within {
+        border-color: #4f46e5;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    }
+    .input-group-modern .form-control, 
+    .input-group-modern .form-select {
+        border: none;
+        background: transparent;
+        padding: 0.75rem 1rem;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+    .input-group-modern .form-control:focus, 
+    .input-group-modern .form-select:focus {
+        box-shadow: none;
+    }
+    .input-group-text-modern {
+        background: transparent;
+        border: none;
+        color: #64748b;
+        padding-left: 1.25rem;
+    }
+    .form-label-modern {
+        font-weight: 700;
+        color: #334155;
+        margin-bottom: 0.5rem;
+        display: block;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .avatar-preview-container {
+        width: 100px;
+        height: 100px;
+        border-radius: 24px;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px dashed #cbd5e1;
+        margin-bottom: 1rem;
+        overflow: hidden;
+    }
+</style>
+@endpush
 
 @section('content')
-    <div class="container py-4">
-
-        {{-- HEADER --}}
-        <div class="row mb-3">
-            <div class="col d-flex align-items-center justify-content-between">
-                <div>
-                    <h1 class="h4 mb-1 text-erp-deep">New Employee</h1>
-                    <p class="text-muted small mb-0">
-                        Register a new employee in the Human Resource system.
-                    </p>
-                </div>
-                <a href="{{ route('hr.employees.index') }}" class="btn btn-sm btn-outline-secondary">
-                    Cancel &amp; Back
-                </a>
-            </div>
-        </div>
-
-        {{-- FULL-WIDTH FORM CARD --}}
-        <div class="row">
-            <div class="col-12">
-                <div class="card shadow-soft border-0">
-                    <div class="card-body">
-                        <form method="POST" action="{{ route('hr.employees.store') }}" enctype="multipart/form-data">
-                            @csrf
-
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label small text-muted">First name</label>
-                                    <input
-                                        name="first_name"
-                                        required
-                                        value="{{ old('first_name') }}"
-                                        class="form-control form-control-sm @error('first_name') is-invalid @enderror"
-                                    >
-                                    @error('first_name')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label small text-muted">Last name</label>
-                                    <input
-                                        name="last_name"
-                                        required
-                                        value="{{ old('last_name') }}"
-                                        class="form-control form-control-sm @error('last_name') is-invalid @enderror"
-                                    >
-                                    @error('last_name')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label small text-muted">Department</label>
-                                    <input 
-                                        type="text" 
-                                        name="department_name" 
-                                        list="departmentList" 
-                                        class="form-control form-control-sm" 
-                                        placeholder="Type or select department..."
-                                        value="{{ old('department_name') }}"
-                                    >
-                                    <datalist id="departmentList">
-                                        @foreach($departments as $dept)
-                                            <option value="{{ $dept->name }}">
-                                        @endforeach
-                                    </datalist>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label small text-muted">Position</label>
-                                    <input 
-                                        type="text" 
-                                        name="position_title" 
-                                        list="positionList" 
-                                        class="form-control form-control-sm" 
-                                        placeholder="Type or select position..."
-                                        value="{{ old('position_title') }}"
-                                    >
-                                    <datalist id="positionList">
-                                        @foreach($positions as $pos)
-                                            <option value="{{ $pos->title }}">
-                                        @endforeach
-                                    </datalist>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label small text-muted">Phone Number</label>
-                                    <input 
-                                        type="text" 
-                                        name="phone" 
-                                        class="form-control form-control-sm @error('phone') is-invalid @enderror"
-                                        value="{{ old('phone') }}"
-                                    >
-                                    @error('phone')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label small text-muted">Email</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        required
-                                        value="{{ old('email') }}"
-                                        class="form-control form-control-sm @error('email') is-invalid @enderror"
-                                    >
-                                    @error('email')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label small text-muted">Hire date</label>
-                                    <input
-                                        type="date"
-                                        name="hire_date"
-                                        value="{{ old('hire_date') }}"
-                                        class="form-control form-control-sm @error('hire_date') is-invalid @enderror"
-                                    >
-                                    @error('hire_date')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label small text-muted">Salary</label>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        name="salary"
-                                        value="{{ old('salary') }}"
-                                        class="form-control form-control-sm @error('salary') is-invalid @enderror"
-                                    >
-                                    @error('salary')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label small text-muted">Profile Picture</label>
-                                    <input 
-                                        type="file" 
-                                        name="profile_picture" 
-                                        class="form-control form-control-sm @error('profile_picture') is-invalid @enderror"
-                                        accept="image/*"
-                                    >
-                                    @error('profile_picture')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label small text-muted">Status</label>
-                                    <select 
-                                        name="status" 
-                                        class="form-select form-select-sm @error('status') is-invalid @enderror"
-                                    >
-                                        <option value="Active" {{ old('status') == 'Active' ? 'selected' : '' }}>Active</option>
-                                        <option value="On Leave" {{ old('status') == 'On Leave' ? 'selected' : '' }}>On Leave</option>
-                                        <option value="Terminated" {{ old('status') == 'Terminated' ? 'selected' : '' }}>Terminated</option>
-                                        <option value="Resigned" {{ old('status') == 'Resigned' ? 'selected' : '' }}>Resigned</option>
-                                    </select>
-                                    @error('status')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            @if ($errors->any())
-                                <div class="mt-3 text-danger small">
-                                    {{ $errors->first() }}
-                                </div>
-                            @endif
-
-                            <div class="mt-4 d-flex gap-2">
-                                <button class="btn btn-sm btn-success">
-                                    Create Employee
-                                </button>
-                                <a href="{{ route('hr.employees.index') }}" class="btn btn-sm btn-outline-secondary">
-                                    Cancel
-                                </a>
-                            </div>
-
-                        </form>
+<div class="form-container container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            {{-- Header --}}
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div class="d-flex align-items-center">
+                    <a href="{{ route('hr.employees.index') }}" class="btn btn-white shadow-sm rounded-circle p-2 me-3">
+                        <i class="bi bi-arrow-left fs-5"></i>
+                    </a>
+                    <div>
+                        <h2 class="fw-800 text-erp-deep mb-1">Register Employee</h2>
+                        <p class="text-muted mb-0">Onboard a new member to the Natanem human resource.</p>
                     </div>
                 </div>
             </div>
-        </div>
 
+            <div class="glass-form-card p-4 p-md-5">
+                <form action="{{ route('hr.employees.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    
+                    <div class="row">
+                        {{-- First Name --}}
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label-modern">First Name</label>
+                            <div class="input-group-modern d-flex align-items-center">
+                                <span class="input-group-text-modern"><i class="bi bi-person"></i></span>
+                                <input type="text" name="first_name" class="form-control @error('first_name') is-invalid @enderror" value="{{ old('first_name') }}" placeholder="e.g. John" required>
+                            </div>
+                            @error('first_name') <div class="text-danger small mt-1 px-2">{{ $message }}</div> @enderror
+                        </div>
+
+                        {{-- Last Name --}}
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label-modern">Last Name</label>
+                            <div class="input-group-modern d-flex align-items-center">
+                                <span class="input-group-text-modern"><i class="bi bi-person"></i></span>
+                                <input type="text" name="last_name" class="form-control @error('last_name') is-invalid @enderror" value="{{ old('last_name') }}" placeholder="e.g. Doe" required>
+                            </div>
+                            @error('last_name') <div class="text-danger small mt-1 px-2">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        {{-- Department --}}
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label-modern">Department</label>
+                            <div class="input-group-modern d-flex align-items-center">
+                                <span class="input-group-text-modern"><i class="bi bi-diagram-3"></i></span>
+                                <input type="text" name="department_name" list="departmentList" class="form-control" placeholder="Select or type..." value="{{ old('department_name') }}">
+                                <datalist id="departmentList">
+                                    @foreach($departments as $dept)
+                                        <option value="{{ $dept->name }}">
+                                    @endforeach
+                                </datalist>
+                            </div>
+                        </div>
+
+                        {{-- Position --}}
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label-modern">Job Position</label>
+                            <div class="input-group-modern d-flex align-items-center">
+                                <span class="input-group-text-modern"><i class="bi bi-briefcase"></i></span>
+                                <input type="text" name="position_title" list="positionList" class="form-control" placeholder="Select or type..." value="{{ old('position_title') }}">
+                                <datalist id="positionList">
+                                    @foreach($positions as $pos)
+                                        <option value="{{ $pos->title }}">
+                                    @endforeach
+                                </datalist>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        {{-- Phone --}}
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label-modern">Contact Phone</label>
+                            <div class="input-group-modern d-flex align-items-center">
+                                <span class="input-group-text-modern"><i class="bi bi-telephone"></i></span>
+                                <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone') }}" placeholder="+251...">
+                            </div>
+                            @error('phone') <div class="text-danger small mt-1 px-2">{{ $message }}</div> @enderror
+                        </div>
+
+                        {{-- Email --}}
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label-modern">Email Address</label>
+                            <div class="input-group-modern d-flex align-items-center">
+                                <span class="input-group-text-modern"><i class="bi bi-envelope"></i></span>
+                                <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="john@example.com" required>
+                            </div>
+                            @error('email') <div class="text-danger small mt-1 px-2">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        {{-- Hire Date --}}
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label-modern">Hire Date</label>
+                            <div class="input-group-modern d-flex align-items-center">
+                                <span class="input-group-text-modern"><i class="bi bi-calendar-check"></i></span>
+                                <input type="date" name="hire_date" class="form-control @error('hire_date') is-invalid @enderror" value="{{ old('hire_date') }}">
+                            </div>
+                            @error('hire_date') <div class="text-danger small mt-1 px-2">{{ $message }}</div> @enderror
+                        </div>
+
+                        {{-- Salary --}}
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label-modern">Monthly Salary (ETB)</label>
+                            <div class="input-group-modern d-flex align-items-center">
+                                <span class="input-group-text-modern"><i class="bi bi-wallet2"></i></span>
+                                <input type="number" step="0.01" name="salary" class="form-control @error('salary') is-invalid @enderror" value="{{ old('salary') }}" placeholder="0.00">
+                            </div>
+                            @error('salary') <div class="text-danger small mt-1 px-2">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        {{-- Profile Picture --}}
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label-modern">Profile Identity</label>
+                            <div class="input-group-modern d-flex align-items-center">
+                                <span class="input-group-text-modern"><i class="bi bi-image"></i></span>
+                                <input type="file" name="profile_picture" class="form-control @error('profile_picture') is-invalid @enderror" accept="image/*">
+                            </div>
+                            <small class="text-muted mt-1 d-block px-2">JPG, PNG or GIF up to 2MB</small>
+                            @error('profile_picture') <div class="text-danger small mt-1 px-2">{{ $message }}</div> @enderror
+                        </div>
+
+                        {{-- Status --}}
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label-modern">Initial Status</label>
+                            <div class="input-group-modern d-flex align-items-center">
+                                <span class="input-group-text-modern"><i class="bi bi-info-circle"></i></span>
+                                <select name="status" class="form-select @error('status') is-invalid @enderror">
+                                    <option value="Active" {{ old('status') == 'Active' ? 'selected' : '' }}>Active - Reporting</option>
+                                    <option value="On Leave" {{ old('status') == 'On Leave' ? 'selected' : '' }}>On Leave</option>
+                                    <option value="Terminated" {{ old('status') == 'Terminated' ? 'selected' : '' }}>Terminated</option>
+                                    <option value="Resigned" {{ old('status') == 'Resigned' ? 'selected' : '' }}>Resigned</option>
+                                </select>
+                            </div>
+                            @error('status') <div class="text-danger small mt-1 px-2">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+
+                    <div class="mt-5 d-flex gap-3">
+                        <button type="submit" class="btn btn-erp-deep btn-lg rounded-pill px-5 flex-grow-1 fw-bold py-3 shadow-lg">
+                            <i class="bi bi-person-plus me-2"></i> Register Member
+                        </button>
+                        <a href="{{ route('hr.employees.index') }}" class="btn btn-outline-secondary btn-lg rounded-pill px-5 py-3 fw-bold">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+</div>
 @endsection

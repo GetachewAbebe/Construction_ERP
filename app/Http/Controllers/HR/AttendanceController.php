@@ -10,8 +10,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
+use App\Services\AttendanceService;
+
 class AttendanceController extends Controller
 {
+    protected AttendanceService $attendanceService;
+
+    public function __construct(AttendanceService $attendanceService)
+    {
+        $this->attendanceService = $attendanceService;
+    }
+
     /**
      * Daily attendance listing with filters & stats.
      */
@@ -43,27 +52,9 @@ class AttendanceController extends Controller
             ->orderByDesc('clock_in')
             ->paginate(20);
 
-        // Today stats
+        // Today stats via Service
         $today = Carbon::today();
-
-        $presentCount = Attendance::whereDate('date', $today)
-            ->where('status', Attendance::STATUS_PRESENT)
-            ->distinct('employee_id')
-            ->count();
-
-        $lateCount = Attendance::whereDate('date', $today)
-            ->where('status', Attendance::STATUS_LATE)
-            ->distinct('employee_id')
-            ->count();
-
-        $totalEmployees = Employee::count();
-        $absentCount = max($totalEmployees - ($presentCount + $lateCount), 0);
-
-        $todayStats = [
-            'present' => $presentCount,
-            'late'    => $lateCount,
-            'absent'  => $absentCount,
-        ];
+        $todayStats = $this->attendanceService->getDailyStats($today);
 
         // Current user's open attendance for quick check-out
         $myOpenAttendance = null;
@@ -119,22 +110,16 @@ class AttendanceController extends Controller
             return back()->with('error', 'This employee is already checked in and not yet checked out.');
         }
 
-        // Determine status: present vs late using config
-        $shiftStartString = config('attendance.start_time', '09:00');
-        $timezone = config('attendance.timezone', config('app.timezone'));
-        $now = Carbon::now($timezone);
-        $shiftStartToday = Carbon::parse($shiftStartString, $timezone)
-            ->setDate($today->year, $today->month, $today->day);
-
-        $status = $now->greaterThan($shiftStartToday)
-            ? Attendance::STATUS_LATE
-            : Attendance::STATUS_PRESENT;
+        // Determine status via Service
+        $now = Carbon::now(config('attendance.timezone', config('app.timezone')));
+        $status = $this->attendanceService->determineStatus($now);
 
         Attendance::create([
             'employee_id' => $employee->id,
             'date'        => $today,
             'clock_in'    => $now,
             'status'      => $status,
+            'ip_address'  => $request->ip(),
         ]);
 
         return back()->with('success', 'Check-in recorded successfully.');
@@ -185,7 +170,7 @@ class AttendanceController extends Controller
             ->orderBy('department')
             ->pluck('department');
 
-        $summary = $this->buildMonthlySummaryData($year, $month, $departmentFilter);
+        $summary = $this->attendanceService->buildMonthlySummaryData($year, $month, $departmentFilter);
 
         return view('hr.attendance.monthly-summary', array_merge($summary, [
             'year'             => $year,
@@ -206,7 +191,7 @@ class AttendanceController extends Controller
         $month = (int) $request->input('month', $now->month);
         $departmentFilter = $request->input('department');
 
-        $summary = $this->buildMonthlySummaryData($year, $month, $departmentFilter);
+        $summary = $this->attendanceService->buildMonthlySummaryData($year, $month, $departmentFilter);
 
         $perEmployee = $summary['perEmployee'];
         $startOfMonth = $summary['startOfMonth'];
@@ -258,92 +243,5 @@ class AttendanceController extends Controller
 
             fclose($handle);
         }, $filename, $headers);
-    }
-
-    /**
-     * Shared logic to build monthly summary data.
-     */
-    protected function buildMonthlySummaryData(int $year, int $month, ?string $departmentFilter = null): array
-    {
-        $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfDay();
-        $endOfMonth   = (clone $startOfMonth)->endOfMonth();
-
-        $attendancesQuery = Attendance::with('employee')
-            ->whereBetween('date', [
-                $startOfMonth->toDateString(),
-                $endOfMonth->toDateString(),
-            ]);
-
-        if ($departmentFilter) {
-            $attendancesQuery->whereHas('employee', function ($q) use ($departmentFilter) {
-                $q->where('department', $departmentFilter);
-            });
-        }
-
-        $attendances = $attendancesQuery->get();
-
-        // Per employee summary
-        $perEmployee = $attendances
-            ->groupBy('employee_id')
-            ->map(function (Collection $rows) {
-                /** @var \App\Models\Attendance $first */
-                $first = $rows->first();
-                $employee = $first->employee;
-
-                $presentDays = $rows->where('status', Attendance::STATUS_PRESENT)->count();
-                $lateDays    = $rows->where('status', Attendance::STATUS_LATE)->count();
-                $records     = $rows->count();
-
-                $totalHours  = $rows->sum('worked_hours');
-
-                return [
-                    'employee'      => $employee,
-                    'present_days'  => $presentDays,
-                    'late_days'     => $lateDays,
-                    'records'       => $records,
-                    'total_hours'   => $totalHours,
-                    'avg_hours'     => $records ? round($totalHours / $records, 2) : null,
-                ];
-            })
-            ->sortBy(function ($row) {
-                return [
-                    $row['employee']->department,
-                    $row['employee']->first_name,
-                    $row['employee']->last_name,
-                ];
-            });
-
-        // Per department summary
-        $perDepartment = $perEmployee
-            ->groupBy(function ($row) {
-                return $row['employee']->department ?? 'Unassigned';
-            })
-            ->map(function (Collection $rows, $deptName) {
-                return [
-                    'department'      => $deptName,
-                    'employees_count' => $rows->count(),
-                    'present_days'    => $rows->sum('present_days'),
-                    'late_days'       => $rows->sum('late_days'),
-                    'total_hours'     => $rows->sum('total_hours'),
-                ];
-            })
-            ->sortBy('department');
-
-        // Global aggregates
-        $totalEmployeesInScope = $perEmployee->count();
-        $totalHoursInScope     = $perEmployee->sum('total_hours');
-        $totalPresentDays      = $perEmployee->sum('present_days');
-        $totalLateDays         = $perEmployee->sum('late_days');
-
-        return [
-            'perEmployee'           => $perEmployee,
-            'perDepartment'         => $perDepartment,
-            'totalEmployeesInScope' => $totalEmployeesInScope,
-            'totalHoursInScope'     => $totalHoursInScope,
-            'totalPresentDays'      => $totalPresentDays,
-            'totalLateDays'         => $totalLateDays,
-            'startOfMonth'          => $startOfMonth,
-            'endOfMonth'            => $endOfMonth,
-        ];
     }
 }

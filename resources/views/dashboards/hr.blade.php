@@ -1,233 +1,148 @@
 @extends('layouts.app')
 
-@section('title', 'HR Dashboard')
+@section('title', 'HR Overview | Natanem Engineering')
 
-@section('content')
+@push('head')
 <style>
-    :root {
-        --color-brand: #4f46e5;
-        --color-success: #10b981;
-        --color-info: #0ea5e9;
-        --color-danger: #f43f5e;
-    }
-    
-    .card-stat {
-        border: none;
-        border-radius: 12px;
-        background: #fff;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-        transition: transform 0.2s, box-shadow 0.2s;
-        border-top: 4px solid transparent;
-        overflow: hidden;
-    }
-    .card-stat:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.06);
-    }
-    
-    /* Variant Colors */
-    .card-stat.stat-primary { border-top-color: var(--color-brand); }
-    .card-stat.stat-success { border-top-color: var(--color-success); }
-    .card-stat.stat-info { border-top-color: var(--color-info); }
-    .card-stat.stat-danger { border-top-color: var(--color-danger); }
-    
-    .card-stat .icon-wrapper {
-        width: 56px;
-        height: 56px;
-        border-radius: 12px;
+    .metric-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
-        margin-left: auto; /* Push to right */
-    }
-    
-    .card-stat.stat-primary .icon-wrapper { background: #e0e7ff; color: var(--color-brand); }
-    .card-stat.stat-success .icon-wrapper { background: #d1fae5; color: var(--color-success); }
-    .card-stat.stat-info .icon-wrapper { background: #e0f2fe; color: var(--color-info); }
-    .card-stat.stat-danger .icon-wrapper { background: #ffe4e6; color: var(--color-danger); }
-
-    .table-custom thead th {
-        background-color: #f8fafc;
-        color: #64748b;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        letter-spacing: 0.05em;
-        border-bottom: 1px solid #e2e8f0;
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-    }
-    .avatar-circle {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .avatar-initial {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: #f1f5f9;
-        color: #64748b;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+        background: var(--erp-primary);
+        color: white;
+        box-shadow: 0 10px 20px rgba(30, 64, 175, 0.2);
     }
 </style>
+@endpush
 
-<div class="container py-4">
-
-    <!-- Premium Header -->
-    <div class="row mb-5">
-        <div class="col-12 d-flex justify-content-between align-items-center">
-            <div>
-                <h1 class="h3 fw-bold text-dark mb-1">Human Resources Overview</h1>
-                <p class="text-secondary small mb-0">Welcome back, {{ Auth::user()->name }}. Here is your workforce at a glance.</p>
-            </div>
-            <div class="d-none d-md-block">
-                <span class="badge bg-white text-secondary border px-3 py-2 rounded-pill fw-normal shadow-sm">
-                    <i class="far fa-calendar-alt me-2"></i> {{ now()->format('l, F j, Y') }}
-                </span>
-            </div>
-        </div>
+@section('content')
+<div class="py-4 px-2">
+    {{-- Premium Header --}}
+    <div class="d-flex flex-column mb-5">
+        <h1 class="display-4 fw-800 text-erp-deep mb-2 tracking-tight">Human Resource Dashboard</h1>
     </div>
 
-    <!-- Metric Cards: Top Border Style -->
+    {{-- HIGHLIGHT METRICS --}}
     <div class="row g-4 mb-5">
-        <!-- Card 1 -->
-        <div class="col-12 col-md-6 col-lg-3">
-            <div class="card card-stat stat-primary h-100">
-                <div class="card-body p-4 d-flex justify-content-between align-items-start">
-                    <div>
-                        <div class="text-secondary small text-uppercase fw-bold mb-2 tracking-wide">Total Employees</div>
-                        <h2 class="display-5 fw-bold text-dark mb-0">{{ $employeeCount }}</h2>
-                        <div class="mt-2 text-primary small d-flex align-items-center gap-1">
-                            <i class="fas fa-check-circle"></i> Registered
-                        </div>
-                    </div>
-                    <div class="icon-wrapper">
-                        <i class="fas fa-users"></i>
-                    </div>
+        <div class="col-md-3">
+            <div class="hardened-glass stagger-entrance">
+                <div class="metric-icon">
+                    <i class="bi bi-people fs-4"></i>
                 </div>
+                <h6 class="text-muted text-uppercase fw-bold small mb-1">Total Employees</h6>
+                <div class="h2 fw-800 mb-0">{{ $employeeCount }}</div>
+                <div class="text-primary small fw-bold mt-2">Active Human Resource</div>
             </div>
         </div>
 
-        <!-- Card 2 -->
-        <div class="col-12 col-md-6 col-lg-3">
-            <div class="card card-stat stat-success h-100">
-                <div class="card-body p-4 d-flex justify-content-between align-items-start">
-                    <div>
-                        <div class="text-secondary small text-uppercase fw-bold mb-2 tracking-wide">Active Staff</div>
-                        <h2 class="display-5 fw-bold text-dark mb-0">{{ $activeEmployees }}</h2>
-                        <div class="mt-2 text-success small d-flex align-items-center gap-1">
-                            <i class="fas fa-user-check"></i> On Duty
-                        </div>
-                    </div>
-                    <div class="icon-wrapper">
-                        <i class="fas fa-id-badge"></i>
-                    </div>
+        <div class="col-md-3">
+            <div class="hardened-glass stagger-entrance">
+                <div class="metric-icon" style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%);">
+                    <i class="bi bi-person-check fs-4"></i>
                 </div>
+                <h6 class="text-muted text-uppercase fw-bold small mb-1">Active Staff</h6>
+                <div class="h2 fw-800 mb-0">{{ $activeEmployees }}</div>
+                <div class="text-success small fw-bold mt-2">On Duty Today</div>
             </div>
         </div>
 
-        <!-- Card 3 -->
-        <div class="col-12 col-md-6 col-lg-3">
-            <div class="card card-stat stat-info h-100">
-                <div class="card-body p-4 d-flex justify-content-between align-items-start">
-                    <div>
-                        <div class="text-secondary small text-uppercase fw-bold mb-2 tracking-wide">New Hires</div>
-                        <h2 class="display-5 fw-bold text-dark mb-0">{{ $recentHires }}</h2>
-                        <div class="mt-2 text-info small d-flex align-items-center gap-1">
-                            <i class="fas fa-arrow-up"></i> Last 30 Days
-                        </div>
-                    </div>
-                    <div class="icon-wrapper">
-                        <i class="fas fa-user-plus"></i>
-                    </div>
+        <div class="col-md-3">
+            <div class="hardened-glass stagger-entrance">
+                <div class="metric-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);">
+                    <i class="bi bi-briefcase fs-4"></i>
                 </div>
+                <h6 class="text-muted text-uppercase fw-bold small mb-1">On Leave Today</h6>
+                <div class="h2 fw-800 mb-0">{{ $onLeaveTodayCount }}</div>
+                <div class="text-warning small fw-bold mt-2">Active Approvals</div>
             </div>
         </div>
 
-        <!-- Card 4 -->
-        <div class="col-12 col-md-6 col-lg-3">
-            <div class="card card-stat stat-danger h-100">
-                <div class="card-body p-4 d-flex justify-content-between align-items-start">
-                    <div>
-                        <div class="text-secondary small text-uppercase fw-bold mb-2 tracking-wide">Pending Requests</div>
-                        <h2 class="display-5 fw-bold text-dark mb-0">{{ $pendingLeaveApprovals }}</h2>
-                        <div class="mt-2 text-danger small d-flex align-items-center gap-1">
-                            <i class="fas fa-exclamation-circle"></i> Needs Action
-                        </div>
-                    </div>
-                    <div class="icon-wrapper">
-                        <i class="fas fa-bell"></i>
-                    </div>
+        <div class="col-md-3">
+            <div class="hardened-glass stagger-entrance">
+                <div class="metric-icon" style="background: linear-gradient(135deg, #f43f5e 0%, #fb7185 100%);">
+                    <i class="bi bi-bell fs-4"></i>
                 </div>
+                <h6 class="text-muted text-uppercase fw-bold small mb-1">Pending Requests</h6>
+                <div class="h2 fw-800 mb-0 text-danger">{{ $pendingLeaveApprovals }}</div>
+                <div class="text-danger small fw-bold mt-2">Action Required</div>
             </div>
         </div>
     </div>
 
-    <!-- Content Row -->
-    <div class="row g-4">
-        <!-- Main Table -->
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
-                <div class="card-header bg-white border-0 py-4 px-4 d-flex justify-content-between align-items-center">
+    {{-- MAIN CONTENT ROW --}}
+    <div class="row g-4 mb-5">
+        {{-- Attendance Trend Chart --}}
+        <div class="col-lg-12">
+            <div class="glass-card-global stagger-entrance p-4 h-100 transition-all hover-translate-y">
+                <div class="d-flex align-items-center justify-content-between mb-4">
                     <div>
-                        <h5 class="fw-bold text-dark mb-0">Recent Activity</h5>
-                        <p class="text-muted small mb-0">Latest employees added to the system</p>
+                        <h5 class="fw-800 text-erp-deep mb-0">Attendance Trend</h5>
+                        <p class="text-muted small mb-0">Check-in statistics for the last 7 days</p>
                     </div>
-                    <a href="{{ route('hr.employees.index') }}" class="btn btn-light btn-sm fw-medium text-secondary">View All</a>
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-custom align-middle mb-0">
+                <div id="attendanceChart" style="min-height: 350px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {{-- Recent Activity Table --}}
+        <div class="col-lg-8 stagger-entrance">
+            <div class="glass-card-global h-100">
+                <div class="card-header border-0 bg-transparent py-4 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-800 text-erp-deep mb-0">Recent Activity</h5>
+                    <a href="{{ Auth::user()->hasRole('Administrator') ? route('admin.hr.employees.index') : route('hr.employees.index') }}" class="btn btn-sm btn-light rounded-pill px-3 fw-bold">View All</a>
+                </div>
+                <div class="table-responsive px-4 pb-4">
+                    <table class="table table-modern align-middle mb-0">
                         <thead>
                             <tr>
-                                <th class="ps-4">Employee</th>
+                                <th>Employee</th>
                                 <th>Role</th>
                                 <th>Status</th>
-                                <th class="text-end pe-4">Joined</th>
+                                <th class="text-end">Joined</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($latestEmployees as $emp)
-                            <tr class="hover-bg-light transition-all">
-                                <td class="ps-4 py-3">
-                                    <div class="d-flex align-items-center">
+                            <tr class="transition-all">
+                                <td class="py-3">
+                                    <div class="d-flex align-items-center gap-3">
                                         @if($emp->profile_picture)
-                                            <img src="{{ asset('storage/' . $emp->profile_picture) }}" class="avatar-circle me-3">
+                                            <img src="{{ asset('storage/' . $emp->profile_picture) }}" class="avatar-pill">
                                         @else
-                                            <div class="avatar-initial me-3">{{ substr($emp->first_name, 0, 1) }}</div>
+                                            <div class="avatar-pill bg-light text-muted d-flex align-items-center justify-content-center fw-bold">
+                                                {{ substr($emp->first_name, 0, 1) }}
+                                            </div>
                                         @endif
                                         <div>
                                             <div class="fw-bold text-dark">{{ $emp->first_name }} {{ $emp->last_name }}</div>
-                                            <div class="small text-muted">{{ $emp->email }}</div>
+                                            <div class="text-muted" style="font-size: 0.75rem;">{{ $emp->email }}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="text-dark fw-medium small">{{ $emp->position ?? 'N/A' }}</div>
-                                    <div class="text-secondary small">{{ $emp->department ?? 'General' }}</div>
+                                    <div class="fw-600 text-dark small">{{ $emp->position ?? 'N/A' }}</div>
+                                    <div class="text-muted" style="font-size: 0.75rem;">{{ $emp->department ?? 'General' }}</div>
                                 </td>
                                 <td>
                                     @php
-                                        $statusConfig = match($emp->status) {
-                                            'Active' => ['bg' => '#d1fae5', 'text' => '#10b981'],
-                                            'On Leave' => ['bg' => '#fef3c7', 'text' => '#f59e0b'],
-                                            'Terminated' => ['bg' => '#ffe4e6', 'text' => '#f43f5e'],
-                                            default => ['bg' => '#f1f5f9', 'text' => '#64748b']
+                                        $colors = match($emp->status) {
+                                            'Active' => ['bg' => 'rgba(16, 185, 129, 0.1)', 'text' => '#10b981'],
+                                            'On Leave' => ['bg' => 'rgba(245, 158, 11, 0.1)', 'text' => '#f59e0b'],
+                                            'Terminated' => ['bg' => 'rgba(244, 63, 94, 0.1)', 'text' => '#f43f5e'],
+                                            default => ['bg' => 'rgba(100, 116, 139, 0.1)', 'text' => '#64748b']
                                         };
                                     @endphp
-                                    <span class="badge rounded-pill fw-bold border-0 px-3 py-2" 
-                                          style="background-color: {{ $statusConfig['bg'] }}; color: {{ $statusConfig['text'] }};">
+                                    <span class="badge rounded-pill fw-bold" style="background: {{ $colors['bg'] }}; color: {{ $colors['text'] }}; padding: 0.5rem 1rem;">
                                         {{ $emp->status ?? 'Active' }}
                                     </span>
                                 </td>
-                                <td class="text-end pe-4 text-secondary small">
+                                <td class="text-end text-muted small">
                                     {{ $emp->created_at->format('M d, Y') }}
                                 </td>
                             </tr>
@@ -242,37 +157,111 @@
             </div>
         </div>
 
-        <!-- Sidebar / Dept Stats -->
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
-                <div class="card-header bg-white border-0 py-4 px-4">
-                    <h5 class="fw-bold text-dark mb-0">Department Stats</h5>
-                    <p class="text-muted small mb-0">Workforce distribution</p>
-                </div>
-                <div class="card-body px-4 pt-0">
+        {{-- Department Distribution --}}
+        <div class="col-lg-4 stagger-entrance">
+            <div class="glass-card-global h-100 p-4">
+                <h5 class="fw-800 text-erp-deep mb-1">Department Stats</h5>
+                <p class="text-muted small mb-4">Human Resource distribution analysis</p>
+                
+                <div class="dept-list">
                     @forelse($departmentStats as $dept)
                     <div class="mb-4">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="fw-bold text-dark">{{ $dept->name }}</span>
-                            <span class="text-secondary small fw-bold">{{ $dept->total }} Members</span>
+                            <span class="badge bg-light text-erp-deep rounded-pill">{{ $dept->total }}</span>
                         </div>
-                        <div class="progress" style="height: 6px; background: #f1f5f9; border-radius: 3px;">
+                        <div class="progress" style="height: 8px; border-radius: 4px; background: rgba(0,0,0,0.05);">
                             <div class="progress-bar" role="progressbar" 
-                                 style="width: {{ $employeeCount > 0 ? ($dept->total / $employeeCount) * 100 : 0 }}%; background-color: var(--color-brand); border-radius: 3px;">
+                                 style="width: {{ $employeeCount > 0 ? ($dept->total / $employeeCount) * 100 : 0 }}%; background: linear-gradient(90deg, #4f46e5, #7c3aed); border-radius: 4px;">
                             </div>
                         </div>
                     </div>
                     @empty
-                    <div class="text-center py-4 text-muted small">No data.</div>
+                    <p class="text-center text-muted small py-4">No department data available.</p>
                     @endforelse
                 </div>
-                <div class="card-footer bg-white border-0 p-4 pt-0">
-                    <a href="{{ route('hr.employees.index') }}" class="btn btn-outline-dark w-100 py-2 rounded-3 fw-medium">
-                        Manage Departments
+
+                <div class="mt-4 pt-4 border-top">
+                    <a href="{{ Auth::user()->hasRole('Administrator') ? route('admin.hr.employees.index') : route('hr.employees.index') }}" class="btn btn-outline-erp-deep w-100 py-2 rounded-4 fw-bold">
+                        Browse Full Registry
                     </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        @php
+            $labels = [];
+            $data = [];
+            for($i = 6; $i >= 0; $i--) {
+                $date = now()->subDays($i)->format('Y-m-d');
+                $labels[] = now()->subDays($i)->format('D');
+                $data[] = \App\Models\Attendance::whereDate('clock_in', $date)->count();
+            }
+        @endphp
+
+        var options = {
+            series: [{
+                name: 'Check-ins',
+                data: {!! json_encode($data) !!}
+            }],
+            chart: {
+                type: 'area',
+                height: 350,
+                toolbar: { show: false },
+                fontFamily: 'Outfit, sans-serif',
+                zoom: { enabled: false }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 3,
+                colors: ['#059669']
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.45,
+                    opacityTo: 0.05,
+                    stops: [20, 100, 100, 100]
+                }
+            },
+            xaxis: {
+                categories: {!! json_encode($labels) !!},
+                labels: {
+                    style: { colors: '#64748b', fontSize: '12px' }
+                }
+            },
+            yaxis: {
+                labels: {
+                    style: { colors: '#64748b' }
+                }
+            },
+            grid: {
+                borderColor: '#f1f5f9',
+            },
+            tooltip: {
+                theme: 'light',
+                x: { show: true }
+            },
+            markers: {
+                size: 5,
+                colors: ['#059669'],
+                strokeColors: '#fff',
+                strokeWidth: 2,
+                hover: { size: 7 }
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#attendanceChart"), options);
+        chart.render();
+    });
+</script>
+@endpush
 @endsection

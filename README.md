@@ -67,15 +67,15 @@ Leave approvals
 Item lending approvals
 
 🧱 Tech Stack
-Category	Technology
-Backend	Laravel 12 (PHP 8.2)
-Frontend	Blade, TailwindCSS
-Database	PostgreSQL
-Permissions	Spatie/laravel-permission
-UI	Tailwind, Bootstrap Icons
-Authentication	Laravel Auth
-Logging	Laravel logging + custom controllers
-Deployment	Laravel artisan + environment configs
+Category Technology
+Backend Laravel 12 (PHP 8.2)
+Frontend Blade, TailwindCSS
+Database PostgreSQL
+Permissions Spatie/laravel-permission
+UI Tailwind, Bootstrap Icons
+Authentication Laravel Auth
+Logging Laravel logging + custom controllers
+Deployment Laravel artisan + environment configs
 📁 Project Structure
 app/
  ├── Http/

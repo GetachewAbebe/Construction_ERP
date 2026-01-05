@@ -37,6 +37,16 @@ class Employee extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function department_rel()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
+
+    public function position_rel()
+    {
+        return $this->belongsTo(Position::class, 'position_id');
+    }
+
     /**
      * Get the employee's full name.
      */
@@ -72,14 +82,8 @@ class Employee extends Model
             return $this->attributes['department'];
         }
         
-        // Direct DB Query (Single File Approach)
-        if (!empty($this->attributes['department_id'])) {
-            return \Illuminate\Support\Facades\DB::table('departments')
-                ->where('id', $this->attributes['department_id'])
-                ->value('name') ?? 'N/A';
-        }
-        
-        return 'N/A';
+        // Use the relationship (Benefit: Supports Eager Loading)
+        return $this->department_rel ? $this->department_rel->name : 'N/A';
     }
 
     /**
@@ -92,15 +96,10 @@ class Employee extends Model
             return $this->attributes['position'];
         }
         
-        // Direct DB Query (Single File Approach)
-        if (!empty($this->attributes['position_id'])) {
-            return \Illuminate\Support\Facades\DB::table('positions')
-                ->where('id', $this->attributes['position_id'])
-                ->value('title') ?? 'N/A';
-        }
-        
-        return 'N/A';
+        // Use the relationship (Benefit: Supports Eager Loading)
+        return $this->position_rel ? $this->position_rel->title : 'N/A';
     }
+
     /**
      * Get the attendances for the employee.
      */

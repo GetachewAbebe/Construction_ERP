@@ -11,8 +11,17 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
 
+use App\Services\InventoryService;
+
 class InventoryLoanController extends Controller
 {
+    protected InventoryService $inventoryService;
+
+    public function __construct(InventoryService $inventoryService)
+    {
+        $this->inventoryService = $inventoryService;
+    }
+
     /**
      * List all loans for Inventory (Inventory Manager + Admin).
      * Route: GET /inventory/loans
@@ -193,8 +202,13 @@ class InventoryLoanController extends Controller
             $item = $loan->item()->lockForUpdate()->first();
 
             if ($item) {
-                $item->quantity = ($item->quantity ?? 0) + $loan->quantity;
-                $item->save();
+                // Use Service to log change and handle quantity
+                $this->inventoryService->logLoanChange(
+                    $item, 
+                    $loan->quantity, 
+                    'loan_returned', 
+                    "Returned loan ID: {$loan->id} from employee: {$loan->employee->name}"
+                );
             }
 
             $loan->status      = 'returned';
@@ -202,6 +216,5 @@ class InventoryLoanController extends Controller
             $loan->save();
         });
 
-        return back()->with('status', 'Loan marked as returned and stock updated.');
     }
 }

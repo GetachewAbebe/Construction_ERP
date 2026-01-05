@@ -4,17 +4,25 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-// use HasFactory, etc if you have them
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, HasRoles;
+
 
     protected $fillable = [
-        'name',
+        'first_name',
+        'middle_name',
+        'last_name',
         'email',
         'password',
-        'role',  // 👈 important
+        'role',
+        'phone_number',
+        'position',
+        'department',
+        'status',
+        'bio',
     ];
 
     protected $hidden = [
@@ -22,7 +30,14 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $appends = ['name'];
+
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function getNameAttribute(): string
+    {
+        return trim("{$this->first_name} {$this->middle_name} {$this->last_name}");
+    }
 }

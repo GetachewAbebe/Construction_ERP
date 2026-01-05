@@ -9,8 +9,17 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\QueryException;
 
+use App\Services\InventoryService;
+
 class InventoryItemController extends Controller
 {
+    protected InventoryService $inventoryService;
+
+    public function __construct(InventoryService $inventoryService)
+    {
+        $this->inventoryService = $inventoryService;
+    }
+
     public function index(Request $request)
     {
         $q    = trim((string) $request->input('q', ''));
@@ -78,7 +87,18 @@ class InventoryItemController extends Controller
             }
 
             DB::transaction(function () use ($data) {
-                InventoryItem::create($data); // will work because $fillable is set
+                $item = InventoryItem::create($data);
+
+                // Log initial stock
+                \App\Models\InventoryLog::create([
+                    'inventory_item_id' => $item->id,
+                    'user_id'           => auth()->id(),
+                    'change_amount'     => $item->quantity,
+                    'previous_quantity' => 0,
+                    'new_quantity'      => $item->quantity,
+                    'reason'            => 'created',
+                    'remarks'           => 'Initial stock entry',
+                ]);
             });
 
             return redirect()
@@ -128,8 +148,12 @@ class InventoryItemController extends Controller
                     ->with('error', 'Duplicate item: the same Item No & Name already exists.');
             }
 
-            DB::transaction(function () use ($item, $data) {
+            $newQuantity = $data['quantity'];
+            unset($data['quantity']); // Handle quantity via Service
+
+            DB::transaction(function () use ($item, $data, $newQuantity) {
                 $item->update($data);
+                $this->inventoryService->adjustQuantity($item, $newQuantity, 'updated', 'Manual update via inventory form');
             });
 
             return redirect()
@@ -140,6 +164,7 @@ class InventoryItemController extends Controller
             return back()->withInput()->with('error', 'Could not update the item. Please try again.');
         }
     }
+
 
     public function destroy(InventoryItem $item)
     {
