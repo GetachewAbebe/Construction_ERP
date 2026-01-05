@@ -17,37 +17,15 @@
 
                     <h5 class="fw-bold text-erp-primary mb-4 pb-2 border-bottom border-light">Account Essentials</h5>
                     <div class="row g-4 mb-5">
-                        {{-- First Name --}}
-                        <div class="col-md-4">
-                            <label class="form-label text-muted x-small fw-bold text-uppercase tracking-wider">First Name</label>
+                        {{-- Full Name --}}
+                        <div class="col-md-6">
+                            <label class="form-label text-muted x-small fw-bold text-uppercase tracking-wider">Full Name</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-white border-end-0"><i class="bi bi-person text-secondary"></i></span>
-                                <input name="first_name" value="{{ old('first_name') }}" required placeholder="e.g. Abebe"
-                                       class="form-control border-start-0 ps-0 shadow-none @error('first_name') is-invalid @enderror"/>
+                                <input name="name" value="{{ old('name') }}" required placeholder="e.g. Abebe Kebede Tesfaye"
+                                       class="form-control border-start-0 ps-0 shadow-none @error('name') is-invalid @enderror"/>
                             </div>
-                            @error('first_name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- Middle Name --}}
-                        <div class="col-md-4">
-                            <label class="form-label text-muted x-small fw-bold text-uppercase tracking-wider">Middle Name</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-white border-end-0"><i class="bi bi-person text-secondary"></i></span>
-                                <input name="middle_name" value="{{ old('middle_name') }}" placeholder="e.g. Kebede"
-                                       class="form-control border-start-0 ps-0 shadow-none @error('middle_name') is-invalid @enderror"/>
-                            </div>
-                            @error('middle_name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- Last Name --}}
-                        <div class="col-md-4">
-                            <label class="form-label text-muted x-small fw-bold text-uppercase tracking-wider">Last Name</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-white border-end-0"><i class="bi bi-person text-secondary"></i></span>
-                                <input name="last_name" value="{{ old('last_name') }}" required placeholder="e.g. Tesfaye"
-                                       class="form-control border-start-0 ps-0 shadow-none @error('last_name') is-invalid @enderror"/>
-                            </div>
-                            @error('last_name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                            @error('name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                         </div>
 
                         {{-- Email --}}

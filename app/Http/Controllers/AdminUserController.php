@@ -97,31 +97,17 @@ class AdminUserController extends Controller
         $this->enforceAdmin();
 
         $validated = $request->validate([
-            'first_name'   => ['required', 'string', 'max:50'],
-            'middle_name'  => ['nullable', 'string', 'max:50'],
-            'last_name'    => ['required', 'string', 'max:50'],
-            'email'        => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password'     => ['required', Password::min(8)],
-            'role'         => ['required', Rule::in($this->allowedRoles)],
-            'phone_number' => ['nullable', 'string', 'max:20'],
-            'position'     => ['nullable', 'string', 'max:100'],
-            'department'   => ['nullable', 'string', 'max:100'],
-            'status'       => ['nullable', 'string', 'in:Active,Inactive,Suspended'],
-            'bio'          => ['nullable', 'string', 'max:1000'],
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', Password::min(8)],
+            'role'     => ['required', Rule::in($this->allowedRoles)],
         ]);
 
         $user = User::create([
-            'first_name'        => $validated['first_name'],
-            'middle_name'       => $validated['middle_name'] ?? null,
-            'last_name'         => $validated['last_name'],
+            'name'              => $validated['name'],
             'email'             => $validated['email'],
             'password'          => Hash::make($validated['password']),
             'role'              => $validated['role'],
-            'phone_number'      => $validated['phone_number'] ?? null,
-            'position'          => $validated['position'] ?? null,
-            'department'        => $validated['department'] ?? null,
-            'status'            => $validated['status'] ?? 'Active',
-            'bio'               => $validated['bio'] ?? null,
             'email_verified_at' => now(),
         ]);
 
@@ -153,9 +139,11 @@ class AdminUserController extends Controller
         $this->enforceAdmin();
 
         $validated = $request->validate([
-            'first_name'   => ['required', 'string', 'max:50'],
-            'middle_name'  => ['nullable', 'string', 'max:50'],
-            'last_name'    => ['required', 'string', 'max:50'],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
             'email'    => [
                 'required',
                 'string',
@@ -164,24 +152,12 @@ class AdminUserController extends Controller
                 Rule::unique('users', 'email')->ignore($user->id),
             ],
             'password' => ['nullable', Password::min(8)],
-            'role'         => ['required', Rule::in($this->allowedRoles)],
-            'phone_number' => ['nullable', 'string', 'max:20'],
-            'position'     => ['nullable', 'string', 'max:100'],
-            'department'   => ['nullable', 'string', 'max:100'],
-            'status'       => ['nullable', 'string', 'in:Active,Inactive,Suspended'],
-            'bio'          => ['nullable', 'string', 'max:1000'],
+            'role'     => ['required', Rule::in($this->allowedRoles)],
         ]);
 
-        $user->first_name   = $validated['first_name'];
-        $user->middle_name  = $validated['middle_name'] ?? null;
-        $user->last_name    = $validated['last_name'];
-        $user->email        = $validated['email'];
-        $user->role         = $validated['role'];
-        $user->phone_number = $validated['phone_number'] ?? null;
-        $user->position     = $validated['position'] ?? null;
-        $user->department   = $validated['department'] ?? null;
-        $user->status       = $validated['status'] ?? 'Active';
-        $user->bio          = $validated['bio'] ?? null;
+        $user->name  = $validated['name'];
+        $user->email = $validated['email'];
+        $user->role  = $validated['role'];
 
         if (!empty($validated['password'])) {
             $user->password = Hash::make($validated['password']);

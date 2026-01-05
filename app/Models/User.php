@@ -12,17 +12,10 @@ class User extends Authenticatable
 
 
     protected $fillable = [
-        'first_name',
-        'middle_name',
-        'last_name',
+        'name',
         'email',
         'password',
         'role',
-        'phone_number',
-        'position',
-        'department',
-        'status',
-        'bio',
     ];
 
     protected $hidden = [
@@ -30,14 +23,7 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected $appends = ['name'];
-
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-    public function getNameAttribute(): string
-    {
-        return trim("{$this->first_name} {$this->middle_name} {$this->last_name}");
-    }
 }
