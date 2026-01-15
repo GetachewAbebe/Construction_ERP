@@ -93,30 +93,6 @@
             </div>
         </div>
 
-        {{-- Approvals --}}
-        <div class="col-md-6 col-lg-8">
-            <div class="glass-metric stagger-entrance" style="background: rgba(255, 255, 255, 0.95); border-left: 6px solid #f43f5e;">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h5 class="fw-800 mb-0">Action Center</h5>
-                    @if(isset($pendingLoanCount) && $pendingLoanCount > 0)
-                        <span class="badge bg-danger rounded-pill px-3 py-2 fw-bold">
-                            {{ $pendingLoanCount }} Pending Approvals
-                        </span>
-                    @endif
-                </div>
-                <p class="text-muted small mb-4">
-                    Immediate management of system-wide requests that require administrative validation (Lending, Leaves, Expenses).
-                </p>
-                <div class="d-flex gap-2">
-                    <a href="{{ route('admin.requests.items') }}" class="btn btn-danger rounded-pill px-4 fw-bold">
-                        Pending Loans
-                    </a>
-                    <a href="{{ route('admin.requests.leave-approvals.index') }}" class="btn btn-outline-danger rounded-pill px-4 fw-bold">
-                        Leave Requests
-                    </a>
-                </div>
-            </div>
-        </div>
 
     </div>
 </div>

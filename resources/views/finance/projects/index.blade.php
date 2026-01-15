@@ -9,12 +9,9 @@
             <h1 class="h3 fw-bold mb-0">Construction Projects</h1>
             <p class="text-muted mb-0">Manage active sites and track budget usage.</p>
         </div>
-        </div>
-        @unless(Auth::user()->hasRole('Administrator'))
         <a href="{{ route('finance.projects.create') }}" class="btn btn-primary rounded-pill px-4">
             <i class="bi bi-plus-lg me-2"></i>New Project
         </a>
-        @endunless
     </div>
 
     @if(session('status'))
@@ -70,7 +67,6 @@
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3">
                                         <li><a class="dropdown-item" href="{{ route('finance.projects.show', $project) }}">View Details</a></li>
-                                        @unless(Auth::user()->hasRole('Administrator'))
                                         <li><a class="dropdown-item" href="{{ route('finance.projects.edit', $project) }}">Edit Project</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li>
@@ -79,7 +75,6 @@
                                                 <button type="submit" class="dropdown-item text-danger">Delete</button>
                                             </form>
                                         </li>
-                                        @endunless
                                     </ul>
                                 </div>
                             </td>

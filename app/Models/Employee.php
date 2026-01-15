@@ -87,6 +87,20 @@ class Employee extends Model
     }
 
     /**
+     * Set Department Name (resolves to department_id)
+     */
+    public function setDepartmentAttribute($value)
+    {
+        if (empty($value)) {
+            $this->attributes['department_id'] = null;
+            return;
+        }
+
+        $dept = \App\Models\Department::firstOrCreate(['name' => $value]);
+        $this->attributes['department_id'] = $dept->id;
+    }
+
+    /**
      * Get Position Title
      */
     public function getPositionAttribute()
@@ -98,6 +112,20 @@ class Employee extends Model
         
         // Use the relationship (Benefit: Supports Eager Loading)
         return $this->position_rel ? $this->position_rel->title : 'N/A';
+    }
+
+    /**
+     * Set Position Title (resolves to position_id)
+     */
+    public function setPositionAttribute($value)
+    {
+        if (empty($value)) {
+            $this->attributes['position_id'] = null;
+            return;
+        }
+
+        $pos = \App\Models\Position::firstOrCreate(['title' => $value]);
+        $this->attributes['position_id'] = $pos->id;
     }
 
     /**

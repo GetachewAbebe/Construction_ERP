@@ -32,7 +32,7 @@ class Project extends Model
 
     public function getTotalExpensesAttribute()
     {
-        return $this->expenses()->sum('amount');
+        return $this->expenses()->where('status', 'approved')->sum('amount');
     }
 
     public function getBudgetUsagePercentageAttribute()

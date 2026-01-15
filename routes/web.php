@@ -15,8 +15,8 @@ use App\Http\Controllers\Inventory\InventoryItemController;
 use App\Http\Controllers\Inventory\InventoryLoanController;
 use App\Http\Controllers\Admin\InventoryLoanApprovalController;
 
-use App\Models\EmployeeOnLeave;
-use App\Models\InventoryLoan;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\HR\ApprovedLeavesController;
 
 /**
  * --------------------------------------------------------------------------
@@ -27,49 +27,7 @@ use App\Models\InventoryLoan;
  * POST /  -> perform login and redirect based on role
  */
 
-Route::get('/', function () {
-    // If user is already logged in, send them straight to their dashboard
-    if (Auth::check()) {
-        $user = Auth::user();
-        $rawRole = $user->role;
-
-        if ($user->hasRole('Administrator')) {
-            return redirect()->route('admin.dashboard');
-        } elseif ($user->hasRole('Human Resource Manager')) {
-            return redirect()->route('hr.dashboard');
-        } elseif ($user->hasRole('Inventory Manager')) {
-            return redirect()->route('inventory.dashboard');
-        } elseif ($user->hasRole('Financial Manager')) {
-            return redirect()->route('finance.dashboard');
-        }
-
-        // Fallback check
-        $roleMap = [
-            'Administrator'           => 'admin.dashboard',
-            'administrator'           => 'admin.dashboard',
-            'Human Resource Manager'  => 'hr.dashboard',
-            'HumanResourceManager'    => 'hr.dashboard',
-            'Inventory Manager'       => 'inventory.dashboard',
-            'InventoryManager'        => 'inventory.dashboard',
-            'Financial Manager'       => 'finance.dashboard',
-            'FinancialManager'        => 'finance.dashboard',
-        ];
-
-        if (isset($roleMap[$rawRole])) {
-            return redirect()->route($roleMap[$rawRole]);
-        }
-
-        // Unknown / unmapped role → block access clearly
-        abort(
-            403,
-            "Unknown or unmapped role '{$rawRole}'. Please check the user's role assignment."
-        );
-    }
-
-
-    // Guest: show the login form
-    return view('home');
-})->name('home');
+Route::get('/', HomeController::class)->name('home');
 
 // Login submit
 Route::post('/', [SimpleAuthController::class, 'login'])->name('login');
@@ -90,6 +48,13 @@ Route::view('/about', 'about')->name('about');
 Route::post('/logout', [SimpleAuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
+
+// Notifications
+Route::middleware('auth')->group(function () {
+    Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/mark-as-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+    Route::post('/notifications/mark-all-as-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
+});
 
 /**
  * --------------------------------------------------------------------------
@@ -119,17 +84,11 @@ Route::middleware([
     Route::prefix('admin/requests')->name('admin.requests.')->group(function () {
         Route::view('/leave',     'admin.requests.leave')->name('leave');
         Route::view('/purchases', 'admin.requests.purchases')->name('purchases');
-        Route::view('/finance',   'admin.requests.finance')->name('finance');
+        Route::get('/finance', [App\Http\Controllers\Admin\ExpenseApprovalController::class, 'index'])->name('finance');
+        Route::post('/finance/{expense}/approve', [App\Http\Controllers\Admin\ExpenseApprovalController::class, 'approve'])->name('finance.approve');
+        Route::post('/finance/{expense}/reject', [App\Http\Controllers\Admin\ExpenseApprovalController::class, 'reject'])->name('finance.reject');
 
-        // === ITEM LENDING REQUESTS (Inventory loans) ===
-        Route::get('/items', function () {
-            $loans = InventoryLoan::with(['item', 'employee'])
-                ->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")
-                ->latest()
-                ->paginate(20);
-
-            return view('admin.requests.items', compact('loans'));
-        })->name('items');
+        Route::get('/items', [InventoryLoanApprovalController::class, 'index'])->name('items');
 
         // Approve / Reject inventory loans
         Route::post('/items/{loan}/approve', [InventoryLoanApprovalController::class, 'approve'])
@@ -177,12 +136,7 @@ Route::middleware([
             // Lets map index and generic read pages.
             Route::get('/leaves',         [LeaveRequestController::class, 'index'])->name('leaves.index');
             Route::get('/attendance',     [App\Http\Controllers\HR\AttendanceController::class, 'index'])->name('attendance.index');
-            Route::get('/leaves/approved', function () {
-                $approved = EmployeeOnLeave::with('employee', 'approver')
-                    ->latest('approved_at')
-                    ->paginate(20);
-                return view('hr.leaves.approved', compact('approved'));
-            })->name('leaves.approved');
+            Route::get('/leaves/approved', ApprovedLeavesController::class)->name('leaves.approved');
         });
 
         // Inventory Shadow
@@ -229,13 +183,7 @@ Route::middleware([
         Route::post('/leaves',       [LeaveRequestController::class, 'store'])->name('leaves.store');
 
         // Approved leaves view
-        Route::get('/leaves/approved', function () {
-            $approved = EmployeeOnLeave::with('employee', 'approver')
-                ->latest('approved_at')
-                ->paginate(20);
-
-            return view('hr.leaves.approved', compact('approved'));
-        })->name('leaves.approved');
+        Route::get('/leaves/approved', ApprovedLeavesController::class)->name('leaves.approved');
 
         // Attendance
         Route::get('/attendance', [App\Http\Controllers\HR\AttendanceController::class, 'index'])

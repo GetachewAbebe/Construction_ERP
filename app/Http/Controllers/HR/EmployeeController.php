@@ -10,7 +10,10 @@ class EmployeeController extends Controller
 {
     public function index()
     {
-        $employees = Employee::orderBy('last_name')->orderBy('first_name')->paginate(20);
+        $employees = Employee::with(['department_rel', 'position_rel'])
+            ->orderBy('last_name')
+            ->orderBy('first_name')
+            ->paginate(20);
         return view('hr.employees.index', compact('employees'));
     }
 

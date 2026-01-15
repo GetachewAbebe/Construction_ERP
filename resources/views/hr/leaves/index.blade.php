@@ -130,18 +130,30 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {{-- @foreach($leaves as $leave) --}}
+                                    @foreach($requests as $leave)
                                     <tr>
-                                        <td>Example Employee</td>
+                                        <td>{{ optional($leave->employee)->first_name }} {{ optional($leave->employee)->last_name }}</td>
                                         <td>Annual</td>
-                                        <td>2025-01-01</td>
-                                        <td>2025-01-05</td>
-                                        <td><span class="badge bg-warning-subtle text-erp-deep">Pending</span></td>
+                                        <td>{{ \Illuminate\Support\Carbon::parse($leave->start_date)->format('Y-m-d') }}</td>
+                                        <td>{{ \Illuminate\Support\Carbon::parse($leave->end_date)->format('Y-m-d') }}</td>
+                                        <td>
+                                            <span class="badge @if($leave->status=='Pending') bg-warning-subtle text-erp-deep @elseif($leave->status=='Approved') bg-success-subtle text-success @else bg-secondary-subtle @endif">
+                                                {{ $leave->status }}
+                                            </span>
+                                        </td>
                                         <td class="text-end">
-                                            <a href="#" class="btn btn-sm btn-outline-secondary">View</a>
+                                            @if($leave->status === 'Pending')
+                                                @can('Administrator')
+                                                    <a href="{{ route('admin.requests.leave') }}" class="btn btn-sm btn-outline-primary">Process</a>
+                                                @else
+                                                    <span class="text-muted small">Pending Review</span>
+                                                @endcan
+                                            @else
+                                                <span class="text-muted small">{{ $leave->status }}</span>
+                                            @endif
                                         </td>
                                     </tr>
-                                    {{-- @endforeach --}}
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>

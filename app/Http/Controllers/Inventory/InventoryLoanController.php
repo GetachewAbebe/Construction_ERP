@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
+use App\Models\User;
+use App\Notifications\InventoryLoanStatusNotification;
 
 use App\Services\InventoryService;
 
@@ -28,7 +31,7 @@ class InventoryLoanController extends Controller
      */
     public function index(): View
     {
-        $loans = InventoryLoan::with(['item', 'employee', 'approvedBy', 'rejectedBy'])
+        $loans = InventoryLoan::with(['item', 'employee.position_rel', 'approvedBy', 'rejectedBy'])
             ->orderByRaw("CASE WHEN status = 'pending' THEN 0 WHEN status = 'approved' THEN 1 ELSE 2 END")
             ->latest()
             ->paginate(20);
@@ -82,7 +85,7 @@ class InventoryLoanController extends Controller
         }
 
         DB::transaction(function () use ($data) {
-            InventoryLoan::create([
+            $loan = InventoryLoan::create([
                 'inventory_item_id'     => $data['inventory_item_id'],
                 'employee_id'           => $data['employee_id'],
                 'requested_by_user_id'  => auth()->id(),  // Current logged-in user
@@ -92,6 +95,10 @@ class InventoryLoanController extends Controller
                 'notes'                 => $data['notes'] ?? null,
                 'status'                => 'pending',   // default
             ]);
+
+            // Notify Administrators
+            $admins = User::role('Administrator')->get();
+            Notification::send($admins, new InventoryLoanStatusNotification($loan, 'request'));
         });
 
         return redirect()

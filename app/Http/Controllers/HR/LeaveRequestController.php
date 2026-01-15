@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use App\Models\LeaveRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
+use App\Models\User;
+use App\Notifications\LeaveRequestStatusNotification;
 
 class LeaveRequestController extends Controller
 {
@@ -30,7 +33,11 @@ class LeaveRequestController extends Controller
             'reason'      => ['nullable','string','max:500'],
         ]);
 
-        LeaveRequest::create($data);
+        $leaveRequest = LeaveRequest::create($data);
+
+        // Notify Administrators
+        $admins = User::role('Administrator')->get();
+        Notification::send($admins, new LeaveRequestStatusNotification($leaveRequest, 'request'));
 
         return redirect()->route('hr.leaves.index')
             ->with('status','Leave request submitted and awaiting Admin approval.');

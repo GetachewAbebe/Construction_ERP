@@ -120,7 +120,7 @@
                                             </div>
                                         @endif
                                         <div>
-                                            <div class="fw-bold text-dark">{{ $emp->first_name }} {{ $emp->last_name }}</div>
+                                            <div class="fw-bold text-dark">{{ optional($emp)->first_name }} {{ optional($emp)->last_name }}</div>
                                             <div class="text-muted" style="font-size: 0.75rem;">{{ $emp->email }}</div>
                                         </div>
                                     </div>
@@ -193,20 +193,12 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        @php
-            $labels = [];
-            $data = [];
-            for($i = 6; $i >= 0; $i--) {
-                $date = now()->subDays($i)->format('Y-m-d');
-                $labels[] = now()->subDays($i)->format('D');
-                $data[] = \App\Models\Attendance::whereDate('clock_in', $date)->count();
-            }
-        @endphp
+
 
         var options = {
             series: [{
                 name: 'Check-ins',
-                data: {!! json_encode($data) !!}
+                data: {!! json_encode($chartData) !!}
             }],
             chart: {
                 type: 'area',
@@ -233,7 +225,7 @@
                 }
             },
             xaxis: {
-                categories: {!! json_encode($labels) !!},
+                categories: {!! json_encode($chartLabels) !!},
                 labels: {
                     style: { colors: '#64748b', fontSize: '12px' }
                 }

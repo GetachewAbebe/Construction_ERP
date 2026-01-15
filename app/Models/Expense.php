@@ -19,6 +19,10 @@ class Expense extends Model
         'description',
         'expense_date',
         'reference_no',
+        'status',
+        'approved_by',
+        'rejected_by',
+        'rejection_reason',
     ];
 
     protected $casts = [
@@ -34,5 +38,15 @@ class Expense extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function rejectedBy()
+    {
+        return $this->belongsTo(User::class, 'rejected_by');
     }
 }

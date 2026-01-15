@@ -7,6 +7,9 @@ use App\Models\InventoryLoan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\InventoryLoanStatusNotification;
 
 use App\Services\InventoryService;
 
@@ -17,6 +20,19 @@ class InventoryLoanApprovalController extends Controller
     public function __construct(InventoryService $inventoryService)
     {
         $this->inventoryService = $inventoryService;
+    }
+
+    /**
+     * List inventory loan requests for Admin approval.
+     */
+    public function index(): View
+    {
+        $loans = InventoryLoan::with(['item', 'employee'])
+            ->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")
+            ->latest()
+            ->paginate(20);
+
+        return view('admin.requests.items', compact('loans'));
     }
 
     /**
@@ -55,6 +71,10 @@ class InventoryLoanApprovalController extends Controller
             $loan->approved_at = now();
             $loan->save();
 
+            if ($loan->employee && $loan->employee->user) {
+                $loan->employee->user->notify(new InventoryLoanStatusNotification($loan, 'status_change'));
+            }
+
             return back()->with('status', 'Loan approved and item quantity updated.');
         });
     }
@@ -75,6 +95,10 @@ class InventoryLoanApprovalController extends Controller
         $loan->approved_by = auth()->id();
         $loan->approved_at = now();
         $loan->save();
+
+        if ($loan->employee && $loan->employee->user) {
+            $loan->employee->user->notify(new InventoryLoanStatusNotification($loan, 'status_change'));
+        }
 
         return back()->with('status', 'Loan request rejected.');
     }

@@ -7,6 +7,7 @@ use App\Models\EmployeeOnLeave;
 use App\Models\LeaveRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Notifications\LeaveRequestStatusNotification;
 
 class LeaveApprovalController extends Controller
 {
@@ -47,6 +48,10 @@ class LeaveApprovalController extends Controller
             ]);
         });
 
+        if ($leave->employee && $leave->employee->user) {
+            $leave->employee->user->notify(new LeaveRequestStatusNotification($leave, 'status_change'));
+        }
+
         return back()->with('status','Leave approved and recorded.');
     }
 
@@ -61,6 +66,10 @@ class LeaveApprovalController extends Controller
             'approved_by' => auth()->id(),
             'approved_at' => now(),
         ]);
+
+        if ($leave->employee && $leave->employee->user) {
+            $leave->employee->user->notify(new LeaveRequestStatusNotification($leave, 'status_change'));
+        }
 
         return back()->with('status','Leave rejected.');
     }

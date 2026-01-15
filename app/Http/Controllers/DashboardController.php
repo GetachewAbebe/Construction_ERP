@@ -14,16 +14,15 @@ class DashboardController extends Controller
      */
     public function admin()
     {
-        // Pending equipment/material loans that need Admin approval
-        $pendingLoanCount = InventoryLoan::where('status', 'pending')->count();
-
-        // Placeholder for future metrics (leave approvals, finance, etc.)
-        // Keep as null so the Blade can safely show "—" if not used yet.
-        $pendingLeaveCount = null;
+        // Pending requests counts
+        $pendingLoanCount    = \App\Models\InventoryLoan::where('status', 'pending')->count();
+        $pendingExpenseCount = \App\Models\Expense::where('status', 'pending')->count();
+        $pendingLeaveCount   = \App\Models\LeaveRequest::where('status', 'Pending')->count();
 
         return view('dashboards.admin', [
-            'pendingLoanCount'  => $pendingLoanCount,
-            'pendingLeaveCount' => $pendingLeaveCount,
+            'pendingLoanCount'    => $pendingLoanCount,
+            'pendingLeaveCount'   => $pendingLeaveCount,
+            'pendingExpenseCount' => $pendingExpenseCount,
         ]);
     }
 
@@ -47,7 +46,7 @@ class DashboardController extends Controller
         $recentHires = \App\Models\Employee::where('hire_date', '>=', now()->subDays(30))->count();
         
         // Latest 5 employees
-        $latestEmployees = \App\Models\Employee::latest('created_at')->take(5)->get();
+        $latestEmployees = \App\Models\Employee::with(['department_rel', 'position_rel'])->latest('created_at')->take(5)->get();
 
         // Department Breakdown (Top 5 largest departments)
         $departmentStats = \Illuminate\Support\Facades\DB::table('departments')
@@ -58,6 +57,24 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        // Attendance Chart Data (Optmized)
+        // Attendance Chart Data (Optimized for Postgres)
+        // Note: 'DATE(clock_in)' works in MySQL/SQLite. In Postgres we need 'clock_in::date' or similar.
+        // And we must group by the expression, not the alias.
+        $attendanceData = \App\Models\Attendance::selectRaw('DATE(clock_in) as date, count(*) as count')
+            ->where('clock_in', '>=', now()->subDays(6)->startOfDay())
+            ->groupBy(\Illuminate\Support\Facades\DB::raw('DATE(clock_in)'))
+            ->pluck('count', 'date');
+
+        $chartLabels = [];
+        $chartData = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $chartLabels[] = now()->subDays($i)->format('D');
+            $chartData[] = $attendanceData[$date] ?? 0; // Check if key exists using 'Y-m-d' format from database query result
+            // Note: selectRaw DATE(clock_in) usually returns Y-m-d format.
+        }
+
         return view('dashboards.hr', compact(
             'employeeCount', 
             'activeEmployees', 
@@ -65,7 +82,9 @@ class DashboardController extends Controller
             'pendingLeaveApprovals',
             'recentHires',
             'latestEmployees',
-            'departmentStats'
+            'departmentStats',
+            'chartLabels',
+            'chartData'
         ));
     }
 

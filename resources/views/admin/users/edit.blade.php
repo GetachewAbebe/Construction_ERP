@@ -12,12 +12,35 @@
             </div>
 
             <div class="glass-card-global p-4 p-md-5">
-                <form method="POST" action="{{ route('admin.users.update', $user) }}">
+                <form method="POST" action="{{ route('admin.users.update', $user) }}" enctype="multipart/form-data">
                     @csrf 
                     @method('PUT')
 
                     <h5 class="fw-bold text-erp-primary mb-4 pb-2 border-bottom border-light">Account Essentials</h5>
                     <div class="row g-4 mb-5">
+                        {{-- Profile Visual --}}
+                        <div class="col-12 text-center mb-3">
+                            <div class="position-relative d-inline-block">
+                                <label for="profile_picture" class="cursor-pointer">
+                                    <div class="rounded-circle bg-light border border-2 d-flex align-items-center justify-content-center overflow-hidden position-relative shadow-sm" style="width: 120px; height: 120px;">
+                                        @if(optional($user->employee)->profile_picture)
+                                            <img id="avatar_preview" src="{{ asset('storage/' . $user->employee->profile_picture) }}" alt="Preview" class="w-100 h-100 object-fit-cover">
+                                            <i class="bi bi-camera fs-2 text-muted opacity-50 d-none" id="avatar_placeholder"></i>
+                                        @else
+                                            <i class="bi bi-camera fs-2 text-muted opacity-50" id="avatar_placeholder"></i>
+                                            <img id="avatar_preview" src="#" alt="Preview" class="w-100 h-100 object-fit-cover d-none">
+                                        @endif
+                                    </div>
+                                    <div class="badge bg-primary rounded-circle position-absolute bottom-0 end-0 p-2 border border-2 border-white shadow-sm">
+                                        <i class="bi bi-pencil-fill text-white x-small"></i>
+                                    </div>
+                                </label>
+                                <input type="file" name="profile_picture" id="profile_picture" class="d-none" accept="image/*" onchange="previewAvatar(this)">
+                            </div>
+                            <div class="form-text mt-2">Change Profile Photo</div>
+                            @error('profile_picture') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                        </div>
+
                         {{-- Full Name --}}
                         <div class="col-md-6">
                             <label class="form-label text-muted x-small fw-bold text-uppercase tracking-wider">Full Name</label>
@@ -139,6 +162,22 @@
                         </div>
                     </div>
                 </form>
+
+            <script>
+                function previewAvatar(input) {
+                    if (input.files && input.files[0]) {
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                            var img = document.getElementById('avatar_preview');
+                            var placeholder = document.getElementById('avatar_placeholder');
+                            img.src = e.target.result;
+                            img.classList.remove('d-none');
+                            if(placeholder) placeholder.classList.add('d-none');
+                        }
+                        reader.readAsDataURL(input.files[0]);
+                    }
+                }
+            </script>
             </div>
         </div>
     </div>

@@ -109,9 +109,9 @@
                             @else
                                 <input type="hidden" name="employee_id" value="{{ auth()->user()->employee_id }}">
                                 <div class="form-control form-control-sm bg-light">
-                                    {{ auth()->user()->employee->first_name }}
-                                    {{ auth()->user()->employee->last_name }}
-                                    ({{ auth()->user()->employee->department }})
+                                    {{ optional(auth()->user()->employee)->first_name ?? 'N/A' }}
+                                    {{ optional(auth()->user()->employee)->last_name }}
+                                    ({{ optional(auth()->user()->employee)->department ?? '-' }})
                                 </div>
                             @endcan
                         </div>
@@ -255,10 +255,10 @@
                                         <td>{{ $attendance->date->format('Y-m-d') }}</td>
                                         <td>
                                             <div class="fw-semibold">
-                                                {{ $attendance->employee->first_name }} {{ $attendance->employee->last_name }}
+                                                {{ optional($attendance->employee)->first_name ?? 'Unknown' }} {{ optional($attendance->employee)->last_name }}
                                             </div>
                                             <div class="small text-muted">
-                                                {{ $attendance->employee->department }}
+                                                {{ optional($attendance->employee)->department ?? '—' }}
                                             </div>
                                         </td>
                                         <td>{{ $attendance->clock_in ? $attendance->clock_in->format('H:i') : '-' }}</td>

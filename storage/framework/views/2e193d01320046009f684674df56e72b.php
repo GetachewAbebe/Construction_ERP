@@ -56,6 +56,22 @@
           transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       }
 
+      .btn-emerald {
+          background: #10b981;
+          color: white;
+          border: none;
+          transition: all 0.2s ease;
+      }
+      .btn-emerald:hover {
+          background: #059669;
+          color: white;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      }
+
+      .bg-black-20 { background: rgba(0,0,0,0.2); }
+      .border-white-10 { border-color: rgba(255, 255, 255, 0.1) !important; }
+
       .hardened-glass:hover, .glass-card-global:hover {
           transform: translateY(-12px) scale(1.01);
           box-shadow: 0 25px 50px rgba(0,0,0,0.1);
@@ -103,7 +119,25 @@
           animation: pulse-emerald 2s infinite;
       }
 
-      /* Command Palette Styles */
+       /* Priority Labels */
+       .priority-stripe {
+           position: absolute;
+           left: 0;
+           top: 0;
+           bottom: 0;
+           width: 4px;
+           border-radius: 4px 0 0 4px;
+       }
+       .priority-high { background: #f43f5e; box-shadow: 0 0 10px rgba(244, 63, 94, 0.4); }
+       .priority-medium { background: #3b82f6; }
+       
+       .btn-outline-danger:hover {
+           background-color: #f43f5e;
+           border-color: #f43f5e;
+           color: white;
+       }
+
+       /* Command Palette Styles */
       .command-palette-overlay {
           position: fixed;
           top: 0;
@@ -191,6 +225,10 @@
           background: rgba(0, 0, 0, 0.3);
           transform: translateY(-2px);
           border-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .user-profile-trigger:hover {
+          background: rgba(255, 255, 255, 0.08) !important;
       }
 
       .main-content {
@@ -416,7 +454,7 @@
           width: 40px;
           height: 40px;
           background: rgba(255, 255, 255, 0.2);
-          border-radius: 12px;
+          border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -499,6 +537,77 @@
           margin-left: .6rem;
           opacity: .7;
       }
+
+      /* Notification System Styles */
+      .notification-dropdown {
+          width: 380px;
+          border: 1px solid rgba(255,255,255,0.15);
+          background: rgba(15, 23, 42, 0.95);
+          backdrop-filter: blur(25px);
+          border-radius: 24px !important;
+          padding: 0 !important;
+          overflow: hidden;
+          box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5);
+          margin-bottom: 0.5rem !important;
+      }
+      .notification-header {
+          padding: 1.25rem;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.03);
+      }
+      .notification-item {
+          padding: 1rem 1.25rem;
+          border-bottom: 1px solid rgba(255,255,255,0.05);
+          transition: all 0.2s ease;
+          position: relative;
+          color: rgba(255,255,255,0.85);
+          text-decoration: none;
+          display: block;
+      }
+      .notification-item:hover {
+          background: rgba(255,255,255,0.05);
+          color: white;
+      }
+      .notification-item.unread::before {
+          content: "";
+          position: absolute;
+          left: 8px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 6px;
+          height: 6px;
+          background: #10b981;
+          border-radius: 50%;
+          box-shadow: 0 0 10px #10b981;
+      }
+      .notification-icon {
+          width: 36px;
+          height: 36px;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.1rem;
+          flex-shrink: 0;
+      }
+      .badge-notify-count {
+          position: absolute;
+          top: -2px;
+          right: -2px;
+          background: #ef4444;
+          color: white;
+          font-size: 0.65rem;
+          padding: 2px 6px;
+          border-radius: 999px;
+          border: 2px solid #0f172a;
+          font-weight: 800;
+      }
+      .notification-list {
+          max-height: 400px;
+          overflow-y: auto;
+      }
+      .notification-list::-webkit-scrollbar { width: 4px; }
+      .notification-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
   </style>
 
   
@@ -526,147 +635,272 @@
   
   <div class="app-sidebar">
     <div class="sidebar-brand">
-       <div class="dot"></div>
-       <h4 class="fw-800 mb-0 tracking-tight">NATANEM</h4>
-       <div class="ms-auto" title="System Online">
-           <div class="pulse-dot-emerald"></div>
-       </div>
+       <a href="<?php echo e(route('home')); ?>" class="d-flex align-items-center gap-2 w-100 text-decoration-none text-white p-0 m-0">
+           <div class="dot flex-shrink-0"></div>
+           <h5 class="fw-800 mb-0 tracking-tight text-nowrap">
+               NATANEM
+               <?php
+                   $roleName = '';
+                   if(Auth::user()->hasRole('Administrator')) {
+                       $roleName = 'Admin';
+                   } elseif(Auth::user()->hasRole('HumanResourceManager')) {
+                       $roleName = 'Human Resource';
+                   } elseif(Auth::user()->hasRole('InventoryManager')) {
+                       $roleName = 'Inventory';
+                   } elseif(Auth::user()->hasRole('FinancialManager')) {
+                       $roleName = 'Finance';
+                   }
+               ?>
+               <?php if($roleName): ?>
+                   <span class="fw-medium opacity-75 fs-6">- <?php echo e($roleName); ?></span>
+               <?php endif; ?>
+           </h5>
+           <div class="ms-auto" title="System Online">
+               <div class="pulse-dot-emerald"></div>
+           </div>
+       </a>
     </div>
 
-    <div class="sidebar-nav flex-grow-1">
-      <a href="<?php echo e(route('home')); ?>" class="sidebar-link <?php echo e(request()->routeIs('home') ? 'active' : ''); ?>">
-        <i class="bi bi-speedometer2"></i>
-        <span>Overview</span>
-      </a>
+    <div class="sidebar-nav flex-grow-1 pt-2">
+      <?php
+          $unreadNotifications = Auth::user()->unreadNotifications;
+          $totalUnread = $unreadNotifications->count();
+          $hrCount = $unreadNotifications->whereIn('data.type', ['leave_request', 'leave_status'])->count();
+          $invCount = $unreadNotifications->whereIn('data.type', ['inventory_request', 'inventory_status'])->count();
+          $finCount = $unreadNotifications->whereIn('data.type', ['expense_request', 'expense_status'])->count();
+      ?>
 
-      <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Administrator')): ?>
-      <div class="sidebar-item">
-          <a class="sidebar-link <?php echo e(request()->segment(1) == 'admin' ? 'active' : ''); ?>" 
-             data-bs-toggle="collapse" href="#adminMenu" role="button" aria-expanded="<?php echo e(request()->segment(1) == 'admin' ? 'true' : 'false'); ?>">
-              <i class="bi bi-shield-lock"></i>
-              <span>Admin Dashboard</span>
-              <i class="bi bi-chevron-down ms-auto x-small opacity-50"></i>
-          </a>
-          <div class="collapse <?php echo e(request()->segment(1) == 'admin' ? 'show' : ''); ?>" id="adminMenu">
-              <div class="vstack gap-1 ps-4 border-start border-white-10 ms-3 my-2">
-                  <a href="<?php echo e(route('admin.dashboard')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('admin.dashboard') ? 'text-white fw-bold' : ''); ?>">Dashboard</a>
-                  
-                  <h6 class="text-uppercase x-small text-white-50 mt-3 mb-1">Modules</h6>
-                  
-                  
-                  <div class="sidebar-nested-group mb-2">
-                      <a href="<?php echo e(route('admin.hr')); ?>" class="text-white-50 text-decoration-none fw-bold small d-block mb-1 hover-white">Human Resources</a>
-                      <div class="ps-2 border-start border-white-10 ms-1">
-                          <a href="<?php echo e(route('admin.hr.employees.index')); ?>" class="sidebar-sublink small py-1 <?php echo e(request()->routeIs('admin.hr.employees.*') ? 'text-white' : ''); ?>">Employees</a>
-                          <a href="<?php echo e(route('admin.hr.leaves.index')); ?>" class="sidebar-sublink small py-1 <?php echo e(request()->routeIs('admin.hr.leaves.*') ? 'text-white' : ''); ?>">Leavess</a>
-                          <a href="<?php echo e(route('admin.hr.attendance.index')); ?>" class="sidebar-sublink small py-1 <?php echo e(request()->routeIs('admin.hr.attendance.*') ? 'text-white' : ''); ?>">Attendance</a>
-                      </div>
-                  </div>
 
-                  
-                  <div class="sidebar-nested-group mb-2">
-                      <a href="<?php echo e(route('admin.inventory')); ?>" class="text-white-50 text-decoration-none fw-bold small d-block mb-1 hover-white">Inventory</a>
-                      <div class="ps-2 border-start border-white-10 ms-1">
-                          <a href="<?php echo e(route('admin.inventory.items.index')); ?>" class="sidebar-sublink small py-1 <?php echo e(request()->routeIs('admin.inventory.items.*') ? 'text-white' : ''); ?>">Items</a>
-                          <a href="<?php echo e(route('admin.inventory.loans.index')); ?>" class="sidebar-sublink small py-1 <?php echo e(request()->routeIs('admin.inventory.loans.*') ? 'text-white' : ''); ?>">Loans</a>
-                          <a href="<?php echo e(route('admin.inventory.logs.index')); ?>" class="sidebar-sublink small py-1 <?php echo e(request()->routeIs('admin.inventory.logs.*') ? 'text-white' : ''); ?>">Logs</a>
-                      </div>
-                  </div>
+      <?php if (\Illuminate\Support\Facades\Blade::check('role', 'Administrator')): ?>
+        
+        
+        <a href="<?php echo e(route('admin.dashboard')); ?>" class="sidebar-link <?php echo e(request()->routeIs('admin.dashboard') ? 'active' : ''); ?>">
+            <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
+        </a>
+        
+        
+        <a class="sidebar-link <?php echo e(request()->routeIs('admin.hr*') ? 'active' : ''); ?>" data-bs-toggle="collapse" href="#adminHrMenu" role="button" aria-expanded="<?php echo e(request()->routeIs('admin.hr*') ? 'true' : 'false'); ?>">
+             <i class="bi bi-people"></i> <span>Human Resources</span>
+             <?php if($hrCount > 0): ?>
+                 <span class="badge bg-danger rounded-pill x-small ms-auto"><?php echo e($hrCount); ?></span>
+             <?php else: ?>
+                 <i class="bi bi-chevron-down ms-auto x-small opacity-50"></i>
+             <?php endif; ?>
+        </a>
+        <div class="collapse <?php echo e(request()->routeIs('admin.hr*') ? 'show' : ''); ?>" id="adminHrMenu">
+            <div class="ms-1 ps-3 border-start border-white-10 mb-2">
+                <a href="<?php echo e(route('admin.hr')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('admin.hr') ? 'text-white fw-bold' : ''); ?>">Dashboard</a>
+                <a href="<?php echo e(route('admin.hr.employees.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('admin.hr.employees.*') ? 'text-white fw-bold' : ''); ?>">Employees</a>
+                <a href="<?php echo e(route('admin.hr.leaves.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('admin.hr.leaves.*') ? 'text-white fw-bold' : ''); ?>">Leave Requests</a>
+                <a href="<?php echo e(route('admin.hr.leaves.approved')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('admin.hr.leaves.approved') ? 'text-white fw-bold' : ''); ?>">Approved Leaves</a>
+                <a href="<?php echo e(route('admin.hr.attendance.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('admin.hr.attendance.*') ? 'text-white fw-bold' : ''); ?>">Attendance</a>
+            </div>
+        </div>
 
-                  
-                  <div class="sidebar-nested-group mb-2">
-                      <a href="<?php echo e(route('admin.finance')); ?>" class="text-white-50 text-decoration-none fw-bold small d-block mb-1 hover-white">Finance</a>
-                      <div class="ps-2 border-start border-white-10 ms-1">
-                          <a href="<?php echo e(route('admin.finance.projects.index')); ?>" class="sidebar-sublink small py-1 <?php echo e(request()->routeIs('admin.finance.projects.*') ? 'text-white' : ''); ?>">Projects</a>
-                          <a href="<?php echo e(route('admin.finance.expenses.index')); ?>" class="sidebar-sublink small py-1 <?php echo e(request()->routeIs('admin.finance.expenses.*') ? 'text-white' : ''); ?>">Expenses</a>
-                      </div>
-                  </div>
+        
+        <a class="sidebar-link <?php echo e(request()->routeIs('admin.inventory*') ? 'active' : ''); ?>" data-bs-toggle="collapse" href="#adminInvMenu" role="button" aria-expanded="<?php echo e(request()->routeIs('admin.inventory*') ? 'true' : 'false'); ?>">
+             <i class="bi bi-boxes"></i> <span>Inventory</span>
+             <?php if($invCount > 0): ?>
+                 <span class="badge bg-danger rounded-pill x-small ms-auto"><?php echo e($invCount); ?></span>
+             <?php else: ?>
+                 <i class="bi bi-chevron-down ms-auto x-small opacity-50"></i>
+             <?php endif; ?>
+        </a>
+        <div class="collapse <?php echo e(request()->routeIs('admin.inventory*') ? 'show' : ''); ?>" id="adminInvMenu">
+            <div class="ms-1 ps-3 border-start border-white-10 mb-2">
+                 <a href="<?php echo e(route('admin.inventory')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('admin.inventory') ? 'text-white fw-bold' : ''); ?>">Dashboard</a>
+                 <a href="<?php echo e(route('admin.inventory.items.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('admin.inventory.items.*') ? 'text-white fw-bold' : ''); ?>">Items Catalogue</a>
+                 <a href="<?php echo e(route('admin.inventory.loans.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('admin.inventory.loans.*') ? 'text-white fw-bold' : ''); ?>">Lending Requests</a>
+                 <a href="<?php echo e(route('admin.inventory.logs.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('admin.inventory.logs.*') ? 'text-white fw-bold' : ''); ?>">Audit Logs</a>
+            </div>
+        </div>
 
-                  <h6 class="text-uppercase x-small text-white-50 mt-3 mb-1">System</h6>
-                  <a href="<?php echo e(route('admin.users.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('admin.users.*') ? 'text-white fw-bold' : ''); ?>">System Users</a>
-                  <a href="<?php echo e(route('admin.requests.leave')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('admin.requests.leave') ? 'text-white fw-bold' : ''); ?>">Approvals</a>
-                  <a href="<?php echo e(route('admin.attendance-settings.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('admin.attendance-settings.*') ? 'text-white fw-bold' : ''); ?>">Config</a>
-              </div>
-          </div>
-      </div>
+        
+        <a class="sidebar-link <?php echo e(request()->routeIs('admin.finance*') ? 'active' : ''); ?>" data-bs-toggle="collapse" href="#adminFinMenu" role="button" aria-expanded="<?php echo e(request()->routeIs('admin.finance*') ? 'true' : 'false'); ?>">
+             <i class="bi bi-currency-dollar"></i> <span>Finance</span>
+             <?php if($finCount > 0): ?>
+                 <span class="badge bg-danger rounded-pill x-small ms-auto"><?php echo e($finCount); ?></span>
+             <?php else: ?>
+                 <i class="bi bi-chevron-down ms-auto x-small opacity-50"></i>
+             <?php endif; ?>
+        </a>
+        <div class="collapse <?php echo e(request()->routeIs('admin.finance*') ? 'show' : ''); ?>" id="adminFinMenu">
+            <div class="ms-1 ps-3 border-start border-white-10 mb-2">
+                 <a href="<?php echo e(route('admin.finance')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('admin.finance') ? 'text-white fw-bold' : ''); ?>">Dashboard</a>
+                 <a href="<?php echo e(route('admin.finance.projects.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('admin.finance.projects.*') ? 'text-white fw-bold' : ''); ?>">Projects</a>
+                 <a href="<?php echo e(route('admin.finance.expenses.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('admin.finance.expenses.*') ? 'text-white fw-bold' : ''); ?>">Expenses</a>
+            </div>
+        </div>
+
+        
+        <a class="sidebar-link <?php echo e(request()->routeIs('admin.users*') || request()->routeIs('admin.attendance-settings*') ? 'active' : ''); ?>" data-bs-toggle="collapse" href="#adminSysMenu" role="button" aria-expanded="<?php echo e(request()->routeIs('admin.users*') ? 'true' : 'false'); ?>">
+            <i class="bi bi-gear"></i> <span>System</span>
+            <i class="bi bi-chevron-down ms-auto x-small opacity-50"></i>
+        </a>
+        <div class="collapse <?php echo e(request()->routeIs('admin.users*') || request()->routeIs('admin.attendance-settings*') ? 'show' : ''); ?>" id="adminSysMenu">
+            <div class="ms-1 ps-3 border-start border-white-10 mb-2">
+                <a href="<?php echo e(route('admin.users.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('admin.users.*') ? 'text-white fw-bold' : ''); ?>">System Users</a>
+                <a href="<?php echo e(route('admin.attendance-settings.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('admin.attendance-settings.*') ? 'text-white fw-bold' : ''); ?>">Configuration</a>
+            </div>
+        </div>
+
+      <?php else: ?>
+        
+
+        <?php if(Auth::user()->hasRole('HumanResourceManager')): ?>
+            <a href="<?php echo e(route('hr.dashboard')); ?>" class="sidebar-link <?php echo e(request()->routeIs('hr.dashboard') ? 'active' : ''); ?>">
+                <i class="bi bi-grid-1x2"></i> <span>Dashboard</span>
+            </a>
+            <a href="<?php echo e(route('hr.employees.index')); ?>" class="sidebar-link <?php echo e(request()->routeIs('hr.employees.*') ? 'active' : ''); ?>">
+                <i class="bi bi-people"></i> <span>Employees</span>
+            </a>
+            <a href="<?php echo e(route('hr.leaves.index')); ?>" class="sidebar-link <?php echo e(request()->routeIs('hr.leaves.index') ? 'active' : ''); ?>">
+                <i class="bi bi-calendar-check"></i> <span>Leave Requests</span>
+                <?php if($hrCount > 0): ?>
+                    <span class="badge bg-danger rounded-pill x-small ms-auto"><?php echo e($hrCount); ?></span>
+                <?php endif; ?>
+            </a>
+            <a href="<?php echo e(route('hr.leaves.approved')); ?>" class="sidebar-link <?php echo e(request()->routeIs('hr.leaves.approved') ? 'active' : ''); ?>">
+                <i class="bi bi-check-circle"></i> <span>Approved Leaves</span>
+            </a>
+            <a href="<?php echo e(route('hr.attendance.index')); ?>" class="sidebar-link <?php echo e(request()->routeIs('hr.attendance.*') ? 'active' : ''); ?>">
+                <i class="bi bi-clock-history"></i> <span>Attendance</span>
+            </a>
+        <?php endif; ?>
+
+        <?php if(Auth::user()->hasRole('InventoryManager')): ?>
+            <a href="<?php echo e(route('inventory.dashboard')); ?>" class="sidebar-link <?php echo e(request()->routeIs('inventory.dashboard') ? 'active' : ''); ?>">
+                <i class="bi bi-grid-1x2"></i> <span>Dashboard</span>
+            </a>
+            <a href="<?php echo e(route('inventory.items.index')); ?>" class="sidebar-link <?php echo e(request()->routeIs('inventory.items.*') ? 'active' : ''); ?>">
+                <i class="bi bi-box-seam"></i> <span>Items Catalogue</span>
+            </a>
+            <a href="<?php echo e(route('inventory.loans.index')); ?>" class="sidebar-link <?php echo e(request()->routeIs('inventory.loans.*') ? 'active' : ''); ?>">
+                <i class="bi bi-arrow-left-right"></i> <span>Item Lending</span>
+                <?php if($invCount > 0): ?>
+                    <span class="badge bg-danger rounded-pill x-small ms-auto"><?php echo e($invCount); ?></span>
+                <?php endif; ?>
+            </a>
+            <a href="<?php echo e(route('inventory.logs.index')); ?>" class="sidebar-link <?php echo e(request()->routeIs('inventory.logs.*') ? 'active' : ''); ?>">
+                <i class="bi bi-journal-text"></i> <span>Audit Logs</span>
+            </a>
+        <?php endif; ?>
+
+        <?php if(Auth::user()->hasRole('FinancialManager')): ?>
+            <a href="<?php echo e(route('finance.dashboard')); ?>" class="sidebar-link <?php echo e(request()->routeIs('finance.dashboard') ? 'active' : ''); ?>">
+                <i class="bi bi-grid-1x2"></i> <span>Dashboard</span>
+            </a>
+            <a href="<?php echo e(route('finance.projects.index')); ?>" class="sidebar-link <?php echo e(request()->routeIs('finance.projects.*') ? 'active' : ''); ?>">
+                <i class="bi bi-briefcase"></i> <span>Projects</span>
+            </a>
+            <a href="<?php echo e(route('finance.expenses.index')); ?>" class="sidebar-link <?php echo e(request()->routeIs('finance.expenses.*') ? 'active' : ''); ?>">
+                <i class="bi bi-receipt"></i> <span>Expenses</span>
+                <?php if($finCount > 0): ?>
+                    <span class="badge bg-danger rounded-pill x-small ms-auto"><?php echo e($finCount); ?></span>
+                <?php endif; ?>
+            </a>
+        <?php endif; ?>
+
       <?php endif; ?>
 
-      <?php if(Auth::user()->hasRole('HumanResourceManager') && !Auth::user()->hasRole('Administrator')): ?>
-      <div class="sidebar-item">
-          <a class="sidebar-link <?php echo e(request()->segment(1) == 'hr' ? 'active' : ''); ?>" 
-             data-bs-toggle="collapse" href="#hrMenu" role="button" aria-expanded="<?php echo e(request()->segment(1) == 'hr' ? 'true' : 'false'); ?>">
-              <i class="bi bi-people"></i>
-              <span>Human Resource</span>
-              <i class="bi bi-chevron-down ms-auto x-small opacity-50"></i>
-          </a>
-          <div class="collapse <?php echo e(request()->segment(1) == 'hr' ? 'show' : ''); ?>" id="hrMenu">
-              <div class="vstack gap-1 ps-4 border-start border-white-10 ms-3 my-2">
-                  <a href="<?php echo e(route('hr.dashboard')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('hr.dashboard') ? 'text-white fw-bold' : ''); ?>">Dashboard</a>
-                  <a href="<?php echo e(route('hr.employees.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('hr.employees.*') ? 'text-white fw-bold' : ''); ?>">Employees</a>
-                  <a href="<?php echo e(route('hr.leaves.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('hr.leaves.index') ? 'text-white fw-bold' : ''); ?>">Leave Requests</a>
-                  <a href="<?php echo e(route('hr.leaves.approved')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('hr.leaves.approved') ? 'text-white fw-bold' : ''); ?>">Approved Leaves</a>
-                  <a href="<?php echo e(route('hr.attendance.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('hr.attendance.*') ? 'text-white fw-bold' : ''); ?>">Attendance</a>
-              </div>
-          </div>
-      </div>
-      <?php endif; ?>
+      
+      <div class="px-3 mt-auto mb-3">
+          <a href="<?php echo e(route('notifications.index')); ?>" class="sidebar-link d-flex align-items-center gap-3 w-100 <?php echo e(request()->routeIs('notifications.index') ? 'active' : ''); ?> <?php echo e($totalUnread > 0 ? 'text-white' : 'opacity-75'); ?>" 
+             style="background: rgba(255,255,255,<?php echo e($totalUnread > 0 ? '0.12' : '0.05'); ?>);">
+              <div class="position-relative">
+                  <i class="bi bi-bell-fill fs-5 mb-0"></i>
+                  <?php if($totalUnread > 0): ?>
+                      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.55rem; padding: 0.2rem 0.4rem; border: 2px solid var(--erp-glass-dark);">
+                          <?php echo e($totalUnread); ?>
 
-      <?php if(Auth::user()->hasRole('InventoryManager') && !Auth::user()->hasRole('Administrator')): ?>
-      <div class="sidebar-item">
-          <a class="sidebar-link <?php echo e(request()->segment(1) == 'inventory' ? 'active' : ''); ?>" 
-             data-bs-toggle="collapse" href="#invMenu" role="button" aria-expanded="<?php echo e(request()->segment(1) == 'inventory' ? 'true' : 'false'); ?>">
-              <i class="bi bi-boxes"></i>
-              <span>Inventory</span>
-              <i class="bi bi-chevron-down ms-auto x-small opacity-50"></i>
-          </a>
-          <div class="collapse <?php echo e(request()->segment(1) == 'inventory' ? 'show' : ''); ?>" id="invMenu">
-              <div class="vstack gap-1 ps-4 border-start border-white-10 ms-3 my-2">
-                  <a href="<?php echo e(route('inventory.dashboard')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('inventory.dashboard') ? 'text-white fw-bold' : ''); ?>">Dashboard</a>
-                  <a href="<?php echo e(route('inventory.items.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('inventory.items.*') ? 'text-white fw-bold' : ''); ?>">Items Catalogue</a>
-                  <a href="<?php echo e(route('inventory.loans.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('inventory.loans.*') ? 'text-white fw-bold' : ''); ?>">Item Lending</a>
-                  <a href="<?php echo e(route('inventory.logs.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('inventory.logs.*') ? 'text-white fw-bold' : ''); ?>">Audit Logs</a>
+                      </span>
+                  <?php endif; ?>
               </div>
-          </div>
-      </div>
-      <?php endif; ?>
-
-      <?php if(Auth::user()->hasRole('FinancialManager') && !Auth::user()->hasRole('Administrator')): ?>
-      <div class="sidebar-item">
-          <a class="sidebar-link <?php echo e(request()->segment(1) == 'finance' ? 'active' : ''); ?>" 
-             data-bs-toggle="collapse" href="#finMenu" role="button" aria-expanded="<?php echo e(request()->segment(1) == 'finance' ? 'true' : 'false'); ?>">
-              <i class="bi bi-currency-dollar"></i>
-              <span>Finance</span>
-              <i class="bi bi-chevron-down ms-auto x-small opacity-50"></i>
+              <span class="fw-bold fs-6">Notifications</span>
+              <i class="bi bi-chevron-right ms-auto x-small opacity-50"></i>
           </a>
-          <div class="collapse <?php echo e(request()->segment(1) == 'finance' ? 'show' : ''); ?>" id="finMenu">
-              <div class="vstack gap-1 ps-4 border-start border-white-10 ms-3 my-2">
-                  <a href="<?php echo e(route('finance.dashboard')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('finance.dashboard') ? 'text-white fw-bold' : ''); ?>">Dashboard</a>
-                  <a href="<?php echo e(route('finance.projects.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('finance.projects.*') ? 'text-white fw-bold' : ''); ?>">Projects</a>
-                  <a href="<?php echo e(route('finance.expenses.index')); ?>" class="sidebar-sublink <?php echo e(request()->routeIs('finance.expenses.*') ? 'text-white fw-bold' : ''); ?>">Expenses</a>
-              </div>
-          </div>
       </div>
-      <?php endif; ?>
     </div>
 
     <div class="sidebar-footer">
-      <div class="d-flex align-items-center gap-3 px-2 mb-3">
-        <div class="avatar-circle">
-          <?php echo e(substr(Auth::user()->name, 0, 1)); ?>
+        <div class="dropup w-100">
+            <button href="#" class="d-flex align-items-center gap-3 w-100 p-2 border-0 bg-transparent text-start user-profile-trigger" 
+                    data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 16px; transition: all 0.2s ease;">
+                
+                
+                <div class="position-relative">
+                    <?php if(optional(Auth::user()->employee)->profile_picture): ?>
+                        <img src="<?php echo e(asset('storage/' . Auth::user()->employee->profile_picture)); ?>" alt="Profile" 
+                             class="rounded-circle border border-2 border-white-20 shadow-sm" 
+                             style="width: 44px; height: 44px; object-fit: cover;">
+                    <?php else: ?>
+                        <div class="avatar-circle rounded-circle shadow-sm" style="width: 44px; height: 44px; font-size: 1rem; background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                        <?php echo e(substr(Auth::user()->first_name ?? Auth::user()->name, 0, 1)); ?>
 
+                        </div>
+                    <?php endif; ?>
+                    <span class="position-absolute bottom-0 end-0 bg-success border border-2 border-dark rounded-circle p-1"></span>
+                </div>
+                
+                
+                <div class="overflow-hidden flex-grow-1">
+                    <div class="text-white fw-bold text-truncate" style="font-size: 0.95rem;"><?php echo e(Auth::user()->name); ?></div>
+                    <div class="text-white-50 x-small text-truncate text-uppercase tracking-tight">
+                        <?php echo e(Auth::user()->roles->first()->name ?? 'Team Member'); ?>
+
+                    </div>
+                </div>
+
+                
+                <i class="bi bi-chevron-up text-white-50 small"></i>
+            </button>
+
+            
+            <ul class="dropdown-menu shadow-lg border-0 mb-2 w-100 p-2" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 16px;">
+                <li>
+                    <h6 class="dropdown-header text-uppercase x-small fw-bold text-muted opacity-75 mb-1">Account</h6>
+                </li>
+                
+                <li>
+                    <?php
+                        $profileRoute = '#';
+                        if(Auth::user()->hasRole('Administrator')) {
+                            $profileRoute = route('admin.users.edit', Auth::id());
+                        } elseif(Auth::user()->hasRole('HumanResourceManager') && optional(Auth::user()->employee)->id) {
+                            $profileRoute = route('hr.employees.edit', Auth::user()->employee->id);
+                        } else {
+                            // Fallback for roles without explicit profile edit routes
+                             if(Auth::user()->hasRole('InventoryManager')) { $profileRoute = route('inventory.dashboard'); }
+                             elseif(Auth::user()->hasRole('FinancialManager')) { $profileRoute = route('finance.dashboard'); }
+                             else { $profileRoute = route('home'); }
+                        }
+                    ?>
+                    <a class="dropdown-item rounded-3 d-flex align-items-center gap-2 py-2" href="<?php echo e($profileRoute); ?>">
+                        <?php if(optional(Auth::user()->employee)->profile_picture): ?>
+                            <img src="<?php echo e(asset('storage/' . Auth::user()->employee->profile_picture)); ?>" alt="Img" 
+                                 class="rounded-circle border border-primary-subtle" 
+                                 style="width: 20px; height: 20px; object-fit: cover;">
+                        <?php else: ?>
+                             <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" 
+                                  style="width: 20px; height: 20px; font-size: 0.6rem;">
+                                 <?php echo e(substr(Auth::user()->first_name ?? Auth::user()->name, 0, 1)); ?>
+
+                             </div>
+                        <?php endif; ?>
+                        <span>My Profile</span>
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider opacity-25 my-2"></li>
+                <li>
+                    <form action="<?php echo e(route('logout')); ?>" method="POST">
+                        <?php echo csrf_field(); ?>
+                        <button type="submit" class="dropdown-item rounded-3 d-flex align-items-center gap-2 py-2 text-danger hover-danger">
+                            <i class="bi bi-box-arrow-right"></i> Sign Out
+                        </button>
+                    </form>
+                </li>
+            </ul>
         </div>
-        <div class="overflow-hidden">
-          <div class="text-white fw-bold text-truncate small"><?php echo e(Auth::user()->name); ?></div>
-          <div class="text-white-50 x-small text-truncate text-capitalize"><?php echo e(Auth::user()->roles->first()->name ?? 'User'); ?></div>
-        </div>
-      </div>
-      <form action="<?php echo e(route('logout')); ?>" method="POST">
-        <?php echo csrf_field(); ?>
-        <button type="submit" class="sidebar-link w-100 border-0 bg-transparent text-start">
-          <i class="bi bi-box-arrow-right"></i>
-          <span>Sign Out</span>
-        </button>
-      </form>
     </div>
   </div>
 <?php endif; ?>
@@ -683,7 +917,33 @@
       </div>
     </footer>
   <?php endif; ?>
-</main>
+  </div>
+
+  
+  <div class="modal fade" id="globalRejectModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content hardened-glass-static p-0" style="background: white; border-radius: 24px;">
+              <form id="globalRejectForm" method="POST">
+                  <?php echo csrf_field(); ?>
+                  <div class="modal-header border-0 p-4 pb-0">
+                      <h5 class="fw-800 text-erp-deep mb-0">Reject <span id="rejectTypeLabel">Request</span></h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body p-4">
+                      <p class="text-muted small mb-4">Are you sure you want to reject this request? Please provide a brief reason for the record.</p>
+                      <div class="mb-3">
+                          <label class="form-label fw-bold small text-uppercase mb-2 text-erp-deep">Reason for Rejection</label>
+                          <textarea name="rejection_reason" id="globalRejectReason" class="form-control rounded-3 bg-light border-0" rows="3" required placeholder="e.g. Documentation required..."></textarea>
+                      </div>
+                  </div>
+                  <div class="modal-footer border-0 p-4 pt-0">
+                      <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
+                      <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm">Confirm Rejection</button>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
 
   
   <script>
@@ -776,6 +1036,30 @@
             el.style.animationDelay = `${(index + 1) * 0.1}s`;
         });
     });
+
+    function markNotificationRead(id) {
+        fetch(`/notifications/${id}/mark-as-read`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            }
+        });
+    }
+
+    function openGlobalRejectModal(actionUrl, typeLabel, notificationId) {
+        const modal = new bootstrap.Modal(document.getElementById('globalRejectModal'));
+        document.getElementById('globalRejectForm').action = actionUrl;
+        document.getElementById('rejectTypeLabel').innerText = typeLabel;
+        
+        // Ensure the notification is marked as read when the form is submitted
+        document.getElementById('globalRejectForm').onsubmit = function() {
+            markNotificationRead(notificationId);
+            return true;
+        };
+        
+        modal.show();
+    }
   </script>
 
   <?php echo $__env->yieldPushContent('scripts'); ?>

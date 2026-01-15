@@ -1,4 +1,4 @@
-@extends('layouts.hr')
+@extends('layouts.app')
 @section('title','Approved Leaves')
 
 @section('content')

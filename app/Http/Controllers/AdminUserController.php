@@ -55,7 +55,7 @@ class AdminUserController extends Controller
 
         $q = trim((string) $request->get('q', ''));
 
-        $users = User::query()
+        $users = User::with('employee')
             ->when($q !== '', function ($query) use ($q) {
                 // Postgres-friendly case-insensitive search
                 $query->where(function ($sub) use ($q) {
@@ -97,18 +97,56 @@ class AdminUserController extends Controller
         $this->enforceAdmin();
 
         $validated = $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', Password::min(8)],
-            'role'     => ['required', Rule::in($this->allowedRoles)],
+            'name'            => ['required', 'string', 'max:255'],
+            'email'           => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password'        => ['required', Password::min(8)],
+            'role'            => ['required', Rule::in($this->allowedRoles)],
+            'profile_picture' => ['nullable', 'image', 'max:2048'], // Added validation
+            // Add other optional fields validation if needed for employee data
+            'phone_number'    => ['nullable', 'string', 'max:20'],
+            'position'        => ['nullable', 'string', 'max:255'],
+            'department'      => ['nullable', 'string', 'max:255'],
+            'status'          => ['nullable', 'in:Active,Inactive,Suspended'],
         ]);
 
+        $parts = explode(' ', $validated['name']);
+        $firstName = array_shift($parts);
+        $lastName  = array_pop($parts);
+        $middleName = implode(' ', $parts);
+
         $user = User::create([
-            'name'              => $validated['name'],
+            'first_name'        => $firstName,
+            'middle_name'       => $middleName,
+            'last_name'         => $lastName,
             'email'             => $validated['email'],
             'password'          => Hash::make($validated['password']),
             'role'              => $validated['role'],
+            'phone_number'      => $request->phone_number,
+            'position'          => $request->position,
+            'department'        => $request->department,
+            'status'            => $request->status ?? 'Active',
+            'bio'               => $request->bio,
             'email_verified_at' => now(),
+        ]);
+
+        // Handle Profile Picture
+        $profilePath = null;
+        if ($request->hasFile('profile_picture')) {
+            $profilePath = $request->file('profile_picture')->store('employees', 'public');
+        }
+
+        // Auto-create Employee Record (Mirroring data)
+        \App\Models\Employee::create([
+            'user_id'         => $user->id,
+            'first_name'      => $firstName,
+            'last_name'       => $lastName ? $lastName : 'User',
+            'email'           => $user->email,
+            'status'          => $request->status ?? 'Active',
+            'hire_date'       => now(),
+            'profile_picture' => $profilePath,
+            'phone'           => $request->phone_number,
+            'position'        => $request->position,
+            'department'      => $request->department,
         ]);
 
         return redirect()
@@ -139,11 +177,7 @@ class AdminUserController extends Controller
         $this->enforceAdmin();
 
         $validated = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-            ],
+            'name' => ['required', 'string', 'max:255'],
             'email'    => [
                 'required',
                 'string',
@@ -153,17 +187,58 @@ class AdminUserController extends Controller
             ],
             'password' => ['nullable', Password::min(8)],
             'role'     => ['required', Rule::in($this->allowedRoles)],
+            'phone_number' => ['nullable', 'string', 'max:20'],
+            'position'     => ['nullable', 'string', 'max:255'],
+            'department'   => ['nullable', 'string', 'max:255'],
+            'status'       => ['nullable', 'in:Active,Inactive,Suspended'],
+            'bio'          => ['nullable', 'string'],
+            'profile_picture' => ['nullable', 'image', 'max:2048'], // Added validation
         ]);
 
-        $user->name  = $validated['name'];
-        $user->email = $validated['email'];
-        $user->role  = $validated['role'];
+        // Name handling
+        $parts = explode(' ', $validated['name']);
+        $user->first_name = array_shift($parts);
+        $user->last_name  = array_pop($parts);
+        $user->middle_name = implode(' ', $parts);
+
+        $user->email      = $validated['email'];
+        $user->role       = $validated['role'];
+        $user->phone_number = $request->phone_number;
+        $user->position     = $request->position;
+        $user->department   = $request->department;
+        $user->status       = $request->status ?? 'Active';
+        $user->bio          = $request->bio;
 
         if (!empty($validated['password'])) {
             $user->password = Hash::make($validated['password']);
         }
 
         $user->save();
+
+        // Handle Profile Picture
+        $profilePath = optional($user->employee)->profile_picture;
+        if ($request->hasFile('profile_picture')) {
+            // Delete old if exists (optional but recommended)
+            if ($profilePath) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($profilePath);
+            }
+            $profilePath = $request->file('profile_picture')->store('employees', 'public');
+        }
+
+        // Sync to Employee if exists
+        $employee = $user->employee;
+        if($employee) {
+            $employee->update([
+                'first_name'      => $user->first_name,
+                'last_name'       => $user->last_name ?: 'User',
+                'email'           => $user->email,
+                'status'          => $user->status,
+                'phone'           => $user->phone_number,
+                'position'        => $user->position,
+                'department'      => $user->department,
+                'profile_picture' => $profilePath,
+            ]);
+        }
 
         return redirect()
             ->route('admin.users.index')

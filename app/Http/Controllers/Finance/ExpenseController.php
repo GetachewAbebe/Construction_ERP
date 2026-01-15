@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use App\Models\Expense;
 use App\Models\Project;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
+use App\Models\User;
+use App\Notifications\ExpenseStatusNotification;
 
 class ExpenseController extends Controller
 {
@@ -47,7 +50,12 @@ class ExpenseController extends Controller
 
         try {
             $data['user_id'] = auth()->id();
-            Expense::create($data);
+            $expense = Expense::create($data);
+            
+            // Notify Administrators
+            $admins = User::role('Administrator')->get();
+            Notification::send($admins, new ExpenseStatusNotification($expense, 'request'));
+
             return redirect()->route('finance.expenses.index')->with('status', 'Expense recorded successfully.');
         } catch (\Exception $e) {
             Log::error('Expense recording failed: ' . $e->getMessage());
