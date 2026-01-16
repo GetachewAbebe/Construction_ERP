@@ -10,7 +10,7 @@ use App\Traits\LogsActivity;
 
 class Employee extends Model
 {
-    use HasFactory, LogsActivity; // SoftDeletes commented out
+    use HasFactory, SoftDeletes, LogsActivity;
 
     protected $fillable = [
         'user_id',

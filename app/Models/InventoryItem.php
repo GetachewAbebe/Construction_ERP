@@ -10,7 +10,7 @@ use App\Traits\LogsActivity;
 
 class InventoryItem extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     protected $table = 'inventory_items';
 

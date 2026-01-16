@@ -12,7 +12,7 @@ use App\Traits\LogsActivity;
 
 class Expense extends Model
 {
-    use HasFactory, LogsActivity; // SoftDeletes commented out
+    use HasFactory, SoftDeletes, LogsActivity;
 
     protected $fillable = [
         'project_id',

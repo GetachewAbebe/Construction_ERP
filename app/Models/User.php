@@ -7,11 +7,11 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\LogsActivity;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
-    // use SoftDeletes; 
-    use Notifiable, HasRoles, LogsActivity;
+    use Notifiable, HasRoles, SoftDeletes, LogsActivity;
 
 
     protected $fillable = [
@@ -67,11 +67,26 @@ class User extends Authenticatable
      */
     public function getDashboardRouteName(): string
     {
+        // 1. Spatie Roles (Primary - matching production DB)
         if ($this->hasRole('Administrator')) return 'admin.dashboard';
+        if ($this->hasRole('Human Resource Manager')) return 'hr.dashboard';
+        if ($this->hasRole('Inventory Manager')) return 'inventory.dashboard';
+        if ($this->hasRole('Financial Manager')) return 'finance.dashboard';
+        
+        // 2. Exact Model Trait names (Secondary fallback)
         if ($this->hasRole('HumanResourceManager')) return 'hr.dashboard';
         if ($this->hasRole('InventoryManager')) return 'inventory.dashboard';
         if ($this->hasRole('FinancialManager')) return 'finance.dashboard';
-        
+
+        // 3. Database Column Fallback (Insurance for mismatching production keys)
+        $columnRole = strtolower(trim((string)$this->role));
+        if (str_contains($columnRole, 'admin')) return 'admin.dashboard';
+        if (str_contains($columnRole, 'hr') || str_contains($columnRole, 'human')) return 'hr.dashboard';
+        if (str_contains($columnRole, 'inventory')) return 'inventory.dashboard';
+        if (str_contains($columnRole, 'finance')) return 'finance.dashboard';
+
+        // 4. Force Logout to break redirect loop
+        Auth::logout();
         return 'home';
     }
 
@@ -84,7 +99,7 @@ class User extends Authenticatable
             return route('admin.users.edit', $this->id);
         }
         
-        if ($this->hasRole('HumanResourceManager') && $this->employee) {
+        if (($this->hasRole('Human Resource Manager') || $this->hasRole('HumanResourceManager')) && $this->employee) {
             return route('hr.employees.edit', $this->employee->id);
         }
 

@@ -10,7 +10,7 @@ use App\Traits\LogsActivity;
 
 class LeaveRequest extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     protected $fillable = [
         'employee_id','start_date','end_date','reason','status','approved_by','approved_at'

@@ -9,7 +9,7 @@ use App\Traits\LogsActivity;
 
 class InventoryLoan extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     protected $fillable = [
         'inventory_item_id',
