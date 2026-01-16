@@ -36,6 +36,24 @@ class ExpenseApprovalController extends Controller
 
         $expense->user->notify(new ExpenseStatusNotification($expense, 'status_change'));
 
+        // Notify Financial Managers
+        $financialManagers = \App\Models\User::role('FinancialManager')->get();
+        if ($financialManagers->isNotEmpty()) {
+            Notification::send($financialManagers, new ExpenseStatusNotification($expense, 'status_update'));
+        }
+
+        // Notify Inventory Managers (if applicable for expense context, though FinancialManager is more common)
+        $inventoryManagers = \App\Models\User::role('InventoryManager')->get();
+        if ($inventoryManagers->isNotEmpty()) {
+            Notification::send($inventoryManagers, new ExpenseStatusNotification($expense, 'status_update'));
+        }
+
+        // Clear notification for admin
+        Auth::user()->unreadNotifications()
+            ->where('data->expense_id', $expense->id)
+            ->get()
+            ->markAsRead();
+
         return back()->with('status', 'Expense approved successfully.');
     }
 
@@ -55,6 +73,18 @@ class ExpenseApprovalController extends Controller
         ]);
 
         $expense->user->notify(new ExpenseStatusNotification($expense, 'status_change'));
+
+        // Notify Financial Managers
+        $financeManagers = \App\Models\User::role('FinancialManager')->get();
+        if ($financeManagers->isNotEmpty()) {
+            \Illuminate\Support\Facades\Notification::send($financeManagers, new ExpenseStatusNotification($expense, 'status_update'));
+        }
+
+        // Clear notification for admin
+        Auth::user()->unreadNotifications()
+            ->where('data->expense_id', $expense->id)
+            ->get()
+            ->markAsRead();
 
         return back()->with('status', 'Expense rejected.');
     }

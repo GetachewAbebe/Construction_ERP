@@ -43,6 +43,6 @@ class AttendanceSettingsController extends Controller
             );
         }
 
-        return redirect()->route('admin.attendance-settings.index')->with('status', 'Attendance settings updated successfully.');
+        return redirect()->route('admin.attendance-settings.index')->with('success', 'Temporal configuration protocols successfully updated. New shift parameters are now active across all workforce monitoring systems.');
     }
 }

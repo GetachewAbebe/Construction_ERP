@@ -148,7 +148,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer border-0 pt-0">
-                                                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="button" class="btn btn-white rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
                                                     <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold">Confirm Denial</button>
                                                 </div>
                                             </form>

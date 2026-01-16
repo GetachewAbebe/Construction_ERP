@@ -1,123 +1,180 @@
 @extends('layouts.app')
-@section('title','Employees')
+@section('title', 'Corporate Directory')
 
 @section('content')
-    <div class="container py-4">
-
-        {{-- HEADER --}}
-        <div class="row mb-3">
-            <div class="col d-flex align-items-center justify-content-between">
-                <div>
-                    <h1 class="h4 mb-1 text-erp-deep">Employees</h1>
-                    <p class="text-muted small mb-0">
-                        View and manage employee records.
-                    </p>
-                </div>
-                @unless(Auth::user()->hasRole('Administrator'))
-                <a href="{{ route('hr.employees.create') }}"
-                   class="btn btn-sm btn-success">
-                    New Employee
-                </a>
-                @endunless
-            </div>
-        </div>
-
-        {{-- TABLE CARD --}}
-        <div class="row">
-            <div class="col">
-                <div class="card shadow-soft border-0">
-                    <div class="card-body">
-
-                        <div class="table-responsive">
-                            <table class="table table-sm align-middle mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th scope="col" style="width: 50px;"></th>
-                                        <th scope="col">Name</th>
-                                        <th scope="col">Department</th>
-                                        <th scope="col">Position</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Phone</th>
-                                        <th scope="col" class="text-center">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($employees as $e)
-                                        <tr>
-                                            <td>
-                                                @if($e->profile_picture)
-                                                    <img src="{{ asset('storage/' . $e->profile_picture) }}" 
-                                                         class="rounded-circle border" 
-                                                         width="32" height="32" 
-                                                         style="object-fit: cover;">
-                                                @else
-                                                    <div class="rounded-circle bg-light border d-flex align-items-center justify-content-center text-muted small" 
-                                                         style="width: 32px; height: 32px;">
-                                                        {{ substr($e->first_name, 0, 1) }}
-                                                    </div>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                <div class="fw-bold text-dark">{{ $e->first_name }} {{ $e->last_name }}</div>
-                                                <div class="small text-muted">{{ $e->email }}</div>
-                                            </td>
-                                            <td>{{ $e->department }}</td>
-                                            <td>{{ $e->position }}</td>
-                                            <td>
-                                                @php
-                                                    $badgeClass = match($e->status) {
-                                                        'Active' => 'bg-success',
-                                                        'On Leave' => 'bg-warning text-dark',
-                                                        'Terminated' => 'bg-danger',
-                                                        'Resigned' => 'bg-secondary',
-                                                        default => 'bg-secondary'
-                                                    };
-                                                @endphp
-                                                <span class="badge {{ $badgeClass }}">{{ $e->status ?? 'N/A' }}</span>
-                                            </td>
-                                            <td>{{ $e->phone ?? '-' }}</td>
-                                            <td class="text-center">
-                                                @unless(Auth::user()->hasRole('Administrator'))
-                                                <div class="d-inline-flex gap-2">
-                                                    <a href="{{ route('hr.employees.edit', $e) }}"
-                                                       class="btn btn-sm btn-outline-secondary">
-                                                        Edit
-                                                    </a>
-                                                    <form method="POST"
-                                                          action="{{ route('hr.employees.destroy', $e) }}"
-                                                          onsubmit="return confirm('Delete this employee?')">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button class="btn btn-sm btn-outline-danger">
-                                                            Delete
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                                @else
-                                                <span class="text-muted x-small">View Only</span>
-                                                @endunless
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="5" class="text-center text-muted py-4">
-                                                No employees yet.
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-
-                        {{-- PAGINATION --}}
-                        <div class="mt-3">
-                            {{ $employees->links() }}
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-
+<div class="row align-items-center mb-4 stagger-entrance">
+    <div class="col">
+        <h1 class="h3 mb-1 fw-800 text-erp-deep">Human Capital Identity</h1>
+        <p class="text-muted mb-0">Strategic workforce overview and organizational directory.</p>
     </div>
+    <div class="col-auto">
+        @unless(Auth::user()->hasRole('Administrator'))
+        <a href="{{ route('hr.employees.create') }}" class="btn btn-primary rounded-pill px-4 shadow-sm hardened-glass border-0">
+            <i class="bi bi-person-plus-fill me-2"></i>Onboard Professional
+        </a>
+        @endunless
+    </div>
+</div>
+
+{{-- Flash Messages --}}
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show hardened-glass border-0 shadow-sm stagger-entrance mb-4" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show hardened-glass border-0 shadow-sm stagger-entrance mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+{{-- Search & Filter --}}
+<form action="{{ route('hr.employees.index') }}" method="GET" class="mb-4 stagger-entrance" style="animation-delay: 0.1s;">
+    <div class="row g-2">
+        <div class="col-md-9">
+            <div class="position-relative">
+                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                <input type="text" name="q" class="form-control border-0 bg-white py-3 ps-5 rounded-pill shadow-sm" 
+                       placeholder="Search by name, email, department, or position title..." 
+                       value="{{ request('q') }}">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="status" class="form-select border-0 bg-white py-3 rounded-pill shadow-sm" onchange="this.form.submit()">
+                <option value="">All Statuses</option>
+                <option value="Active" {{ request('status') === 'Active' ? 'selected' : '' }}>Active Duty</option>
+                <option value="On Leave" {{ request('status') === 'On Leave' ? 'selected' : '' }}>On Leave</option>
+                <option value="Terminated" {{ request('status') === 'Terminated' ? 'selected' : '' }}>Terminated</option>
+                <option value="Resigned" {{ request('status') === 'Resigned' ? 'selected' : '' }}>Resigned</option>
+            </select>
+        </div>
+    </div>
+</form>
+
+{{-- Workforce Stats --}}
+<div class="row g-4 mb-4 stagger-entrance" style="animation-delay: 0.2s;">
+    <div class="col-md-3">
+        <div class="card hardened-glass border-0 p-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="avatar-sm bg-primary-soft text-primary rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-people-fill fs-5"></i>
+                </div>
+                <div>
+                    <div class="small text-muted">Total Workforce</div>
+                    <div class="fw-800 fs-5 text-erp-deep">{{ $employees->total() }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card hardened-glass border-0 p-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="avatar-sm bg-success-soft text-success rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-patch-check-fill fs-5"></i>
+                </div>
+                <div>
+                    <div class="small text-muted">Active Duty</div>
+                    <div class="fw-800 fs-5 text-erp-deep">{{ \App\Models\Employee::where('status', 'Active')->count() }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card hardened-glass border-0 overflow-hidden stagger-entrance" style="animation-delay: 0.3s;">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light-soft text-erp-deep">
+                <tr>
+                    <th class="ps-4">Profile</th>
+                    <th>Professional Identity</th>
+                    <th>Assignment Designation</th>
+                    <th>Status</th>
+                    <th>Communication</th>
+                    <th class="text-end pe-4">Lifecycle</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($employees as $e)
+                    <tr>
+                        <td class="ps-4">
+                            @if($e->profile_picture)
+                                <div class="avatar-md hardened-glass p-1 rounded-circle shadow-sm" style="width: 45px; height: 45px;">
+                                    <img src="{{ asset('storage/' . $e->profile_picture) }}" 
+                                         class="rounded-circle w-100 h-100" 
+                                         style="object-fit: cover;">
+                                </div>
+                            @else
+                                <div class="avatar-md bg-erp-deep text-white rounded-circle d-flex align-items-center justify-content-center fw-800 shadow-sm" 
+                                     style="width: 45px; height: 45px;">
+                                    {{ substr($e->first_name, 0, 1) }}
+                                </div>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="fw-800 text-erp-deep">{{ $e->first_name }} {{ $e->last_name }}</div>
+                            <small class="text-muted fw-600">ID: #EMP-{{ str_pad($e->id, 4, '0', STR_PAD_LEFT) }}</small>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-700 text-dark">{{ $e->position ?? 'Unassigned Role' }}</span>
+                                <small class="text-muted"><i class="bi bi-diagram-2 me-1"></i>{{ $e->department ?? 'General' }}</small>
+                            </div>
+                        </td>
+                        <td>
+                            @php
+                                $statusContext = match($e->status) {
+                                    'Active' => ['class' => 'bg-success-soft text-success', 'icon' => 'bi-check-circle-fill'],
+                                    'On Leave' => ['class' => 'bg-warning-soft text-warning', 'icon' => 'bi-hourglass-split'],
+                                    'Terminated' => ['class' => 'bg-danger-soft text-danger', 'icon' => 'bi-x-circle-fill'],
+                                    'Resigned' => ['class' => 'bg-secondary-soft text-secondary', 'icon' => 'bi-door-closed-fill'],
+                                    default => ['class' => 'bg-light text-muted', 'icon' => 'bi-question-circle']
+                                };
+                            @endphp
+                            <span class="badge {{ $statusContext['class'] }} rounded-pill px-3 py-2 border-0 fw-600">
+                                <i class="bi {{ $statusContext['icon'] }} me-1"></i>{{ $e->status ?? 'Unknown' }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="small text-dark fw-bold">{{ $e->email }}</div>
+                            <div class="x-small text-muted">{{ $e->phone ?? 'No Direct Line' }}</div>
+                        </td>
+                        <td class="text-end pe-4">
+                            @unless(Auth::user()->hasRole('Administrator'))
+                            <div class="btn-group hardened-glass rounded-pill p-1 shadow-sm">
+                                <a href="{{ route('hr.employees.edit', $e) }}" class="btn btn-sm btn-white rounded-pill px-3" title="Refine Profile">
+                                    <i class="bi bi-person-gear"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-white text-danger rounded-pill px-3" 
+                                        onclick="if(confirm('Request permanent removal of this record?')) document.getElementById('del-emp-{{ $e->id }}').submit()">
+                                    <i class="bi bi-trash3-fill"></i>
+                                    <form id="del-emp-{{ $e->id }}" action="{{ route('hr.employees.destroy', $e) }}" method="POST" class="d-none">@csrf @method('DELETE')</form>
+                                </button>
+                            </div>
+                            @else
+                            <span class="badge bg-light text-muted fw-normal rounded-pill px-3">Read Only Portfolio</span>
+                            @endunless
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <i class="bi bi-person-video2 fs-1 text-muted opacity-25"></i>
+                            <div class="text-muted italic mt-3">No professional records match your search criteria.</div>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+    
+    @if($employees->hasPages())
+        <div class="card-footer border-0 bg-white p-4">
+            {{ $employees->links() }}
+        </div>
+    @endif
+</div>
 @endsection
+

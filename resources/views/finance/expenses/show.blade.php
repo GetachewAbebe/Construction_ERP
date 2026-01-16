@@ -171,13 +171,44 @@
 
 @section('content')
 <div class="no-print pt-2 pb-4">
+    {{-- Flash Messages --}}
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show hardened-glass border-0 shadow-sm stagger-entrance mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show hardened-glass border-0 shadow-sm stagger-entrance mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="d-flex justify-content-between align-items-center">
-        <a href="{{ route('finance.expenses.index') }}" class="btn btn-link text-decoration-none text-muted p-0">
+        <a href="{{ route('finance.expenses.index') }}" class="btn btn-link text-decoration-none text-muted p-0 fw-bold">
             <i class="bi bi-arrow-left me-2"></i>Exit to Ledger
         </a>
-        <button onclick="window.print()" class="btn btn-erp-deep text-white rounded-pill px-4 shadow-sm fw-bold">
-            <i class="bi bi-printer me-2"></i>Print Report
-        </button>
+        
+        <div class="d-flex gap-2">
+            @if(Auth::user()->hasAnyRole(['Administrator', 'FinancialManager']) && $expense->status === 'pending')
+                <button type="button" class="btn btn-white text-success rounded-pill px-4 shadow-sm border-0 fw-bold hover-lift" 
+                        onclick="if(confirm('Authorize this expense?')) document.getElementById('approve-form').submit()">
+                    <i class="bi bi-patch-check-fill me-2"></i>Approve
+                </button>
+                <form id="approve-form" action="{{ route('finance.expenses.approve', $expense) }}" method="POST" class="d-none">@csrf</form>
+
+                <button type="button" class="btn btn-white text-danger rounded-pill px-4 shadow-sm border-0 fw-bold hover-lift" 
+                        onclick="if(confirm('Reject this transaction?')) document.getElementById('reject-form').submit()">
+                    <i class="bi bi-x-circle-fill me-2"></i>Reject
+                </button>
+                <form id="reject-form" action="{{ route('finance.expenses.reject', $expense) }}" method="POST" class="d-none">@csrf</form>
+            @endif
+
+            <button onclick="window.print()" class="btn btn-erp-deep text-white rounded-pill px-4 shadow-sm fw-bold hover-lift">
+                <i class="bi bi-printer me-2"></i>Print Report
+            </button>
+        </div>
     </div>
 </div>
 
@@ -213,7 +244,7 @@
     <div class="row g-4 mb-4">
         <div class="col-6">
             <div class="info-label">Project Site Name</div>
-            <div class="info-value">{{ $expense->project->name }}</div>
+            <div class="info-value">{{ optional($expense->project)->name ?? 'Unknown Project' }}</div>
             <div class="text-muted" style="font-size: 0.8rem;">{{ $expense->project->location }}</div>
         </div>
         <div class="col-3">
@@ -266,7 +297,7 @@
         <div class="col-4">
             <div class="info-label">Prepared By</div>
             <div class="signature-line"></div>
-            <div style="font-size: 0.85rem; font-weight: 700;">{{ $expense->user->name ?? 'System User' }}</div>
+            <div style="font-size: 0.85rem; font-weight: 700;">{{ optional($expense->user)->name ?? 'System User' }}</div>
             <div class="text-muted" style="font-size: 0.65rem;">Recorded On: {{ $expense->created_at->format('d M, Y') }}</div>
         </div>
         <div class="col-4">
@@ -280,12 +311,12 @@
                 <div class="signature-line border-0 d-flex align-items-end">
                     <div class="text-success fw-bold small"><i class="bi bi-patch-check-fill me-1"></i>SECURED DIGITAL APPROVAL</div>
                 </div>
-                <div style="font-size: 0.85rem; font-weight: 700;">{{ $expense->approvedBy->name ?? 'Administrator' }}</div>
+                <div style="font-size: 0.85rem; font-weight: 700;">{{ optional($expense->approvedBy)->name ?? 'Administrator' }}</div>
             @elseif($expense->status === 'rejected')
                 <div class="signature-line border-0 d-flex align-items-end">
                     <div class="text-danger fw-bold small"><i class="bi bi-x-circle-fill me-1"></i>VOID / REJECTED</div>
                 </div>
-                <div style="font-size: 0.85rem; font-weight: 700;">{{ $expense->rejectedBy->name ?? 'Administrator' }}</div>
+                <div style="font-size: 0.85rem; font-weight: 700;">{{ optional($expense->rejectedBy)->name ?? 'Administrator' }}</div>
             @else
                 <div class="signature-line text-muted small pt-4 italic">Pending Approval</div>
                 <div style="font-size: 0.85rem;" class="text-muted">-</div>

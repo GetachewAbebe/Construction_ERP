@@ -26,8 +26,9 @@ class InventoryItemController extends Controller
         $loc  = trim((string) $request->input('store_location', ''));
         $from = $request->input('from_date');
         $to   = $request->input('to_date');
+        $status = $request->input('status');
 
-        $items = InventoryItem::query()
+        $query = InventoryItem::query()
             ->when($q !== '', function ($query) use ($q) {
                 $query->where(function ($qq) use ($q) {
                     $qq->where('item_no', 'ILIKE', "%{$q}%")
@@ -35,20 +36,41 @@ class InventoryItemController extends Controller
                        ->orWhere('description', 'ILIKE', "%{$q}%");
                 });
             })
-            ->when($loc !== '', fn($query) => $query->where('store_location', 'ILIKE', "%{$loc}%"))
+            ->when($loc !== '', fn($query) => $query->where('store_location', $loc))
             ->when($from, fn($query) => $query->whereDate('in_date', '>=', $from))
             ->when($to,   fn($query) => $query->whereDate('in_date', '<=', $to))
-            ->latest('created_at')
-            ->paginate(10)
-            ->withQueryString();
+            ->when($status, function($query) use ($status) {
+                if ($status === 'in_stock') {
+                    $query->where('quantity', '>', 5);
+                } elseif ($status === 'low_stock') {
+                    $query->where('quantity', '<=', 5)->where('quantity', '>', 0);
+                } elseif ($status === 'out_of_stock') {
+                    $query->where('quantity', '<=', 0);
+                }
+            }, function($query) use ($q, $loc) {
+                // Default behavior: Hide deleted items unless searching or filtering by location
+                if ($q === '' && $loc === '') {
+                    $query->where('quantity', '>', 0);
+                }
+            });
 
+        // Global totals for the analytic cards - Synchronized with Dashboard logic
         $totals = [
-            'total'     => InventoryItem::count(),
-            'low_stock' => InventoryItem::where('quantity', '<=', 5)->count(),
-            'locations' => InventoryItem::whereNotNull('store_location')->distinct('store_location')->count('store_location'),
+            'total_items' => InventoryItem::count(),
+            'low_stock_count' => InventoryItem::where('quantity', '>', 0)->where('quantity', '<=', 5)->count(),
         ];
 
-        return view('inventory.items.index', compact('items', 'totals', 'q', 'loc', 'from', 'to'));
+        $items = $query->latest('created_at')
+            ->paginate(15)
+            ->withQueryString();
+
+        // Unique store locations for the filter
+        $storeLocations = InventoryItem::whereNotNull('store_location')
+            ->distinct()
+            ->orderBy('store_location')
+            ->pluck('store_location');
+
+        return view('inventory.items.index', compact('items', 'totals', 'q', 'loc', 'from', 'to', 'storeLocations'));
     }
 
     public function create()
@@ -56,60 +78,41 @@ class InventoryItemController extends Controller
         return view('inventory.items.create');
     }
 
-    public function store(Request $request)
+    public function store(\App\Http\Requests\Inventory\StoreInventoryItemRequest $request)
     {
-        // Normalize quantity like "2,000" => 2000
-        $request->merge([
-            'quantity' => $request->filled('quantity')
-                ? (int) preg_replace('/[^\d\-]/', '', (string) $request->input('quantity'))
-                : null,
-        ]);
-
-        $data = $request->validate([
-            'item_no'             => ['required','string','max:255'],
-            'name'                => ['required','string','max:255'],
-            'description'         => ['nullable','string','max:1000'],
-            'unit_of_measurement' => ['required','string','max:255'],
-            'quantity'            => ['required','integer','min:0'],
-            'store_location'      => ['required','string','max:255'],
-            'in_date'             => ['required','date'],
-        ]);
+        $data = $request->validated();
 
         try {
-            // App-level duplicate guard (adjust to your business rule)
+            // Check for existing item with same item_no and store_location
             $exists = InventoryItem::where('item_no', $data['item_no'])
-                        ->where('name', $data['name'])
+                        ->where('store_location', $data['store_location'])
                         ->exists();
+
             if ($exists) {
-                return back()
-                    ->withInput()
-                    ->with('error', 'Duplicate item: the same Item No & Name already exists.');
+                return back()->withInput()->with('error', 'An item with this ID already exists in this location.');
             }
 
             DB::transaction(function () use ($data) {
                 $item = InventoryItem::create($data);
 
-                // Log initial stock
+                // Log initial stock via Service if needed or manual
                 \App\Models\InventoryLog::create([
                     'inventory_item_id' => $item->id,
                     'user_id'           => auth()->id(),
                     'change_amount'     => $item->quantity,
                     'previous_quantity' => 0,
                     'new_quantity'      => $item->quantity,
-                    'reason'            => 'created',
-                    'remarks'           => 'Initial stock entry',
+                    'reason'            => 'Initial Entry',
+                    'remarks'           => 'New inventory item created',
                 ]);
             });
 
-            return redirect()
-                ->route('inventory.items.index')
-                ->with('status', 'Item created successfully.');
-        } catch (QueryException $e) {
-            Log::error('InventoryItem store DB error', ['message' => $e->getMessage()]);
-            return back()->withInput()->with('error', 'Database error: '.$e->getMessage());
-        } catch (\Throwable $e) {
-            Log::error('InventoryItem store failed', ['message' => $e->getMessage()]);
-            return back()->withInput()->with('error', 'Could not save the item. Please try again.');
+            return redirect()->route('inventory.items.index')
+                ->with('success', 'Inventory item added successfully.');
+
+        } catch (\Exception $e) {
+            Log::error('Inventory creation failed: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Failed to save inventory item.');
         }
     }
 
@@ -118,50 +121,29 @@ class InventoryItemController extends Controller
         return view('inventory.items.edit', compact('item'));
     }
 
-    public function update(Request $request, InventoryItem $item)
+    public function update(\App\Http\Requests\Inventory\UpdateInventoryItemRequest $request, InventoryItem $item)
     {
-        $request->merge([
-            'quantity' => $request->filled('quantity')
-                ? (int) preg_replace('/[^\d\-]/', '', (string) $request->input('quantity'))
-                : null,
-        ]);
-
-        $data = $request->validate([
-            'item_no'             => ['required','string','max:255'],
-            'name'                => ['required','string','max:255'],
-            'description'         => ['nullable','string','max:1000'],
-            'unit_of_measurement' => ['required','string','max:255'],
-            'quantity'            => ['required','integer','min:0'],
-            'store_location'      => ['required','string','max:255'],
-            'in_date'             => ['required','date'],
-        ]);
+        $data = $request->validated();
 
         try {
-            // prevent updating to a duplicate of another record
-            $exists = InventoryItem::where('item_no', $data['item_no'])
-                ->where('name', $data['name'])
-                ->where('id', '!=', $item->id)
-                ->exists();
-            if ($exists) {
-                return back()
-                    ->withInput()
-                    ->with('error', 'Duplicate item: the same Item No & Name already exists.');
-            }
-
             $newQuantity = $data['quantity'];
-            unset($data['quantity']); // Handle quantity via Service
+            unset($data['quantity']); // Quantity usually handled via adjustments Service
 
             DB::transaction(function () use ($item, $data, $newQuantity) {
                 $item->update($data);
-                $this->inventoryService->adjustQuantity($item, $newQuantity, 'updated', 'Manual update via inventory form');
+                
+                // If quantity changed, log it via Service
+                if ($item->quantity != $newQuantity) {
+                    $this->inventoryService->adjustQuantity($item, $newQuantity, 'Manual Adjustment', 'Updated via item edit form');
+                }
             });
 
-            return redirect()
-                ->route('inventory.items.index')
-                ->with('status', 'Item updated successfully.');
-        } catch (\Throwable $e) {
-            Log::error('InventoryItem update failed', ['message' => $e->getMessage(), 'id' => $item->id]);
-            return back()->withInput()->with('error', 'Could not update the item. Please try again.');
+            return redirect()->route('inventory.items.index')
+                ->with('success', 'Inventory record updated.');
+
+        } catch (\Exception $e) {
+            Log::error('Inventory update failed: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Failed to update record.');
         }
     }
 
@@ -175,7 +157,7 @@ class InventoryItemController extends Controller
 
             return redirect()
                 ->route('inventory.items.index')
-                ->with('status', 'Item deleted.');
+                ->with('success', 'Item deleted.');
         } catch (\Throwable $e) {
             Log::error('InventoryItem delete failed', ['message' => $e->getMessage(), 'id' => $item->id]);
             return back()->with('error', 'Could not delete the item.');

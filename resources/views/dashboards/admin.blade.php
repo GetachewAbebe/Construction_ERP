@@ -1,99 +1,172 @@
 @extends('layouts.app')
 
-@section('title', 'Admin Overview | Natanem Engineering')
-
-
+@section('title', 'Admin Command Center | Natanem Engineering')
 
 @section('content')
-<div class="py-4 px-2">
+<div class="py-4 px-2 stagger-entrance">
     {{-- Page Header --}}
     <div class="d-flex flex-column mb-5">
-        <h1 class="display-4 fw-800 text-erp-deep mb-2 tracking-tight">Admin Dashboard</h1>
+        <h1 class="display-4 fw-800 text-erp-deep mb-2 tracking-tight">System Administration</h1>
+        <p class="text-muted">Central command for user management, approvals, and system configuration.</p>
     </div>
 
-    {{-- HIGHLIGHT METRICS --}}
+    {{-- ALERT / ACTION CENTER (Only if pending items exist) --}}
+    @if(($pendingLeaveCount ?? 0) > 0 || ($pendingExpenseCount ?? 0) > 0 || ($pendingLoanCount ?? 0) > 0)
+    <div class="card bg-warning-subtle border-0 mb-5 shadow-sm overflow-hidden stagger-entrance">
+        <div class="card-body p-4">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    <i class="bi bi-bell-fill"></i>
+                </div>
+                <h5 class="fw-800 text-erp-deep mb-0">Pending Approvals Required</h5>
+            </div>
+            
+            <div class="row g-3">
+                @if(($pendingLeaveCount ?? 0) > 0)
+                    <div class="col-md-4">
+                        <a href="{{ route('admin.requests.leave-approvals.index') }}" class="d-flex align-items-center justify-content-between p-3 bg-white rounded-3 shadow-sm text-decoration-none transition-all hover-translate-y">
+                            <span class="text-muted fw-bold small text-uppercase">Leave Requests</span>
+                            <span class="badge bg-danger rounded-pill px-3">{{ $pendingLeaveCount }}</span>
+                        </a>
+                    </div>
+                @endif
+                @if(($pendingExpenseCount ?? 0) > 0)
+                    <div class="col-md-4">
+                        <a href="{{ route('admin.requests.finance') }}" class="d-flex align-items-center justify-content-between p-3 bg-white rounded-3 shadow-sm text-decoration-none transition-all hover-translate-y">
+                            <span class="text-muted fw-bold small text-uppercase">Expense Claims</span>
+                            <span class="badge bg-danger rounded-pill px-3">{{ $pendingExpenseCount }}</span>
+                        </a>
+                    </div>
+                @endif
+                @if(($pendingLoanCount ?? 0) > 0)
+                    <div class="col-md-4">
+                        <a href="{{ route('admin.requests.items') }}" class="d-flex align-items-center justify-content-between p-3 bg-white rounded-3 shadow-sm text-decoration-none transition-all hover-translate-y">
+                            <span class="text-muted fw-bold small text-uppercase">Inventory Loans</span>
+                            <span class="badge bg-danger rounded-pill px-3">{{ $pendingLoanCount }}</span>
+                        </a>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- MODULE NAVIGATION GRID --}}
     <div class="row g-4">
         {{-- Users --}}
         <div class="col-md-6 col-lg-4">
-            <div class="hardened-glass stagger-entrance">
-                <div class="metric-icon">
+            <div class="hardened-glass h-100 p-4 stagger-entrance">
+                <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: var(--erp-primary);">
                     <i class="bi bi-person-gear fs-4"></i>
                 </div>
                 <h5 class="fw-800 mb-2">User Management</h5>
-                <p class="text-muted small mb-4 flex-grow-1">
-                    Manage system accounts, roles, and administrative access levels safely.
+                <p class="text-muted small mb-4">
+                    Manage system accounts, assign roles, and control access permissions.
                 </p>
-                <a href="{{ route('admin.users.index') }}" class="btn btn-erp-deep rounded-pill px-4 fw-bold">
-                    System Users
-                </a>
+                <div class="mt-auto">
+                    <a href="{{ route('admin.users.index') }}" class="btn btn-erp-deep rounded-pill px-4 fw-bold w-100">
+                        Manage Users
+                    </a>
+                    <a href="{{ route('admin.roles.index') }}" class="btn btn-sm btn-link text-muted w-100 mt-2 text-decoration-none">
+                        Manage Roles
+                    </a>
+                </div>
             </div>
         </div>
 
-        {{-- HR --}}
+        {{-- HR Hub --}}
         <div class="col-md-6 col-lg-4">
-            <div class="hardened-glass stagger-entrance">
-                <div class="metric-icon" style="background: var(--gradient-primary);">
+            <div class="hardened-glass h-100 p-4 stagger-entrance">
+                <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: linear-gradient(135deg, #10b981 0%, #34d399 100%);">
                     <i class="bi bi-person-vcard fs-4"></i>
                 </div>
                 <h5 class="fw-800 mb-2">Human Resources</h5>
-                <p class="text-muted small mb-4 flex-grow-1">
-                    Review Human Resource statistics, departments, and active employee status.
+                <p class="text-muted small mb-4">
+                    View employee directory, attendance logs, and leave history.
                 </p>
-                <a href="{{ route('admin.hr') }}" class="btn btn-outline-erp-deep rounded-pill px-4 fw-bold">
-                    Human Resource Hub
-                </a>
+                <div class="mt-auto">
+                    <a href="{{ route('admin.hr') }}" class="btn btn-outline-erp-deep rounded-pill px-4 fw-bold w-100">
+                        Enter HR Hub
+                    </a>
+                </div>
             </div>
         </div>
 
-        {{-- Inventory --}}
+        {{-- Inventory Hub --}}
         <div class="col-md-6 col-lg-4">
-            <div class="hardened-glass stagger-entrance">
-                <div class="metric-icon" style="background: var(--gradient-primary);">
+            <div class="hardened-glass h-100 p-4 stagger-entrance">
+                <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);">
                     <i class="bi bi-boxes fs-4"></i>
                 </div>
                 <h5 class="fw-800 mb-2">Inventory Control</h5>
-                <p class="text-muted small mb-4 flex-grow-1">
-                    Manage construction materials, track stock movements, and audit logs.
+                <p class="text-muted small mb-4">
+                    Track material stock, manage equipment loans, and view audit trails.
                 </p>
-                <a href="{{ route('admin.inventory') }}" class="btn btn-outline-erp-deep rounded-pill px-4 fw-bold">
-                    Stock Manager
-                </a>
+                <div class="mt-auto">
+                    <a href="{{ route('admin.inventory') }}" class="btn btn-outline-erp-deep rounded-pill px-4 fw-bold w-100">
+                        Enter Stock Manager
+                    </a>
+                </div>
             </div>
         </div>
 
-        {{-- Finance --}}
+        {{-- Finance Hub --}}
         <div class="col-md-6 col-lg-4">
-            <div class="hardened-glass stagger-entrance">
-                <div class="metric-icon" style="background: var(--gradient-primary);">
+            <div class="hardened-glass h-100 p-4 stagger-entrance">
+                <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);">
                     <i class="bi bi-wallet2 fs-4"></i>
                 </div>
                 <h5 class="fw-800 mb-2">Financial Operations</h5>
-                <p class="text-muted small mb-4 flex-grow-1">
-                    Track project budgets, expenses, billing, and financial distributions.
+                <p class="text-muted small mb-4">
+                    Oversee project budgets, approve expenses, and analyze spending.
                 </p>
-                <a href="{{ route('admin.finance') }}" class="btn btn-outline-erp-deep rounded-pill px-4 fw-bold">
-                    Finance Hub
-                </a>
+                <div class="mt-auto">
+                    <a href="{{ route('admin.finance') }}" class="btn btn-outline-erp-deep rounded-pill px-4 fw-bold w-100">
+                        Enter Finance Hub
+                    </a>
+                </div>
             </div>
         </div>
 
-        {{-- System Settings --}}
+        {{-- Logs & Trash (Maintenance) --}}
         <div class="col-md-6 col-lg-4">
-            <div class="hardened-glass stagger-entrance">
-                <div class="metric-icon" style="background: linear-gradient(135deg, #64748b 0%, #334155 100%);">
+            <div class="hardened-glass h-100 p-4 stagger-entrance">
+                <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);">
+                    <i class="bi bi-activity fs-4"></i>
+                </div>
+                <h5 class="fw-800 mb-2">System Maintenance</h5>
+                <p class="text-muted small mb-4">
+                    View activity logs, system health, backups, and restore deleted items.
+                </p>
+                <div class="mt-auto">
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('admin.maintenance.index') }}" class="btn btn-sm btn-white border shadow-sm fw-bold">Maintenance</a>
+                        <a href="{{ route('admin.trash.index') }}" class="btn btn-sm btn-white border shadow-sm fw-bold">Recycle Bin</a>
+                        <a href="{{ route('admin.activity-logs') }}" class="btn btn-sm btn-white border shadow-sm fw-bold">Activity Logs</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Global Settings --}}
+        <div class="col-md-6 col-lg-4">
+            <div class="hardened-glass h-100 p-4 stagger-entrance">
+                <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: linear-gradient(135deg, #1e293b 0%, #334155 100%);">
                     <i class="bi bi-gear-wide-connected fs-4"></i>
                 </div>
-                <h5 class="fw-800 mb-2">Global Settings</h5>
-                <p class="text-muted small mb-4 flex-grow-1">
-                    Configure organizational rules, attendance shifts, and system-wide defaults.
+                <h5 class="fw-800 mb-2">Global Config</h5>
+                <p class="text-muted small mb-4">
+                    Adjust system parameters, attendance rules, and notification templates.
                 </p>
-                <a href="{{ route('admin.attendance-settings.index') }}" class="btn btn-outline-erp-deep rounded-pill px-4 fw-bold">
-                    System Config
-                </a>
+                <div class="mt-auto">
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('admin.attendance-settings.index') }}" class="btn btn-sm btn-white border shadow-sm fw-bold">Attendance Rules</a>
+                        <a href="{{ route('admin.system-settings.index') }}" class="btn btn-sm btn-white border shadow-sm fw-bold">System Settings</a>
+                        <a href="{{ route('admin.notification-templates.index') }}" class="btn btn-sm btn-white border shadow-sm fw-bold">Notifications</a>
+                    </div>
+                </div>
             </div>
         </div>
-
-
     </div>
 </div>
 @endsection

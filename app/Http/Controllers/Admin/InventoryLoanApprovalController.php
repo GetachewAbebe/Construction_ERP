@@ -75,6 +75,18 @@ class InventoryLoanApprovalController extends Controller
                 $loan->employee->user->notify(new InventoryLoanStatusNotification($loan, 'status_change'));
             }
 
+            // Notify Inventory Managers
+            $inventoryManagers = \App\Models\User::role('InventoryManager')->get();
+            if ($inventoryManagers->isNotEmpty()) {
+                Notification::send($inventoryManagers, new InventoryLoanStatusNotification($loan, 'status_update'));
+            }
+
+            // Clear notification for admin
+            auth()->user()->unreadNotifications()
+                ->where('data->loan_id', $loan->id)
+                ->get()
+                ->markAsRead();
+
             return back()->with('status', 'Loan approved and item quantity updated.');
         });
     }
@@ -99,6 +111,18 @@ class InventoryLoanApprovalController extends Controller
         if ($loan->employee && $loan->employee->user) {
             $loan->employee->user->notify(new InventoryLoanStatusNotification($loan, 'status_change'));
         }
+
+        // Notify Inventory Managers
+        $inventoryManagers = \App\Models\User::role('InventoryManager')->get();
+        if ($inventoryManagers->isNotEmpty()) {
+            Notification::send($inventoryManagers, new InventoryLoanStatusNotification($loan, 'status_update'));
+        }
+
+        // Clear notification for admin
+        auth()->user()->unreadNotifications()
+            ->where('data->loan_id', $loan->id)
+            ->get()
+            ->markAsRead();
 
         return back()->with('status', 'Loan request rejected.');
     }

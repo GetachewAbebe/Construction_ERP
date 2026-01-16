@@ -39,6 +39,21 @@ class InventoryLoanStatusNotification extends Notification
             ];
         }
 
+        if ($this->type === 'status_update') {
+            $name = $this->loan->employee->user->name ?? $this->loan->employee->name ?? 'An employee';
+            
+            return [
+                'type' => 'inventory_status',
+                'title' => "Inventory Request " . ucfirst($this->loan->status),
+                'message' => "{$name}'s request for {$this->loan->item->name} has been {$this->loan->status}.",
+                'loan_id' => $this->loan->id,
+                'url' => route('inventory.loans.index'),
+                'icon' => $this->loan->status === 'approved' ? 'bi-patch-check' : 'bi-patch-exclamation',
+                'color' => $this->loan->status === 'approved' ? 'success' : 'danger',
+                'priority' => 'medium'
+            ];
+        }
+
         $color = $this->loan->status === 'approved' ? 'success' : 'danger';
         return [
             'type' => 'inventory_status',

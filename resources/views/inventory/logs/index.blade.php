@@ -1,103 +1,112 @@
 @extends('layouts.app')
-@section('title', 'Inventory Audit Trail')
+@section('title', 'Inventory Audit Trail | Natanem Engineering')
 
 @section('content')
-<div class="container py-4">
-    {{-- HEADER --}}
-    <div class="row mb-4">
-        <div class="col d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-            <div>
-                <h1 class="h4 mb-1 text-erp-deep">Inventory Audit Trail</h1>
-                <p class="text-muted small mb-0">
-                    Track every quantity change, who made it, and the reason for the adjustment.
-                </p>
-            </div>
-            <a href="{{ route('inventory.dashboard') }}" class="btn btn-sm btn-outline-secondary">
-                Back to Dashboard
-            </a>
-        </div>
+<div class="row align-items-center mb-4 stagger-entrance">
+    <div class="col">
+        <h1 class="h3 mb-1 fw-800 text-erp-deep">Inventory Audit Trail</h1>
+        <p class="text-muted mb-0">Complete historical record of stock movements and adjustments.</p>
     </div>
+    <div class="col-auto">
+        <a href="{{ route('inventory.items.index') }}" class="btn btn-white rounded-pill px-4 shadow-sm border-0">
+            <i class="bi bi-arrow-left me-2"></i>Inventory Overview
+        </a>
+    </div>
+</div>
 
-    {{-- LOGS TABLE --}}
-    <div class="row">
-        <div class="col">
-            <div class="card shadow-soft border-0">
-                <div class="card-body">
-                    
-                    <div class="table-responsive">
-                        <table class="table table-sm align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th scope="col" style="width: 15%">Date & Time</th>
-                                    <th scope="col">Item</th>
-                                    <th scope="col">User</th>
-                                    <th scope="col" class="text-center">Change</th>
-                                    <th scope="col" class="text-center">Result</th>
-                                    <th scope="col">Reason / Remarks</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($logs as $log)
-                                    <tr>
-                                        <td class="small text-muted">
-                                            {{ $log->created_at->format('Y-m-d H:i:s') }}
-                                        </td>
-                                        <td>
-                                            <div class="fw-semibold">
-                                                {{ $log->item->name ?? 'Deleted Item' }}
-                                            </div>
-                                            @if($log->item)
-                                                <div class="small text-muted">{{ $log->item->item_no }}</div>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div class="small fw-medium">{{ $log->user->name ?? 'System' }}</div>
-                                            <div class="text-muted" style="font-size: 0.75rem;">{{ $log->user->email ?? '' }}</div>
-                                        </td>
-                                        <td class="text-center">
-                                            @if($log->change_amount > 0)
-                                                <span class="badge bg-success-subtle text-success fw-bold">
-                                                    +{{ $log->change_amount }}
-                                                </span>
-                                            @elseif($log->change_amount < 0)
-                                                <span class="badge bg-danger-subtle text-danger fw-bold">
-                                                    {{ $log->change_amount }}
-                                                </span>
-                                            @else
-                                                <span class="badge bg-light text-muted">0</span>
-                                            @endif
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="small text-muted" style="text-decoration: line-through;">{{ $log->previous_quantity }}</div>
-                                            <div class="fw-bold text-erp-deep">{{ $log->new_quantity }}</div>
-                                        </td>
-                                        <td>
-                                            <div class="badge bg-info-subtle text-erp-deep small mb-1">
-                                                {{ ucfirst($log->reason) }}
-                                            </div>
-                                            @if($log->remarks)
-                                                <div class="small text-muted">{{ $log->remarks }}</div>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center text-muted py-5">
-                                            No logs found in the audit trail.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {{-- PAGINATION --}}
-                    <div class="mt-4 d-flex justify-content-end">
-                        {{ $logs->links() }}
-                    </div>
+<div class="card hardened-glass border-0 overflow-hidden shadow-lg stagger-entrance">
+    <div class="card-body p-0">
+        <div class="p-4 bg-light-soft border-bottom d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+                <div class="avatar-sm bg-white shadow-sm rounded-circle text-primary d-flex align-items-center justify-content-center">
+                    <i class="bi bi-clock-history fs-5"></i>
+                </div>
+                <div>
+                    <h6 class="fw-800 text-erp-deep mb-0">Transaction Log</h6>
+                    <small class="text-muted">Showing latest stock activities</small>
                 </div>
             </div>
+            <div class="badge bg-white text-muted border rounded-pill px-3 py-2">
+                Total Records: {{ $logs->total() }}
+            </div>
         </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light-soft text-erp-deep">
+                    <tr>
+                        <th class="ps-4">Timestamp</th>
+                        <th>Item Details</th>
+                        <th>Performed By</th>
+                        <th class="text-center">Adjustment</th>
+                        <th class="text-center">Balance</th>
+                        <th class="pe-4">Context</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($logs as $log)
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-bold text-dark">{{ $log->created_at->format('M d, Y') }}</div>
+                                <div class="small text-muted">{{ $log->created_at->format('H:i:s') }}</div>
+                            </td>
+                            <td>
+                                <div class="fw-700 text-erp-deep">{{ optional($log->item)->name ?? 'Archived Item' }}</div>
+                                <div class="x-small text-muted fw-bold font-monospace">{{ optional($log->item)->item_no ?? '---' }}</div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="avatar-xs bg-light text-muted rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 10px;">
+                                        {{ substr(optional($log->user)->name ?? 'S', 0, 1) }}
+                                    </div>
+                                    <span class="small fw-600 text-dark">{{ optional($log->user)->name ?? 'System Process' }}</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                @if($log->change_amount > 0)
+                                    <span class="badge bg-success-soft text-success rounded-pill px-3 py-1 border-0 fw-bold">
+                                        +{{ $log->change_amount }}
+                                    </span>
+                                @elseif($log->change_amount < 0)
+                                    <span class="badge bg-danger-soft text-danger rounded-pill px-3 py-1 border-0 fw-bold">
+                                        {{ $log->change_amount }}
+                                    </span>
+                                @else
+                                    <span class="badge bg-light text-muted rounded-pill px-3 py-1 border fw-bold">0</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex flex-column align-items-center">
+                                    <span class="fw-800 text-dark">{{ $log->new_quantity }}</span>
+                                    <span class="x-small text-muted" style="text-decoration: line-through;">{{ $log->previous_quantity }}</span>
+                                </div>
+                            </td>
+                            <td class="pe-4">
+                                <div class="badge bg-light border text-dark mb-1">{{ ucfirst(str_replace('_', ' ', $log->reason)) }}</div>
+                                @if($log->remarks)
+                                    <div class="small text-muted text-truncate" style="max-width: 250px;" title="{{ $log->remarks }}">
+                                        {{ $log->remarks }}
+                                    </div>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <i class="bi bi-clock-history fs-1 text-muted opacity-25"></i>
+                                <div class="text-muted italic mt-3">No activity logs recorded.</div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if($logs->hasPages())
+            <div class="card-footer border-0 bg-white p-4">
+                {{ $logs->links() }}
+            </div>
+        @endif
     </div>
 </div>
 @endsection

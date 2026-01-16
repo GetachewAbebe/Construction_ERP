@@ -13,9 +13,9 @@ class RolesAndAdminSeeder extends Seeder
     {
         foreach ([
             'Administrator',
-            'Human Resource Manager',
-            'Inventory Manager',
-            'Financial Manager',
+            'HumanResourceManager',
+            'InventoryManager',
+            'FinancialManager',
         ] as $name) {
             Role::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
         }

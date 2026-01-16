@@ -69,13 +69,43 @@
           box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
       }
 
+      .btn-erp-deep {
+          background: var(--erp-deep) !important;
+          color: #ffffff !important;
+          border: none !important;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          box-shadow: 0 4px 10px rgba(6, 78, 59, 0.15);
+      }
+      .btn-erp-deep:hover {
+          background: var(--erp-primary) !important;
+          color: #ffffff !important;
+          transform: translateY(-2px);
+          box-shadow: 0 8px 15px rgba(6, 78, 59, 0.2);
+      }
+
       .bg-black-20 { background: rgba(0,0,0,0.2); }
       .border-white-10 { border-color: rgba(255, 255, 255, 0.1) !important; }
 
       .hardened-glass:hover, .glass-card-global:hover {
-          transform: translateY(-12px) scale(1.01);
+          transform: translateY(-5px);
           box-shadow: 0 25px 50px rgba(0,0,0,0.1);
           border-color: var(--erp-primary);
+      }
+
+      /* High Contrast Button for Glass Backgrounds */
+      .btn-white {
+          background: #ffffff !important;
+          color: var(--erp-deep) !important;
+          border: 1px solid rgba(0,0,0,0.1) !important;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+          transition: all 0.2s ease;
+      }
+      .btn-white:hover {
+          background: #f8fafc !important;
+          color: var(--erp-primary) !important;
+          border-color: var(--erp-primary) !important;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 10px rgba(0,0,0,0.08);
       }
 
       .metric-icon {
@@ -502,6 +532,7 @@
       .dropdown-item {
           font-size: .85rem;
           font-weight: 500;
+          color: var(--erp-deep) !important; /* Force dark text */
           border-radius: 8px;
           padding: 0.6rem 1rem;
           transition: all 0.2s ease;
@@ -617,6 +648,22 @@
 </head>
 <body class="bg-light">
 
+{{-- Premium Toast Notifications --}}
+<div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 9999;">
+    <div id="erpToast" class="toast hardened-glass border-0" role="alert" aria-live="assertive" aria-atomic="true" style="background: rgba(255,255,255,0.9); backdrop-filter: blur(20px);">
+        <div class="d-flex align-items-center p-3">
+            <div id="toastIconContainer" class="me-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                <i id="toastIcon" class="bi fs-5"></i>
+            </div>
+            <div class="flex-grow-1">
+                <h6 id="toastTitle" class="mb-0 fw-800 text-erp-deep">System Notification</h6>
+                <p id="toastMessage" class="mb-0 small text-muted"></p>
+            </div>
+            <button type="button" class="btn-close ms-2" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
 {{-- Global Command Palette --}}
 <div id="commandPalette" class="command-palette-overlay">
     <div class="command-palette-modal">
@@ -665,9 +712,14 @@
       @php
           $unreadNotifications = Auth::user()->unreadNotifications;
           $totalUnread = $unreadNotifications->count();
-          $hrCount = $unreadNotifications->whereIn('data.type', ['leave_request', 'leave_status'])->count();
-          $invCount = $unreadNotifications->whereIn('data.type', ['inventory_request', 'inventory_status'])->count();
-          $finCount = $unreadNotifications->whereIn('data.type', ['expense_request', 'expense_status'])->count();
+          $hrCount     = Auth::user()->getUnreadCountByModule('hr');
+          $invCount    = Auth::user()->getUnreadCountByModule('inventory');
+          $finCount    = Auth::user()->getUnreadCountByModule('finance');
+
+          // Granular counts for sub-menus
+          $leaveReqCount   = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') === 'leave_request')->count();
+          $inventoryReqCount = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') === 'inventory_request')->count();
+          $expenseReqCount = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') === 'expense_request')->count();
       @endphp
 
 
@@ -693,8 +745,12 @@
             <div class="ms-1 ps-3 border-start border-white-10 mb-2">
                 <a href="{{ route('admin.hr') }}" class="sidebar-sublink {{ request()->routeIs('admin.hr') ? 'text-white fw-bold' : '' }}">Dashboard</a>
                 <a href="{{ route('admin.hr.employees.index') }}" class="sidebar-sublink {{ request()->routeIs('admin.hr.employees.*') ? 'text-white fw-bold' : '' }}">Employees</a>
-                <a href="{{ route('admin.hr.leaves.index') }}" class="sidebar-sublink {{ request()->routeIs('admin.hr.leaves.*') ? 'text-white fw-bold' : '' }}">Leave Requests</a>
-                <a href="{{ route('admin.hr.leaves.approved') }}" class="sidebar-sublink {{ request()->routeIs('admin.hr.leaves.approved') ? 'text-white fw-bold' : '' }}">Approved Leaves</a>
+                <a href="{{ route('admin.hr.leaves.index') }}" class="sidebar-sublink d-flex align-items-center justify-content-between {{ request()->routeIs('admin.hr.leaves.*') ? 'text-white fw-bold' : '' }}">
+                    <span>Leave Management</span>
+                    @if($leaveReqCount > 0)
+                        <span class="badge bg-danger rounded-pill x-small">{{ $leaveReqCount }}</span>
+                    @endif
+                </a>
                 <a href="{{ route('admin.hr.attendance.index') }}" class="sidebar-sublink {{ request()->routeIs('admin.hr.attendance.*') ? 'text-white fw-bold' : '' }}">Attendance</a>
             </div>
         </div>
@@ -712,7 +768,12 @@
             <div class="ms-1 ps-3 border-start border-white-10 mb-2">
                  <a href="{{ route('admin.inventory') }}" class="sidebar-sublink {{ request()->routeIs('admin.inventory') ? 'text-white fw-bold' : '' }}">Dashboard</a>
                  <a href="{{ route('admin.inventory.items.index') }}" class="sidebar-sublink {{ request()->routeIs('admin.inventory.items.*') ? 'text-white fw-bold' : '' }}">Items Catalogue</a>
-                 <a href="{{ route('admin.inventory.loans.index') }}" class="sidebar-sublink {{ request()->routeIs('admin.inventory.loans.*') ? 'text-white fw-bold' : '' }}">Lending Requests</a>
+                 <a href="{{ route('admin.inventory.loans.index') }}" class="sidebar-sublink d-flex align-items-center justify-content-between {{ request()->routeIs('admin.inventory.loans.*') ? 'text-white fw-bold' : '' }}">
+                     <span>Lending Requests</span>
+                     @if($inventoryReqCount > 0)
+                        <span class="badge bg-danger rounded-pill x-small">{{ $inventoryReqCount }}</span>
+                     @endif
+                 </a>
                  <a href="{{ route('admin.inventory.logs.index') }}" class="sidebar-sublink {{ request()->routeIs('admin.inventory.logs.*') ? 'text-white fw-bold' : '' }}">Audit Logs</a>
             </div>
         </div>
@@ -730,7 +791,12 @@
             <div class="ms-1 ps-3 border-start border-white-10 mb-2">
                  <a href="{{ route('admin.finance') }}" class="sidebar-sublink {{ request()->routeIs('admin.finance') ? 'text-white fw-bold' : '' }}">Dashboard</a>
                  <a href="{{ route('admin.finance.projects.index') }}" class="sidebar-sublink {{ request()->routeIs('admin.finance.projects.*') ? 'text-white fw-bold' : '' }}">Projects</a>
-                 <a href="{{ route('admin.finance.expenses.index') }}" class="sidebar-sublink {{ request()->routeIs('admin.finance.expenses.*') ? 'text-white fw-bold' : '' }}">Expenses</a>
+                 <a href="{{ route('admin.finance.expenses.index') }}" class="sidebar-sublink d-flex align-items-center justify-content-between {{ request()->routeIs('admin.finance.expenses.*') ? 'text-white fw-bold' : '' }}">
+                     <span>Expenses</span>
+                     @if($expenseReqCount > 0)
+                        <span class="badge bg-danger rounded-pill x-small">{{ $expenseReqCount }}</span>
+                     @endif
+                 </a>
             </div>
         </div>
 
@@ -743,6 +809,8 @@
             <div class="ms-1 ps-3 border-start border-white-10 mb-2">
                 <a href="{{ route('admin.users.index') }}" class="sidebar-sublink {{ request()->routeIs('admin.users.*') ? 'text-white fw-bold' : '' }}">System Users</a>
                 <a href="{{ route('admin.attendance-settings.index') }}" class="sidebar-sublink {{ request()->routeIs('admin.attendance-settings.*') ? 'text-white fw-bold' : '' }}">Configuration</a>
+                <a href="{{ route('admin.activity-logs') }}" class="sidebar-sublink {{ request()->routeIs('admin.activity-logs') ? 'text-white fw-bold' : '' }}">Audit Trails</a>
+                <a href="{{ route('admin.trash.index') }}" class="sidebar-sublink {{ request()->routeIs('admin.trash.index') ? 'text-white fw-bold' : '' }}">Trash Recovery</a>
             </div>
         </div>
 
@@ -758,14 +826,11 @@
             <a href="{{ route('hr.employees.index') }}" class="sidebar-link {{ request()->routeIs('hr.employees.*') ? 'active' : '' }}">
                 <i class="bi bi-people"></i> <span>Employees</span>
             </a>
-            <a href="{{ route('hr.leaves.index') }}" class="sidebar-link {{ request()->routeIs('hr.leaves.index') ? 'active' : '' }}">
-                <i class="bi bi-calendar-check"></i> <span>Leave Requests</span>
-                @if($hrCount > 0)
-                    <span class="badge bg-danger rounded-pill x-small ms-auto">{{ $hrCount }}</span>
+            <a href="{{ route('hr.leaves.index') }}" class="sidebar-link {{ request()->routeIs('hr.leaves.*') ? 'active' : '' }}">
+                <i class="bi bi-calendar-check"></i> <span>Leave Management</span>
+                @if($leaveReqCount > 0)
+                    <span class="badge bg-danger rounded-pill x-small ms-auto">{{ $leaveReqCount }}</span>
                 @endif
-            </a>
-            <a href="{{ route('hr.leaves.approved') }}" class="sidebar-link {{ request()->routeIs('hr.leaves.approved') ? 'active' : '' }}">
-                <i class="bi bi-check-circle"></i> <span>Approved Leaves</span>
             </a>
             <a href="{{ route('hr.attendance.index') }}" class="sidebar-link {{ request()->routeIs('hr.attendance.*') ? 'active' : '' }}">
                 <i class="bi bi-clock-history"></i> <span>Attendance</span>
@@ -781,8 +846,13 @@
             </a>
             <a href="{{ route('inventory.loans.index') }}" class="sidebar-link {{ request()->routeIs('inventory.loans.*') ? 'active' : '' }}">
                 <i class="bi bi-arrow-left-right"></i> <span>Item Lending</span>
-                @if($invCount > 0)
-                    <span class="badge bg-danger rounded-pill x-small ms-auto">{{ $invCount }}</span>
+                @php
+                    // For managers, we show total module count on main link if they want, 
+                    // or specific counts for actions. Let's use inventory_request here.
+                    $invSubCount = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') === 'inventory_request')->count();
+                @endphp
+                @if($invSubCount > 0)
+                    <span class="badge bg-danger rounded-pill x-small ms-auto">{{ $invSubCount }}</span>
                 @endif
             </a>
             <a href="{{ route('inventory.logs.index') }}" class="sidebar-link {{ request()->routeIs('inventory.logs.*') ? 'active' : '' }}">
@@ -799,30 +869,17 @@
             </a>
             <a href="{{ route('finance.expenses.index') }}" class="sidebar-link {{ request()->routeIs('finance.expenses.*') ? 'active' : '' }}">
                 <i class="bi bi-receipt"></i> <span>Expenses</span>
-                @if($finCount > 0)
-                    <span class="badge bg-danger rounded-pill x-small ms-auto">{{ $finCount }}</span>
+                @php
+                    $finSubCount = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') === 'expense_request')->count();
+                @endphp
+                @if($finSubCount > 0)
+                    <span class="badge bg-danger rounded-pill x-small ms-auto">{{ $finSubCount }}</span>
                 @endif
             </a>
         @endif
 
       @endrole
 
-      {{-- Notification Link (Direct Page) --}}
-      <div class="px-3 mt-auto mb-3">
-          <a href="{{ route('notifications.index') }}" class="sidebar-link d-flex align-items-center gap-3 w-100 {{ request()->routeIs('notifications.index') ? 'active' : '' }} {{ $totalUnread > 0 ? 'text-white' : 'opacity-75' }}" 
-             style="background: rgba(255,255,255,{{ $totalUnread > 0 ? '0.12' : '0.05' }});">
-              <div class="position-relative">
-                  <i class="bi bi-bell-fill fs-5 mb-0"></i>
-                  @if($totalUnread > 0)
-                      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.55rem; padding: 0.2rem 0.4rem; border: 2px solid var(--erp-glass-dark);">
-                          {{ $totalUnread }}
-                      </span>
-                  @endif
-              </div>
-              <span class="fw-bold fs-6">Notifications</span>
-              <i class="bi bi-chevron-right ms-auto x-small opacity-50"></i>
-          </a>
-      </div>
     </div>
 
     <div class="sidebar-footer">
@@ -863,20 +920,7 @@
                 </li>
                 {{-- My Profile --}}
                 <li>
-                    @php
-                        $profileRoute = '#';
-                        if(Auth::user()->hasRole('Administrator')) {
-                            $profileRoute = route('admin.users.edit', Auth::id());
-                        } elseif(Auth::user()->hasRole('HumanResourceManager') && optional(Auth::user()->employee)->id) {
-                            $profileRoute = route('hr.employees.edit', Auth::user()->employee->id);
-                        } else {
-                            // Fallback for roles without explicit profile edit routes
-                             if(Auth::user()->hasRole('InventoryManager')) { $profileRoute = route('inventory.dashboard'); }
-                             elseif(Auth::user()->hasRole('FinancialManager')) { $profileRoute = route('finance.dashboard'); }
-                             else { $profileRoute = route('home'); }
-                        }
-                    @endphp
-                    <a class="dropdown-item rounded-3 d-flex align-items-center gap-2 py-2" href="{{ $profileRoute }}">
+                    <a class="dropdown-item rounded-3 d-flex align-items-center gap-2 py-2" href="{{ Auth::user()->getProfileUrl() }}">
                         @if(optional(Auth::user()->employee)->profile_picture)
                             <img src="{{ asset('storage/' . Auth::user()->employee->profile_picture) }}" alt="Img" 
                                  class="rounded-circle border border-primary-subtle" 
@@ -991,7 +1035,9 @@
         { name: 'Finance Center', url: '{{ route("finance.dashboard") }}', icon: 'bi-currency-dollar' },
         { name: 'Admin Console', url: '{{ route("admin.dashboard") }}', icon: 'bi-shield-lock' },
         { name: 'New Employee Onboarding', url: '{{ route("hr.employees.create") }}', icon: 'bi-person-plus' },
-        { name: 'System Users', url: '{{ route("admin.users.index") }}', icon: 'bi-person-gear' }
+        { name: 'System Users', url: '{{ route("admin.users.index") }}', icon: 'bi-person-gear' },
+        { name: 'Audit Trails (System Logs)', url: '{{ route("admin.activity-logs") }}', icon: 'bi-journal-text' },
+        { name: 'Trash & Data Recovery', url: '{{ route("admin.trash.index") }}', icon: 'bi-trash-fill' }
     ];
 
     const cmdInput = document.getElementById('cmdInput');
@@ -1060,6 +1106,48 @@
         
         modal.show();
     }
+
+    // Premium Toast Helper
+    function showToast(message, type = 'success', title = 'System Update') {
+        const toastEl = document.getElementById('erpToast');
+        const iconEl = document.getElementById('toastIcon');
+        const iconContainer = document.getElementById('toastIconContainer');
+        const titleEl = document.getElementById('toastTitle');
+        const messageEl = document.getElementById('toastMessage');
+
+        // Reset classes
+        iconContainer.className = 'me-3 rounded-circle d-flex align-items-center justify-content-center ';
+        
+        if (type === 'success') {
+            iconContainer.classList.add('bg-success-soft', 'text-success');
+            iconEl.className = 'bi bi-check-circle-fill';
+        } else if (type === 'danger' || type === 'error') {
+            iconContainer.classList.add('bg-danger-soft', 'text-danger');
+            iconEl.className = 'bi bi-exclamation-triangle-fill';
+        } else {
+            iconContainer.classList.add('bg-primary-soft', 'text-primary');
+            iconEl.className = 'bi bi-info-circle-fill';
+        }
+
+        titleEl.innerText = title;
+        messageEl.innerText = message;
+
+        const toast = new bootstrap.Toast(toastEl, { delay: 5000 });
+        toast.show();
+    }
+
+    // Auto-show session flashes as toasts
+    document.addEventListener('DOMContentLoaded', function() {
+        @if(session('status'))
+            showToast("{{ session('status') }}", 'success', 'Success');
+        @endif
+        @if(session('error'))
+            showToast("{{ session('error') }}", 'danger', 'Error Occurred');
+        @endif
+        @if(session('success'))
+            showToast("{{ session('success') }}", 'success', 'Success');
+        @endif
+    });
   </script>
 
   @stack('scripts')

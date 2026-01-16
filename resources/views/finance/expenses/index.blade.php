@@ -1,194 +1,182 @@
 @extends('layouts.app')
-
-@section('title', 'Expenses - Natanem Engineering')
+@section('title', 'Financial Requisitions - Natanem Engineering')
 
 @section('content')
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 fw-bold mb-0">Financial Expenses</h1>
-            <p class="text-muted mb-0">Track all costs across projects and categories.</p>
-        </div>
-        <a href="{{ route('finance.expenses.create') }}" class="btn btn-primary rounded-pill px-4">
-            <i class="bi bi-plus-lg me-2"></i>Record Expense
+<div class="row align-items-center mb-4 stagger-entrance">
+    <div class="col">
+        <h1 class="h3 mb-1 fw-800 text-erp-deep">Financial Requisitions</h1>
+        <p class="text-muted mb-0">Monitor and track project expenditures in real-time.</p>
+    </div>
+    <div class="col-auto">
+        <a href="{{ route('finance.expenses.create') }}" class="btn btn-erp-deep rounded-pill px-4 shadow-sm border-0">
+            <i class="bi bi-plus-lg me-2"></i>New Requisition
         </a>
-    </div>
-
-    @if(session('status'))
-        <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-sm mb-4" role="alert">
-            {{ session('status') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
-    {{-- Filters --}}
-    <div class="card border-0 shadow-sm rounded-4 mb-4">
-        <div class="card-body">
-            <form action="{{ route('finance.expenses.index') }}" method="GET" class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label small fw-bold text-muted">Project</label>
-                    <select name="project_id" class="form-select border-light bg-light rounded-3">
-                        <option value="">All Projects</option>
-                        @foreach($projects as $p)
-                            <option value="{{ $p->id }}" {{ request('project_id') == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label small fw-bold text-muted">Category</label>
-                    <select name="category" class="form-select border-light bg-light rounded-3">
-                        <option value="">All Categories</option>
-                        <option value="materials" {{ request('category') == 'materials' ? 'selected' : '' }}>Materials</option>
-                        <option value="labor" {{ request('category') == 'labor' ? 'selected' : '' }}>Labor</option>
-                        <option value="transport" {{ request('category') == 'transport' ? 'selected' : '' }}>Transport</option>
-                        <option value="equipment" {{ request('category') == 'equipment' ? 'selected' : '' }}>Equipment</option>
-                        <option value="other" {{ request('category') == 'other' ? 'selected' : '' }}>Other</option>
-                    </select>
-                </div>
-                <div class="col-md-5 d-flex align-items-end gap-2">
-                    <button type="submit" class="btn btn-dark rounded-3 px-4">Filter</button>
-                    <a href="{{ route('finance.expenses.index') }}" class="btn btn-outline-secondary rounded-3 px-4">Reset</a>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="bg-light">
-                    <tr>
-                        <th class="ps-4">Date</th>
-                        <th>Project</th>
-                        <th>Category</th>
-                        <th>Status</th>
-                        <th>Description</th>
-                        <th>Amount</th>
-                        <th class="text-end pe-4">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($expenses as $expense)
-                        <tr>
-                            <td class="ps-4">
-                                <div class="fw-bold">{{ $expense->expense_date->format('M d, Y') }}</div>
-                                <small class="text-muted">{{ $expense->user->name ?? 'System' }}</small>
-                            </td>
-                            <td>
-                                <a href="{{ route('finance.projects.show', $expense->project) }}" class="text-decoration-none fw-semibold">
-                                    {{ $expense->project->name }}
-                                </a>
-                            </td>
-                            <td>
-                                <span class="badge rounded-pill bg-light text-dark border px-3">
-                                    {{ ucfirst($expense->category) }}
-                                </span>
-                            </td>
-                            <td>
-                                @if($expense->status === 'approved')
-                                    <span class="badge rounded-pill bg-success-soft text-success px-3">
-                                        <i class="bi bi-check2-circle me-1"></i>Approved
-                                    </span>
-                                @elseif($expense->status === 'rejected')
-                                    <span class="badge rounded-pill bg-danger-soft text-danger px-3" title="Reason: {{ $expense->rejection_reason }}">
-                                        <i class="bi bi-x-circle me-1"></i>Rejected
-                                    </span>
-                                @else
-                                    <span class="badge rounded-pill bg-warning-soft text-warning px-3">
-                                        <i class="bi bi-clock me-1"></i>Pending
-                                    </span>
-                                @endif
-                            </td>
-                            <td>
-                                <div class="text-truncate" style="max-width: 250px;">
-                                    {{ $expense->description ?? 'No description' }}
-                                </div>
-                                @if($expense->reference_no)
-                                    <small class="text-muted mt-1 d-block"><i class="bi bi-receipt me-1"></i>{{ $expense->reference_no }}</small>
-                                @endif
-                            </td>
-                            <td class="fw-bold text-dark">
-                                ETB {{ number_format($expense->amount, 2) }}
-                            </td>
-                            <td class="text-end pe-4">
-                                <div class="d-flex gap-2 justify-content-end align-items-center">
-                                    @if($expense->status === 'pending')
-                                        @if(Auth::user()->hasRole('Administrator'))
-                                            <form method="POST" action="{{ route('admin.requests.finance.approve', $expense) }}" class="d-inline">
-                                                @csrf
-                                                <button type="submit" class="btn btn-sm btn-success rounded-pill px-3 fw-bold">Approve</button>
-                                            </form>
-                                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold" 
-                                                    data-bs-toggle="modal" data-bs-target="#rejectModal{{ $expense->id }}">Reject</button>
-                                        @else
-                                            <a href="{{ route('finance.expenses.edit', $expense) }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">Edit</a>
-                                        @endif
-                                    @endif
-
-                                    <a href="{{ route('finance.expenses.show', $expense) }}" class="btn btn-sm btn-erp-deep rounded-pill px-3 shadow-sm">
-                                        <i class="bi bi-file-earmark-text me-1"></i>Report
-                                    </a>
-                                </div>
-
-                                @if($expense->status !== 'pending')
-                                    <div class="text-muted mt-2" style="font-size: 0.7rem;">
-                                        <i class="bi bi-person-check-fill me-1"></i>
-                                        @if($expense->status === 'approved')
-                                            Approved by {{ $expense->approvedBy->name ?? 'Admin' }}
-                                        @else
-                                            Rejected by {{ $expense->rejectedBy->name ?? 'Admin' }}
-                                        @endif
-                                    </div>
-                                @endif
-
-                                {{-- Reject Modal --}}
-                                @if(Auth::user()->hasRole('Administrator') && $expense->status === 'pending')
-                                <div class="modal fade text-start" id="rejectModal{{ $expense->id }}" tabindex="-1" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content border-0 rounded-4 shadow-xl">
-                                            <form method="POST" action="{{ route('admin.requests.finance.reject', $expense) }}">
-                                                @csrf
-                                                <div class="modal-header border-0 pb-0">
-                                                    <h5 class="fw-800 text-erp-deep">Reject Expense</h5>
-                                                    <button type="button" class="btn-close" data-bs-close="modal"></button>
-                                                </div>
-                                                <div class="modal-body py-4">
-                                                    <p class="text-muted mb-4">Provide a reason for rejecting the ETB {{ number_format($expense->amount, 2) }} expense.</p>
-                                                    <label class="form-label fw-bold small text-uppercase mb-2">Rejection Reason</label>
-                                                    <textarea name="rejection_reason" class="form-control rounded-3" rows="3" required placeholder="e.g. Unclear description..."></textarea>
-                                                </div>
-                                                <div class="modal-footer border-0 pt-0">
-                                                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
-                                                    <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold">Confirm Reject</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                                @endif
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="text-center py-5">
-                                <div class="text-muted">No expenses recorded matching your criteria.</div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        @if($expenses->hasPages())
-            <div class="card-footer bg-white border-0 py-3">
-                {{ $expenses->links() }}
-            </div>
-        @endif
     </div>
 </div>
 
-<style>
-    .bg-success-soft { background-color: rgba(25, 135, 84, 0.1); color: #198754; }
-    .bg-warning-soft { background-color: rgba(255, 193, 7, 0.1); color: #ffc107; }
-    .bg-danger-soft { background-color: rgba(220, 53, 69, 0.1); color: #dc3545; }
-</style>
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show hardened-glass border-0 shadow-sm stagger-entrance" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show hardened-glass border-0 shadow-sm stagger-entrance" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+<div class="card hardened-glass border-0 mb-4 stagger-entrance shadow-sm">
+    <div class="card-body p-4">
+        <form action="{{ route('finance.expenses.index') }}" method="GET" class="row g-3">
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label small fw-800 text-muted text-uppercase">Search</label>
+                <div class="input-group bg-light-soft rounded-pill overflow-hidden shadow-sm border-0">
+                    <span class="input-group-text bg-transparent border-0 text-muted ps-3"><i class="bi bi-search"></i></span>
+                    <input type="text" name="q" value="{{ request('q') }}" class="form-control border-0 bg-transparent py-2" placeholder="Desc, ID, or User...">
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label small fw-800 text-muted text-uppercase">Project Alignment</label>
+                <select name="project_id" class="form-select border-0 bg-light-soft rounded-pill shadow-sm py-2">
+                    <option value="">All Projects</option>
+                    @foreach($projects as $p)
+                        <option value="{{ $p->id }}" @selected(request('project_id') == $p->id)>{{ $p->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-lg-2 col-md-6">
+                <label class="form-label small fw-800 text-muted text-uppercase">Status</label>
+                <select name="status" class="form-select border-0 bg-light-soft rounded-pill shadow-sm py-2">
+                    <option value="">All Statuses</option>
+                    <option value="pending" @selected(request('status') == 'pending')>Pending</option>
+                    <option value="approved" @selected(request('status') == 'approved')>Approved</option>
+                    <option value="rejected" @selected(request('status') == 'rejected')>Rejected</option>
+                </select>
+            </div>
+            <div class="col-lg-2 col-md-6">
+                <label class="form-label small fw-800 text-muted text-uppercase">Category</label>
+                <select name="category" class="form-select border-0 bg-light-soft rounded-pill shadow-sm py-2">
+                    <option value="">All Categories</option>
+                    <option value="materials" @selected(request('category') == 'materials')>Materials</option>
+                    <option value="labor" @selected(request('category') == 'labor')>Labor</option>
+                    <option value="transport" @selected(request('category') == 'transport')>Transport</option>
+                    <option value="equipment" @selected(request('category') == 'equipment')>Equipment</option>
+                    <option value="other" @selected(request('category') == 'other')>Other</option>
+                </select>
+            </div>
+            <div class="col-lg-2 col-md-12 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-erp-deep rounded-pill px-4 flex-grow-1 border-0 shadow-sm fw-bold">Filter</button>
+                @if(request()->anyFilled(['q', 'project_id', 'category', 'status']))
+                    <a href="{{ route('finance.expenses.index') }}" class="btn btn-white rounded-circle shadow-sm border-0" title="Reset Filters">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                @endif
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card hardened-glass border-0 overflow-hidden stagger-entrance shadow-lg">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light-soft text-erp-deep">
+                <tr>
+                    <th class="ps-4 py-3">Transaction Info</th>
+                    <th class="py-3">Project & Description</th>
+                    <th class="py-3">Category</th>
+                    <th class="py-3 text-center">Authorization</th>
+                    <th class="py-3">Valuation</th>
+                    <th class="text-end pe-4 py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($expenses as $expense)
+                    <tr>
+                        <td class="ps-4">
+                            <div class="fw-800 text-erp-deep fs-6">{{ $expense->expense_date->format('d M, Y') }}</div>
+                            <small class="text-muted d-flex align-items-center gap-1">
+                                <i class="bi bi-person-circle opacity-50"></i>
+                                {{ optional($expense->user)->name ?? 'System' }}
+                            </small>
+                        </td>
+                        <td>
+                            <div class="fw-600 text-dark">{{ optional($expense->project)->name ?? 'Unknown Project' }}</div>
+                            <small class="text-muted text-truncate d-block" style="max-width: 200px;">
+                                {{ Str::limit($expense->description ?? 'No details provided', 50) }}
+                            </small>
+                        </td>
+                        <td>
+                            <span class="badge bg-white text-erp-deep border shadow-sm rounded-pill px-3 py-1 fw-600 x-small font-monospace">
+                                {{ strtoupper($expense->category) }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            @php
+                                $statusClass = match($expense->status) {
+                                    'approved' => 'bg-success-soft text-success',
+                                    'rejected' => 'bg-danger-soft text-danger',
+                                    default => 'bg-warning-soft text-warning'
+                                };
+                                $statusIcon = match($expense->status) {
+                                    'approved' => 'bi-check-circle-fill',
+                                    'rejected' => 'bi-x-circle-fill',
+                                    default => 'bi-hourglass-split'
+                                };
+                            @endphp
+                            <span class="badge {{ $statusClass }} rounded-pill px-3 py-2 border-0 fw-700">
+                                <i class="bi {{ $statusIcon }} me-1"></i>
+                                {{ ucfirst($expense->status ?? 'pending') }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="fw-800 fs-6 text-erp-deep">
+                                <small class="text-muted fw-normal me-1">ETB</small>{{ number_format($expense->amount, 2) }}
+                            </div>
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="btn-group hardened-glass rounded-pill p-1 shadow-sm">
+                                <a href="{{ route('finance.expenses.show', $expense) }}" class="btn btn-sm btn-white rounded-pill px-3 border-0" title="View Ledger">
+                                    <i class="bi bi-eye-fill"></i>
+                                </a>
+                                @if($expense->status === 'pending')
+                                    <a href="{{ route('finance.expenses.edit', $expense) }}" class="btn btn-sm btn-white rounded-pill px-3 border-0 text-primary" title="Modify">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+                                @endif
+                                
+                                @if(Auth::user()->hasAnyRole(['Administrator', 'FinancialManager']) && $expense->status === 'pending')
+                                    <button type="button" class="btn btn-sm btn-white rounded-pill px-3 border-0 text-success" 
+                                            onclick="if(confirm('Authorize this expense?')) document.getElementById('approve-{{ $expense->id }}').submit()" title="Approve">
+                                        <i class="bi bi-check-lg"></i>
+                                        <form id="approve-{{ $expense->id }}" action="{{ route('finance.expenses.approve', $expense) }}" method="POST" class="d-none">@csrf</form>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-white rounded-pill px-3 border-0 text-danger" 
+                                            onclick="if(confirm('Reject this transaction?')) document.getElementById('reject-{{ $expense->id }}').submit()" title="Reject">
+                                        <i class="bi bi-x-lg"></i>
+                                        <form id="reject-{{ $expense->id }}" action="{{ route('finance.expenses.reject', $expense) }}" method="POST" class="d-none">@csrf</form>
+                                    </button>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <i class="bi bi-receipt fs-1 text-muted opacity-25"></i>
+                            <p class="text-muted italic mt-3 mb-0">No financial requisitions match your criteria.</p>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="px-4 py-3 border-top border-light">
+        {{ $expenses->withQueryString()->links() }}
+    </div>
+</div>
 @endsection
+

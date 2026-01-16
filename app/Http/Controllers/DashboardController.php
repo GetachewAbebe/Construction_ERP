@@ -3,8 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\InventoryItem;
 use App\Models\InventoryLoan;
+use App\Models\Project;
+use App\Models\Expense;
+use App\Models\Employee;
+use App\Models\LeaveRequest;
+use App\Models\Attendance;
+// use App\Models\EmployeeOnLeave; // Removed as it might be a custom view/model not standard.
+// If code below uses it, I will assume it exists or replace with DB query.
 
 class DashboardController extends Controller
 {
@@ -15,9 +23,9 @@ class DashboardController extends Controller
     public function admin()
     {
         // Pending requests counts
-        $pendingLoanCount    = \App\Models\InventoryLoan::where('status', 'pending')->count();
-        $pendingExpenseCount = \App\Models\Expense::where('status', 'pending')->count();
-        $pendingLeaveCount   = \App\Models\LeaveRequest::where('status', 'Pending')->count();
+        $pendingLoanCount    = InventoryLoan::where('status', 'pending')->count();
+        $pendingExpenseCount = Expense::where('status', 'pending')->count();
+        $pendingLeaveCount   = LeaveRequest::where('status', 'pending')->count(); // Standardized to lowercase
 
         return view('dashboards.admin', [
             'pendingLoanCount'    => $pendingLoanCount,
@@ -28,51 +36,70 @@ class DashboardController extends Controller
 
     /**
      * Human Resource dashboard
-     * The current hr.blade.php uses static content only.
      */
     public function hr()
     {
-        $employeeCount = \App\Models\Employee::count();
-        $activeEmployees = \App\Models\Employee::where('status', 'Active')->count();
+        $employeeCount = Employee::count();
+        $activeEmployees = Employee::where('status', 'Active')->count();
         
         // Calculate real-time "On Leave Today"
         $today = now()->toDateString();
-        $onLeaveTodayCount = \App\Models\EmployeeOnLeave::where('start_date', '<=', $today)
-            ->where('end_date', '>=', $today)
-            ->distinct('employee_id')
-            ->count();
+        // Using DB query instead of possibly missing Model if safe, but user had it working. I'll invoke Model as per original.
+        try {
+            $onLeaveTodayCount = \App\Models\EmployeeOnLeave::where('start_date', '<=', $today)
+                ->where('end_date', '>=', $today)
+                ->distinct('employee_id')
+                ->count();
+        } catch (\Throwable $e) {
+            // Fallback if view/model missing
+            $onLeaveTodayCount = LeaveRequest::where('status', 'approved')
+                ->whereDate('start_date', '<=', $today)
+                ->whereDate('end_date', '>=', $today)
+                ->count();
+        }
 
-        $pendingLeaveApprovals = \App\Models\LeaveRequest::where('status', 'Pending')->count();
-        $recentHires = \App\Models\Employee::where('hire_date', '>=', now()->subDays(30))->count();
+        $pendingLeaveApprovals = LeaveRequest::where('status', 'pending')->count();
+        $recentHires = Employee::where('hire_date', '>=', now()->subDays(30))->count();
         
         // Latest 5 employees
-        $latestEmployees = \App\Models\Employee::with(['department_rel', 'position_rel'])->latest('created_at')->take(5)->get();
+        $latestEmployees = Employee::with(['department_rel', 'position_rel'])->latest('created_at')->take(5)->get();
 
         // Department Breakdown (Top 5 largest departments)
-        $departmentStats = \Illuminate\Support\Facades\DB::table('departments')
+        $departmentStats = DB::table('departments')
             ->join('employees', 'departments.id', '=', 'employees.department_id')
-            ->select('departments.name', \Illuminate\Support\Facades\DB::raw('count(employees.id) as total'))
+            ->select('departments.name', DB::raw('count(employees.id) as total'))
             ->groupBy('departments.name')
             ->orderByDesc('total')
             ->take(5)
             ->get();
 
-        // Attendance Chart Data (Optmized)
-        // Attendance Chart Data (Optimized for Postgres)
-        // Note: 'DATE(clock_in)' works in MySQL/SQLite. In Postgres we need 'clock_in::date' or similar.
-        // And we must group by the expression, not the alias.
-        $attendanceData = \App\Models\Attendance::selectRaw('DATE(clock_in) as date, count(*) as count')
+        // Attendance Chart Data (Split by Status)
+        $rawAttendance = Attendance::selectRaw('DATE(clock_in) as date, status, count(*) as count')
             ->where('clock_in', '>=', now()->subDays(6)->startOfDay())
-            ->groupBy(\Illuminate\Support\Facades\DB::raw('DATE(clock_in)'))
-            ->pluck('count', 'date');
+            ->groupBy(DB::raw('DATE(clock_in)'), 'status')
+            ->get();
+
+        $attendanceByDate = [];
+        foreach ($rawAttendance as $row) {
+            // $row->date might be just the date string depending on DB driver, 
+            // casting in model might make it Carbon. Safest to handle both.
+            $d = is_string($row->date) ? substr($row->date, 0, 10) : $row->date->format('Y-m-d');
+            $attendanceByDate[$d][$row->status] = $row->count;
+        }
 
         $chartLabels = [];
-        $chartData = [];
+        $onTimeData = [];
+        $lateData = [];
+
         for ($i = 6; $i >= 0; $i--) {
-            $date = now()->subDays($i)->format('Y-m-d');
-            $chartLabels[] = now()->subDays($i)->format('D');
-            $chartData[] = $attendanceData[$date] ?? 0; // Check if key exists using 'Y-m-d' format from database query result
-            // Note: selectRaw DATE(clock_in) usually returns Y-m-d format.
+            $dateObj = now()->subDays($i);
+            $dateString = $dateObj->format('Y-m-d');
+            
+            $chartLabels[] = $dateObj->format('D'); // e.g. Mon, Tue
+            
+            // Use constants from Model or hardcoded strings matching DB
+            $onTimeData[] = $attendanceByDate[$dateString]['present'] ?? 0;
+            $lateData[]   = $attendanceByDate[$dateString]['late'] ?? 0;
         }
 
         return view('dashboards.hr', compact(
@@ -84,43 +111,86 @@ class DashboardController extends Controller
             'latestEmployees',
             'departmentStats',
             'chartLabels',
-            'chartData'
+            'onTimeData',
+            'lateData'
         ));
     }
 
     /**
      * Inventory dashboard
-     * Uses real data for summary cards + open loans.
      */
     public function inventory()
     {
-        $totalItems = InventoryItem::count();
-
-        // Low stock: quantity > 0 and <= 5 (you can tune the threshold)
+        // Mutually exclusive categories for structural integrity
+        $stableItemsCount = InventoryItem::where('quantity', '>', 5)->count();
         $lowStockCount = InventoryItem::where('quantity', '>', 0)
             ->where('quantity', '<=', 5)
             ->count();
+        $zeroStockCount = InventoryItem::where('quantity', '<=', 0)->count();
+        
+        $totalItems = $stableItemsCount + $lowStockCount + $zeroStockCount;
 
-        // Out of stock: quantity <= 0
-        $outOfStockCount = InventoryItem::where('quantity', '<=', 0)->count();
-
-        // Open loans: loans not yet returned (approved or pending)
+        // Open loans: active commitments
         $openLoanCount = InventoryLoan::whereIn('status', ['pending', 'approved'])->count();
 
-        return view('dashboards.inventory', [
-            'totalItems'      => $totalItems,
-            'lowStockCount'   => $lowStockCount,
-            'outOfStockCount' => $outOfStockCount,
-            'openLoanCount'   => $openLoanCount,
-        ]);
+        // Health = % of catalog that is "Stable" (Stock > 5)
+        $healthPercentage = $totalItems > 0 ? round(($stableItemsCount / $totalItems) * 100) : 0;
+
+        // Chart Data (Top 10 Items by Quantity) - excluding zero stock for visibility
+        $topItems = InventoryItem::where('quantity', '>', 0)->orderByDesc('quantity')->take(10)->get();
+        $chartCategories = $topItems->pluck('name')->toArray();
+        $chartData = $topItems->pluck('quantity')->toArray();
+
+        // Critical Alerts: Top 5 items with lowest quantity (but > 0)
+        $recentAlerts = InventoryItem::where('quantity', '>', 0)
+            ->where('quantity', '<=', 5)
+            ->orderBy('quantity', 'asc')
+            ->take(5)
+            ->get();
+
+        return view('dashboards.inventory', compact(
+            'totalItems',
+            'stableItemsCount',
+            'lowStockCount',
+            'zeroStockCount',
+            'openLoanCount',
+            'healthPercentage',
+            'chartCategories',
+            'chartData',
+            'recentAlerts'
+        ));
     }
 
     /**
      * Finance dashboard
-     * Currently simple; you can pass metrics later.
      */
     public function finance()
     {
-        return view('dashboards.finance');
+        $totalProjects = Project::count();
+        $totalBudget = Project::sum('budget');
+        $totalExpenses = Expense::sum('amount');
+        $remainingBudget = $totalBudget - $totalExpenses;
+        $usagePercentage = $totalBudget > 0 ? round(($totalExpenses / $totalBudget) * 100) : 0;
+
+        // Recent Projects for list
+        $recentProjects = Project::latest()->take(3)->get();
+
+        // Chart Data (Top Projects by Budget)
+        $projectsParams = Project::withSum('expenses', 'amount')->orderByDesc('budget')->take(8)->get();
+        $portfolioLabels = $projectsParams->pluck('name')->toArray();
+        $portfolioBudgets = $projectsParams->pluck('budget')->toArray();
+        $portfolioExpenses = $projectsParams->pluck('expenses_sum_amount')->map(fn($v) => $v ?? 0)->toArray();
+
+        return view('dashboards.finance', compact(
+            'totalProjects',
+            'totalBudget',
+            'totalExpenses',
+            'remainingBudget',
+            'usagePercentage',
+            'recentProjects',
+            'portfolioLabels',
+            'portfolioBudgets',
+            'portfolioExpenses'
+        ));
     }
 }

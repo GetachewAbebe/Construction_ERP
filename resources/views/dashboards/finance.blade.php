@@ -2,55 +2,30 @@
 
 @section('title', 'Finance Overview | Natanem Engineering')
 
-@push('head')
-<style>
-    .metric-icon {
-        width: 64px;
-        height: 64px;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1.5rem;
-        background: var(--erp-primary);
-        color: white;
-        box-shadow: 0 10px 20px rgba(30, 64, 175, 0.2);
-    }
-</style>
-@endpush
-
 @section('content')
-<div class="py-4 px-2">
+<div class="py-4 px-2 stagger-entrance">
     {{-- Premium Header --}}
-        <h1 class="display-4 fw-800 text-erp-deep mb-2 tracking-tight">Finance Dashboard</h1>
-
-    @php
-        $totalProjects = \App\Models\Project::count();
-        $totalBudget = \App\Models\Project::sum('budget');
-        $totalExpenses = \App\Models\Expense::sum('amount');
-        $remainingBudget = $totalBudget - $totalExpenses;
-        $usagePercentage = $totalBudget > 0 ? round(($totalExpenses / $totalBudget) * 100) : 0;
-    @endphp
+    <h1 class="display-4 fw-800 text-erp-deep mb-2 tracking-tight">Finance Dashboard</h1>
 
     {{-- HIGHLIGHT METRICS --}}
     <div class="row g-4 mb-5">
         <div class="col-md-4">
-            <div class="hardened-glass stagger-entrance h-100">
-                <div class="metric-icon">
+            <div class="hardened-glass stagger-entrance h-100 p-4">
+                <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: var(--erp-primary);">
                     <i class="bi bi-diagram-3 fs-4"></i>
                 </div>
                 <h6 class="text-muted text-uppercase fw-bold small mb-1">Total Active Projects</h6>
                 <div class="h2 fw-800 mb-0">{{ $totalProjects }}</div>
                 <div class="text-success small fw-bold mt-2 d-flex align-items-center gap-1">
-                    <span class="erp-pill-dot" style="background: #38ef7d;"></span>
+                    <span class="rounded-circle bg-success" style="width: 8px; height: 8px;"></span>
                     Operational
                 </div>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="hardened-glass stagger-entrance h-100">
-                <div class="metric-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <div class="hardened-glass stagger-entrance h-100 p-4">
+                <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                     <i class="bi bi-wallet2 fs-4"></i>
                 </div>
                 <h6 class="text-muted text-uppercase fw-bold small mb-1">Total Budget Portfolio</h6>
@@ -60,14 +35,14 @@
         </div>
 
         <div class="col-md-4">
-            <div class="hardened-glass stagger-entrance h-100">
-                <div class="metric-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+            <div class="hardened-glass stagger-entrance h-100 p-4">
+                <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
                     <i class="bi bi-graph-down-arrow fs-4"></i>
                 </div>
                 <h6 class="text-muted text-uppercase fw-bold small mb-1">Total Expenses Used</h6>
                 <div class="h2 fw-800 mb-0 text-danger">${{ number_format($totalExpenses, 2) }}</div>
                 <div class="progress mt-3" style="height: 10px; border-radius: 10px;">
-                    <div class="progress-bar" role="progressbar" style="width: {{ $usagePercentage }}%; background: var(--gradient-primary);" aria-valuenow="{{ $usagePercentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    <div class="progress-bar" role="progressbar" style="width: {{ $usagePercentage }}%; background: var(--erp-primary);" aria-valuenow="{{ $usagePercentage }}" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
                 <div class="d-flex justify-content-between mt-1">
                     <span class="text-muted small">{{ $usagePercentage }}% Exhausted</span>
@@ -79,7 +54,7 @@
 
     <div class="row g-4 mb-5">
         <div class="col-lg-12 stagger-entrance">
-            <div class="glass-card-global p-4">
+            <div class="glass-card-global p-4 shadow-lg rounded-4">
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <div>
                         <h5 class="fw-800 text-erp-deep mb-0">Project Portfolio Health</h5>
@@ -93,24 +68,33 @@
 
     <div class="row">
         <div class="col stagger-entrance">
-            <div class="glass-card-global p-4">
+            <div class="glass-card-global p-4 shadow-lg rounded-4">
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <h5 class="fw-800 text-erp-deep mb-0">Recent Projects</h5>
                     <a href="{{ Auth::user()->hasRole('Administrator') ? route('admin.finance.projects.index') : route('finance.projects.index') }}" class="btn btn-sm btn-outline-erp-deep rounded-pill px-3">Manage all</a>
                 </div>
                 
                 <div class="row g-3">
-                    @forelse(\App\Models\Project::latest()->take(3)->get() as $p)
+                    @forelse($recentProjects as $p)
                         <div class="col-md-4">
                             <div class="p-3 border rounded-4 bg-white hover-shadow transition-all">
                                 <h6 class="fw-bold mb-1">{{ $p->name }}</h6>
-                                <p class="text-muted small mb-2">{{ Str::limit($p->description, 50) }}</p>
+                                <p class="text-muted small mb-2">{{ \Illuminate\Support\Str::limit($p->description, 50) }}</p>
                                 <div class="d-flex justify-content-between small">
                                     <span class="text-muted">Budget:</span>
                                     <span class="fw-bold text-erp-deep">${{ number_format($p->budget, 0) }}</span>
                                 </div>
                                 <div class="progress mt-2" style="height: 4px;">
-                                    <div class="progress-bar bg-success" style="width: {{ $p->budget_usage_percentage }}%"></div>
+                                    @php
+                                        // Calc percentage locally if not present
+                                        $usage = 0;
+                                        if($p->budget > 0 && $p->expenses_sum_amount) {
+                                            $usage = ($p->expenses_sum_amount / $p->budget) * 100;
+                                        } elseif ($p->budget > 0 && $p->budget_usage_percentage) {
+                                            $usage = $p->budget_usage_percentage;
+                                        }
+                                    @endphp
+                                    <div class="progress-bar bg-success" style="width: {{ $usage }}%"></div>
                                 </div>
                             </div>
                         </div>
@@ -128,22 +112,13 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        @php
-            $projects = \App\Models\Project::with('expenses')->take(8)->get();
-            $names = $projects->pluck('name')->toArray();
-            $budgets = $projects->pluck('budget')->toArray();
-            $expenses = $projects->map(function($p) {
-                return $p->expenses->sum('amount');
-            })->toArray();
-        @endphp
-
         var options = {
             series: [{
                 name: 'Budget',
-                data: {!! json_encode($budgets) !!}
+                data: {!! json_encode($portfolioBudgets) !!}
             }, {
                 name: 'Expenses',
-                data: {!! json_encode($expenses) !!}
+                data: {!! json_encode($portfolioExpenses) !!}
             }],
             chart: {
                 type: 'bar',
@@ -169,7 +144,7 @@
                 colors: ['transparent']
             },
             xaxis: {
-                categories: {!! json_encode($names) !!},
+                categories: {!! json_encode($portfolioLabels) !!},
                 labels: {
                     style: { colors: '#64748b', fontSize: '12px' }
                 }

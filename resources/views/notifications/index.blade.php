@@ -83,21 +83,21 @@
                                                 Void
                                             </button>
                                         @elseif(isset($notification->data['leave_id']))
-                                            <form action="{{ route('admin.hr.leaves.approve', $notification->data['leave_id']) }}" method="POST">
+                                            <form action="{{ route('admin.requests.leave.approve', $notification->data['leave_id']) }}" method="POST">
                                                 @csrf
                                                 <button type="submit" class="btn btn-sm btn-success rounded-pill px-3 fw-bold" onclick="markNotificationRead('{{ $notification->id }}')">Approve</button>
                                             </form>
                                             <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold" 
-                                                    onclick="openGlobalRejectModal('{{ route('admin.hr.leaves.reject', $notification->data['leave_id']) }}', 'Leave Request', '{{ $notification->id }}')">
+                                                    onclick="openGlobalRejectModal('{{ route('admin.requests.leave.reject', $notification->data['leave_id']) }}', 'Leave Request', '{{ $notification->id }}')">
                                                 Reject
                                             </button>
                                         @elseif(isset($notification->data['loan_id']))
-                                            <form action="{{ route('admin.inventory.loans.approve', $notification->data['loan_id']) }}" method="POST">
+                                            <form action="{{ route('admin.requests.items.approve', $notification->data['loan_id']) }}" method="POST">
                                                 @csrf
                                                 <button type="submit" class="btn btn-sm btn-success rounded-pill px-3 fw-bold" onclick="markNotificationRead('{{ $notification->id }}')">Issue</button>
                                             </form>
                                             <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold" 
-                                                    onclick="openGlobalRejectModal('{{ route('admin.inventory.loans.reject', $notification->data['loan_id']) }}', 'Item Request', '{{ $notification->id }}')">
+                                                    onclick="openGlobalRejectModal('{{ route('admin.requests.items.reject', $notification->data['loan_id']) }}', 'Item Request', '{{ $notification->id }}')">
                                                 Deny
                                             </button>
                                         @endif

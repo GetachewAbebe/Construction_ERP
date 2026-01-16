@@ -1,148 +1,165 @@
 @extends('layouts.app')
 
-@section('title', 'Request Loan | Natanem Engineering')
-
-@push('head')
-<style>
-    .form-container {
-        padding: 3rem 0;
-    }
-    .glass-form-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 24px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-    }
-    .input-group-modern {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        transition: all 0.3s ease;
-    }
-    .input-group-modern:focus-within {
-        border-color: #10b981;
-        background: white;
-        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
-    }
-    .input-group-modern .form-control, 
-    .input-group-modern .form-select {
-        border: none;
-        background: transparent;
-        padding: 0.75rem 1rem;
-        font-weight: 500;
-        font-size: 0.9rem;
-    }
-    .input-group-modern .form-control:focus, 
-    .input-group-modern .form-select:focus {
-        box-shadow: none;
-    }
-    .input-group-text-modern {
-        background: transparent;
-        border: none;
-        color: #64748b;
-        padding-left: 1.25rem;
-    }
-    .form-label-modern {
-        font-weight: 700;
-        color: #334155;
-        margin-bottom: 0.5rem;
-        display: block;
-        font-size: 0.8rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-</style>
-@endpush
+@section('title', 'Request Asset Loan | Natanem Engineering')
 
 @section('content')
-<div class="form-container container">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            {{-- Header --}}
-            <div class="d-flex align-items-center mb-4">
-                <a href="{{ route('inventory.loans.index') }}" class="btn btn-white shadow-sm rounded-circle p-2 me-3">
-                    <i class="bi bi-arrow-left fs-5"></i>
-                </a>
-                <div>
-                    <h2 class="fw-800 text-erp-deep mb-1">New Item Loan</h2>
-                    <p class="text-muted mb-0">Record a tool or material loan request for an employee.</p>
-                </div>
-            </div>
+<style>
+    .form-premium-input {
+        transition: all 0.2s ease;
+        border: 1.5px solid #e2e8f0 !important;
+        background-color: #ffffff !important;
+    }
+    .form-premium-input:focus {
+        background: #fff !important;
+        border-color: var(--erp-primary) !important;
+        box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1) !important;
+    }
+    .section-icon-box {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: var(--erp-deep);
+        color: white;
+        font-size: 1.2rem;
+    }
+    .input-label-premium {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        color: var(--erp-deep);
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.6rem;
+    }
+</style>
 
-            <div class="glass-form-card p-4 p-md-5">
+<div class="row align-items-center mb-5">
+    <div class="col">
+        <h1 class="h3 mb-1 fw-800 text-erp-deep">Request Asset Loan</h1>
+        <p class="text-muted mb-0">Record a tool or material loan request for personnel assignment.</p>
+    </div>
+    <div class="col-auto">
+        <a href="{{ route('inventory.loans.index') }}" class="btn btn-white rounded-pill px-4 py-2 shadow-sm border border-light fw-700">
+            <i class="bi bi-arrow-left me-2"></i>Back to Registry
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card bg-white border-0 overflow-hidden shadow-sm rounded-4">
+            <div class="card-body p-4 p-md-5">
                 <form action="{{ route('inventory.loans.store') }}" method="POST">
                     @csrf
                     
-                    {{-- Item Selection --}}
-                    <div class="mb-4">
-                        <label class="form-label-modern">Inventory Item</label>
-                        <div class="input-group-modern d-flex align-items-center">
-                            <span class="input-group-text-modern"><i class="bi bi-box"></i></span>
-                            <select name="inventory_item_id" class="form-select @error('inventory_item_id') is-invalid @enderror" required>
-                                <option value="" disabled {{ old('inventory_item_id') ? '' : 'selected' }}>Select item to loan...</option>
-                                @foreach($items as $item)
-                                    <option value="{{ $item->id }}" {{ old('inventory_item_id') == $item->id ? 'selected' : '' }}>
-                                        {{ $item->item_no }} – {{ $item->name ?? $item->description }} (Available: {{ $item->quantity }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        @error('inventory_item_id') <div class="text-danger small mt-1 px-2">{{ $message }}</div> @enderror
-                    </div>
-
-                    {{-- Employee Selection --}}
-                    <div class="mb-4">
-                        <label class="form-label-modern">Borrowing Employee</label>
-                        <div class="input-group-modern d-flex align-items-center">
-                            <span class="input-group-text-modern"><i class="bi bi-person-check"></i></span>
-                            <select name="employee_id" class="form-select @error('employee_id') is-invalid @enderror" required>
-                                <option value="" disabled {{ old('employee_id') ? '' : 'selected' }}>Who is borrowing the item?</option>
-                                @foreach($employees as $employee)
-                                    <option value="{{ $employee->id }}" {{ old('employee_id') == $employee->id ? 'selected' : '' }}>
-                                        {{ $employee->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        @error('employee_id') <div class="text-danger small mt-1 px-2">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="row">
-                        {{-- Quantity --}}
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label-modern">Loan Quantity</label>
-                            <div class="input-group-modern d-flex align-items-center">
-                                <span class="input-group-text-modern"><i class="bi bi-bar-chart-steps"></i></span>
-                                <input type="number" name="quantity" min="1" class="form-control @error('quantity') is-invalid @enderror" value="{{ old('quantity', 1) }}" required>
+                    {{-- Section 1: Assignment --}}
+                    <div class="mb-5">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <div class="section-icon-box">
+                                <i class="bi bi-box-seam"></i>
                             </div>
-                            @error('quantity') <div class="text-danger small mt-1 px-2">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- Due Date --}}
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label-modern">Expected Return Date</label>
-                            <div class="input-group-modern d-flex align-items-center">
-                                <span class="input-group-text-modern"><i class="bi bi-calendar-event"></i></span>
-                                <input type="date" name="due_date" class="form-control @error('due_date') is-invalid @enderror" value="{{ old('due_date') }}">
+                            <div>
+                                <h5 class="fw-800 text-erp-deep mb-0">Asset Assignment</h5>
+                                <p class="text-muted small mb-0">Identify the item and the personnel responsible for the loan.</p>
                             </div>
-                            @error('due_date') <div class="text-danger small mt-1 px-2">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="row g-4">
+                            {{-- Item Selection --}}
+                            <div class="col-12">
+                                <label class="input-label-premium text-uppercase">Select Asset / Item</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border border-end-0 text-muted"><i class="bi bi-box"></i></span>
+                                    <select name="inventory_item_id" class="form-select rounded-end-4 py-3 px-4 shadow-sm form-premium-input @error('inventory_item_id') is-invalid @enderror" required>
+                                        <option value="" disabled {{ old('inventory_item_id') ? '' : 'selected' }}>Choose an item from available stock...</option>
+                                        @foreach($items as $item)
+                                            <option value="{{ $item->id }}" {{ old('inventory_item_id') == $item->id ? 'selected' : '' }}>
+                                                {{ $item->item_no }} – {{ $item->name }} (In Stock: {{ $item->quantity }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-text x-small ps-1 text-muted">Only items currently in stock are available for assignment.</div>
+                                @error('inventory_item_id') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                            </div>
+
+                            {{-- Employee Selection --}}
+                            <div class="col-12">
+                                <label class="input-label-premium text-uppercase">Assign to Personnel</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border border-end-0 text-muted"><i class="bi bi-person-badge"></i></span>
+                                    <select name="employee_id" class="form-select rounded-end-4 py-3 px-4 shadow-sm form-premium-input @error('employee_id') is-invalid @enderror" required>
+                                        <option value="" disabled {{ old('employee_id') ? '' : 'selected' }}>Select employee...</option>
+                                        @foreach($employees as $employee)
+                                            <option value="{{ $employee->id }}" {{ old('employee_id') == $employee->id ? 'selected' : '' }}>
+                                                {{ $employee->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('employee_id') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                            </div>
                         </div>
                     </div>
 
-                    {{-- Notes --}}
-                    <div class="mb-4">
-                        <label class="form-label-modern">Purpose & Remarks</label>
-                        <div class="input-group-modern d-flex align-items-start">
-                            <span class="input-group-text-modern mt-2"><i class="bi bi-pencil-square"></i></span>
-                            <textarea name="notes" rows="3" class="form-control @error('notes') is-invalid @enderror" placeholder="State the purpose or site location...">{{ old('notes') }}</textarea>
+                    {{-- Section 2: Terms --}}
+                    <div class="mb-5 py-4 border-top border-light">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <div class="section-icon-box" style="background: var(--erp-primary);">
+                                <i class="bi bi-calendar-event"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-800 text-erp-deep mb-0">Loan Terms</h5>
+                                <p class="text-muted small mb-0">Specify quantity and expected recovery timeline.</p>
+                            </div>
                         </div>
-                        @error('notes') <div class="text-danger small mt-1 px-2">{{ $message }}</div> @enderror
+
+                        <div class="row g-4">
+                            {{-- Quantity --}}
+                            <div class="col-md-6">
+                                <label class="input-label-premium text-uppercase">Units to Issue</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border border-end-0 text-muted"><i class="bi bi-123"></i></span>
+                                    <input type="number" name="quantity" min="1" 
+                                           class="form-control rounded-end-4 py-3 px-4 shadow-sm form-premium-input @error('quantity') is-invalid @enderror" 
+                                           value="{{ old('quantity', 1) }}" required>
+                                </div>
+                                @error('quantity') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                            </div>
+
+                            {{-- Due Date --}}
+                            <div class="col-md-6">
+                                <label class="input-label-premium text-uppercase">Expected Return by</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border border-end-0 text-muted"><i class="bi bi-calendar-date"></i></span>
+                                    <input type="date" name="due_date" 
+                                           class="form-control rounded-end-4 py-3 px-4 shadow-sm form-premium-input @error('due_date') is-invalid @enderror" 
+                                           value="{{ old('due_date') }}">
+                                </div>
+                                <div class="form-text x-small ps-1 text-muted">Leave blank if return date is indefinite.</div>
+                                @error('due_date') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                            </div>
+
+                            {{-- Notes --}}
+                            <div class="col-12 mt-4">
+                                <label class="input-label-premium text-uppercase">Purpose / Location Remarks</label>
+                                <textarea name="notes" rows="3" 
+                                          class="form-control rounded-4 py-3 px-4 shadow-sm form-premium-input @error('notes') is-invalid @enderror" 
+                                          placeholder="Specify the site location or project usage...">{{ old('notes') }}</textarea>
+                                @error('notes') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mt-5">
-                        <button type="submit" class="btn btn-success btn-lg rounded-pill px-5 w-100 fw-bold py-3 shadow-lg">
-                            <i class="bi bi-clipboard-check me-2"></i> Submit Loan Request
+                    <div class="d-flex gap-3 justify-content-end pt-4 border-top border-light">
+                        <a href="{{ route('inventory.loans.index') }}" class="btn btn-white rounded-pill px-4 py-3 fw-700 shadow-sm border border-light">
+                            <i class="bi bi-x-circle me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-800 shadow-sm border-0"
+                                onclick="this.disabled=true; this.innerText='Processing...'; this.form.submit();">
+                            <i class="bi bi-send-fill me-2"></i>Submit Request
                         </button>
                     </div>
                 </form>

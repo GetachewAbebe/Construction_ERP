@@ -5,15 +5,41 @@ namespace App\Http\Controllers\HR;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use App\Http\Requests\HR\StoreEmployeeRequest;
+use App\Http\Requests\HR\UpdateEmployeeRequest;
 
 class EmployeeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $employees = Employee::with(['department_rel', 'position_rel'])
-            ->orderBy('last_name')
+        $query = Employee::with(['department_rel', 'position_rel']);
+
+        // Search Scope
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhereHas('department_rel', function($dq) use ($search) {
+                      $dq->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('position_rel', function($pq) use ($search) {
+                      $pq->where('title', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Status Filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $employees = $query->orderBy('last_name')
             ->orderBy('first_name')
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
+
         return view('hr.employees.index', compact('employees'));
     }
 
@@ -25,20 +51,9 @@ class EmployeeController extends Controller
         return view('hr.employees.create', compact('departments', 'positions'));
     }
 
-    public function store(Request $request)
+    public function store(StoreEmployeeRequest $request)
     {
-        $data = $request->validate([
-            'first_name'      => ['required','string','max:120'],
-            'last_name'       => ['required','string','max:120'],
-            'email'           => ['required','email','max:255','unique:employees,email'],
-            'phone'           => ['nullable','string','max:20'],
-            'profile_picture' => ['nullable','image','max:2048'], // Max 2MB
-            'hire_date'       => ['nullable','date'],
-            'salary'          => ['nullable','numeric'],
-            'status'          => ['required','in:Active,On Leave,Terminated,Resigned'],
-            'department_name' => ['nullable','string','max:255'],
-            'position_title'  => ['nullable','string','max:255'],
-        ]);
+        $data = $request->validated();
 
         // Auto-Capitalize Names
         $data['first_name'] = ucwords(strtolower($data['first_name']));
@@ -46,65 +61,27 @@ class EmployeeController extends Controller
 
         // Handle File Upload
         if ($request->hasFile('profile_picture')) {
-            $path = $request->file('profile_picture')->store('employees', 'public');
-            $data['profile_picture'] = $path;
-        }
-
-        // Auto-Capitalize Department & Position Inputs
-        if (!empty($data['department_name'])) {
-            $data['department_name'] = ucwords(strtolower($data['department_name']));
-        }
-        if (!empty($data['position_title'])) {
-            $data['position_title'] = ucwords(strtolower($data['position_title']));
+            $data['profile_picture'] = $request->file('profile_picture')->store('employees', 'public');
         }
 
         // Process Department
-        $departmentId = null;
         if (!empty($data['department_name'])) {
-            $existing = \Illuminate\Support\Facades\DB::table('departments')
-                ->where('name', $data['department_name'])
-                ->first();
-            
-            if ($existing) {
-                $departmentId = $existing->id;
-            } else {
-                $departmentId = \Illuminate\Support\Facades\DB::table('departments')->insertGetId([
-                    'name' => $data['department_name'],
-                    'created_at' => now(), 
-                    'updated_at' => now()
-                ]);
-            }
+            $data['department_id'] = \App\Models\Department::firstOrCreate([
+                'name' => ucwords(strtolower($data['department_name']))
+            ])->id;
         }
-        $data['department_id'] = $departmentId;
-        unset($data['department_name']);
 
         // Process Position
-        $positionId = null;
         if (!empty($data['position_title'])) {
-            $existingPos = \Illuminate\Support\Facades\DB::table('positions')
-                ->where('title', $data['position_title'])
-                ->first();
-            
-            if ($existingPos) {
-                $positionId = $existingPos->id;
-            } else {
-                $positionId = \Illuminate\Support\Facades\DB::table('positions')->insertGetId([
-                    'title' => $data['position_title'],
-                    'created_at' => now(), 
-                    'updated_at' => now()
-                ]);
-            }
+            $data['position_id'] = \App\Models\Position::firstOrCreate([
+                'title' => ucwords(strtolower($data['position_title']))
+            ])->id;
         }
-        $data['position_id'] = $positionId;
-        unset($data['position_title']);
-
-        // Clean up any other temporary fields if necessary (already unset above)
-        // Note: 'new_department' and 'new_position' are gone from validation
 
         Employee::create($data);
 
         return redirect()->route('hr.employees.index')
-            ->with('status','Employee created.');
+            ->with('success', 'Professional identity successfully onboarded and archived.');
     }
 
     public function edit(Employee $employee)
@@ -115,20 +92,9 @@ class EmployeeController extends Controller
         return view('hr.employees.edit', compact('employee', 'departments', 'positions'));
     }
 
-    public function update(Request $request, Employee $employee)
+    public function update(UpdateEmployeeRequest $request, Employee $employee)
     {
-        $data = $request->validate([
-            'first_name'      => ['required','string','max:120'],
-            'last_name'       => ['required','string','max:120'],
-            'email'           => ['required','email','max:255','unique:employees,email,'.$employee->id],
-            'phone'           => ['nullable','string','max:20'],
-            'profile_picture' => ['nullable','image','max:2048'],
-            'hire_date'       => ['nullable','date'],
-            'salary'          => ['nullable','numeric'],
-            'status'          => ['required','in:Active,On Leave,Terminated,Resigned'],
-            'department_name' => ['nullable','string','max:255'],
-            'position_title'  => ['nullable','string','max:255'],
-        ]);
+        $data = $request->validated();
 
         // Auto-Capitalize Names
         $data['first_name'] = ucwords(strtolower($data['first_name']));
@@ -136,84 +102,38 @@ class EmployeeController extends Controller
 
         // Handle File Upload
         if ($request->hasFile('profile_picture')) {
-            // Delete old valid picture if exists (optional logic, good for cleanup)
-            // if ($employee->profile_picture) { Storage::disk('public')->delete($employee->profile_picture); }
-
-            $path = $request->file('profile_picture')->store('employees', 'public');
-            $data['profile_picture'] = $path;
-        }
-
-        // Auto-Capitalize Department & Position Inputs
-        if (!empty($data['department_name'])) {
-            $data['department_name'] = ucwords(strtolower($data['department_name']));
-        }
-        if (!empty($data['position_title'])) {
-            $data['position_title'] = ucwords(strtolower($data['position_title']));
+            // Cleanup old picture
+            if ($employee->profile_picture) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($employee->profile_picture);
+            }
+            $data['profile_picture'] = $request->file('profile_picture')->store('employees', 'public');
         }
 
         // Process Department
-        $departmentId = $employee->department_id; 
-        
-        // Check if department_name is present in the request
         if (array_key_exists('department_name', $data)) {
-            if (empty($data['department_name'])) {
-                $departmentId = null; 
-            } else {
-                $existing = \Illuminate\Support\Facades\DB::table('departments')
-                    ->where('name', $data['department_name'])
-                    ->first();
-
-                if ($existing) {
-                    $departmentId = $existing->id;
-                } else {
-                    $departmentId = \Illuminate\Support\Facades\DB::table('departments')->insertGetId([
-                        'name' => $data['department_name'],
-                        'created_at' => now(), 
-                        'updated_at' => now()
-                    ]);
-                }
-            }
-            unset($data['department_name']);
+            $data['department_id'] = !empty($data['department_name']) 
+                ? \App\Models\Department::firstOrCreate(['name' => ucwords(strtolower($data['department_name']))])->id
+                : null;
         }
-        $data['department_id'] = $departmentId;
 
         // Process Position
-        $positionId = $employee->position_id;
-        
-        // Check if position_title is present in the request
         if (array_key_exists('position_title', $data)) {
-            if (empty($data['position_title'])) {
-                $positionId = null;
-            } else {
-                $existingPos = \Illuminate\Support\Facades\DB::table('positions')
-                    ->where('title', $data['position_title'])
-                    ->first();
-
-                if ($existingPos) {
-                    $positionId = $existingPos->id;
-                } else {
-                    $positionId = \Illuminate\Support\Facades\DB::table('positions')->insertGetId([
-                        'title' => $data['position_title'],
-                        'created_at' => now(), 
-                        'updated_at' => now()
-                    ]);
-                }
-            }
-            unset($data['position_title']);
+            $data['position_id'] = !empty($data['position_title'])
+                ? \App\Models\Position::firstOrCreate(['title' => ucwords(strtolower($data['position_title']))])->id
+                : null;
         }
-        $data['position_id'] = $positionId;
 
         $employee->update($data);
 
         return redirect()->route('hr.employees.index')
-            ->with('status','Employee updated.');
+            ->with('success', 'Professional record updated successfully.');
     }
 
     public function destroy(Employee $employee)
     {
         $employee->delete();
         return redirect()->route('hr.employees.index')
-            ->with('status','Employee deleted.');
+            ->with('success', 'Employee record archived.');
     }
 
     // ==========================================
@@ -231,13 +151,13 @@ class EmployeeController extends Controller
         $data['created_at'] = now();
         $data['updated_at'] = now();
         \Illuminate\Support\Facades\DB::table('departments')->insert($data);
-        return redirect()->route('hr.departments.index')->with('status', 'Department added.');
+        return redirect()->route('hr.departments.index')->with('success', 'Department added to organizational structure.');
     }
 
     public function destroyDepartment($id)
     {
         \Illuminate\Support\Facades\DB::table('departments')->where('id', $id)->delete();
-        return redirect()->route('hr.departments.index')->with('status', 'Department deleted.');
+        return redirect()->route('hr.departments.index')->with('success', 'Department removed from structure.');
     }
 
     // ==========================================
@@ -255,12 +175,12 @@ class EmployeeController extends Controller
         $data['created_at'] = now();
         $data['updated_at'] = now();
         \Illuminate\Support\Facades\DB::table('positions')->insert($data);
-        return redirect()->route('hr.positions.index')->with('status', 'Position added.');
+        return redirect()->route('hr.positions.index')->with('success', 'Position designation established.');
     }
 
     public function destroyPosition($id)
     {
         \Illuminate\Support\Facades\DB::table('positions')->where('id', $id)->delete();
-        return redirect()->route('hr.positions.index')->with('status', 'Position deleted.');
+        return redirect()->route('hr.positions.index')->with('success', 'Position designation retired.');
     }
 }

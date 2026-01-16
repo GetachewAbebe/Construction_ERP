@@ -29,14 +29,30 @@ class InventoryLoanController extends Controller
      * List all loans for Inventory (Inventory Manager + Admin).
      * Route: GET /inventory/loans
      */
-    public function index(): View
+    public function index(Request $request): View
     {
+        $q = trim((string) $request->input('q', ''));
+        $status = $request->input('status');
+
         $loans = InventoryLoan::with(['item', 'employee.position_rel', 'approvedBy', 'rejectedBy'])
+            ->when($q, function ($query, $q) {
+                $query->whereHas('employee', function ($sub) use ($q) {
+                    $sub->where('first_name', 'like', "%{$q}%")
+                        ->orWhere('last_name', 'like', "%{$q}%");
+                })->orWhereHas('item', function ($sub) use ($q) {
+                    $sub->where('name', 'like', "%{$q}%")
+                        ->orWhere('item_no', 'like', "%{$q}%");
+                });
+            })
+            ->when($status, function ($query, $status) {
+                $query->where('status', $status);
+            })
             ->orderByRaw("CASE WHEN status = 'pending' THEN 0 WHEN status = 'approved' THEN 1 ELSE 2 END")
             ->latest()
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
-        return view('inventory.loans.index', compact('loans'));
+        return view('inventory.loans.index', compact('loans', 'q', 'status'));
     }
 
     /**
@@ -45,11 +61,8 @@ class InventoryLoanController extends Controller
      */
     public function create(): View
     {
-        $items = InventoryItem::orderBy('name')->get();
-
-        // ✅ SAFE: don’t assume employees table has `name` or `full_name`
-        // just order by id
-        $employees = Employee::orderBy('id')->get();
+        $items = InventoryItem::orderBy('name')->where('quantity', '>', 0)->get();
+        $employees = Employee::orderBy('first_name')->get();
 
         return view('inventory.loans.create', compact('items', 'employees'));
     }
@@ -62,120 +75,79 @@ class InventoryLoanController extends Controller
      *  - We DO NOT change item quantity here.
      *  - Quantity is decremented only when Admin approves.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(\App\Http\Requests\Inventory\StoreInventoryLoanRequest $request): RedirectResponse
     {
-        $data = $request->validate([
-            'inventory_item_id' => ['required', 'exists:inventory_items,id'],
-            'employee_id'       => ['required', 'exists:employees,id'],
-            'quantity'          => ['required', 'integer', 'min:1'],
-            'requested_at'      => ['nullable', 'date'],
-            'due_date'          => ['nullable', 'date'],
-            'notes'             => ['nullable', 'string', 'max:2000'],
-        ]);
-
-        // Check if item has sufficient stock (accounting for items already on loan)
+        $data = $request->validated();
         $item = InventoryItem::findOrFail($data['inventory_item_id']);
         
         if ($item->available_quantity < $data['quantity']) {
-            return back()
-                ->withInput()
-                ->withErrors([
-                    'quantity' => "⚠️ Not enough stock available! You requested {$data['quantity']} item(s), but only {$item->available_quantity} are available. (Total stock: {$item->quantity}, Currently on loan: {$item->on_loan_quantity})"
-                ]);
+            return back()->withInput()->withErrors([
+                'quantity' => "Insufficient stock. Only {$item->available_quantity} units available."
+            ]);
         }
 
-        DB::transaction(function () use ($data) {
-            $loan = InventoryLoan::create([
-                'inventory_item_id'     => $data['inventory_item_id'],
-                'employee_id'           => $data['employee_id'],
-                'requested_by_user_id'  => auth()->id(),  // Current logged-in user
-                'quantity'              => $data['quantity'],
-                'requested_at'          => $data['requested_at'] ?? now(),
-                'due_date'              => $data['due_date'] ?? null,
-                'notes'                 => $data['notes'] ?? null,
-                'status'                => 'pending',   // default
-            ]);
+        try {
+            DB::transaction(function () use ($data) {
+                $loan = InventoryLoan::create(array_merge($data, [
+                    'requested_by_user_id' => auth()->id(),
+                    'requested_at'         => $data['requested_at'] ?? now(),
+                    'status'               => 'pending',
+                ]));
 
-            // Notify Administrators
-            $admins = User::role('Administrator')->get();
-            Notification::send($admins, new InventoryLoanStatusNotification($loan, 'request'));
-        });
+                $admins = User::role('Administrator')->get();
+                try {
+                    Notification::send($admins, new InventoryLoanStatusNotification($loan, 'request'));
+                } catch (\Exception $e) {
+                    \Log::warning('Loan notification failed: ' . $e->getMessage());
+                }
+            });
 
-        return redirect()
-            ->route('inventory.loans.index')
-            ->with('status', 'Loan request submitted for approval.');
+            return redirect()->route('inventory.loans.index')
+                ->with('success', 'Asset loan request has been successfully queued for approval.');
+        } catch (\Exception $e) {
+            \Log::error('Loan request failed: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Critical failure during loan initialization.');
+        }
     }
 
-    /**
-     * Show a single loan detail.
-     * Route: GET /inventory/loans/{loan}
-     */
     public function show(InventoryLoan $loan): View
     {
         $loan->load(['item', 'employee', 'approvedBy', 'rejectedBy']);
-
         return view('inventory.loans.show', compact('loan'));
     }
 
-    /**
-     * Edit loan (typically only while pending).
-     * Route: GET /inventory/loans/{loan}/edit
-     */
     public function edit(InventoryLoan $loan): View
     {
         $loan->load(['item', 'employee']);
-
         $items     = InventoryItem::orderBy('name')->get();
-        // ✅ Same fix here
-        $employees = Employee::orderBy('id')->get();
+        $employees = Employee::orderBy('first_name')->get();
 
         return view('inventory.loans.edit', compact('loan', 'items', 'employees'));
     }
 
-    /**
-     * Update loan (only if still pending is recommended).
-     * Route: PUT /inventory/loans/{loan}
-     */
-    public function update(Request $request, InventoryLoan $loan): RedirectResponse
+    public function update(\App\Http\Requests\Inventory\UpdateInventoryLoanRequest $request, InventoryLoan $loan): RedirectResponse
     {
         if ($loan->status !== 'pending') {
-            return back()->with('status', 'Only pending loans can be edited.');
+            return back()->with('error', 'Modification rejected: only pending requests can be altered.');
         }
 
-        $data = $request->validate([
-            'inventory_item_id' => ['required', 'exists:inventory_items,id'],
-            'employee_id'       => ['required', 'exists:employees,id'],
-            'quantity'          => ['required', 'integer', 'min:1'],
-            'requested_at'      => ['nullable', 'date'],
-            'due_date'          => ['nullable', 'date'],
-            'notes'             => ['nullable', 'string', 'max:2000'],
-        ]);
-
-        // Check if item has sufficient stock (accounting for items already on loan)
+        $data = $request->validated();
         $item = InventoryItem::findOrFail($data['inventory_item_id']);
-        
+
         if ($item->available_quantity < $data['quantity']) {
-            return back()
-                ->withInput()
-                ->withErrors([
-                    'quantity' => "⚠️ Not enough stock available! You requested {$data['quantity']} item(s), but only {$item->available_quantity} are available. (Total stock: {$item->quantity}, Currently on loan: {$item->on_loan_quantity})"
-                ]);
+            return back()->withInput()->withErrors([
+                'quantity' => "Insufficient stock for update. Only {$item->available_quantity} units available."
+            ]);
         }
 
-
-        DB::transaction(function () use ($loan, $data) {
-            $loan->inventory_item_id = $data['inventory_item_id'];
-            $loan->employee_id       = $data['employee_id'];
-            $loan->quantity          = $data['quantity'];
-            $loan->requested_at      = $data['requested_at'] ?? $loan->requested_at;
-            $loan->due_date          = $data['due_date'] ?? $loan->due_date;
-            $loan->notes             = $data['notes'] ?? $loan->notes;
-            $loan->save();
-        });
-
-        return redirect()
-            ->route('inventory.loans.index')
-            ->with('status', 'Loan updated successfully.');
+        try {
+            $loan->update($data);
+            return redirect()->route('inventory.loans.index')
+                ->with('success', 'Loan request parameters updated.');
+        } catch (\Exception $e) {
+            \Log::error('Loan update failed: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Failed to update loan record.');
+        }
     }
 
     /**
@@ -185,14 +157,14 @@ class InventoryLoanController extends Controller
     public function destroy(InventoryLoan $loan): RedirectResponse
     {
         if ($loan->status === 'approved') {
-            return back()->with('status', 'Cannot delete an approved loan. Mark it as returned instead.');
+            return back()->with('error', 'Cannot delete an approved loan. Mark it as returned instead.');
         }
 
         $loan->delete();
 
         return redirect()
             ->route('inventory.loans.index')
-            ->with('status', 'Loan deleted.');
+            ->with('success', 'Loan deleted.');
     }
 
     /**

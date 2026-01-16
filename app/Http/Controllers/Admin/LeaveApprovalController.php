@@ -28,7 +28,7 @@ class LeaveApprovalController extends Controller
     public function approve(LeaveRequest $leave)
     {
         if ($leave->status !== 'Pending') {
-            return back()->with('status','This request is already processed.');
+            return back()->with('error','This request is already processed.');
         }
 
         DB::transaction(function () use ($leave) {
@@ -52,13 +52,25 @@ class LeaveApprovalController extends Controller
             $leave->employee->user->notify(new LeaveRequestStatusNotification($leave, 'status_change'));
         }
 
-        return back()->with('status','Leave approved and recorded.');
+        // Notify Human Resource Managers
+        $hrManagers = \App\Models\User::role('HumanResourceManager')->get();
+        if ($hrManagers->isNotEmpty()) {
+            \Illuminate\Support\Facades\Notification::send($hrManagers, new LeaveRequestStatusNotification($leave, 'status_update'));
+        }
+
+        // Mark related notification as read for the admin
+        auth()->user()->unreadNotifications()
+            ->where('data->leave_id', $leave->id)
+            ->get()
+            ->markAsRead();
+
+        return back()->with('success','Leave approved and recorded.');
     }
 
     public function reject(LeaveRequest $leave)
     {
         if ($leave->status !== 'Pending') {
-            return back()->with('status','This request is already processed.');
+            return back()->with('error','This request is already processed.');
         }
 
         $leave->update([
@@ -71,6 +83,18 @@ class LeaveApprovalController extends Controller
             $leave->employee->user->notify(new LeaveRequestStatusNotification($leave, 'status_change'));
         }
 
-        return back()->with('status','Leave rejected.');
+        // Notify Human Resource Managers
+        $hrManagers = \App\Models\User::role('HumanResourceManager')->get();
+        if ($hrManagers->isNotEmpty()) {
+            \Illuminate\Support\Facades\Notification::send($hrManagers, new LeaveRequestStatusNotification($leave, 'status_update'));
+        }
+
+        // Mark related notification as read for the admin
+        auth()->user()->unreadNotifications()
+            ->where('data->leave_id', $leave->id)
+            ->get()
+            ->markAsRead();
+
+        return back()->with('success','Leave rejected.');
     }
 }

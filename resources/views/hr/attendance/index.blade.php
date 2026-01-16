@@ -1,338 +1,234 @@
 @extends('layouts.app')
-@section('title','Attendance Management')
+@section('title', 'Attendance Control')
 
 @section('content')
-<div class="container py-4">
+<div class="row align-items-center mb-4 stagger-entrance">
+    <div class="col">
+        <h1 class="h3 mb-1 fw-800 text-erp-deep">Operational Presence</h1>
+        <p class="text-muted mb-0">Real-time tracking of human capital availability and site attendance.</p>
+    </div>
+    <div class="col-auto">
+        @can('manage-attendance')
+        <a href="{{ route('hr.attendance.monthly-summary') }}" class="btn btn-white rounded-pill px-4 shadow-sm border-0">
+            <i class="bi bi-file-earmark-bar-graph me-2"></i>Analytical Summary
+        </a>
+        @endcan
+    </div>
+</div>
 
-    {{-- PAGE HEADER + SUMMARY --}}
-    <div class="row mb-3">
-        <div class="col d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-            <div>
-                <h1 class="h4 mb-1 text-erp-deep">Attendance Management</h1>
-                <p class="text-muted small mb-0">
-                    Track daily check-in and check-out, monitor lateness and overall presence.
-                </p>
-            </div>
-
-            <div class="d-flex flex-wrap gap-2 align-items-center justify-content-md-end">
-                @if(isset($todayStats))
-                    <div class="d-flex flex-wrap gap-2 me-md-2">
-                        <div class="card border-0 shadow-sm py-1 px-2">
-                            <div class="small text-muted mb-0">Present</div>
-                            <div class="fw-bold">{{ $todayStats['present'] ?? 0 }}</div>
-                        </div>
-                        <div class="card border-0 shadow-sm py-1 px-2">
-                            <div class="small text-muted mb-0">Late</div>
-                            <div class="fw-bold text-warning">{{ $todayStats['late'] ?? 0 }}</div>
-                        </div>
-                        <div class="card border-0 shadow-sm py-1 px-2">
-                            <div class="small text-muted mb-0">Absent</div>
-                            <div class="fw-bold text-danger">{{ $todayStats['absent'] ?? 0 }}</div>
-                        </div>
-                    </div>
-                @endif
-
-                {{-- Link to monthly summary --}}
-                @can('manage-attendance')
-                    <a href="{{ route('hr.attendance.monthly-summary') }}" class="btn btn-outline-primary btn-sm">
-                        Monthly Summary
-                    </a>
-                @endcan
+{{-- Real-time Operational Metrics --}}
+<div class="row g-4 mb-4 stagger-entrance">
+    <div class="col-md-3">
+        <div class="card hardened-glass border-0 p-4 shadow-sm">
+            <div class="small text-muted fw-bold text-uppercase mb-2">On-Site Today</div>
+            <div class="d-flex align-items-end gap-2">
+                <div class="fw-800 fs-2 text-success">{{ $todayStats['present'] ?? 0 }}</div>
+                <div class="text-muted small fw-600 mb-2">/ {{ $employees->count() }} Total</div>
             </div>
         </div>
     </div>
-
-    {{-- FLASH MESSAGES --}}
-    <div class="row mb-3">
-        <div class="col">
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
-            @if($errors->any())
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <ul class="mb-0 small">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
+    <div class="col-md-3">
+        <div class="card hardened-glass border-0 p-4 shadow-sm">
+            <div class="small text-muted fw-bold text-uppercase mb-2">Lateness Index</div>
+            <div class="d-flex align-items-end gap-2">
+                <div class="fw-800 fs-2 text-warning">{{ $todayStats['late'] ?? 0 }}</div>
+                <div class="text-muted small fw-600 mb-2">Incidents</div>
+            </div>
         </div>
     </div>
+    <div class="col-md-3">
+        <div class="card hardened-glass border-0 p-4 shadow-sm">
+            <div class="small text-muted fw-bold text-uppercase mb-2">Missing Personnel</div>
+            <div class="d-flex align-items-end gap-2">
+                <div class="fw-800 fs-2 text-danger">{{ $todayStats['absent'] ?? 0 }}</div>
+                <div class="text-muted small fw-600 mb-2">Unaccounted</div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    {{-- QUICK ACTIONS + FILTERS ROW --}}
-    <div class="row mb-4 g-3">
-        <div class="col-lg-6">
-            <div class="card shadow-soft border-0 h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h5 class="card-title mb-0">Quick Actions</h5>
-                        <span class="badge bg-light text-muted small">
-                            {{ now()->format('Y-m-d') }}
-                        </span>
+<div class="row g-4 mb-4 stagger-entrance">
+    {{-- Check-in / Biometric Style Action --}}
+    <div class="col-lg-5">
+        <div class="card hardened-glass border-0 h-100 overflow-hidden shadow-sm">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="access-icon-box bg-primary text-white p-3 rounded-4 shadow-lg">
+                        <i class="bi bi-fingerprint fs-2"></i>
                     </div>
-                    <p class="small text-muted mb-3">
-                        Quickly check in employees for today’s attendance.
-                    </p>
+                    <div>
+                        <h4 class="fw-800 text-erp-deep mb-0">Access Portal</h4>
+                        <small class="text-muted fw-bold">{{ now()->format('l, jS F Y') }}</small>
+                    </div>
+                </div>
 
-                    <form action="{{ route('hr.attendance.check-in') }}" method="POST" class="row gy-2 gx-2 align-items-end">
-                        @csrf
-
-                        {{-- If HR/admin: choose any employee; otherwise default to logged-in user --}}
-                        <div class="col-12 @can('manage-attendance') col-md-8 @else col-md-12 @endcan">
-                            <label for="employee_id" class="form-label small fw-semibold">Employee</label>
-                            @can('manage-attendance')
-                                <select name="employee_id" id="employee_id"
-                                        class="form-select form-select-sm select2"
-                                        data-placeholder="Select employee">
-                                    <option value="">-- Select Employee --</option>
-                                    @foreach($employees as $employee)
-                                        <option value="{{ $employee->id }}"
-                                            {{ old('employee_id') == $employee->id ? 'selected' : '' }}>
-                                            {{ $employee->first_name }} {{ $employee->last_name }}
-                                            ({{ $employee->department }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                            @else
-                                <input type="hidden" name="employee_id" value="{{ auth()->user()->employee_id }}">
-                                <div class="form-control form-control-sm bg-light">
-                                    {{ optional(auth()->user()->employee)->first_name ?? 'N/A' }}
-                                    {{ optional(auth()->user()->employee)->last_name }}
-                                    ({{ optional(auth()->user()->employee)->department ?? '-' }})
+                <form action="{{ route('hr.attendance.check-in') }}" method="POST">
+                    @csrf
+                    <div class="mb-4">
+                        @can('manage-attendance')
+                            <label class="form-label small fw-800 text-muted text-uppercase">Identification</label>
+                            <select name="employee_id" class="form-select border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm select2" data-placeholder="Select associate for check-in">
+                                <option value="">Identify Associate...</option>
+                                @foreach($employees as $employee)
+                                    <option value="{{ $employee->id }}">
+                                        {{ $employee->name }} — {{ $employee->position ?? 'Professional' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        @else
+                            <div class="p-4 bg-light-soft rounded-4 border">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="fw-800 text-erp-deep">
+                                        {{ auth()->user()->employee->name ?? 'User Profile' }}
+                                    </div>
+                                    <span class="badge bg-primary-soft text-primary rounded-pill px-3">Standard Access</span>
                                 </div>
-                            @endcan
-                        </div>
-
-                        <div class="col-6 col-md-4 text-md-end">
-                            <button type="submit"
-                                    class="btn btn-primary btn-sm w-100"
-                                    onclick="this.disabled = true; this.form.submit();">
-                                Check In Now
-                            </button>
-                        </div>
-                    </form>
-
-                    {{-- Quick Check-out for own open session --}}
-                    @isset($myOpenAttendance)
-                        <hr class="my-3">
-                        <form action="{{ route('hr.attendance.check-out', $myOpenAttendance->id) }}" method="POST"
-                              onsubmit="return confirm('Confirm check out now?');">
-                            @csrf
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="small text-muted">
-                                    You are checked in since
-                                    <strong>{{ $myOpenAttendance->clock_in->format('H:i') }}</strong>
-                                </div>
-                                <button type="submit" class="btn btn-outline-danger btn-sm">
-                                    Check Out
-                                </button>
                             </div>
-                        </form>
-                    @endisset
-                </div>
-            </div>
-        </div>
-
-        {{-- FILTERS CARD --}}
-        <div class="col-lg-6">
-            <div class="card shadow-soft border-0 h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h5 class="card-title mb-0">Filters</h5>
-                        @if(request()->anyFilled(['date_from', 'date_to', 'employee_filter', 'status']))
-                            <a href="{{ route('hr.attendance.index') }}" class="small text-decoration-none">
-                                Clear
-                            </a>
-                        @endif
+                        @endcan
                     </div>
 
-                    <button class="btn btn-outline-secondary btn-sm d-md-none mb-2"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#attendanceFilters">
-                        Filters
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-800 fs-5 shadow-lg border-0">
+                        Confirm Access Recording
                     </button>
+                </form>
 
-                    <div class="collapse d-md-block" id="attendanceFilters">
-                        <form method="GET" action="{{ route('hr.attendance.index') }}" class="row g-2">
-                            <div class="col-sm-6 col-md-3">
-                                <label class="form-label small">From</label>
-                                <input type="date" name="date_from" value="{{ request('date_from') }}"
-                                       class="form-control form-control-sm">
+                @isset($myOpenAttendance)
+                    <div class="mt-4 p-3 rounded-4 bg-warning-soft border-warning border border-opacity-10">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-warning fw-bold d-block text-uppercase mb-1">Active Duty Session</small>
+                                <span class="fw-800 text-erp-deep">Locked in at {{ $myOpenAttendance->clock_in->format('H:i') }}</span>
                             </div>
-                            <div class="col-sm-6 col-md-3">
-                                <label class="form-label small">To</label>
-                                <input type="date" name="date_to" value="{{ request('date_to') }}"
-                                       class="form-control form-control-sm">
-                            </div>
-                            <div class="col-sm-6 col-md-3">
-                                <label class="form-label small">Employee</label>
-                                <select name="employee_filter"
-                                        class="form-select form-select-sm select2"
-                                        data-placeholder="All employees">
-                                    <option value="">All</option>
-                                    @foreach($employees as $employee)
-                                        <option value="{{ $employee->id }}"
-                                            {{ request('employee_filter') == $employee->id ? 'selected' : '' }}>
-                                            {{ $employee->first_name }} {{ $employee->last_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-sm-6 col-md-3">
-                                <label class="form-label small">Status</label>
-                                <select name="status" class="form-select form-select-sm">
-                                    <option value="">All</option>
-                                    <option value="present" {{ request('status') == 'present' ? 'selected' : '' }}>Present</option>
-                                    <option value="late" {{ request('status') == 'late' ? 'selected' : '' }}>Late</option>
-                                    <option value="absent" {{ request('status') == 'absent' ? 'selected' : '' }}>Absent</option>
-                                </select>
-                            </div>
-
-                            <div class="col-12 d-flex justify-content-end mt-2">
-                                <button type="submit" class="btn btn-outline-primary btn-sm">
-                                    Apply Filters
+                            <form action="{{ route('hr.attendance.check-out', $myOpenAttendance->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-warning rounded-pill px-4 fw-800">
+                                    Depart Site
                                 </button>
-                            </div>
-                        </form>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- TABLE CARD --}}
-    <div class="row">
-        <div class="col">
-            <div class="card shadow-soft border-0">
-                <div class="card-body">
-
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
-                        <h5 class="card-title mb-0">Attendance Records</h5>
-                        <div class="small text-muted">
-                            Showing {{ $attendances->firstItem() ?? 0 }}–{{ $attendances->lastItem() ?? 0 }}
-                            of {{ $attendances->total() }} records
+                            </form>
                         </div>
                     </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-sm align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th scope="col">Date</th>
-                                    <th scope="col">Employee</th>
-                                    <th scope="col">Check In</th>
-                                    <th scope="col">Check Out</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col" class="text-center">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($attendances as $attendance)
-                                    @php
-                                        $rowClass = match ($attendance->status) {
-                                            'present' => 'table-success-subtle',
-                                            'late'    => 'table-warning-subtle',
-                                            'absent'  => 'table-secondary-subtle',
-                                            default   => ''
-                                        };
-                                    @endphp
-                                    <tr class="{{ $rowClass }}">
-                                        <td>{{ $attendance->date->format('Y-m-d') }}</td>
-                                        <td>
-                                            <div class="fw-semibold">
-                                                {{ optional($attendance->employee)->first_name ?? 'Unknown' }} {{ optional($attendance->employee)->last_name }}
-                                            </div>
-                                            <div class="small text-muted">
-                                                {{ optional($attendance->employee)->department ?? '—' }}
-                                            </div>
-                                        </td>
-                                        <td>{{ $attendance->clock_in ? $attendance->clock_in->format('H:i') : '-' }}</td>
-                                        <td>{{ $attendance->clock_out ? $attendance->clock_out->format('H:i') : '-' }}</td>
-                                        <td>
-                                            <span class="badge
-                                                @if($attendance->status === 'present') bg-success
-                                                @elseif($attendance->status === 'late') bg-warning text-dark
-                                                @elseif($attendance->status === 'absent') bg-secondary
-                                                @else bg-light text-muted
-                                                @endif">
-                                                {{ ucfirst($attendance->status) }}
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            @if(!$attendance->clock_out)
-                                                <form action="{{ route('hr.attendance.check-out', $attendance->id) }}"
-                                                      method="POST"
-                                                      class="d-inline"
-                                                      onsubmit="return confirm('Check out this employee now?');">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                        Check Out
-                                                    </button>
-                                                </form>
-                                            @else
-                                                <span class="text-muted small">Completed</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center text-muted py-4">
-                                            No attendance records found for the selected filters.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {{-- PAGINATION --}}
-                    <div class="mt-3 d-flex justify-content-end">
-                        {{ $attendances->withQueryString()->links() }}
-                    </div>
-
-                </div>
+                @endisset
             </div>
         </div>
     </div>
 
+    {{-- Temporal Search & Filtering --}}
+    <div class="col-lg-7">
+        <div class="card hardened-glass border-0 h-100 shadow-sm">
+            <div class="card-body p-4">
+                <h5 class="fw-800 text-erp-deep mb-4"><i class="bi bi-funnel-fill me-2"></i>Analytical Filters</h5>
+                <form method="GET" action="{{ route('hr.attendance.index') }}" class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-muted">Temporal Range: Start</label>
+                        <div class="input-group bg-light-soft rounded-pill overflow-hidden shadow-sm px-3 border-0">
+                            <span class="input-group-text bg-transparent border-0"><i class="bi bi-calendar-date"></i></span>
+                            <input type="date" name="date_from" value="{{ request('date_from') }}" class="form-control border-0 bg-transparent">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-muted">Temporal Range: End</label>
+                        <div class="input-group bg-light-soft rounded-pill overflow-hidden shadow-sm px-3 border-0">
+                            <span class="input-group-text bg-transparent border-0"><i class="bi bi-calendar-check"></i></span>
+                            <input type="date" name="date_to" value="{{ request('date_to') }}" class="form-control border-0 bg-transparent">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-muted">Associate Filter</label>
+                        <select name="employee_filter" class="form-select border-0 bg-light-soft rounded-pill px-4 shadow-sm select2">
+                            <option value="">Consolidated Workforce</option>
+                            @foreach($employees as $employee)
+                                <option value="{{ $employee->id }}" @selected(request('employee_filter') == $employee->id)>
+                                    {{ $employee->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-muted">Presence Status</label>
+                        <select name="status" class="form-select border-0 bg-light-soft rounded-pill px-4 shadow-sm">
+                            <option value="">Any Operational State</option>
+                            <option value="present" @selected(request('status') == 'present')>Standard Presence</option>
+                            <option value="late" @selected(request('status') == 'late')>Tardy (Delayed)</option>
+                            <option value="absent" @selected(request('status') == 'absent')>Null Presence</option>
+                        </select>
+                    </div>
+                    <div class="col-12 text-end mt-4">
+                        <a href="{{ route('hr.attendance.index') }}" class="btn btn-white rounded-pill px-4 me-2 border-0 shadow-sm">Reset</a>
+                        <button type="submit" class="btn btn-erp-deep rounded-pill px-5 border-0 shadow-sm">Apply Analysis</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Presence Transaction Ledger --}}
+<div class="card hardened-glass border-0 overflow-hidden stagger-entrance">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light-soft text-erp-deep">
+                <tr>
+                    <th class="ps-4">Operational Date</th>
+                    <th>Personnel Identity</th>
+                    <th class="text-center">Entry</th>
+                    <th class="text-center">Exit</th>
+                    <th>Status Context</th>
+                    <th class="text-end pe-4">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($attendances as $at)
+                    <tr>
+                        <td class="ps-4 fw-800 text-erp-deep">{{ $at->date->format('M d, Y') }}</td>
+                        <td>
+                            <div class="fw-800 text-dark">{{ $at->employee->name ?? 'Legacy Identity' }}</div>
+                            <small class="text-muted fw-bold">{{ $at->employee->department ?? 'General Operations' }}</small>
+                        </td>
+                        <td class="text-center fw-600">{{ $at->clock_in ? $at->clock_in->format('H:i') : '—' }}</td>
+                        <td class="text-center fw-600">{{ $at->clock_out ? $at->clock_out->format('H:i') : '—' }}</td>
+                        <td>
+                            @php
+                                $statusIcon = match($at->status) {
+                                    'present' => 'bi-circle-fill text-success',
+                                    'late' => 'bi-dash-circle-fill text-warning',
+                                    'absent' => 'bi-x-circle-fill text-danger',
+                                    default => 'bi-question-circle text-muted'
+                                };
+                            @endphp
+                            <span class="d-flex align-items-center gap-2 fw-700 text-erp-deep">
+                                <i class="bi {{ $statusIcon }}" style="font-size: 8px;"></i>
+                                {{ ucfirst($at->status) }}
+                            </span>
+                        </td>
+                        <td class="text-end pe-4">
+                            @if(!$at->clock_out)
+                                <form action="{{ route('hr.attendance.check-out', $at->id) }}" method="POST" onsubmit="return confirm('Authorize site departure?');">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-800">
+                                        Force Depart
+                                    </button>
+                                </form>
+                            @else
+                                <span class="badge bg-light text-muted fw-normal rounded-pill px-3">Duty Concluded</span>
+                            @endif
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <i class="bi bi-calendar2-x fs-1 text-muted opacity-25"></i>
+                            <div class="text-muted italic mt-3">No presence data detected for this temporal scope.</div>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+    @if($attendances->hasPages())
+        <div class="card-footer border-0 p-4">
+            {{ $attendances->links() }}
+        </div>
+    @endif
 </div>
 @endsection
 
-@push('styles')
-    <style>
-        .table-success-subtle { background-color: rgba(25,135,84,.04); }
-        .table-warning-subtle { background-color: rgba(255,193,7,.04); }
-        .table-secondary-subtle { background-color: rgba(108,117,125,.04); }
-    </style>
-@endpush
-
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            if (window.jQuery && $.fn.select2) {
-                $('.select2').select2({
-                    width: '100%',
-                    allowClear: true,
-                    placeholder: function(){
-                        return $(this).data('placeholder') || '';
-                    }
-                });
-            }
-        });
-    </script>
-@endpush

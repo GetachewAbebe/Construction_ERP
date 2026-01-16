@@ -14,8 +14,16 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         $status = $request->input('status');
+        $search = $request->input('q');
+
         $projects = Project::query()
             ->when($status, fn($q) => $q->where('status', $status))
+            ->when($search, function($q) use ($search) {
+                $q->where(function($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                          ->orWhere('location', 'like', "%{$search}%");
+                });
+            })
             ->withCount('expenses')
             ->latest()
             ->paginate(10);
@@ -28,30 +36,23 @@ class ProjectController extends Controller
         return view('finance.projects.create');
     }
 
-    public function store(Request $request)
+    public function store(\App\Http\Requests\Projects\StoreProjectRequest $request)
     {
-        $data = $request->validate([
-            'name'        => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'location'    => 'nullable|string|max:255',
-            'start_date'  => 'nullable|date',
-            'end_date'    => 'nullable|date',
-            'budget'      => 'required|numeric|min:0',
-            'status'      => 'required|in:active,completed,on_hold,cancelled',
-        ]);
+        $data = $request->validated();
 
         try {
-            Project::create($data);
-            return redirect()->route('finance.projects.index')->with('status', 'Project created successfully.');
+            $project = Project::create($data);
+            return redirect()->route('finance.projects.index')
+                ->with('success', "Strategic initiative '{$project->name}' has been successfully commissioned.");
         } catch (\Exception $e) {
             Log::error('Project creation failed: ' . $e->getMessage());
-            return back()->withInput()->with('error', 'Failed to create project.');
+            return back()->withInput()->with('error', 'Critical Error: Failed to initialize project parameters. Contact system administrator.');
         }
     }
 
     public function show(Project $project)
     {
-        $project->load('expenses.user');
+        $project->load(['expenses.user']);
         return view('finance.projects.show', compact('project'));
     }
 
@@ -60,35 +61,30 @@ class ProjectController extends Controller
         return view('finance.projects.edit', compact('project'));
     }
 
-    public function update(Request $request, Project $project)
+    public function update(\App\Http\Requests\Projects\UpdateProjectRequest $request, Project $project)
     {
-        $data = $request->validate([
-            'name'        => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'location'    => 'nullable|string|max:255',
-            'start_date'  => 'nullable|date',
-            'end_date'    => 'nullable|date',
-            'budget'      => 'required|numeric|min:0',
-            'status'      => 'required|in:active,completed,on_hold,cancelled',
-        ]);
+        $data = $request->validated();
 
         try {
             $project->update($data);
-            return redirect()->route('finance.projects.index')->with('status', 'Project updated successfully.');
+            return redirect()->route('finance.projects.index')
+                ->with('success', "Operational parameters for '{$project->name}' have been successfully recalibrated.");
         } catch (\Exception $e) {
             Log::error('Project update failed: ' . $e->getMessage());
-            return back()->withInput()->with('error', 'Failed to update project.');
+            return back()->withInput()->with('error', 'Critical Error: Failed to update project configuration.');
         }
     }
 
     public function destroy(Project $project)
     {
         try {
+            $name = $project->name;
             $project->delete();
-            return redirect()->route('finance.projects.index')->with('status', 'Project deleted successfully.');
+            return redirect()->route('finance.projects.index')
+                ->with('success', "Project '{$name}' has been archived and removed from active operations.");
         } catch (\Exception $e) {
             Log::error('Project deletion failed: ' . $e->getMessage());
-            return back()->with('error', 'Failed to delete project.');
+            return back()->with('error', 'Critical Error: Failed to execute project archival sequence.');
         }
     }
 }

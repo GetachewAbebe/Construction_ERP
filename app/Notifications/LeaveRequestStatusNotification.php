@@ -27,15 +27,37 @@ class LeaveRequestStatusNotification extends Notification
     public function toArray(object $notifiable): array
     {
         if ($this->type === 'request') {
+            // Safely get name: Try Employee User -> Employee Name -> Fallback
+            $name = $this->leaveRequest->employee?->user?->name 
+                    ?? $this->leaveRequest->employee?->first_name . ' ' . $this->leaveRequest->employee?->last_name 
+                    ?? 'An employee';
+                    
             return [
                 'type' => 'leave_request',
                 'title' => 'New Leave Request',
-                'message' => "{$this->leaveRequest->employee->user->name} has requested leave from {$this->leaveRequest->start_date->format('M d')} to {$this->leaveRequest->end_date->format('M d')}.",
+                'message' => "{$name} has requested leave from {$this->leaveRequest->start_date->format('M d')} to {$this->leaveRequest->end_date->format('M d')}.",
                 'leave_id' => $this->leaveRequest->id,
                 'url' => route('admin.requests.leave-approvals.index'),
                 'icon' => 'bi-calendar-event',
                 'color' => 'primary',
                 'priority' => $this->leaveRequest->start_date->diffInDays($this->leaveRequest->end_date) > 5 ? 'high' : 'medium'
+            ];
+        }
+
+        if ($this->type === 'status_update') {
+            $name = $this->leaveRequest->employee?->user?->name 
+                    ?? $this->leaveRequest->employee?->first_name . ' ' . $this->leaveRequest->employee?->last_name 
+                    ?? 'An employee';
+
+            return [
+                'type' => 'leave_status',
+                'title' => "Leave Request " . $this->leaveRequest->status,
+                'message' => "{$name}'s leave request has been {$this->leaveRequest->status}.",
+                'leave_id' => $this->leaveRequest->id,
+                'url' => route('hr.leaves.index'),
+                'icon' => $this->leaveRequest->status === 'Approved' ? 'bi-calendar-check' : 'bi-calendar-x',
+                'color' => $this->leaveRequest->status === 'Approved' ? 'success' : 'danger',
+                'priority' => 'medium'
             ];
         }
 

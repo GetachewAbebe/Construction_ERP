@@ -1,353 +1,326 @@
 @extends('layouts.app')
 
-@section('title', 'Inventory Dashboard')
-
-@push('head')
-<style>
-    .metric-icon {
-        width: 64px;
-        height: 64px;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1.5rem;
-        background: var(--erp-primary);
-        color: white;
-        box-shadow: 0 10px 20px rgba(5, 150, 105, 0.2);
-    }
-    
-    .stat-card {
-        background: white;
-        border-radius: 16px;
-        padding: 1.5rem;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(0, 0, 0, 0.05);
-    }
-    
-    .stat-card:hover {
-        background: #f8f9fa;
-        transform: translateX(8px);
-        border-color: var(--erp-primary);
-    }
-    
-    .action-button {
-        background: white;
-        border: 2px solid #e9ecef;
-        border-radius: 14px;
-        padding: 1.25rem 1.5rem;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .action-button::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: var(--gradient);
-        transition: left 0.3s ease;
-        z-index: 0;
-    }
-    
-    .action-button:hover::before {
-        left: 0;
-    }
-    
-    .action-button:hover {
-        border-color: transparent;
-        transform: translateX(8px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    }
-    
-    .action-button:hover * {
-        color: white !important;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .page-title {
-        font-size: 2.5rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, var(--erp-deep) 0%, var(--erp-primary) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 0.5rem;
-    }
-    
-    .badge-modern {
-        padding: 0.5rem 1rem;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 0.875rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .progress-modern {
-        height: 8px;
-        border-radius: 10px;
-        background: #e9ecef;
-        overflow: hidden;
-    }
-    
-    .progress-bar-modern {
-        height: 100%;
-        border-radius: 10px;
-        background: var(--gradient);
-        transition: width 0.6s ease;
-    }
-    
-    .chart-placeholder {
-        height: 200px;
-        background: linear-gradient(180deg, rgba(115, 175, 111, 0.1) 0%, rgba(115, 175, 111, 0.05) 100%);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 2px dashed rgba(115, 175, 111, 0.3);
-    }
-    
-    .floating-badge {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-</style>
-@endpush
+@section('title', 'Logistics Command Center | Natanem Engineering')
 
 @section('content')
-    <div class="dashboard-container">
-        <div class="container">
+<style>
+    :root {
+        --dash-bg: #fdfdfd;
+        --cmd-sidebar: #0f172a;
+        --glass-border: rgba(226, 232, 240, 0.8);
+    }
 
-<div class="py-4 px-2">
-    {{-- Premium Header Section --}}
-        <h1 class="display-4 fw-800 text-erp-deep mb-2 tracking-tight">Inventory Dashboard</h1>
+    body {
+        background-color: var(--dash-bg);
+    }
 
-    <div class="row g-4 mb-5">
-        {{-- Total Items --}}
-        <div class="col-md-4">
-            <div class="hardened-glass stagger-entrance h-100">
-                <div class="metric-icon" style="background: var(--gradient-primary);">
-                    <i class="bi bi-box-seam fs-4"></i>
-                </div>
-                <h6 class="text-muted text-uppercase fw-bold small mb-1">Total Materials</h6>
-                <div class="display-5 fw-800 text-erp-deep mb-2">{{ $totalItems ?? 0 }}</div>
-                <div class="premium-badge d-inline-block" style="width: fit-content;">In Stock</div>
-            </div>
+    /* Command Layout */
+    .command-bridge {
+        background: #ffffff;
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.02);
+    }
+
+    .sidebar-control {
+        background: var(--cmd-sidebar);
+        color: #ffffff;
+        padding: 3rem 2rem;
+        display: flex;
+        flex-column: column;
+        justify-content: space-between;
+    }
+
+    /* Metric HUD */
+    .metric-hud-item {
+        background: #f8fafc;
+        border: 1px solid #f1f5f9;
+        border-radius: 16px;
+        padding: 1.25rem;
+        transition: all 0.2s ease;
+    }
+    .metric-hud-item:hover {
+        background: #ffffff;
+        border-color: #cbd5e1;
+        transform: translateX(5px);
+    }
+
+    .health-gauge-box {
+        background: radial-gradient(circle at center, #f8fafc 0%, #ffffff 100%);
+        border-right: 1px solid #f1f5f9;
+    }
+
+    .btn-command {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        font-weight: 700;
+        padding: 1rem;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .btn-command:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #ffffff;
+        transform: translateY(-2px);
+    }
+    .btn-command.active-op {
+        background: #ffffff;
+        color: var(--cmd-sidebar);
+        border: none;
+    }
+
+    .track-pill {
+        font-size: 0.65rem;
+        letter-spacing: 0.1em;
+        font-weight: 900;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: 20px;
+    }
+</style>
+
+<div class="dashboard-container mt-3">
+    <div class="container-fluid px-md-5 py-2">
+        
+        {{-- Clean Header Section --}}
+        <div class="mb-4">
+            <h1 class="h2 fw-900 text-erp-deep tracking-tight-custom">Inventory Dashboard</h1>
         </div>
 
-        {{-- Low Stock --}}
-        <div class="col-md-4">
-            <div class="hardened-glass stagger-entrance h-100">
-                <div class="metric-icon" style="background: var(--gradient-warning);">
-                    <i class="bi bi-exclamation-triangle fs-4"></i>
-                </div>
-                <h6 class="text-muted text-uppercase fw-bold small mb-1">Low Stock</h6>
-                <div class="display-5 fw-800 text-warning mb-2">{{ $lowStockCount ?? 0 }}</div>
-                <div class="badge bg-warning-subtle text-warning px-3 py-1 rounded-pill small fw-bold">Action Required</div>
-            </div>
-        </div>
-
-        {{-- Out of Stock --}}
-        <div class="col-md-4">
-            <div class="hardened-glass stagger-entrance h-100">
-                <div class="metric-icon" style="background: var(--gradient-danger);">
-                    <i class="bi bi-x-circle fs-4"></i>
-                </div>
-                <h6 class="text-muted text-uppercase fw-bold small mb-1">Out of Stock</h6>
-                <div class="display-5 fw-800 text-danger mb-2">{{ $outOfStockCount ?? 0 }}</div>
-                <div class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill small fw-bold">Critical Level</div>
-            </div>
-        </div>
-    </div>
-            </div>
-
-            <div class="row g-4">
-                {{-- Left Column: Stats & Chart --}}
-                <div class="col-lg-8">
-                    {{-- Inventory Health --}}
-                    <div class="hardened-glass p-4 mb-4">
-                        <div class="d-flex align-items-center justify-content-between mb-4">
-                            <h5 class="fw-800 mb-0 text-erp-deep">
-                                <i class="bi bi-heart-pulse me-2"></i>
-                                Inventory Health
-                            </h5>
-                            @php
-                                $total = $totalItems ?? 1;
-                                $healthy = $total - ($lowStockCount ?? 0) - ($outOfStockCount ?? 0);
-                                $healthPercentage = round(($healthy / $total) * 100);
-                            @endphp
-                            <div class="premium-badge">
-                                {{ $healthPercentage }}% System Stability
-                            </div>
-                        </div>
-
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-4">
-                                <div class="stat-card">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--gradient-success); display: flex; align-items: center; justify-content: center;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white" viewBox="0 0 16 16">
-                                                <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <h4 class="mb-0 fw-bold">{{ ($totalItems ?? 0) - ($outOfStockCount ?? 0) }}</h4>
-                                            <p class="text-muted small mb-0">In Stock</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="stat-card">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--gradient-warning); display: flex; align-items: center; justify-content: center;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white" viewBox="0 0 16 16">
-                                                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <h4 class="mb-0 fw-bold">{{ $lowStockCount ?? 0 }}</h4>
-                                            <p class="text-muted small mb-0">Low Stock</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="stat-card">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--gradient-danger); display: flex; align-items: center; justify-content: center;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white" viewBox="0 0 16 16">
-                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <h4 class="mb-0 fw-bold">{{ $outOfStockCount ?? 0 }}</h4>
-                                            <p class="text-muted small mb-0">Out of Stock</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="progress-modern mb-2">
-                            <div class="progress-bar-modern" style="width: {{ $healthPercentage }}%; --gradient: var(--gradient-success);"></div>
-                        </div>
-                        <p class="text-muted small mb-0">Overall inventory health based on stock availability</p>
+        {{-- Main Command Bridge --}}
+        <div class="command-bridge mb-5">
+            <div class="row g-0">
+                {{-- Health & Intelligence Column --}}
+                <div class="col-lg-4 health-gauge-box p-5 text-center">
+                    <div class="mb-5">
+                        <h5 class="fw-900 text-erp-deep mb-0">Items Health</h5>
                     </div>
 
-                    {{-- Stock Levels Chart --}}
-                    <div class="glass-card p-4">
-                        <h5 class="fw-bold mb-3" style="color: var(--erp-deep);">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="me-2" viewBox="0 0 16 16">
-                                <path d="M0 0h1v15h15v1H0V0Zm14.817 3.113a.5.5 0 0 1 .07.704l-4.5 5.5a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61 4.15-5.073a.5.5 0 0 1 .704-.07Z"/>
-                            </svg>
-                            Stock Levels (Top 10 Items)
-                        </h5>
-                        <div id="stockLevelsChart" style="min-height: 350px;"></div>
+                    <div class="position-relative d-inline-flex align-items-center justify-content-center mb-4">
+                        <svg width="220" height="220" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="#f1f5f9" stroke-width="8" />
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="var(--erp-primary)" stroke-width="8" 
+                                    stroke-dasharray="339.29" stroke-dashoffset="{{ 339.29 - (339.29 * $healthPercentage / 100) }}"
+                                    stroke-linecap="round" transform="rotate(-90 60 60)" style="transition: stroke-dashoffset 1.5s ease;" />
+                        </svg>
+                        <div class="position-absolute text-center">
+                            <div class="display-4 fw-900 mb-0 text-erp-deep">{{ $healthPercentage }}%</div>
+                            <div class="small text-muted fw-800 uppercase letter-spacing-1">Stable</div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-light-soft rounded-4 border border-light mx-2">
+                        <div class="d-flex justify-content-between small fw-800 mb-2">
+                            <span>TOTAL ASSETS</span>
+                            <span class="text-erp-deep">{{ $totalItems }}</span>
+                        </div>
+                        <div class="progress" style="height: 6px; border-radius: 10px; background: #e2e8f0;">
+                            <div class="progress-bar bg-erp-primary" role="progressbar" style="width: {{ $healthPercentage }}%"></div>
+                        </div>
                     </div>
                 </div>
 
-                {{-- Right Column: Actions & Alerts --}}
-                <div class="col-lg-4">
-                    {{-- Action Center --}}
-                    <div class="hardened-glass p-4 mb-4">
-                        <div class="d-flex align-items-center justify-content-between mb-4">
-                            <h5 class="fw-800 text-erp-deep mb-0">Action Center</h5>
-                            <i class="bi bi-lightning-charge text-warning"></i>
-                        </div>
-                        <p class="text-muted small mb-4">Streamline your material logistics workflow.</p>
+                {{-- Distribution HUD --}}
+                <div class="col-lg-5 p-5 border-start border-light">
+                    <div class="mb-5">
+                        <h5 class="fw-900 text-erp-deep mb-0">Items Composition</h5>
+                    </div>
 
+                    <div class="d-grid gap-3">
+                        <div class="metric-hud-item d-flex align-items-center justify-content-between bg-erp-deep text-white shadow-lg mb-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="p-2 bg-white bg-opacity-10 rounded-3 text-white"><i class="bi bi-truck-flatbed"></i></div>
+                                <div>
+                                    <div class="fw-800">Active Field Loans</div>
+                                    <div class="x-small text-white-50 fw-600">Dispatched Assets</div>
+                                </div>
+                            </div>
+                            <div class="h4 fw-900 mb-0">{{ $openLoanCount }}</div>
+                        </div>
+                        <div class="metric-hud-item d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="p-2 bg-success text-white rounded-3"><i class="bi bi-check2-circle"></i></div>
+                                <div>
+                                    <div class="fw-800 text-erp-deep">Stable Stock</div>
+                                    <div class="x-small text-muted fw-600">Items with Qty > 5</div>
+                                </div>
+                            </div>
+                            <div class="h4 fw-900 text-erp-deep mb-0">{{ $stableItemsCount }}</div>
+                        </div>
+
+                        <div class="metric-hud-item d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="p-2 bg-warning text-white rounded-3"><i class="bi bi-exclamation-square"></i></div>
+                                <div>
+                                    <div class="fw-800 text-erp-deep">Risk Alerts</div>
+                                    <div class="x-small text-muted fw-600">Items with Qty 1-5</div>
+                                </div>
+                            </div>
+                            <div class="h4 fw-900 text-warning mb-0">{{ $lowStockCount }}</div>
+                        </div>
+
+                        <div class="metric-hud-item d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="p-2 bg-danger text-white rounded-3"><i class="bi bi-trash-fill"></i></div>
+                                <div>
+                                    <div class="fw-800 text-erp-deep">Deleted Records</div>
+                                    <div class="x-small text-muted fw-600">Zero quantity historicals</div>
+                                </div>
+                            </div>
+                            <div class="h4 fw-900 text-danger mb-0">{{ $zeroStockCount }}</div>
+                        </div>
+
+                    </div>
+                </div>
+
+                {{-- Operational Sidebar --}}
+                <div class="col-lg-3 sidebar-control">
+                    <div class="top-ops">
+                        <h5 class="fw-900 mb-4 tracking-tight">Quick Actions</h5>
+                        
                         <div class="d-grid gap-3">
-                            <a href="{{ Auth::user()->hasRole('Administrator') ? route('admin.inventory.items.index') : route('inventory.items.create') }}" class="sidebar-link active bg-primary text-white border-0 py-3">
-                                <i class="bi bi-plus-circle me-2"></i>
-                                <span class="fw-semibold">Add New Item</span>
+                            <a href="{{ route('inventory.items.index') }}" class="btn-command">
+                                <i class="bi bi-search"></i>
+                                <span>Explore Items</span>
                             </a>
 
-                            <a href="{{ Auth::user()->hasRole('Administrator') ? route('admin.inventory.items.index') : route('inventory.items.index') }}" class="sidebar-link py-3 bg-white border">
-                                <i class="bi bi-search me-2 text-primary"></i>
-                                <span class="fw-semibold text-dark">Browse Inventory</span>
+                            <a href="{{ route('inventory.items.create') }}" class="btn-command active-op">
+                                <i class="bi bi-plus-circle-fill"></i>
+                                <span>Register Items</span>
                             </a>
 
-                            <a href="{{ Auth::user()->hasRole('Administrator') ? route('admin.inventory.loans.index') : route('inventory.loans.create') }}" class="sidebar-link py-3 bg-white border">
-                                <i class="bi bi-person-up me-2 text-success"></i>
-                                <span class="fw-semibold text-dark">Lend Material</span>
+                            <a href="{{ Auth::user()->hasRole('Administrator') ? route('inventory.loans.index') : route('inventory.loans.create') }}" class="btn-command">
+                                <i class="bi bi-arrow-left-right"></i>
+                                <span>Loan Management</span>
                             </a>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
+
+        {{-- Row 2: Deep Analytics & Critical List --}}
+        <div class="row g-4">
+            {{-- Analytics Chart --}}
+            <div class="col-lg-8">
+                <div class="bg-white border border-light p-4 p-md-5 rounded-4 shadow-sm h-100">
+                    <div class="d-flex justify-content-between align-items-start mb-5">
+                        <div>
+                            <h5 class="fw-900 text-erp-deep mb-1">Volume Intelligence</h5>
+                            <p class="text-muted small">Resource distribution analysis (Top 10 Materials)</p>
+                        </div>
+                        <div class="badge bg-light text-erp-deep border px-3 py-2 fw-800">RANKED BY QTY</div>
+                    </div>
+                    <div id="stockLevelsChart" style="min-height: 380px;"></div>
+                </div>
+            </div>
+
+            {{-- Critical Alerts --}}
+            <div class="col-lg-4">
+                <div class="bg-white border border-light p-4 p-md-5 rounded-4 shadow-sm h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <h5 class="fw-900 text-erp-deep mb-0">At Risk</h5>
+                        <span class="badge bg-danger text-white rounded-pill px-2 py-1 x-small fw-900 uppercase">PRIORITY</span>
+                    </div>
+                    
+                    <div class="alerts-tray scrollbar-hide">
+                        @forelse($recentAlerts as $alert)
+                            <div class="metric-hud-item p-3 mb-2 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-900 text-erp-deep small">{{ Str::limit($alert->name, 25) }}</div>
+                                    <div class="x-small text-muted fw-800">{{ $alert->item_no }}</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-900 text-danger">{{ $alert->quantity }}</div>
+                                    <div class="x-small text-muted fw-bold">{{ $alert->unit_of_measurement }}</div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-5">
+                                <i class="bi bi-shield-check text-success display-4 opacity-25"></i>
+                                <p class="text-muted small fw-600 mt-2">Logistics are Stable.</p>
+                            </div>
+                        @endforelse
+                    </div>
+
+                    @if(count($recentAlerts) > 0)
+                        <div class="mt-4 pt-3 border-top text-center">
+                            <a href="{{ route('inventory.items.index') }}?status=low_stock" class="text-erp-deep fw-800 x-small text-uppercase tracking-wider text-decoration-none">
+                                View Registry <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        @php
-            $topItems = \App\Models\InventoryItem::orderBy('quantity', 'desc')->take(10)->get();
-            $itemNames = $topItems->pluck('name')->toArray();
-            $itemQuantities = $topItems->pluck('quantity')->toArray();
-        @endphp
-
         var options = {
             series: [{
-                name: 'Quantity',
-                data: {!! json_encode($itemQuantities) !!}
+                name: 'Units',
+                data: {!! json_encode($chartData) !!}
             }],
             chart: {
                 type: 'bar',
-                height: 350,
+                height: 380,
                 toolbar: { show: false },
                 fontFamily: 'Outfit, sans-serif'
             },
             plotOptions: {
                 bar: {
-                    borderRadius: 10,
-                    columnWidth: '50%',
+                    borderRadius: 6,
+                    columnWidth: '40%',
                     distributed: true,
+                    dataLabels: { position: 'top' }
                 }
             },
             dataLabels: {
-                enabled: false
+                enabled: true,
+                offsetY: -20,
+                style: {
+                    fontSize: '11px',
+                    colors: ["#334155"],
+                    fontWeight: 800
+                }
             },
-            colors: ['#667eea', '#764ba2', '#11998e', '#38ef7d', '#f093fb', '#f5576c', '#fa709a', '#fee140', '#4facfe', '#00f2fe'],
+            colors: ['#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#064e3b', '#065f46', '#047857', '#059669', '#10b981'],
             xaxis: {
-                categories: {!! json_encode($itemNames) !!},
+                categories: {!! json_encode($chartCategories) !!},
                 labels: {
                     style: {
                         colors: '#64748b',
-                        fontSize: '12px'
-                    }
-                }
+                        fontSize: '11px',
+                        fontWeight: 700
+                    },
+                    rotate: -45,
+                    trim: true
+                },
+                axisBorder: { show: false },
+                axisTicks: { show: false }
             },
             yaxis: {
                 labels: {
-                    style: {
-                        colors: '#64748b'
-                    }
+                    style: { colors: '#64748b', fontWeight: 600 }
                 }
             },
             grid: {
                 borderColor: '#f1f5f9',
+                strokeDashArray: 3
             },
-            tooltip: {
-                theme: 'light'
-            },
-            legend: {
-                show: false
-            }
+            tooltip: { theme: 'dark' },
+            legend: { show: false }
         };
 
         var chart = new ApexCharts(document.querySelector("#stockLevelsChart"), options);

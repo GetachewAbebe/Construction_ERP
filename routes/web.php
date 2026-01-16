@@ -51,7 +51,15 @@ Route::post('/logout', [SimpleAuthController::class, 'logout'])
 
 // Notifications
 Route::middleware('auth')->group(function () {
-    Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications', function () {
+        $user = auth()->user();
+        if ($user->hasRole('Administrator')) return redirect()->route('admin.notifications');
+        if ($user->hasRole('HumanResourceManager')) return redirect()->route('hr.notifications');
+        if ($user->hasRole('InventoryManager')) return redirect()->route('inventory.notifications');
+        if ($user->hasRole('FinancialManager')) return redirect()->route('finance.notifications');
+        
+        return redirect()->route('home'); // Fallback
+    })->name('notifications.index');
     Route::post('/notifications/{id}/mark-as-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
     Route::post('/notifications/mark-all-as-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
 });
@@ -77,6 +85,7 @@ Route::middleware([
     Route::get('/admin/hr',        [DashboardController::class, 'hr'])->name('admin.hr');
     Route::get('/admin/inventory', [DashboardController::class, 'inventory'])->name('admin.inventory');
     Route::get('/admin/finance',   [DashboardController::class, 'finance'])->name('admin.finance');
+    Route::get('/admin/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('admin.notifications');
 
     /**
      * Admin: requests / approvals (leave, purchases, items, finance)
@@ -124,6 +133,50 @@ Route::middleware([
             ->name('attendance-settings.index');
         Route::post('/attendance-settings', [App\Http\Controllers\Admin\AttendanceSettingsController::class, 'update'])
             ->name('attendance-settings.update');
+
+        // System Settings
+        Route::get('/system-settings', [App\Http\Controllers\Admin\SystemSettingsController::class, 'index'])
+            ->name('system-settings.index');
+        Route::post('/system-settings', [App\Http\Controllers\Admin\SystemSettingsController::class, 'update'])
+            ->name('system-settings.update');
+
+        // Role & Permission Management
+        Route::resource('roles', App\Http\Controllers\Admin\RolePermissionController::class)->except(['show']);
+        Route::get('/permissions', [App\Http\Controllers\Admin\RolePermissionController::class, 'permissions'])
+            ->name('roles.permissions');
+        Route::post('/permissions', [App\Http\Controllers\Admin\RolePermissionController::class, 'storePermission'])
+            ->name('roles.permissions.store');
+        Route::delete('/permissions/{permission}', [App\Http\Controllers\Admin\RolePermissionController::class, 'destroyPermission'])
+            ->name('roles.permissions.destroy');
+
+        // Notification Templates
+        Route::resource('notification-templates', App\Http\Controllers\Admin\NotificationTemplateController::class)->except(['show']);
+        Route::get('/notification-templates/{notificationTemplate}/preview', [App\Http\Controllers\Admin\NotificationTemplateController::class, 'preview'])
+            ->name('notification-templates.preview');
+
+        // System Maintenance & Backup
+        Route::get('/maintenance', [App\Http\Controllers\Admin\MaintenanceController::class, 'index'])
+            ->name('maintenance.index');
+        Route::post('/maintenance/clear-cache', [App\Http\Controllers\Admin\MaintenanceController::class, 'clearCache'])
+            ->name('maintenance.clear-cache');
+        Route::post('/maintenance/optimize', [App\Http\Controllers\Admin\MaintenanceController::class, 'optimizeSystem'])
+            ->name('maintenance.optimize');
+        Route::post('/maintenance/clear-logs', [App\Http\Controllers\Admin\MaintenanceController::class, 'clearLogs'])
+            ->name('maintenance.clear-logs');
+        Route::post('/maintenance/create-backup', [App\Http\Controllers\Admin\MaintenanceController::class, 'createBackup'])
+            ->name('maintenance.create-backup');
+        Route::get('/maintenance/list-backups', [App\Http\Controllers\Admin\MaintenanceController::class, 'listBackups'])
+            ->name('maintenance.list-backups');
+        Route::get('/maintenance/backup/download/{filename}', [App\Http\Controllers\Admin\MaintenanceController::class, 'downloadBackup'])
+            ->name('maintenance.download-backup');
+
+        // Activity Logs
+        Route::get('/activity-logs', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])
+            ->name('activity-logs');
+
+        // Trash Recovery
+        Route::get('/trash',           [App\Http\Controllers\Admin\TrashController::class, 'index'])->name('trash.index');
+        Route::post('/trash/restore',  [App\Http\Controllers\Admin\TrashController::class, 'restore'])->name('trash.restore');
     });
 
     // === SHADOW ROUTES FOR ADMIN CONTEXT (Read-Only / Management View) ===
@@ -148,9 +201,17 @@ Route::middleware([
 
         // Finance Shadow
         Route::prefix('finance')->name('finance.')->group(function () {
-            Route::get('/projects',       [App\Http\Controllers\Finance\ProjectController::class, 'index'])->name('projects.index');
-            Route::get('/projects/{project}', [App\Http\Controllers\Finance\ProjectController::class, 'show'])->name('projects.show');
-            Route::get('/expenses',       [App\Http\Controllers\Finance\ExpenseController::class, 'index'])->name('expenses.index');
+            // Projects
+            Route::resource('projects', App\Http\Controllers\Finance\ProjectController::class);
+
+            // Expenses
+            Route::resource('expenses', App\Http\Controllers\Finance\ExpenseController::class);
+            
+            // Expense Approval Workflow
+            Route::post('/expenses/{expense}/approve', [App\Http\Controllers\Finance\ExpenseController::class, 'approve'])
+                ->name('expenses.approve');
+            Route::post('/expenses/{expense}/reject', [App\Http\Controllers\Finance\ExpenseController::class, 'reject'])
+                ->name('expenses.reject');
         });
     });
 });
@@ -167,6 +228,7 @@ Route::middleware([
     'prevent-back-history',
 ])->group(function () {
     Route::get('/hr', [DashboardController::class, 'hr'])->name('hr.dashboard');
+    Route::get('/hr/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('hr.notifications');
 
     Route::prefix('hr')->name('hr.')->group(function () {
         // Employees CRUD
@@ -181,9 +243,10 @@ Route::middleware([
         Route::get('/leaves',        [LeaveRequestController::class, 'index'])->name('leaves.index');
         Route::get('/leaves/create', [LeaveRequestController::class, 'create'])->name('leaves.create');
         Route::post('/leaves',       [LeaveRequestController::class, 'store'])->name('leaves.store');
-
         // Approved leaves view
         Route::get('/leaves/approved', ApprovedLeavesController::class)->name('leaves.approved');
+
+        Route::get('/leaves/{leave}', [LeaveRequestController::class, 'show'])->name('leaves.show');
 
         // Attendance
         Route::get('/attendance', [App\Http\Controllers\HR\AttendanceController::class, 'index'])
@@ -203,6 +266,10 @@ Route::middleware([
         Route::get('/attendance/monthly-summary/export', [App\Http\Controllers\HR\AttendanceController::class, 'exportMonthlySummaryCsv'])
             ->middleware('can:manage-attendance')
             ->name('attendance.monthly-summary.export');
+
+        // Fetch employee leave dates for UI validation
+        Route::get('/employees/{employee}/leave-dates', [LeaveRequestController::class, 'getLeaveDates'])
+            ->name('employees.leave-dates');
     });
 });
 
@@ -219,6 +286,7 @@ Route::middleware([
 ])->group(function () {
 
     Route::get('/inventory', [DashboardController::class, 'inventory'])->name('inventory.dashboard');
+    Route::get('/inventory/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('inventory.notifications');
 
     Route::prefix('inventory')->name('inventory.')->group(function () {
         /**
@@ -267,6 +335,7 @@ Route::middleware([
     // Finance Management
     Route::prefix('finance')->name('finance.')->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'finance'])->name('dashboard');
+        Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications');
 
         // Projects & Expenses
         Route::resource('projects', App\Http\Controllers\Finance\ProjectController::class);

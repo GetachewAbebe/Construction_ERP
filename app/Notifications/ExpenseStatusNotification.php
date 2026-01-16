@@ -32,10 +32,26 @@ class ExpenseStatusNotification extends Notification
                 'title' => 'New Expense Request',
                 'message' => "A new expense of ETB " . number_format($this->expense->amount, 2) . " for project {$this->expense->project->name} requires your approval.",
                 'expense_id' => $this->expense->id,
-                'url' => route('admin.requests.finance'),
+                'url' => route('finance.expenses.show', $this->expense),
                 'icon' => 'bi-receipt',
                 'color' => 'primary',
                 'priority' => $this->expense->amount > 5000 ? 'high' : 'medium'
+            ];
+        }
+
+        if ($this->type === 'status_update') {
+            $name = $this->expense->user->name ?? 'A user';
+            $statusText = strtoupper($this->expense->status);
+
+            return [
+                'type' => 'expense_status',
+                'title' => "Expense {$statusText}",
+                'message' => "{$name}'s expense request of ETB " . number_format($this->expense->amount, 2) . " has been {$this->expense->status}.",
+                'expense_id' => $this->expense->id,
+                'url' => route('finance.expenses.show', $this->expense),
+                'icon' => $this->expense->status === 'approved' ? 'bi-check-circle' : 'bi-x-circle',
+                'color' => $this->expense->status === 'approved' ? 'success' : 'danger',
+                'priority' => 'medium'
             ];
         }
 
@@ -47,7 +63,7 @@ class ExpenseStatusNotification extends Notification
             'title' => "Expense {$statusText}",
             'message' => "Your expense request of ETB " . number_format($this->expense->amount, 2) . " has been {$this->expense->status}.",
             'expense_id' => $this->expense->id,
-            'url' => route('finance.expenses.index'),
+            'url' => route('finance.expenses.show', $this->expense),
             'icon' => $this->expense->status === 'approved' ? 'bi-check-circle' : 'bi-x-circle',
             'color' => $badge,
             'priority' => 'medium'

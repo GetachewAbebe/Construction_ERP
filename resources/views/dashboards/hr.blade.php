@@ -16,6 +16,37 @@
         color: white;
         box-shadow: 0 10px 20px rgba(30, 64, 175, 0.2);
     }
+    
+    /* New Avatar Styling */
+    .avatar-pill {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #ffffff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease;
+    }
+    
+    .avatar-fallback {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem; 
+        color: white;
+        border: 2px solid #ffffff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+
+    .table-modern tbody tr:hover .avatar-pill,
+    .table-modern tbody tr:hover .avatar-fallback {
+        transform: scale(1.1);
+    }
 </style>
 @endpush
 
@@ -80,8 +111,8 @@
             <div class="glass-card-global stagger-entrance p-4 h-100 transition-all hover-translate-y">
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <div>
-                        <h5 class="fw-800 text-erp-deep mb-0">Attendance Trend</h5>
-                        <p class="text-muted small mb-0">Check-in statistics for the last 7 days</p>
+                        <h5 class="fw-800 text-erp-deep mb-0">Attendance & Punctuality</h5>
+                        <p class="text-muted small mb-0">Weekly breakdown of On-Time vs. Late check-ins</p>
                     </div>
                 </div>
                 <div id="attendanceChart" style="min-height: 350px;"></div>
@@ -113,10 +144,22 @@
                                 <td class="py-3">
                                     <div class="d-flex align-items-center gap-3">
                                         @if($emp->profile_picture)
-                                            <img src="{{ asset('storage/' . $emp->profile_picture) }}" class="avatar-pill">
+                                            <img src="{{ asset('storage/' . $emp->profile_picture) }}" class="avatar-pill" alt="{{ $emp->first_name }}">
                                         @else
-                                            <div class="avatar-pill bg-light text-muted d-flex align-items-center justify-content-center fw-bold">
-                                                {{ substr($emp->first_name, 0, 1) }}
+                                            @php
+                                                // Generate a deterministic color based on the name
+                                                $gradients = [
+                                                    'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', // Indigo-Purple
+                                                    'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)', // Blue-Cyan
+                                                    'linear-gradient(135deg, #10b981 0%, #34d399 100%)', // Emerald-Teal
+                                                    'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)', // Amber-Yellow
+                                                    'linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)'  // Pink-Rose
+                                                ];
+                                                $index = ord(substr($emp->first_name, 0, 1)) % count($gradients);
+                                                $bg = $gradients[$index];
+                                            @endphp
+                                            <div class="avatar-fallback" style="background: {{ $bg }};">
+                                                {{ strtoupper(substr($emp->first_name, 0, 1)) }}{{ strtoupper(substr($emp->last_name, 0, 1)) }}
                                             </div>
                                         @endif
                                         <div>
@@ -193,61 +236,73 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-
-
         var options = {
             series: [{
-                name: 'Check-ins',
-                data: {!! json_encode($chartData) !!}
+                name: 'On Time',
+                data: {!! json_encode($onTimeData) !!}
+            }, {
+                name: 'Late',
+                data: {!! json_encode($lateData) !!}
             }],
             chart: {
-                type: 'area',
+                type: 'bar',
                 height: 350,
+                stacked: false, // Grouped side-by-side
                 toolbar: { show: false },
-                fontFamily: 'Outfit, sans-serif',
-                zoom: { enabled: false }
+                fontFamily: 'Outfit, sans-serif'
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    borderRadius: 6,
+                    borderRadiusApplication: 'end'
+                },
             },
             dataLabels: {
                 enabled: false
             },
             stroke: {
-                curve: 'smooth',
-                width: 3,
-                colors: ['#059669']
+                show: true,
+                width: 2,
+                colors: ['transparent']
             },
-            fill: {
-                type: 'gradient',
-                gradient: {
-                    shadeIntensity: 1,
-                    opacityFrom: 0.45,
-                    opacityTo: 0.05,
-                    stops: [20, 100, 100, 100]
-                }
-            },
+            colors: ['#10b981', '#f59e0b'], // Emerald, Amber
             xaxis: {
                 categories: {!! json_encode($chartLabels) !!},
                 labels: {
-                    style: { colors: '#64748b', fontSize: '12px' }
-                }
+                    style: { colors: '#64748b', fontSize: '12px', fontWeight: 600 }
+                },
+                axisBorder: { show: false },
+                axisTicks: { show: false }
             },
             yaxis: {
                 labels: {
                     style: { colors: '#64748b' }
                 }
             },
+            fill: {
+                opacity: 1
+            },
             grid: {
                 borderColor: '#f1f5f9',
+                strokeDashArray: 4,
+                yaxis: {
+                    lines: { show: true }
+                }
+            },
+            legend: {
+                position: 'top',
+                horizontalAlign: 'right',
+                markers: { radius: 12 },
             },
             tooltip: {
                 theme: 'light',
-                x: { show: true }
-            },
-            markers: {
-                size: 5,
-                colors: ['#059669'],
-                strokeColors: '#fff',
-                strokeWidth: 2,
-                hover: { size: 7 }
+                y: {
+                    formatter: function (val) {
+                        return val + " employees"
+                    }
+                }
             }
         };
 

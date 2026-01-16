@@ -76,53 +76,55 @@ class AttendanceController extends Controller
     /**
      * Check-in logic with simple role-based behavior.
      */
-    public function checkIn(Request $request)
+    public function checkIn(\App\Http\Requests\HR\CheckInRequest $request)
     {
-        $request->validate([
-            'employee_id' => 'nullable|exists:employees,id',
-        ]);
-
+        $data = $request->validated();
         $user = Auth::user();
         $today = Carbon::today();
 
-        // Determine which employee to check in
-        if ($user && $user->can('manage-attendance') && $request->filled('employee_id')) {
-            $employeeId = $request->input('employee_id');
-        } elseif ($user && $user->employee_id) {
-            $employeeId = $user->employee_id;
+        // Determine target employee
+        $employeeId = null;
+        if ($user->can('manage-attendance') && !empty($data['employee_id'])) {
+            $employeeId = $data['employee_id'];
         } else {
-            // Fallback: require employee_id
-            $request->validate([
-                'employee_id' => 'required|exists:employees,id',
+            $employeeId = $user->employee_id;
+        }
+
+        if (!$employeeId) {
+            return back()->with('error', 'Authentication mismatch: No linked employee profile detected.');
+        }
+
+        try {
+            $employee = Employee::findOrFail($employeeId);
+
+            // Prevent duplicate open sessions
+            $existingOpen = Attendance::where('employee_id', $employee->id)
+                ->whereDate('date', $today)
+                ->whereNull('clock_out')
+                ->first();
+
+            if ($existingOpen) {
+                return back()->with('error', 'Security check: Active session already in progress for this associate.');
+            }
+
+            // Record attendance via Service status context
+            $now = Carbon::now(config('attendance.timezone', config('app.timezone')));
+            $status = $this->attendanceService->determineStatus($now);
+
+            Attendance::create([
+                'employee_id' => $employee->id,
+                'date'        => $today,
+                'clock_in'    => $now,
+                'status'      => $status,
+                'ip_address'  => $request->ip(),
             ]);
-            $employeeId = $request->input('employee_id');
+
+            return back()->with('success', "Access granted: {$employee->name} checked in successfully at " . $now->format('H:i'));
+
+        } catch (\Exception $e) {
+            \Log::error('Attendance check-in failed: ' . $e->getMessage());
+            return back()->with('error', 'System failure during access recording.');
         }
-
-        $employee = Employee::findOrFail($employeeId);
-
-        // Prevent duplicate open sessions for today
-        $existingOpen = Attendance::where('employee_id', $employee->id)
-            ->whereDate('date', $today)
-            ->whereNull('clock_out')
-            ->first();
-
-        if ($existingOpen) {
-            return back()->with('error', 'This employee is already checked in and not yet checked out.');
-        }
-
-        // Determine status via Service
-        $now = Carbon::now(config('attendance.timezone', config('app.timezone')));
-        $status = $this->attendanceService->determineStatus($now);
-
-        Attendance::create([
-            'employee_id' => $employee->id,
-            'date'        => $today,
-            'clock_in'    => $now,
-            'status'      => $status,
-            'ip_address'  => $request->ip(),
-        ]);
-
-        return back()->with('success', 'Check-in recorded successfully.');
     }
 
     /**
