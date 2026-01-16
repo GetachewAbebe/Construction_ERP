@@ -350,8 +350,10 @@ Route::middleware([
  */
 Route::get('/debug-db', function() {
     return [
-        'database' => \Illuminate\Support\Facades\DB::connection()->getDatabaseName(),
-        'schema'   => \Illuminate\Support\Facades\DB::select('SHOW search_path'),
-        'columns'  => \Illuminate\Support\Facades\Schema::getColumnListing('expenses')
+        'database'   => \Illuminate\Support\Facades\DB::connection()->getDatabaseName(),
+        'schema'     => \Illuminate\Support\Facades\DB::select('SHOW search_path'),
+        'expenses'   => \Illuminate\Support\Facades\Schema::getColumnListing('expenses'),
+        'employees'  => \Illuminate\Support\Facades\Schema::getColumnListing('employees'),
+        'users'      => \Illuminate\Support\Facades\Schema::getColumnListing('users'),
     ];
 });
