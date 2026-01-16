@@ -88,12 +88,12 @@
         <table class="table table-hover align-middle mb-0">
             <thead class="bg-light-soft text-erp-deep">
                 <tr>
-                    <th class="ps-4">Profile</th>
-                    <th>Professional Identity</th>
-                    <th>Assignment Designation</th>
+                    <th class="ps-4">Photo</th>
+                    <th>Employee Name</th>
+                    <th>Position & Department</th>
                     <th>Status</th>
-                    <th>Communication</th>
-                    <th class="text-end pe-4">Lifecycle</th>
+                    <th>Contact</th>
+                    <th class="text-end pe-4">Actions</th>
                 </tr>
             </thead>
             <tbody>
