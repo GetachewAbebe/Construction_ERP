@@ -8,11 +8,11 @@
         <p class="text-muted mb-0">Strategic workforce overview and organizational directory.</p>
     </div>
     <div class="col-auto">
-        @unless(Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin'))
-        <a href="{{ route('hr.employees.create') }}" class="btn btn-primary rounded-pill px-4 shadow-sm hardened-glass border-0">
+        @if(Auth::user()->hasAnyRole(['Administrator', 'Admin', 'Human Resource Manager', 'HumanResourceManager']))
+        <a href="{{ route('hr.employees.create') }}" class="btn btn-erp-deep rounded-pill px-4 py-2 shadow-lg border-0 fw-700">
             <i class="bi bi-person-plus-fill me-2"></i>Onboard Professional
         </a>
-        @endunless
+        @endif
     </div>
 </div>
 
@@ -142,20 +142,23 @@
                             <div class="x-small text-muted">{{ $e->phone ?? 'No Direct Line' }}</div>
                         </td>
                         <td class="text-end pe-4">
-                            @unless(Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin'))
-                            <div class="btn-group hardened-glass rounded-pill p-1 shadow-sm">
-                                <a href="{{ route('hr.employees.edit', $e) }}" class="btn btn-sm btn-white rounded-pill px-3" title="Refine Profile">
-                                    <i class="bi bi-person-gear"></i>
+                            @if(Auth::user()->hasAnyRole(['Administrator', 'Admin', 'Human Resource Manager', 'HumanResourceManager']))
+                            <div class="btn-group shadow-sm" role="group">
+                                <a href="{{ route('hr.employees.edit', $e) }}" 
+                                   class="btn btn-sm btn-primary px-3 py-2 fw-600" 
+                                   title="Edit Profile">
+                                    <i class="bi bi-pencil-square me-1"></i>Edit
                                 </a>
-                                <button type="button" class="btn btn-sm btn-white text-danger rounded-pill px-3" 
-                                        onclick="if(confirm('Request permanent removal of this record?')) document.getElementById('del-emp-{{ $e->id }}').submit()">
-                                    <i class="bi bi-trash3-fill"></i>
+                                <button type="button" 
+                                        class="btn btn-sm btn-danger px-3 py-2 fw-600" 
+                                        onclick="if(confirm('Permanently remove {{ $e->first_name }} {{ $e->last_name }} from records?')) document.getElementById('del-emp-{{ $e->id }}').submit()">
+                                    <i class="bi bi-trash3-fill me-1"></i>Delete
                                     <form id="del-emp-{{ $e->id }}" action="{{ route('hr.employees.destroy', $e) }}" method="POST" class="d-none">@csrf @method('DELETE')</form>
                                 </button>
                             </div>
                             @else
-                            <span class="badge bg-light text-muted fw-normal rounded-pill px-3">Read Only Portfolio</span>
-                            @endunless
+                            <span class="badge bg-secondary text-white fw-normal rounded-pill px-3 py-2">View Only</span>
+                            @endif
                         </td>
                     </tr>
                 @empty
