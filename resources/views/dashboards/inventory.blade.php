@@ -195,7 +195,7 @@
                                 <span>Register Items</span>
                             </a>
 
-                            <a href="{{ Auth::user()->hasRole('Administrator') ? route('inventory.loans.index') : route('inventory.loans.create') }}" class="btn-command">
+                            <a href="{{ (Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin')) ? route('inventory.loans.index') : route('inventory.loans.create') }}" class="btn-command">
                                 <i class="bi bi-arrow-left-right"></i>
                                 <span>Loan Management</span>
                             </a>

@@ -8,7 +8,7 @@
         <p class="text-muted mb-0">Strategic workforce overview and organizational directory.</p>
     </div>
     <div class="col-auto">
-        @unless(Auth::user()->hasRole('Administrator'))
+        @unless(Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin'))
         <a href="{{ route('hr.employees.create') }}" class="btn btn-primary rounded-pill px-4 shadow-sm hardened-glass border-0">
             <i class="bi bi-person-plus-fill me-2"></i>Onboard Professional
         </a>
@@ -142,7 +142,7 @@
                             <div class="x-small text-muted">{{ $e->phone ?? 'No Direct Line' }}</div>
                         </td>
                         <td class="text-end pe-4">
-                            @unless(Auth::user()->hasRole('Administrator'))
+                            @unless(Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin'))
                             <div class="btn-group hardened-glass rounded-pill p-1 shadow-sm">
                                 <a href="{{ route('hr.employees.edit', $e) }}" class="btn btn-sm btn-white rounded-pill px-3" title="Refine Profile">
                                     <i class="bi bi-person-gear"></i>

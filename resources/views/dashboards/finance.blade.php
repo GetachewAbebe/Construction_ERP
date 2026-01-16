@@ -71,7 +71,7 @@
             <div class="glass-card-global p-4 shadow-lg rounded-4">
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <h5 class="fw-800 text-erp-deep mb-0">Recent Projects</h5>
-                    <a href="{{ Auth::user()->hasRole('Administrator') ? route('admin.finance.projects.index') : route('finance.projects.index') }}" class="btn btn-sm btn-outline-erp-deep rounded-pill px-3">Manage all</a>
+                    <a href="{{ (Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin')) ? route('admin.finance.projects.index') : route('finance.projects.index') }}" class="btn btn-sm btn-outline-erp-deep rounded-pill px-3">Manage all</a>
                 </div>
                 
                 <div class="row g-3">
@@ -100,7 +100,7 @@
                         </div>
                     @empty
                         <div class="col text-center py-5">
-                            <p class="text-muted">No projects found. <a href="{{ Auth::user()->hasRole('Administrator') ? route('admin.finance.projects.index') : route('finance.projects.create') }}">Create one now</a></p>
+                            <p class="text-muted">No projects found. <a href="{{ (Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin')) ? route('admin.finance.projects.index') : route('finance.projects.create') }}">Create one now</a></p>
                         </div>
                     @endforelse
                 </div>

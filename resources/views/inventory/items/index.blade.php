@@ -8,7 +8,7 @@
         <p class="text-muted mb-0">Unified management system for materials, tools, and site equipment.</p>
     </div>
     <div class="col-auto">
-        @unless(Auth::user()->hasRole('Administrator'))
+        @unless(Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin'))
         <a href="{{ route('inventory.items.create') }}" class="btn btn-erp-deep rounded-pill px-4 shadow-sm border-0">
             <i class="bi bi-box-seam me-2"></i>Provision New Item
         </a>

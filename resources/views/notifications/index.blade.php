@@ -72,7 +72,7 @@
                             <td class="text-end">
                                 <div class="d-flex justify-content-end gap-2 text-nowrap">
                                     {{-- Administrator Quick Actions --}}
-                                    @if(Auth::user()->hasRole('Administrator') && !$notification->read_at && isset($notification->data['type']) && str_ends_with($notification->data['type'], '_request'))
+                                    @if((Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin')) && !$notification->read_at && isset($notification->data['type']) && str_ends_with($notification->data['type'], '_request'))
                                         @if(isset($notification->data['expense_id']))
                                             <form action="{{ route('admin.finance.expenses.approve', $notification->data['expense_id']) }}" method="POST">
                                                 @csrf

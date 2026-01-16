@@ -126,7 +126,7 @@
             <div class="glass-card-global h-100">
                 <div class="card-header border-0 bg-transparent py-4 px-4 d-flex justify-content-between align-items-center">
                     <h5 class="fw-800 text-erp-deep mb-0">Recent Activity</h5>
-                    <a href="{{ Auth::user()->hasRole('Administrator') ? route('admin.hr.employees.index') : route('hr.employees.index') }}" class="btn btn-sm btn-light rounded-pill px-3 fw-bold">View All</a>
+                    <a href="{{ (Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin')) ? route('admin.hr.employees.index') : route('hr.employees.index') }}" class="btn btn-sm btn-light rounded-pill px-3 fw-bold">View All</a>
                 </div>
                 <div class="table-responsive px-4 pb-4">
                     <table class="table table-modern align-middle mb-0">
@@ -225,7 +225,7 @@
                 </div>
 
                 <div class="mt-4 pt-4 border-top">
-                    <a href="{{ Auth::user()->hasRole('Administrator') ? route('admin.hr.employees.index') : route('hr.employees.index') }}" class="btn btn-outline-erp-deep w-100 py-2 rounded-4 fw-bold">
+                    <a href="{{ (Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin')) ? route('admin.hr.employees.index') : route('hr.employees.index') }}" class="btn btn-outline-erp-deep w-100 py-2 rounded-4 fw-bold">
                         Browse Full Registry
                     </a>
                 </div>

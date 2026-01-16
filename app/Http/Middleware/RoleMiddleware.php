@@ -23,8 +23,22 @@ class RoleMiddleware
 
         // 1. Spatie Roles are the primary source of truth
         foreach ($roles as $role) {
-            // Check both Spatie hasRole() AND the custom role column (normalized)
-            if ($user->hasRole($role) || strtolower($user->role) === str_replace(' ', '', strtolower($role))) {
+            $normalizedUserRole = str_replace(' ', '', strtolower((string)$user->role));
+            $normalizedRequiredRole = str_replace(' ', '', strtolower((string)$role));
+
+            // Check Spatie hasRole()
+            if ($user->hasRole($role)) {
+                return $next($request);
+            }
+
+            // Check normalized database column
+            if ($normalizedUserRole === $normalizedRequiredRole) {
+                return $next($request);
+            }
+
+            // Special Case: Admin <-> Administrator mapping
+            if (($normalizedRequiredRole === 'administrator' && $normalizedUserRole === 'admin') ||
+                ($normalizedRequiredRole === 'admin' && $normalizedUserRole === 'administrator')) {
                 return $next($request);
             }
         }

@@ -686,18 +686,18 @@
            <div class="dot flex-shrink-0"></div>
            <h5 class="fw-800 mb-0 tracking-tight text-nowrap">
                NATANEM
-               @php
-                   $roleName = '';
-                   if(Auth::user()->hasRole('Administrator')) {
-                       $roleName = 'Admin';
-                   } elseif(Auth::user()->hasRole('HumanResourceManager')) {
-                       $roleName = 'Human Resource';
-                   } elseif(Auth::user()->hasRole('InventoryManager')) {
-                       $roleName = 'Inventory';
-                   } elseif(Auth::user()->hasRole('FinancialManager')) {
-                       $roleName = 'Finance';
-                   }
-               @endphp
+                @php
+                    $roleName = '';
+                    if(Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin')) {
+                        $roleName = 'Admin';
+                    } elseif(Auth::user()->hasRole('Human Resource Manager') || Auth::user()->hasRole('HumanResourceManager')) {
+                        $roleName = 'Human Resource';
+                    } elseif(Auth::user()->hasRole('Inventory Manager') || Auth::user()->hasRole('InventoryManager')) {
+                        $roleName = 'Inventory';
+                    } elseif(Auth::user()->hasRole('Financial Manager') || Auth::user()->hasRole('FinancialManager')) {
+                        $roleName = 'Finance';
+                    }
+                @endphp
                @if($roleName)
                    <span class="fw-medium opacity-75 fs-6">- {{ $roleName }}</span>
                @endif
@@ -723,7 +723,7 @@
       @endphp
 
 
-      @role('Administrator')
+      @if(Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin'))
         {{-- =========================================
              ADMINISTRATOR VIEW (Flat Structure)
              ========================================= --}}
@@ -819,7 +819,7 @@
              ROLE SPECIFIC VIEWS (Non-Admin)
              ========================================= --}}
 
-        @if(Auth::user()->hasRole('HumanResourceManager'))
+        @if(Auth::user()->hasRole('Human Resource Manager') || Auth::user()->hasRole('HumanResourceManager'))
             <a href="{{ route('hr.dashboard') }}" class="sidebar-link {{ request()->routeIs('hr.dashboard') ? 'active' : '' }}">
                 <i class="bi bi-grid-1x2"></i> <span>Dashboard</span>
             </a>
@@ -837,7 +837,7 @@
             </a>
         @endif
 
-        @if(Auth::user()->hasRole('InventoryManager'))
+        @if(Auth::user()->hasRole('Inventory Manager') || Auth::user()->hasRole('InventoryManager'))
             <a href="{{ route('inventory.dashboard') }}" class="sidebar-link {{ request()->routeIs('inventory.dashboard') ? 'active' : '' }}">
                 <i class="bi bi-grid-1x2"></i> <span>Dashboard</span>
             </a>
@@ -860,7 +860,7 @@
             </a>
         @endif
 
-        @if(Auth::user()->hasRole('FinancialManager'))
+        @if(Auth::user()->hasRole('Financial Manager') || Auth::user()->hasRole('FinancialManager'))
             <a href="{{ route('finance.dashboard') }}" class="sidebar-link {{ request()->routeIs('finance.dashboard') ? 'active' : '' }}">
                 <i class="bi bi-grid-1x2"></i> <span>Dashboard</span>
             </a>
@@ -878,7 +878,7 @@
             </a>
         @endif
 
-      @endrole
+      @endif
 
     </div>
 

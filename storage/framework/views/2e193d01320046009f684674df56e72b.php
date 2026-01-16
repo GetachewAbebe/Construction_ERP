@@ -686,18 +686,18 @@
            <div class="dot flex-shrink-0"></div>
            <h5 class="fw-800 mb-0 tracking-tight text-nowrap">
                NATANEM
-               <?php
-                   $roleName = '';
-                   if(Auth::user()->hasRole('Administrator')) {
-                       $roleName = 'Admin';
-                   } elseif(Auth::user()->hasRole('HumanResourceManager')) {
-                       $roleName = 'Human Resource';
-                   } elseif(Auth::user()->hasRole('InventoryManager')) {
-                       $roleName = 'Inventory';
-                   } elseif(Auth::user()->hasRole('FinancialManager')) {
-                       $roleName = 'Finance';
-                   }
-               ?>
+                <?php
+                    $roleName = '';
+                    if(Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin')) {
+                        $roleName = 'Admin';
+                    } elseif(Auth::user()->hasRole('Human Resource Manager') || Auth::user()->hasRole('HumanResourceManager')) {
+                        $roleName = 'Human Resource';
+                    } elseif(Auth::user()->hasRole('Inventory Manager') || Auth::user()->hasRole('InventoryManager')) {
+                        $roleName = 'Inventory';
+                    } elseif(Auth::user()->hasRole('Financial Manager') || Auth::user()->hasRole('FinancialManager')) {
+                        $roleName = 'Finance';
+                    }
+                ?>
                <?php if($roleName): ?>
                    <span class="fw-medium opacity-75 fs-6">- <?php echo e($roleName); ?></span>
                <?php endif; ?>
@@ -723,7 +723,7 @@
       ?>
 
 
-      <?php if (\Illuminate\Support\Facades\Blade::check('role', 'Administrator')): ?>
+      <?php if(Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin')): ?>
         
         
         <a href="<?php echo e(route('admin.dashboard')); ?>" class="sidebar-link <?php echo e(request()->routeIs('admin.dashboard') ? 'active' : ''); ?>">
@@ -815,7 +815,7 @@
       <?php else: ?>
         
 
-        <?php if(Auth::user()->hasRole('HumanResourceManager')): ?>
+        <?php if(Auth::user()->hasRole('Human Resource Manager') || Auth::user()->hasRole('HumanResourceManager')): ?>
             <a href="<?php echo e(route('hr.dashboard')); ?>" class="sidebar-link <?php echo e(request()->routeIs('hr.dashboard') ? 'active' : ''); ?>">
                 <i class="bi bi-grid-1x2"></i> <span>Dashboard</span>
             </a>
@@ -833,7 +833,7 @@
             </a>
         <?php endif; ?>
 
-        <?php if(Auth::user()->hasRole('InventoryManager')): ?>
+        <?php if(Auth::user()->hasRole('Inventory Manager') || Auth::user()->hasRole('InventoryManager')): ?>
             <a href="<?php echo e(route('inventory.dashboard')); ?>" class="sidebar-link <?php echo e(request()->routeIs('inventory.dashboard') ? 'active' : ''); ?>">
                 <i class="bi bi-grid-1x2"></i> <span>Dashboard</span>
             </a>
@@ -856,7 +856,7 @@
             </a>
         <?php endif; ?>
 
-        <?php if(Auth::user()->hasRole('FinancialManager')): ?>
+        <?php if(Auth::user()->hasRole('Financial Manager') || Auth::user()->hasRole('FinancialManager')): ?>
             <a href="<?php echo e(route('finance.dashboard')); ?>" class="sidebar-link <?php echo e(request()->routeIs('finance.dashboard') ? 'active' : ''); ?>">
                 <i class="bi bi-grid-1x2"></i> <span>Dashboard</span>
             </a>

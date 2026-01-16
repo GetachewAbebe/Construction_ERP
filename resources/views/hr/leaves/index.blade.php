@@ -154,7 +154,7 @@
                             <td class="text-end pe-4">
                                 @if($leave->status === 'Pending')
                                     <div class="d-flex justify-content-end gap-1">
-                                        @if(auth()->user()->hasRole('Administrator'))
+                                        @if(auth()->user()->hasRole('Administrator') || auth()->user()->hasRole('Admin'))
                                             {{-- Direct Actions for Clarity --}}
                                             <form method="POST" action="{{ route('admin.requests.leave.approve', $leave) }}" class="d-inline">
                                                 @csrf
