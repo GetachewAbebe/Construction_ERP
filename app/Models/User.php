@@ -68,7 +68,7 @@ class User extends Authenticatable
     public function getDashboardRouteName(): string
     {
         // 1. Spatie Roles (Primary - matching production DB)
-        if ($this->hasRole('Administrator')) return 'admin.dashboard';
+        if ($this->hasRole('Administrator') || $this->hasRole('Admin')) return 'admin.dashboard';
         if ($this->hasRole('Human Resource Manager')) return 'hr.dashboard';
         if ($this->hasRole('Inventory Manager')) return 'inventory.dashboard';
         if ($this->hasRole('Financial Manager')) return 'finance.dashboard';

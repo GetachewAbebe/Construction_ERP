@@ -30,7 +30,7 @@ class SimpleAuthController extends Controller
         $rawRole = $user->role; // Get the role from the 'role' column in users table
 
         // Redirect based on roles using Spatie's hasRole
-        if ($user->hasRole('Administrator')) {
+        if ($user->hasRole('Administrator') || $user->hasRole('Admin')) {
             return redirect()->route('admin.dashboard');
         } elseif ($user->hasRole('Human Resource Manager')) {
             return redirect()->route('hr.dashboard');

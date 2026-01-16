@@ -72,8 +72,8 @@ Route::middleware('auth')->group(function () {
  */
 Route::middleware([
     'auth',
-    // ✅ allow all four management roles into the /admin area
-    'role:Administrator,HumanResourceManager,InventoryManager,FinancialManager',
+    // ✅ allow all management roles into the /admin area
+    'role:Administrator,Admin,Human Resource Manager,Inventory Manager,Financial Manager',
     'prevent-back-history',
 ])->group(function () {
 
@@ -224,7 +224,7 @@ Route::middleware([
  */
 Route::middleware([
     'auth',
-    'role:Administrator,HumanResourceManager',
+    'role:Administrator,Admin,Human Resource Manager',
     'prevent-back-history',
 ])->group(function () {
     Route::get('/hr', [DashboardController::class, 'hr'])->name('hr.dashboard');
@@ -281,7 +281,7 @@ Route::middleware([
  */
 Route::middleware([
     'auth',
-    'role:Administrator,InventoryManager',
+    'role:Administrator,Admin,Inventory Manager',
     'prevent-back-history',
 ])->group(function () {
 
@@ -329,7 +329,7 @@ Route::middleware([
  */
 Route::middleware([
     'auth',
-    'role:Administrator,FinancialManager',
+    'role:Administrator,Admin,Financial Manager',
     'prevent-back-history',
 ])->group(function () {
     // Finance Management
@@ -343,11 +343,6 @@ Route::middleware([
     });
 });
 
-/**
- * --------------------------------------------------------------------------
- * DEBUG: DATABASE CONNECTIVITY
- * --------------------------------------------------------------------------
- */
 Route::get('/debug-db', function() {
     return [
         'database'   => \Illuminate\Support\Facades\DB::connection()->getDatabaseName(),
@@ -355,5 +350,7 @@ Route::get('/debug-db', function() {
         'expenses'   => \Illuminate\Support\Facades\Schema::getColumnListing('expenses'),
         'employees'  => \Illuminate\Support\Facades\Schema::getColumnListing('employees'),
         'users'      => \Illuminate\Support\Facades\Schema::getColumnListing('users'),
+        'projects'   => \Illuminate\Support\Facades\Schema::getColumnListing('projects'),
     ];
 });
+
