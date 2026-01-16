@@ -8,7 +8,13 @@ class UpdateInventoryLoanRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->hasAnyRole(['InventoryManager', 'Administrator']);
+        // Support both production (with spaces) and local (camelCase) role names
+        return $this->user()->hasAnyRole([
+            'InventoryManager',
+            'Inventory Manager',
+            'Administrator',
+            'Admin'
+        ]);
     }
 
     public function rules(): array

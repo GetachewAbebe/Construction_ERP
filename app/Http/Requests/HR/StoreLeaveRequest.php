@@ -10,7 +10,14 @@ class StoreLeaveRequest extends FormRequest
     {
         // Any authenticated user can potentially submit a leave request (self)
         // HR/Admins can also submit on behalf of others
-        return $this->user()->hasAnyRole(['HumanResourceManager', 'Administrator', 'Employee']) || $this->user()->employee_id > 0;
+        // Support both production (with spaces) and local (camelCase) role names
+        return $this->user()->hasAnyRole([
+            'HumanResourceManager',
+            'Human Resource Manager',
+            'Administrator',
+            'Admin',
+            'Employee'
+        ]) || $this->user()->employee_id > 0;
         // Adjust based on your specific role hierarchy. For now, allow all authenticated users.
     }
 

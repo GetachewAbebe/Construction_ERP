@@ -11,7 +11,13 @@ class UpdateEmployeeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->hasAnyRole(['HumanResourceManager', 'Administrator']);
+        // Support both production (with spaces) and local (camelCase) role names
+        return $this->user()->hasAnyRole([
+            'HumanResourceManager',
+            'Human Resource Manager',
+            'Administrator',
+            'Admin'
+        ]);
     }
 
     /**

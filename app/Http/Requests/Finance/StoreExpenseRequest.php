@@ -8,7 +8,13 @@ class StoreExpenseRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->hasAnyRole(['FinancialManager', 'Administrator']);
+        // Support both production (with spaces) and local (camelCase) role names
+        return $this->user()->hasAnyRole([
+            'FinancialManager',
+            'Financial Manager',
+            'Administrator',
+            'Admin'
+        ]);
     }
 
     public function rules(): array
