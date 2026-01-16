@@ -10,7 +10,8 @@ use App\Traits\LogsActivity;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasRoles, SoftDeletes, LogsActivity;
+    // use SoftDeletes; 
+    use Notifiable, HasRoles, LogsActivity;
 
 
     protected $fillable = [
