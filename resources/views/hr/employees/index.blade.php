@@ -104,8 +104,9 @@
                                 <div class="avatar-md hardened-glass p-1 rounded-circle shadow-sm" style="width: 45px; height: 45px;">
                                     <img src="{{ $e->profile_picture_url }}" 
                                          class="rounded-circle w-100 h-100" 
-                                         style="object-fit: cover;"
-                                         alt="{{ $e->first_name }}">
+                                         style="object-fit: cover; text-indent: -9999px;" 
+                                         alt="{{ $e->first_name }}"
+                                         onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2NjYyIgZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDRzMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIvPjwvc3ZnPg==';">
                                 </div>
                             @else
                                 <div class="avatar-md bg-erp-deep text-white rounded-circle d-flex align-items-center justify-content-center fw-800 shadow-sm" 

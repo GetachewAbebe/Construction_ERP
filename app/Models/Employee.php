@@ -151,27 +151,14 @@ class Employee extends Model
 
         $path = $this->profile_picture;
 
-        // Strategy 1: Try standard Laravel storage with symlink
-        $symlinkPath = public_path('storage/' . $path);
-        if (file_exists($symlinkPath)) {
+        // Strategy 1: Check if accessible via public link (Symlink works)
+        if (file_exists(public_path('storage/' . $path))) {
             return asset('storage/' . $path);
         }
 
-        // Strategy 2: Try direct storage path (no symlink needed)
-        $directPath = storage_path('app/public/' . $path);
-        if (file_exists($directPath)) {
-            // Return route to a controller that serves the file directly
-            return route('employee.profile-picture', ['path' => $path]);
-        }
-
-        // Strategy 3: Check if it's already a full path in public directory
-        $publicPath = public_path($path);
-        if (file_exists($publicPath)) {
-            return asset($path);
-        }
-
-        // Strategy 4: Fallback - return the asset path anyway (browser will handle 404)
-        return asset('storage/' . $path);
+        // Strategy 2: If public link fails (broken symlink), ALWAYS use secure route
+        // We skip checking storage_path() here to avoid permission/open_basedir issues
+        return route('employee.profile-picture', ['path' => $path]);
     }
 
     /**
