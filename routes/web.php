@@ -342,3 +342,16 @@ Route::middleware([
         Route::resource('expenses', App\Http\Controllers\Finance\ExpenseController::class);
     });
 });
+
+/**
+ * --------------------------------------------------------------------------
+ * DEBUG: DATABASE CONNECTIVITY
+ * --------------------------------------------------------------------------
+ */
+Route::get('/debug-db', function() {
+    return [
+        'database' => \Illuminate\Support\Facades\DB::connection()->getDatabaseName(),
+        'schema'   => \Illuminate\Support\Facades\DB::select('SHOW search_path'),
+        'columns'  => \Illuminate\Support\Facades\Schema::getColumnListing('expenses')
+    ];
+});
