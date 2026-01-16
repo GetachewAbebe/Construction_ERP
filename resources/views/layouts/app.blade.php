@@ -889,8 +889,8 @@
                 
                 {{-- Avatar --}}
                 <div class="position-relative">
-                    @if(optional(Auth::user()->employee)->profile_picture)
-                        <img src="{{ asset('storage/' . Auth::user()->employee->profile_picture) }}" alt="Profile" 
+                    @if(optional(Auth::user()->employee)->profile_picture_url)
+                        <img src="{{ Auth::user()->employee->profile_picture_url }}" alt="Profile" 
                              class="rounded-circle border border-2 border-white-20 shadow-sm" 
                              style="width: 44px; height: 44px; object-fit: cover;">
                     @else
@@ -921,8 +921,8 @@
                 {{-- My Profile --}}
                 <li>
                     <a class="dropdown-item rounded-3 d-flex align-items-center gap-2 py-2" href="{{ Auth::user()->getProfileUrl() }}">
-                        @if(optional(Auth::user()->employee)->profile_picture)
-                            <img src="{{ asset('storage/' . Auth::user()->employee->profile_picture) }}" alt="Img" 
+                        @if(optional(Auth::user()->employee)->profile_picture_url)
+                            <img src="{{ Auth::user()->employee->profile_picture_url }}" alt="Img" 
                                  class="rounded-circle border border-primary-subtle" 
                                  style="width: 20px; height: 20px; object-fit: cover;">
                         @else

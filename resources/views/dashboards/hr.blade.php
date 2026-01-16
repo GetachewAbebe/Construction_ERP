@@ -143,8 +143,8 @@
                             <tr class="transition-all">
                                 <td class="py-3">
                                     <div class="d-flex align-items-center gap-3">
-                                        @if($emp->profile_picture)
-                                            <img src="{{ asset('storage/' . $emp->profile_picture) }}" class="avatar-pill" alt="{{ $emp->first_name }}">
+                                        @if($emp->profile_picture_url)
+                                            <img src="{{ $emp->profile_picture_url }}" class="avatar-pill" alt="{{ $emp->first_name }}">
                                         @else
                                             @php
                                                 // Generate a deterministic color based on the name

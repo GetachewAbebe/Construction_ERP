@@ -23,8 +23,8 @@
                     
                     <div class="text-center mb-5">
                         <div class="position-relative d-inline-block">
-                            @if($employee->profile_picture)
-                                <img src="{{ asset('storage/' . $employee->profile_picture) }}" 
+                            @if($employee->profile_picture_url)
+                                <img src="{{ $employee->profile_picture_url }}" 
                                      alt="Profile" 
                                      class="rounded-circle shadow-lg border border-4 border-white" 
                                      width="120" height="120" style="object-fit: cover;">

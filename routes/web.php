@@ -49,6 +49,17 @@ Route::post('/logout', [SimpleAuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
+/**
+ * --------------------------------------------------------------------------
+ * PROFILE PICTURE SERVING (Symlink-Independent)
+ * --------------------------------------------------------------------------
+ * Serves employee profile pictures directly from storage
+ * Works even without public/storage symlink
+ */
+Route::get('/employee/profile-picture', [App\Http\Controllers\ProfilePictureController::class, 'show'])
+    ->name('employee.profile-picture');
+
+
 // Notifications
 Route::middleware('auth')->group(function () {
     Route::get('/notifications', function () {

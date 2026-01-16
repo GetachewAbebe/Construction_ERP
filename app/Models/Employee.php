@@ -137,4 +137,48 @@ class Employee extends Model
     {
         return $this->hasMany(Attendance::class);
     }
+
+    /**
+     * PREMIUM SOLUTION: Get profile picture URL with intelligent fallback
+     * Works regardless of symlink configuration or server setup
+     */
+    public function getProfilePictureUrlAttribute()
+    {
+        // If no profile picture is set, return null
+        if (empty($this->profile_picture)) {
+            return null;
+        }
+
+        $path = $this->profile_picture;
+
+        // Strategy 1: Try standard Laravel storage with symlink
+        $symlinkPath = public_path('storage/' . $path);
+        if (file_exists($symlinkPath)) {
+            return asset('storage/' . $path);
+        }
+
+        // Strategy 2: Try direct storage path (no symlink needed)
+        $directPath = storage_path('app/public/' . $path);
+        if (file_exists($directPath)) {
+            // Return route to a controller that serves the file directly
+            return route('employee.profile-picture', ['path' => $path]);
+        }
+
+        // Strategy 3: Check if it's already a full path in public directory
+        $publicPath = public_path($path);
+        if (file_exists($publicPath)) {
+            return asset($path);
+        }
+
+        // Strategy 4: Fallback - return the asset path anyway (browser will handle 404)
+        return asset('storage/' . $path);
+    }
+
+    /**
+     * Check if employee has a profile picture
+     */
+    public function hasProfilePicture()
+    {
+        return !empty($this->profile_picture) && $this->profile_picture_url !== null;
+    }
 }

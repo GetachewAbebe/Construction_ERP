@@ -27,8 +27,8 @@
                             <div class="position-relative d-inline-block">
                                 <label for="profile_picture" class="cursor-pointer">
                                     <div class="avatar-preview-box rounded-circle bg-light-soft border border-2 d-flex align-items-center justify-content-center overflow-hidden position-relative shadow-sm" style="width: 140px; height: 140px;">
-                                        @if(optional($user->employee)->profile_picture)
-                                            <img id="avatar_preview" src="{{ asset('storage/' . $user->employee->profile_picture) }}" alt="Preview" class="w-100 h-100 object-fit-cover">
+                                        @if(optional($user->employee)->profile_picture_url)
+                                            <img id="avatar_preview" src="{{ $user->employee->profile_picture_url }}" alt="Preview" class="w-100 h-100 object-fit-cover">
                                         @else
                                             <i class="bi bi-person-bounding-box fs-1 text-muted opacity-25" id="avatar_placeholder"></i>
                                             <img id="avatar_preview" src="#" alt="Preview" class="w-100 h-100 object-fit-cover d-none">

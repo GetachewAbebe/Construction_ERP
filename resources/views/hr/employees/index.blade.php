@@ -100,11 +100,12 @@
                 @forelse($employees as $e)
                     <tr>
                         <td class="ps-4">
-                            @if($e->profile_picture)
+                            @if($e->profile_picture_url)
                                 <div class="avatar-md hardened-glass p-1 rounded-circle shadow-sm" style="width: 45px; height: 45px;">
-                                    <img src="{{ asset('storage/' . $e->profile_picture) }}" 
+                                    <img src="{{ $e->profile_picture_url }}" 
                                          class="rounded-circle w-100 h-100" 
-                                         style="object-fit: cover;">
+                                         style="object-fit: cover;"
+                                         alt="{{ $e->first_name }}">
                                 </div>
                             @else
                                 <div class="avatar-md bg-erp-deep text-white rounded-circle d-flex align-items-center justify-content-center fw-800 shadow-sm" 
