@@ -12,29 +12,29 @@ class ProfilePictureController extends Controller
      * Serve profile picture directly from storage
      * This bypasses the need for public/storage symlink
      */
-    public function show(Request $request): StreamedResponse
+    public function show(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $path = $request->get('path');
         
         // Security: Prevent directory traversal attacks
-        if (str_contains($path, '..') || str_starts_with($path, '/')) {
-            abort(403, 'Invalid path');
+        if (!$path || str_contains($path, '..')) {
+             abort(404);
         }
 
-        // Check if file exists in storage
-        $fullPath = storage_path('app/public/' . $path);
-        
+        // Use Storage facade to check existence and get path (Server-Agnostic)
+        if (!Storage::disk('public')->exists($path)) {
+            abort(404, 'Image not found in storage');
+        }
+
+        $fullPath = Storage::disk('public')->path($path);
+
+        // Terminate if physical file is missing despite Storage saying yes (race condition/cache)
         if (!file_exists($fullPath)) {
-            abort(404, 'Image not found');
+            abort(404, 'Physical file missing');
         }
 
-        // Determine MIME type
-        $mimeType = mime_content_type($fullPath);
-        
-        // Stream the file directly
         return response()->file($fullPath, [
-            'Content-Type' => $mimeType,
-            'Cache-Control' => 'public, max-age=31536000', // Cache for 1 year
+            'Cache-Control' => 'public, max-age=31536000',
         ]);
     }
 }
