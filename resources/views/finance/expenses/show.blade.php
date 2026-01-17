@@ -1,346 +1,206 @@
 @extends('layouts.app')
-
-@section('title', 'Financial Report | Natanem Engineering')
-
-@push('head')
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-<style>
-    :root {
-        --report-navy: #0f172a;
-        --report-accent: #1e40af;
-        --report-border: #e2e8f0;
-    }
-
-    .report-body {
-        font-family: 'Outfit', sans-serif;
-        color: #334155;
-        background: #f8fafc;
-        min-height: 100vh;
-    }
-
-    .premium-document {
-        background: white;
-        width: 210mm; /* A4 Width */
-        min-height: 297mm; /* A4 Height */
-        margin: 0 auto;
-        padding: 15mm !important;
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Visual guide for screen only */
-    @media screen {
-        .premium-document {
-            border: 1px solid var(--report-border);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
-            margin-top: 2rem;
-            margin-bottom: 2rem;
-        }
-    }
-
-    .premium-document::before {
-        content: "";
-        position: absolute;
-        top: 0; left: 0; right: 0; height: 4px;
-        background: var(--report-navy);
-    }
-
-    .brand-title {
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        color: var(--report-navy);
-        font-size: 1.5rem;
-    }
-
-    .document-type {
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 2rem;
-        color: #64748b;
-        font-style: italic;
-        line-height: 1;
-    }
-
-    .info-label {
-        font-size: 0.65rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        color: #94a3b8;
-        letter-spacing: 0.05em;
-        margin-bottom: 0.2rem;
-    }
-
-    .info-value {
-        color: var(--report-navy);
-        font-weight: 600;
-        font-size: 1rem;
-    }
-
-    .amount-display {
-        font-size: 2.5rem;
-        font-weight: 800;
-        letter-spacing: -0.04em;
-        color: var(--report-navy);
-        line-height: 1;
-    }
-
-    .status-stamp {
-        border: 3px double;
-        padding: 0.4rem 1rem;
-        border-radius: 4px;
-        font-weight: 900;
-        text-transform: uppercase;
-        transform: rotate(-10deg);
-        position: absolute;
-        top: 80mm;
-        right: 15mm;
-        opacity: 0.6;
-        font-size: 1.25rem;
-        z-index: 10;
-    }
-
-    .stamp-approved { color: #10b981; border-color: #10b981; }
-    .stamp-rejected { color: #ef4444; border-color: #ef4444; }
-    .stamp-pending { color: #f59e0b; border-color: #f59e0b; }
-
-    @media screen {
-        .premium-document {
-            border: 1px solid var(--report-border);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            margin-top: 0;
-            margin-bottom: 2rem;
-        }
-    }
-
-    .premium-document {
-        background: white;
-        width: 210mm; 
-        min-height: 297mm;
-        margin: 0 auto;
-        padding: 15mm !important;
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .signature-line {
-        border-bottom: 1px solid #cbd5e1;
-        width: 100%;
-        height: 40px;
-        margin-bottom: 0.3rem;
-    }
-
-    .summary-card {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 1rem;
-    }
-
-    .description-box {
-        border: 1px solid #e2e8f0;
-        padding: 1rem;
-        border-radius: 8px;
-        min-height: 80px;
-        font-size: 0.95rem;
-        line-height: 1.5;
-        background: #fdfdfd;
-    }
-
-    @media print {
-        @page {
-            size: A4;
-            margin: 0;
-        }
-        .no-print { display: none !important; }
-        body { background: white !important; margin: 0 !important; padding: 0 !important; }
-        .report-viewer-mode { background: white !important; padding: 0 !important; display: block !important; }
-        .premium-document {
-            width: 210mm;
-            height: 297mm;
-            padding: 15mm !important;
-            border: none;
-            box-shadow: none;
-            margin: 0 !important;
-        }
-    }
-</style>
-@endpush
+@section('title', 'Expense Report #' . $expense->id)
 
 @section('content')
-<div class="no-print pt-2 pb-4">
-    {{-- Flash Messages --}}
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show hardened-glass border-0 shadow-sm stagger-entrance mb-4" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show hardened-glass border-0 shadow-sm stagger-entrance mb-4" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
+<div class="row justify-content-center stagger-entrance">
+    <div class="col-lg-9">
+        {{-- Report Controls (Screen Only) --}}
+        <div class="d-flex justify-content-between align-items-center mb-4 d-print-none">
+            <a href="{{ route('finance.expenses.index') }}" class="btn btn-white rounded-pill px-4 shadow-sm border-0 fw-bold">
+                <i class="bi bi-arrow-left me-2"></i>Back to Ledger
+            </a>
+            
+            <div class="d-flex gap-2">
+                @if(Auth::user()->hasAnyRole(['Administrator', 'FinancialManager', 'Financial Manager']) && $expense->status === 'pending')
+                    <button type="button" class="btn btn-white text-success rounded-pill px-4 shadow-sm border-0 fw-bold hover-lift" 
+                            onclick="if(confirm('Authorize this expense?')) document.getElementById('approve-form').submit()">
+                        <i class="bi bi-patch-check-fill me-2"></i>Approve
+                    </button>
+                    <form id="approve-form" action="{{ route('finance.expenses.approve', $expense) }}" method="POST" class="d-none">@csrf</form>
 
-    <div class="d-flex justify-content-between align-items-center">
-        <a href="{{ route('finance.expenses.index') }}" class="btn btn-link text-decoration-none text-muted p-0 fw-bold">
-            <i class="bi bi-arrow-left me-2"></i>Exit to Ledger
-        </a>
-        
-        <div class="d-flex gap-2">
-            @if(Auth::user()->hasAnyRole(['Administrator', 'FinancialManager']) && $expense->status === 'pending')
-                <button type="button" class="btn btn-white text-success rounded-pill px-4 shadow-sm border-0 fw-bold hover-lift" 
-                        onclick="if(confirm('Authorize this expense?')) document.getElementById('approve-form').submit()">
-                    <i class="bi bi-patch-check-fill me-2"></i>Approve
+                    <button type="button" class="btn btn-white text-danger rounded-pill px-4 shadow-sm border-0 fw-bold hover-lift" 
+                            onclick="if(confirm('Reject this transaction?')) document.getElementById('reject-form').submit()">
+                        <i class="bi bi-x-circle-fill me-2"></i>Reject
+                    </button>
+                    <form id="reject-form" action="{{ route('finance.expenses.reject', $expense) }}" method="POST" class="d-none">@csrf</form>
+                @endif
+
+                <button onclick="window.print()" class="btn btn-erp-deep rounded-pill px-4 shadow-sm border-0 fw-bold">
+                    <i class="bi bi-printer-fill me-2"></i>Print Report
                 </button>
-                <form id="approve-form" action="{{ route('finance.expenses.approve', $expense) }}" method="POST" class="d-none">@csrf</form>
+            </div>
+        </div>
 
-                <button type="button" class="btn btn-white text-danger rounded-pill px-4 shadow-sm border-0 fw-bold hover-lift" 
-                        onclick="if(confirm('Reject this transaction?')) document.getElementById('reject-form').submit()">
-                    <i class="bi bi-x-circle-fill me-2"></i>Reject
-                </button>
-                <form id="reject-form" action="{{ route('finance.expenses.reject', $expense) }}" method="POST" class="d-none">@csrf</form>
-            @endif
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show hardened-glass border-0 shadow-sm mb-4 d-print-none" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
 
-            <button onclick="window.print()" class="btn btn-erp-deep text-white rounded-pill px-4 shadow-sm fw-bold hover-lift">
-                <i class="bi bi-printer me-2"></i>Print Report
-            </button>
+        {{-- Printable Document --}}
+        <div class="card border-0 shadow-lg print-card overflow-hidden">
+            <div class="card-body p-4 p-md-5">
+                {{-- Header --}}
+                <div class="d-flex justify-content-between align-items-start mb-5 pb-4 border-bottom">
+                    <div>
+                        <h1 class="fw-900 text-erp-deep mb-2" style="letter-spacing: -2px;">EXPENSE REPORT</h1>
+                        <div class="text-muted fw-800 fs-5">ID: EX-{{ str_pad($expense->id, 6, '0', STR_PAD_LEFT) }}</div>
+                    </div>
+                    <div class="text-end">
+                        <h4 class="fw-800 text-erp-deep mb-1">Natanem Engineering</h4>
+                        <div class="text-muted small fw-700">
+                            Industrial & Civil Construction Solutions<br>
+                            Addis Ababa, Ethiopia<br>
+                            Generated on {{ now()->format('d M, Y H:i') }}
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Parties Info --}}
+                <div class="row g-4 mb-5">
+                    <div class="col-sm-6">
+                        <div class="small fw-800 text-muted text-uppercase mb-2" style="letter-spacing: 0.1em;">Requester Information</div>
+                        <div class="p-4 bg-light-soft rounded-4 border">
+                            <div class="fw-800 text-dark fs-5">{{ optional($expense->user)->name ?? 'System' }}</div>
+                            <div class="text-muted fw-700 small">{{ optional($expense->user)->email ?? 'no-email@natanem.com' }}</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="small fw-800 text-muted text-uppercase mb-2 text-sm-end" style="letter-spacing: 0.1em;">Project Assignment</div>
+                        <div class="p-4 bg-light-soft rounded-4 border text-sm-end">
+                            <div class="fw-800 text-erp-deep fs-5 text-truncate">{{ optional($expense->project)->name ?? 'General Expenditure' }}</div>
+                            <div class="text-muted fw-700 small">{{ optional($expense->project)->location ?? 'Addis Ababa' }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Financial Details --}}
+                <div class="bg-erp-deep rounded-4 p-4 mb-5 text-white shadow-sm">
+                    <div class="row align-items-center">
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="small fw-800 text-white-50 text-uppercase mb-1">Category</div>
+                            <div class="fw-800 fs-5">{{ strtoupper($expense->category) }}</div>
+                        </div>
+                        <div class="col-md-4 mb-3 mb-md-0 border-start border-white-10 ps-md-4">
+                            <div class="small fw-800 text-white-50 text-uppercase mb-1">Date of Record</div>
+                            <div class="fw-800 fs-5">{{ $expense->expense_date->format('d M, Y') }}</div>
+                        </div>
+                        <div class="col-md-4 text-md-end border-start border-white-10 ps-md-4">
+                            <div class="small fw-800 text-white-50 text-uppercase mb-1">Total Amount</div>
+                            <div class="fw-900 fs-2">
+                                <span class="fs-6 fw-400 opacity-75">ETB</span> {{ number_format($expense->amount, 2) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Descriptive Content --}}
+                <div class="mb-5">
+                    <div class="small fw-800 text-muted text-uppercase mb-2" style="letter-spacing: 0.1em;">Narrative & Description</div>
+                    <div class="p-4 bg-white border rounded-4 fw-700 text-dark" style="min-height: 120px; line-height: 1.8; font-size: 1.05rem;">
+                        {{ $expense->description ?? 'No detailed description provided for this transaction.' }}
+                    </div>
+                </div>
+
+                {{-- Status & Approvals --}}
+                <div class="row g-4 mb-5">
+                    <div class="col-md-12">
+                        <div class="p-4 rounded-4 border {{ $expense->status === 'approved' ? 'bg-success-soft border-success-subtle' : ($expense->status === 'rejected' ? 'bg-danger-soft border-danger-subtle' : 'bg-warning-soft border-warning-subtle') }}">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                                <div>
+                                    <div class="small fw-800 text-muted text-uppercase mb-1">Current Status</div>
+                                    <div class="fw-900 fs-4 text-{{ $expense->status === 'approved' ? 'success' : ($expense->status === 'rejected' ? 'danger' : 'warning') }}">
+                                        {{ strtoupper($expense->status ?? 'pending') }}
+                                    </div>
+                                </div>
+                                @if($expense->status === 'approved' && $expense->approved_by)
+                                    <div class="text-md-end">
+                                        <div class="small fw-800 text-muted text-uppercase mb-1">Digital Authorization</div>
+                                        <div class="fw-800 text-dark">{{ $expense->approvedBy->name ?? 'Administrator' }}</div>
+                                        <div class="text-muted small fw-700">{{ $expense->updated_at->format('d M, Y H:i') }}</div>
+                                    </div>
+                                @endif
+                                @if($expense->status === 'pending')
+                                    <div class="text-muted italic fw-700 small">Awaiting Review</div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Signatures Header --}}
+                <div class="row mt-5 pt-5 border-top signature-section">
+                    <div class="col-4 text-center">
+                        <div class="border-top border-dark mx-auto mb-2" style="width: 150px;"></div>
+                        <div class="small fw-800 text-muted text-uppercase">Prepared By</div>
+                    </div>
+                    <div class="col-4 text-center">
+                        <div class="border-top border-dark mx-auto mb-2" style="width: 150px;"></div>
+                        <div class="small fw-800 text-muted text-uppercase">Checked By</div>
+                    </div>
+                    <div class="col-4 text-center">
+                        <div class="border-top border-dark mx-auto mb-2" style="width: 150px;"></div>
+                        <div class="small fw-800 text-muted text-uppercase">Authorized By</div>
+                    </div>
+                </div>
+
+                {{-- Footer Summary --}}
+                <div class="text-center mt-5 pt-4 border-top border-light opacity-50 small fw-800 italic">
+                    NATANEM ENGINEERING SOLUTIONS - OFFICIAL ENTERPRISE RESOURCE DOCUMENT
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="premium-document">
-    
-    {{-- Status Stamp --}}
-    @if($expense->status === 'approved')
-        <div class="status-stamp stamp-approved">VERIFIED</div>
-    @elseif($expense->status === 'rejected')
-        <div class="status-stamp stamp-rejected">VOID</div>
-    @else
-        <div class="status-stamp stamp-pending">PENDING</div>
-    @endif
+<style>
+.bg-light-soft { background-color: #f8fafc; }
+.bg-success-soft { background-color: #f0fdf4; }
+.bg-danger-soft { background-color: #fef2f2; }
+.bg-warning-soft { background-color: #fffbeb; }
 
-    {{-- Header Branding --}}
-    <div class="row align-items-center mb-4 pb-4 border-bottom">
-        <div class="col-7">
-            <div class="brand-title">NATANEM ENGINEERING</div>
-            <p class="text-muted" style="font-size: 0.75rem; line-height: 1.4; margin-bottom: 0;">
-                Bole West, Addis Ababa, Ethiopia<br>
-                information@natanemengineering.com | +251 911 223 344
-            </p>
-        </div>
-        <div class="col-5 text-end">
-            <div class="document-type mb-2">Expenditure Report</div>
-            <span class="badge bg-light text-dark border px-3 py-2">
-                REF: {{ $expense->reference_no ?? 'EXP-REF-'.$expense->id }}
-            </span>
-        </div>
-    </div>
+.print-card {
+    border-radius: 20px;
+    background: white;
+}
 
-    {{-- Details Grid --}}
-    <div class="row g-4 mb-4">
-        <div class="col-6">
-            <div class="info-label">Project Site Name</div>
-            <div class="info-value">{{ optional($expense->project)->name ?? 'Unknown Project' }}</div>
-            <div class="text-muted" style="font-size: 0.8rem;">{{ $expense->project->location }}</div>
-        </div>
-        <div class="col-3">
-            <div class="info-label">Category</div>
-            <div class="info-value">{{ ucfirst($expense->category) }}</div>
-        </div>
-        <div class="col-3 text-end">
-            <div class="info-label">Transaction Date</div>
-            <div class="info-value">{{ $expense->expense_date->format('d M, Y') }}</div>
-        </div>
-    </div>
-
-    {{-- Scope/Description --}}
-    <div class="mb-4">
-        <div class="info-label">Narrative / Scope of Work</div>
-        <div class="description-box">
-            {{ $expense->description ?: 'No narrative provided.' }}
-        </div>
-    </div>
-
-    {{-- Amount & Financial Impact --}}
-    <div class="row align-items-center mb-5">
-        <div class="col-6">
-            <div class="info-label">Total Expenditure Amount</div>
-            <div class="amount-display">
-                <span style="font-size: 1.2rem; color: #94a3b8; font-weight: 400;">ETB</span> {{ number_format($expense->amount, 2) }}
-            </div>
-        </div>
-        <div class="col-6">
-            <div class="summary-card">
-                <div class="info-label mb-2">Project Financial Summary</div>
-                <div class="d-flex justify-content-between small mb-1">
-                    <span class="text-muted">Total Budget:</span>
-                    <span class="fw-bold">ETB {{ number_format($expense->project->budget, 2) }}</span>
-                </div>
-                <div class="d-flex justify-content-between small mb-1 text-danger">
-                    <span>Approved Spending:</span>
-                    <span class="fw-bold">ETB {{ number_format($expense->project->total_expenses, 2) }}</span>
-                </div>
-                <div class="d-flex justify-content-between small border-top pt-1 mt-1 text-success">
-                    <span class="fw-bold">Remaining:</span>
-                    <span class="fw-800">ETB {{ number_format($expense->project->budget - $expense->project->total_expenses, 2) }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Authorized Signatures --}}
-    <div class="row g-4 mt-auto">
-        <div class="col-4">
-            <div class="info-label">Prepared By</div>
-            <div class="signature-line"></div>
-            <div style="font-size: 0.85rem; font-weight: 700;">{{ optional($expense->user)->name ?? 'System User' }}</div>
-            <div class="text-muted" style="font-size: 0.65rem;">Recorded On: {{ $expense->created_at->format('d M, Y') }}</div>
-        </div>
-        <div class="col-4">
-            <div class="info-label">Checked By (PM)</div>
-            <div class="signature-line"></div>
-            <div class="text-muted small italic" style="font-size: 0.75rem;">Signature & Stamp</div>
-        </div>
-        <div class="col-4">
-            <div class="info-label">Authorized By</div>
-            @if($expense->status === 'approved')
-                <div class="signature-line border-0 d-flex align-items-end">
-                    <div class="text-success fw-bold small"><i class="bi bi-patch-check-fill me-1"></i>SECURED DIGITAL APPROVAL</div>
-                </div>
-                <div style="font-size: 0.85rem; font-weight: 700;">{{ optional($expense->approvedBy)->name ?? 'Administrator' }}</div>
-            @elseif($expense->status === 'rejected')
-                <div class="signature-line border-0 d-flex align-items-end">
-                    <div class="text-danger fw-bold small"><i class="bi bi-x-circle-fill me-1"></i>VOID / REJECTED</div>
-                </div>
-                <div style="font-size: 0.85rem; font-weight: 700;">{{ optional($expense->rejectedBy)->name ?? 'Administrator' }}</div>
-            @else
-                <div class="signature-line text-muted small pt-4 italic">Pending Approval</div>
-                <div style="font-size: 0.85rem;" class="text-muted">-</div>
-            @endif
-            <div class="text-muted" style="font-size: 0.65rem;">Auth Date: {{ $expense->status === 'pending' ? '---' : $expense->updated_at->format('d M, Y') }}</div>
-        </div>
-    </div>
-
-    {{-- Rejection Memorandum if applicable --}}
-    @if($expense->status === 'rejected')
-    <div class="mt-4 p-3 border border-danger rounded-3 bg-light">
-        <div class="info-label text-danger">Rejection Memorandum</div>
-        <p class="small text-danger mb-0">{{ $expense->rejection_reason }}</p>
-    </div>
-    @endif
-
-    {{-- Document Footer --}}
-    <div class="mt-5 pb-2 text-center border-top pt-3">
-        <div class="text-muted" style="font-size: 0.6rem; letter-spacing: 0.05em; line-height: 1.8;">
-            OFFICIAL FINANCIAL RECORD | GENERATED BY NATANEM ENGINEERING ERP<br>
-            DIGITAL FINGERPRINT: {{ strtoupper(substr(hash('sha256', $expense->id . $expense->created_at), 0, 16)) }} | PAGE 1 OF 1<br>
-            &copy; {{ date('Y') }} NATANEM ENGINEERING PLC.
-        </div>
-    </div>
-
-</div>
+@media print {
+    .main-sidebar, .main-navbar, .sidebar, .navbar, .btn-group, .d-print-none, .alert {
+        display: none !important;
+    }
+    .main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        background: white !important;
+    }
+    .print-card {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+    body {
+        background: white !important;
+    }
+    .container, .container-fluid {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .row {
+        margin: 0 !important;
+    }
+    .col-lg-9 {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+    }
+    .signature-section {
+        display: flex !important;
+        margin-top: 100px !important;
+    }
+}
+</style>
 @endsection
