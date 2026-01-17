@@ -174,22 +174,24 @@
     .btn-reset-circle {
         width: 58px;
         height: 58px;
-        border: 1.5px solid #edf2f7;
+        border: 2px solid #e2e8f0;
         border-radius: 50%;
         background: white;
-        color: #64748b;
+        color: #064e43;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        text-decoration: none;
     }
 
     .btn-reset-circle:hover {
-        border-color: var(--premium-green);
-        color: var(--premium-green);
-        transform: rotate(-45deg);
-        box-shadow: 0 10px 15px -3px rgba(6, 78, 67, 0.1);
+        border-color: #064e43;
+        background: #064e43;
+        color: white;
+        transform: rotate(180deg) scale(1.1);
+        box-shadow: 0 12px 20px rgba(6, 78, 67, 0.2);
     }
 </style>
 @endpush
@@ -237,8 +239,8 @@
                         <button type="submit" class="btn btn-premium-main flex-grow-1 shadow-lg py-3">
                             Search
                         </button>
-                        <a href="{{ route('inventory.loans.index') }}" class="btn btn-reset-circle" title="Reset Filters">
-                            <i class="bi bi-arrow-counterclockwise fs-4"></i>
+                        <a href="{{ route('inventory.loans.index') }}" class="btn-reset-circle" title="Reset Filters">
+                            <i class="bi bi-arrow-repeat fs-3"></i>
                         </a>
                     </div>
                 </div>
