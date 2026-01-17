@@ -135,40 +135,45 @@
     .signature-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 30px;
-        margin-top: 4rem;
+        gap: 40px;
+        margin-top: 5rem;
     }
 
     .signature-box {
-        text-align: center;
+        position: relative;
+        padding-top: 40px;
     }
 
     .signature-line {
-        border-top: 1px solid var(--slate-900);
-        margin-bottom: 10px;
-        height: 1px;
+        border-top: 1.5px solid var(--slate-900);
+        margin-bottom: 8px;
     }
 
     .signature-label {
-        font-size: 0.7rem;
+        font-size: 0.65rem;
         font-weight: 800;
         color: var(--slate-400);
         text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
 
     /* Security Stamp */
     .auth-stamp {
-        border: 2px solid #10b981;
+        position: absolute;
+        top: -10px;
+        left: 20px;
+        border: 3px solid #10b981;
         color: #10b981;
-        padding: 5px 15px;
-        font-weight: 900;
-        font-size: 0.8rem;
+        padding: 4px 12px;
+        font-weight: 950;
+        font-size: 0.75rem;
         text-transform: uppercase;
-        transform: rotate(-5deg);
-        display: inline-block;
-        margin-bottom: 10px;
+        transform: rotate(-12deg);
         border-radius: 4px;
-        opacity: 0.8;
+        background: rgba(255, 255, 255, 0.9);
+        z-index: 10;
+        pointer-events: none;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);
     }
 
     @media print {
@@ -316,22 +321,24 @@
 
         {{-- Signature Section --}}
         <div class="signature-grid">
-            <div class="signature-box text-start">
+            <div class="signature-box">
                 <div class="signature-line"></div>
-                <div class="fw-800 small">{{ optional($expense->user)->name }}</div>
+                <div class="fw-800 text-slate-800 small">{{ optional($expense->user)->name }}</div>
                 <div class="signature-label">Prepared By (Requester)</div>
             </div>
-            <div class="signature-box text-start">
+            
+            <div class="signature-box">
                 <div class="signature-line"></div>
-                <div class="fw-800 small text-slate-400">Signature Required</div>
-                <div class="signature-label">Certified By (Project Manager)</div>
+                <div class="fw-800 text-slate-300 small italic">Pending Site Stamp</div>
+                <div class="signature-label">Verified By (Project Manager)</div>
             </div>
-            <div class="signature-box text-start">
-                <div class="signature-line"></div>
+
+            <div class="signature-box">
                 @if($expense->status === 'approved')
                     <div class="auth-stamp">ELECTRONICALLY VERIFIED</div>
                 @endif
-                <div class="fw-800 small">{{ optional($expense->approvedBy)->name ?? 'Financial Officer' }}</div>
+                <div class="signature-line"></div>
+                <div class="fw-800 text-slate-800 small">{{ optional($expense->approvedBy)->name ?? 'Financial Officer' }}</div>
                 <div class="signature-label">Authorized By (Finance)</div>
             </div>
         </div>
