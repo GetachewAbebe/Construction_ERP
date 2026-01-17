@@ -144,20 +144,10 @@ class Employee extends Model
      */
     public function getProfilePictureUrlAttribute()
     {
-        // If no profile picture is set, return null
-        if (empty($this->profile_picture)) {
-            return null;
-        }
-
         $path = $this->profile_picture;
+        if (!$path) return null;
 
-        // Strategy 1: Check if accessible via public link (Symlink works)
-        if (file_exists(public_path('storage/' . $path))) {
-            return asset('storage/' . $path);
-        }
-
-        // Strategy 2: If public link fails (broken symlink), ALWAYS use secure route
-        // We skip checking storage_path() here to avoid permission/open_basedir issues
+        // Force usage of the secure controller route to bypass symlink issues
         return route('employee.profile-picture', ['path' => $path]);
     }
 
