@@ -1,15 +1,15 @@
 @extends('layouts.app')
-@section('title', 'System Configuration Matrix')
+@section('title', 'System Settings')
 
 @section('content')
 <div class="row align-items-center mb-4 stagger-entrance">
     <div class="col">
-        <h1 class="h3 mb-1 fw-800 text-erp-deep">System Configuration Matrix</h1>
-        <p class="text-muted mb-0">Define core organizational parameters and operational defaults for enterprise-wide deployment.</p>
+        <h1 class="h3 mb-1 fw-800 text-erp-deep">System Settings</h1>
+        <p class="text-muted mb-0">Manage core application settings.</p>
     </div>
     <div class="col-auto">
         <a href="{{ route('admin.dashboard') }}" class="btn btn-white rounded-pill px-4 shadow-sm border-0">
-            <i class="bi bi-arrow-left me-2"></i>Return to Command
+            <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
         </a>
     </div>
 </div>
@@ -37,45 +37,45 @@
                     <div class="mb-5">
                         <h5 class="fw-800 text-erp-deep mb-4 d-flex align-items-center gap-2">
                             <i class="bi bi-building text-primary"></i>
-                            Organizational Identity
+                            Organization Details
                         </h5>
                         
                         <div class="row g-4">
                             <div class="col-md-6">
-                                <label class="form-label small fw-800 text-muted text-uppercase">Corporate Designation</label>
+                                <label class="form-label small fw-800 text-muted text-uppercase">Company Name</label>
                                 <input type="text" name="company_name" 
                                        class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('company_name') is-invalid @enderror" 
                                        value="{{ old('company_name', $settings['company_name']) }}" 
                                        required>
-                                <small class="text-muted fw-bold mt-2 d-block">Official legal name of the organization.</small>
+                                <small class="text-muted fw-bold mt-2 d-block">Name of your company.</small>
                                 @error('company_name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label small fw-800 text-muted text-uppercase">Primary Digital Contact</label>
+                                <label class="form-label small fw-800 text-muted text-uppercase">Company Email</label>
                                 <input type="email" name="company_email" 
                                        class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('company_email') is-invalid @enderror" 
                                        value="{{ old('company_email', $settings['company_email']) }}" 
                                        required>
-                                <small class="text-muted fw-bold mt-2 d-block">Main email address for system communications.</small>
+                                <small class="text-muted fw-bold mt-2 d-block">Primary contact email.</small>
                                 @error('company_email') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label small fw-800 text-muted text-uppercase">Telephonic Gateway</label>
+                                <label class="form-label small fw-800 text-muted text-uppercase">Phone Number</label>
                                 <input type="text" name="company_phone" 
                                        class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('company_phone') is-invalid @enderror" 
                                        value="{{ old('company_phone', $settings['company_phone']) }}">
-                                <small class="text-muted fw-bold mt-2 d-block">Primary contact number for organizational reach.</small>
+                                <small class="text-muted fw-bold mt-2 d-block">Main contact number.</small>
                                 @error('company_phone') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label small fw-800 text-muted text-uppercase">Physical Coordinates</label>
+                                <label class="form-label small fw-800 text-muted text-uppercase">Address</label>
                                 <input type="text" name="company_address" 
                                        class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('company_address') is-invalid @enderror" 
                                        value="{{ old('company_address', $settings['company_address']) }}">
-                                <small class="text-muted fw-bold mt-2 d-block">Registered business address location.</small>
+                                <small class="text-muted fw-bold mt-2 d-block">Physical office address.</small>
                                 @error('company_address') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
                         </div>
@@ -84,12 +84,12 @@
                     <div class="mb-5">
                         <h5 class="fw-800 text-erp-deep mb-4 d-flex align-items-center gap-2">
                             <i class="bi bi-gear-fill text-success"></i>
-                            System Operational Defaults
+                            System Defaults
                         </h5>
                         
                         <div class="row g-4">
                             <div class="col-md-6">
-                                <label class="form-label small fw-800 text-muted text-uppercase">Temporal Zone Anchor</label>
+                                <label class="form-label small fw-800 text-muted text-uppercase">System Timezone</label>
                                 <select name="timezone" 
                                         class="form-select border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('timezone') is-invalid @enderror" 
                                         required>
@@ -97,34 +97,30 @@
                                     <option value="UTC" @selected(old('timezone', $settings['timezone']) == 'UTC')>UTC (Universal)</option>
                                     <option value="Africa/Nairobi" @selected(old('timezone', $settings['timezone']) == 'Africa/Nairobi')>Africa/Nairobi (EAT)</option>
                                 </select>
-                                <small class="text-muted fw-bold mt-2 d-block">System-wide timezone for all temporal operations.</small>
+                                <small class="text-muted fw-bold mt-2 d-block">Timezone for dates and times.</small>
                                 @error('timezone') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label small fw-800 text-muted text-uppercase">Date Rendering Format</label>
-                                <select name="date_format" 
-                                        class="form-select border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('date_format') is-invalid @enderror" 
-                                        required>
-                                    <option value="Y-m-d" @selected(old('date_format', $settings['date_format']) == 'Y-m-d')>YYYY-MM-DD (2026-01-15)</option>
-                                    <option value="d/m/Y" @selected(old('date_format', $settings['date_format']) == 'd/m/Y')>DD/MM/YYYY (15/01/2026)</option>
-                                    <option value="m/d/Y" @selected(old('date_format', $settings['date_format']) == 'm/d/Y')>MM/DD/YYYY (01/15/2026)</option>
-                                </select>
-                                <small class="text-muted fw-bold mt-2 d-block">Standard date display format across all modules.</small>
-                                @error('date_format') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                <label class="form-label small fw-800 text-muted text-uppercase">Currency Symbol</label>
+                                <input type="text" name="currency_symbol" 
+                                       class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('currency_symbol') is-invalid @enderror" 
+                                       value="{{ old('currency_symbol', $settings['currency_symbol'] ?? 'ETB') }}"
+                                       required>
+                                <small class="text-muted fw-bold mt-2 d-block">Symbol for financial values (e.g. ETB, $).</small>
+                                @error('currency_symbol') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label small fw-800 text-muted text-uppercase">Monetary Unit Designation</label>
-                                <select name="currency" 
-                                        class="form-select border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('currency') is-invalid @enderror" 
-                                        required>
-                                    <option value="ETB" @selected(old('currency', $settings['currency']) == 'ETB')>ETB (Ethiopian Birr)</option>
-                                    <option value="USD" @selected(old('currency', $settings['currency']) == 'USD')>USD (US Dollar)</option>
-                                    <option value="EUR" @selected(old('currency', $settings['currency']) == 'EUR')>EUR (Euro)</option>
+                                <label class="form-label small fw-800 text-muted text-uppercase">Date Format</label>
+                                <select name="date_format" 
+                                        class="form-select border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('date_format') is-invalid @enderror">
+                                    <option value="Y-m-d" @selected(old('date_format', $settings['date_format']) == 'Y-m-d')>YYYY-MM-DD (2023-12-31)</option>
+                                    <option value="d/m/Y" @selected(old('date_format', $settings['date_format']) == 'd/m/Y')>DD/MM/YYYY (31/12/2023)</option>
+                                    <option value="M j, Y" @selected(old('date_format', $settings['date_format']) == 'M j, Y')>MMM D, YYYY (Dec 31, 2023)</option>
                                 </select>
-                                <small class="text-muted fw-bold mt-2 d-block">Default currency for financial transactions.</small>
-                                @error('currency') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                <small class="text-muted fw-bold mt-2 d-block">Preferred display format for dates.</small>
+                                @error('date_format') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="col-md-6">

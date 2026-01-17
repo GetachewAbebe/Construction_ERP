@@ -185,21 +185,33 @@ class AdminUserController extends Controller
             $profilePath = $request->file('profile_picture')->store('employees', 'public');
         }
 
-        // Sync to Employee (Create if missing)
-        \App\Models\Employee::updateOrCreate(
-            ['user_id' => $user->id],
-            [
-                'first_name'      => $user->first_name,
-                'last_name'       => $user->last_name ?: 'User',
-                'email'           => $user->email,
-                'status'          => $user->status,
-                'phone'           => $user->phone_number,
-                'position'        => $user->position,
-                'department'      => $user->department,
-                'profile_picture' => $profilePath,
-                'hire_date'       => now(), // Default for auto-created records
-            ]
-        );
+        // Sync to Employee (Robust)
+        $employee = \App\Models\Employee::where('user_id', $user->id)->first();
+
+        if (!$employee) {
+            // Fallback: Check if an employee exists with this email (orphan record)
+            $employee = \App\Models\Employee::where('email', $user->email)->first();
+        }
+
+        $employeeData = [
+            'user_id'         => $user->id, // Ensure linked
+            'first_name'      => $user->first_name,
+            'last_name'       => $user->last_name ?: 'User',
+            'email'           => $user->email,
+            'status'          => $user->status,
+            'phone'           => $user->phone_number,
+            'position'        => $user->position,
+            'department'      => $user->department,
+            'profile_picture' => $profilePath,
+        ];
+
+        if ($employee) {
+            $employee->update($employeeData);
+        } else {
+            // Create new if absolutely no match found
+            $employeeData['hire_date'] = now();
+            \App\Models\Employee::create($employeeData);
+        }
 
         return redirect()
             ->route('admin.users.index')

@@ -1,15 +1,15 @@
 @extends('layouts.app')
-@section('title', 'Modify Authorization Tier')
+@section('title', 'Edit Role')
 
 @section('content')
 <div class="row align-items-center mb-4 stagger-entrance">
     <div class="col">
-        <h1 class="h3 mb-1 fw-800 text-erp-deep">Modify Authorization Tier</h1>
-        <p class="text-muted mb-0">Reconfigure access privileges and permission assignments for: <span class="text-erp-deep fw-800">{{ $role->name }}</span></p>
+        <h1 class="h3 mb-1 fw-800 text-erp-deep">Edit Role</h1>
+        <p class="text-muted mb-0">Edit role details and permissions for: <span class="text-erp-deep fw-800">{{ $role->name }}</span></p>
     </div>
     <div class="col-auto">
         <a href="{{ route('admin.roles.index') }}" class="btn btn-white rounded-pill px-4 shadow-sm border-0">
-            <i class="bi bi-arrow-left me-2"></i>Return to Roles
+            <i class="bi bi-arrow-left me-2"></i>Back to Roles
         </a>
     </div>
 </div>
@@ -24,12 +24,12 @@
                     <div class="mb-5">
                         <h5 class="fw-800 text-erp-deep mb-4 d-flex align-items-center gap-2">
                             <i class="bi bi-shield-fill-check text-primary"></i>
-                            Role Identity
+                            Role Details
                         </h5>
                         
                         <div class="row g-4">
                             <div class="col-md-6">
-                                <label class="form-label small fw-800 text-muted text-uppercase">Role Name (System Identifier)</label>
+                                <label class="form-label small fw-800 text-muted text-uppercase">Role Name</label>
                                 <input type="text" name="name" 
                                        class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('name') is-invalid @enderror" 
                                        value="{{ old('name', $role->name) }}" 
@@ -37,9 +37,9 @@
                                        @if(in_array($role->name, ['Administrator', 'HumanResourceManager', 'InventoryManager', 'FinancialManager'])) readonly @endif>
                                 <small class="text-muted fw-bold mt-2 d-block">
                                     @if(in_array($role->name, ['Administrator', 'HumanResourceManager', 'InventoryManager', 'FinancialManager']))
-                                        Core system role - name modification restricted.
+                                        System role - name cannot be changed.
                                     @else
-                                        Use PascalCase without spaces (e.g., ProjectManager).
+                                        Unique role name (e.g. ProjectManager).
                                     @endif
                                 </small>
                                 @error('name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
@@ -51,16 +51,15 @@
                                        class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('display_name') is-invalid @enderror" 
                                        value="{{ old('display_name', $role->display_name ?? '') }}" 
                                        placeholder="e.g., Project Manager">
-                                <small class="text-muted fw-bold mt-2 d-block">Human-readable name for display purposes.</small>
+                                <small class="text-muted fw-bold mt-2 d-block">Human-readable name.</small>
                                 @error('display_name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="col-12">
-                                <label class="form-label small fw-800 text-muted text-uppercase">Role Description</label>
+                                <label class="form-label small fw-800 text-muted text-uppercase">Description</label>
                                 <textarea name="description" rows="3" 
                                           class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('description') is-invalid @enderror" 
-                                          placeholder="Describe the purpose and scope of this role...">{{ old('description', $role->description ?? '') }}</textarea>
-                                <small class="text-muted fw-bold mt-2 d-block">Brief explanation of role responsibilities and access scope.</small>
+                                          placeholder="Description of the role...">{{ old('description', $role->description ?? '') }}</textarea>
                                 @error('description') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
                         </div>
@@ -69,7 +68,7 @@
                     <div class="mb-5">
                         <h5 class="fw-800 text-erp-deep mb-4 d-flex align-items-center gap-2">
                             <i class="bi bi-key-fill text-success"></i>
-                            Permission Assignment Matrix
+                            Permissions
                         </h5>
                         
                         @if($permissions->count() > 0)
@@ -104,7 +103,7 @@
                         @else
                             <div class="alert alert-info border-0 rounded-4">
                                 <i class="bi bi-info-circle-fill me-2"></i>
-                                No permissions have been defined yet. Visit the Permission Registry to create granular access privileges.
+                                No permissions found.
                             </div>
                         @endif
                     </div>
@@ -114,7 +113,7 @@
                             <i class="bi bi-x-circle me-2"></i>Cancel
                         </a>
                         <button type="submit" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-800 shadow-lg border-0">
-                            <i class="bi bi-check2-circle me-2"></i>Update Role
+                            <i class="bi bi-check2-circle me-2"></i>Save Changes
                         </button>
                     </div>
                 </form>

@@ -1,15 +1,15 @@
 @extends('layouts.app')
-@section('title', 'Provision Authorization Tier')
+@section('title', 'Create New Role')
 
 @section('content')
 <div class="row align-items-center mb-4 stagger-entrance">
     <div class="col">
-        <h1 class="h3 mb-1 fw-800 text-erp-deep">Provision Authorization Tier</h1>
-        <p class="text-muted mb-0">Establish a new role with designated access privileges and permission assignments.</p>
+        <h1 class="h3 mb-1 fw-800 text-erp-deep">Create New Role</h1>
+        <p class="text-muted mb-0">Create a new user role and assign permissions.</p>
     </div>
     <div class="col-auto">
         <a href="{{ route('admin.roles.index') }}" class="btn btn-white rounded-pill px-4 shadow-sm border-0">
-            <i class="bi bi-arrow-left me-2"></i>Return to Roles
+            <i class="bi bi-arrow-left me-2"></i>Back to Roles
         </a>
     </div>
 </div>
@@ -23,18 +23,18 @@
                     <div class="mb-5">
                         <h5 class="fw-800 text-erp-deep mb-4 d-flex align-items-center gap-2">
                             <i class="bi bi-shield-fill-check text-primary"></i>
-                            Role Identity
+                            Role Details
                         </h5>
                         
                         <div class="row g-4">
                             <div class="col-md-6">
-                                <label class="form-label small fw-800 text-muted text-uppercase">Role Name (System Identifier)</label>
+                                <label class="form-label small fw-800 text-muted text-uppercase">Role Name</label>
                                 <input type="text" name="name" 
                                        class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('name') is-invalid @enderror" 
                                        value="{{ old('name') }}" 
                                        placeholder="e.g., ProjectManager"
                                        required>
-                                <small class="text-muted fw-bold mt-2 d-block">Use PascalCase without spaces (e.g., ContentEditor, SystemAuditor).</small>
+                                <small class="text-muted fw-bold mt-2 d-block">Unique role name (e.g. ProjectManager).</small>
                                 @error('name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
@@ -44,16 +44,15 @@
                                        class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('display_name') is-invalid @enderror" 
                                        value="{{ old('display_name') }}" 
                                        placeholder="e.g., Project Manager">
-                                <small class="text-muted fw-bold mt-2 d-block">Human-readable name for display purposes.</small>
+                                <small class="text-muted fw-bold mt-2 d-block">Human-readable name.</small>
                                 @error('display_name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="col-12">
-                                <label class="form-label small fw-800 text-muted text-uppercase">Role Description</label>
+                                <label class="form-label small fw-800 text-muted text-uppercase">Description</label>
                                 <textarea name="description" rows="3" 
                                           class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('description') is-invalid @enderror" 
-                                          placeholder="Describe the purpose and scope of this role...">{{ old('description') }}</textarea>
-                                <small class="text-muted fw-bold mt-2 d-block">Brief explanation of role responsibilities and access scope.</small>
+                                          placeholder="Description of the role...">{{ old('description') }}</textarea>
                                 @error('description') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
                         </div>
@@ -62,7 +61,7 @@
                     <div class="mb-5">
                         <h5 class="fw-800 text-erp-deep mb-4 d-flex align-items-center gap-2">
                             <i class="bi bi-key-fill text-success"></i>
-                            Permission Assignment Matrix
+                            Permissions
                         </h5>
                         
                         @if($permissions->count() > 0)
@@ -96,7 +95,7 @@
                         @else
                             <div class="alert alert-info border-0 rounded-4">
                                 <i class="bi bi-info-circle-fill me-2"></i>
-                                No permissions have been defined yet. Visit the Permission Registry to create granular access privileges.
+                                No permissions found.
                             </div>
                         @endif
                     </div>
@@ -106,7 +105,7 @@
                             <i class="bi bi-x-circle me-2"></i>Cancel
                         </a>
                         <button type="submit" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-800 shadow-lg border-0">
-                            <i class="bi bi-check2-circle me-2"></i>Provision Role
+                            <i class="bi bi-check2-circle me-2"></i>Create Role
                         </button>
                     </div>
                 </form>

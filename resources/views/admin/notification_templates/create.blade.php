@@ -1,15 +1,15 @@
 @extends('layouts.app')
-@section('title', 'Register Communication Template')
+@section('title', 'Create Template')
 
 @section('content')
 <div class="row align-items-center mb-4 stagger-entrance">
     <div class="col">
-        <h1 class="h3 mb-1 fw-800 text-erp-deep">Register Communication Template</h1>
-        <p class="text-muted mb-0">Create a new email or notification template with dynamic variable support.</p>
+        <h1 class="h3 mb-1 fw-800 text-erp-deep">Create Template</h1>
+        <p class="text-muted mb-0">Create a new email or notification template.</p>
     </div>
     <div class="col-auto">
         <a href="{{ route('admin.notification-templates.index') }}" class="btn btn-white rounded-pill px-4 shadow-sm border-0">
-            <i class="bi bi-arrow-left me-2"></i>Return to Templates
+            <i class="bi bi-arrow-left me-2"></i>Back to Templates
         </a>
     </div>
 </div>
@@ -23,53 +23,53 @@
                     <div class="mb-5">
                         <h5 class="fw-800 text-erp-deep mb-4 d-flex align-items-center gap-2">
                             <i class="bi bi-tag-fill text-primary"></i>
-                            Template Identification
+                            Template Details
                         </h5>
                         
                         <div class="row g-4">
                             <div class="col-md-6">
-                                <label class="form-label small fw-800 text-muted text-uppercase">Template Key (System Identifier)</label>
+                                <label class="form-label small fw-800 text-muted text-uppercase">Template Key</label>
                                 <input type="text" name="key" 
                                        class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm font-monospace @error('key') is-invalid @enderror" 
                                        value="{{ old('key') }}" 
-                                       placeholder="e.g., leave_approved, user_welcome"
+                                       placeholder="e.g., leave_approved"
                                        required>
-                                <small class="text-muted fw-bold mt-2 d-block">Use lowercase with underscores (e.g., leave_approved).</small>
+                                <small class="text-muted fw-bold mt-2 d-block">Unique key (e.g. leave_approved).</small>
                                 @error('key') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label small fw-800 text-muted text-uppercase">Display Name</label>
+                                <label class="form-label small fw-800 text-muted text-uppercase">Template Name</label>
                                 <input type="text" name="name" 
                                        class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('name') is-invalid @enderror" 
                                        value="{{ old('name') }}" 
                                        placeholder="e.g., Leave Approval Notification"
                                        required>
-                                <small class="text-muted fw-bold mt-2 d-block">Human-readable template name for identification.</small>
+                                <small class="text-muted fw-bold mt-2 d-block">Name for this template.</small>
                                 @error('name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label small fw-800 text-muted text-uppercase">Communication Type</label>
+                                <label class="form-label small fw-800 text-muted text-uppercase">Type</label>
                                 <select name="type" 
                                         class="form-select border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('type') is-invalid @enderror" 
                                         required>
                                     <option value="email" @selected(old('type') == 'email')>
-                                        <i class="bi bi-envelope-fill"></i> Email Message
+                                        <i class="bi bi-envelope-fill"></i> Email
                                     </option>
                                     <option value="notification" @selected(old('type') == 'notification')>
-                                        <i class="bi bi-bell-fill"></i> In-App Notification
+                                        <i class="bi bi-bell-fill"></i> Notification
                                     </option>
                                     <option value="sms" @selected(old('type') == 'sms')>
-                                        <i class="bi bi-phone-fill"></i> SMS Message
+                                        <i class="bi bi-phone-fill"></i> SMS
                                     </option>
                                 </select>
-                                <small class="text-muted fw-bold mt-2 d-block">Select the delivery channel for this template.</small>
+                                <small class="text-muted fw-bold mt-2 d-block">Delivery method.</small>
                                 @error('type') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label small fw-800 text-muted text-uppercase">Status</label>
+                                <label class="form-label small fw-800 text-muted text-uppercase">Active Status</label>
                                 <div class="form-check form-switch mt-3">
                                     <input class="form-check-input" type="checkbox" name="is_active" id="is_active" 
                                            @checked(old('is_active', true))>
@@ -77,7 +77,7 @@
                                         Template is Active
                                     </label>
                                 </div>
-                                <small class="text-muted fw-bold mt-2 d-block">Inactive templates won't be used by the system.</small>
+                                <small class="text-muted fw-bold mt-2 d-block">Inactive templates won't be used.</small>
                             </div>
                         </div>
                     </div>
@@ -85,32 +85,34 @@
                     <div class="mb-5">
                         <h5 class="fw-800 text-erp-deep mb-4 d-flex align-items-center gap-2">
                             <i class="bi bi-file-text-fill text-success"></i>
-                            Message Content
+                            Content
                         </h5>
                         
                         <div class="row g-4">
                             <div class="col-12">
-                                <label class="form-label small fw-800 text-muted text-uppercase">Subject Line (Email Only)</label>
+                                <label class="form-label small fw-800 text-muted text-uppercase">Subject (Email Only)</label>
                                 <input type="text" name="subject" 
                                        class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('subject') is-invalid @enderror" 
                                        value="{{ old('subject') }}" 
                                        placeholder="e.g., Your Leave Request Has Been Approved">
-                                <small class="text-muted fw-bold mt-2 d-block">Email subject line. Use variables like {user_name} for dynamic content.</small>
+                                <small class="text-muted fw-bold mt-2 d-block">Subject line for emails.</small>
                                 @error('subject') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="col-12">
-                                <label class="form-label small fw-800 text-muted text-uppercase">Message Body</label>
-                                <textarea name="body" rows="10" 
+                                <label class="form-label small fw-800 text-muted text-uppercase">Body Content</label>
+                                <textarea name="body" rows="8" 
                                           class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm font-monospace @error('body') is-invalid @enderror" 
-                                          placeholder="Dear {user_name},&#10;&#10;Your leave request from {start_date} to {end_date} has been approved.&#10;&#10;Best regards,&#10;{company_name}"
+                                          placeholder="Hi {user_name}, Your request has been approved..."
                                           required>{{ old('body') }}</textarea>
-                                <small class="text-muted fw-bold mt-2 d-block">Template content with variable placeholders in curly braces.</small>
+                                <small class="text-muted fw-bold mt-2 d-block">
+                                    Available Variables: {user_name}, {action_url}, {app_name}
+                                </small>
                                 @error('body') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="col-12">
-                                <label class="form-label small fw-800 text-muted text-uppercase">Available Variables (comma-separated)</label>
+                                <label class="form-label small fw-800 text-muted text-uppercase">Available Variables</label>
                                 <input type="text" name="variables" 
                                        class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm font-monospace @error('variables') is-invalid @enderror" 
                                        value="{{ old('variables') }}" 

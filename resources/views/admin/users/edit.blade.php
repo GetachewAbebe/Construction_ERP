@@ -38,96 +38,96 @@
                                     </div>
                                 </label>
                                 <input type="file" name="profile_picture" id="profile_picture" class="d-none" accept="image/*" onchange="previewAvatar(this)">
+                                <div class="mt-3 fw-bold text-erp-deep text-uppercase small tracking-wide">Profile Picture</div>
                             </div>
-                            <div class="mt-3 fw-800 text-erp-deep text-uppercase small tracking-widest">Identify Revision</div>
                             @error('profile_picture') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="col-12">
-                            <h5 class="fw-800 text-erp-deep mb-4 d-flex align-items-center gap-2">
+                            <h5 class="fw-bold text-erp-deep mb-4 d-flex align-items-center gap-2">
                                 <i class="bi bi-shield-lock text-primary"></i>
-                                Security & Authorization
+                                Account & Security
                             </h5>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label small fw-800 text-muted text-uppercase">Legal Personnel Name</label>
-                            <input name="name" value="{{ old('name', $user->name) }}" required
+                            <label class="form-label small fw-bold text-muted text-uppercase">Full Name</label>
+                            <input name="name" value="{{ old('name', $user->name) }}" required placeholder="e.g. Getachew Abebe"
                                    class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('name') is-invalid @enderror"/>
                             @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label small fw-800 text-muted text-uppercase">Digital Signature (Email)</label>
+                            <label class="form-label small fw-bold text-muted text-uppercase">Email Address</label>
                             <input type="email" name="email" value="{{ old('email', $user->email) }}" required
                                    class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('email') is-invalid @enderror"/>
                             @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label small fw-800 text-muted text-uppercase">Update Credential <span class="fw-normal text-muted lowercase">(Leave blank to retain)</span></label>
-                            <input type="password" name="password" placeholder="••••••••"
+                            <label class="form-label small fw-bold text-muted text-uppercase">Change Password</label>
+                            <input type="password" name="password" placeholder="Leave blank to keep current"
                                    class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('password') is-invalid @enderror"/>
                             @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label small fw-800 text-muted text-uppercase">Authorization Tier (Role)</label>
+                            <label class="form-label small fw-bold text-muted text-uppercase">System Role</label>
                             <select name="role" required class="form-select border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('role') is-invalid @enderror">
                                 @foreach($roles as $role)
-                                    <option value="{{ $role }}" @selected($user->role === $role)>{{ $role }}</option>
+                                    <option value="{{ $role }}" @selected(old('role', $user->role) === $role)>{{ $role }}</option>
                                 @endforeach
                             </select>
                             @error('role') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="col-12 mt-5">
-                            <h5 class="fw-800 text-erp-deep mb-4 d-flex align-items-center gap-2">
-                                <i class="bi bi-activity text-success"></i>
-                                Professional Status & Metadata
+                            <h5 class="fw-bold text-erp-deep mb-4 d-flex align-items-center gap-2">
+                                <i class="bi bi-person-badge text-success"></i>
+                                Professional Details
                             </h5>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label small fw-800 text-muted text-uppercase">Telephonic Link</label>
-                            <input name="phone_number" value="{{ old('phone_number', $user->phone_number) }}" 
+                            <label class="form-label small fw-bold text-muted text-uppercase">Phone Number</label>
+                            <input name="phone_number" value="{{ old('phone_number', $user->phone_number) }}" placeholder="+251 ..."
                                    class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('phone_number') is-invalid @enderror"/>
                             @error('phone_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label small fw-800 text-muted text-uppercase">Account Vitality</label>
+                            <label class="form-label small fw-bold text-muted text-uppercase">Status</label>
                             <select name="status" class="form-select border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('status') is-invalid @enderror">
-                                <option value="Active" @selected(old('status', $user->status) == 'Active')>Active Duty</option>
-                                <option value="Inactive" @selected(old('status', $user->status) == 'Inactive')>Off-Registry</option>
-                                <option value="Suspended" @selected(old('status', $user->status) == 'Suspended')>Access Terminated</option>
+                                <option value="Active" @selected(old('status', $user->status) == 'Active')>Active</option>
+                                <option value="Inactive" @selected(old('status', $user->status) == 'Inactive')>Inactive</option>
+                                <option value="Suspended" @selected(old('status', $user->status) == 'Suspended')>Suspended</option>
                             </select>
                             @error('status') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label small fw-800 text-muted text-uppercase">Assigned Designation</label>
-                            <input name="position" value="{{ old('position', $user->position) }}" 
+                            <label class="form-label small fw-bold text-muted text-uppercase">Job Title / Position</label>
+                            <input name="position" value="{{ old('position', $user->position) }}" placeholder="e.g. Civil Engineer"
                                    class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('position') is-invalid @enderror"/>
                             @error('position') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label small fw-800 text-muted text-uppercase">Departmental Anchor</label>
-                            <input name="department" value="{{ old('department', $user->department) }}" 
+                            <label class="form-label small fw-bold text-muted text-uppercase">Department</label>
+                            <input name="department" value="{{ old('department', $user->department) }}" placeholder="e.g. Engineering"
                                    class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('department') is-invalid @enderror"/>
                             @error('department') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
                          <div class="col-12">
-                            <label class="form-label small fw-800 text-muted text-uppercase">Professional Synopsis</label>
-                            <textarea name="bio" rows="3" class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm">{{ old('bio', $user->bio) }}</textarea>
+                            <label class="form-label small fw-bold text-muted text-uppercase">Bio / Notes</label>
+                            <textarea name="bio" rows="3" class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm" placeholder="Additional information...">{{ old('bio', $user->bio) }}</textarea>
                         </div>
                     </div>
 
                     <div class="text-end mt-5">
-                        <button type="submit" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-800 shadow-lg border-0">
-                            Apply Archive Modifications
+                        <button type="submit" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-bold shadow-lg border-0">
+                            Update User
                         </button>
                     </div>
                 </form>

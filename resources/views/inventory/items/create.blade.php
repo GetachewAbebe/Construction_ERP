@@ -38,11 +38,11 @@
 <div class="row align-items-center mb-5">
     <div class="col">
         <h1 class="h3 mb-1 fw-800 text-erp-deep">Add Inventory Item</h1>
-        <p class="text-muted mb-0">Centralized material registration portal for industrial assets.</p>
+        <p class="text-muted mb-0">Add a new item to the inventory system.</p>
     </div>
     <div class="col-auto">
         <a href="{{ route('inventory.items.index') }}" class="btn btn-white rounded-pill px-4 py-2 shadow-sm border border-light fw-700">
-            <i class="bi bi-arrow-left me-2"></i>Back to Registry
+            <i class="bi bi-arrow-left me-2"></i>Back to Inventory
         </a>
     </div>
 </div>
@@ -53,29 +53,29 @@
                 <form action="{{ route('inventory.items.store') }}" method="POST">
                     @csrf
                     
-                    {{-- Section 1: Specifications --}}
+                    {{-- Section 1: Item Details --}}
                     <div class="mb-5">
                         <div class="d-flex align-items-center gap-3 mb-4">
                             <div class="section-icon-box">
                                 <i class="bi bi-box-seam"></i>
                             </div>
                             <div>
-                                <h5 class="fw-800 text-erp-deep mb-0">Item Specifications</h5>
-                                <p class="text-muted small mb-0">Define the core identity and technical parameters of the asset.</p>
+                                <h5 class="fw-800 text-erp-deep mb-0">Item Details</h5>
+                                <p class="text-muted small mb-0">Basic information about the item.</p>
                             </div>
                         </div>
 
                         <div class="row g-4">
                             {{-- Item No --}}
                             <div class="col-md-4">
-                                <label class="input-label-premium text-uppercase">Catalog Number (SKU)</label>
+                                <label class="input-label-premium text-uppercase">SKU / Code</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light border border-end-0 text-muted"><i class="bi bi-hash"></i></span>
                                     <input type="text" name="item_no" 
                                            class="form-control py-3 px-4 shadow-sm rounded-end-4 form-premium-input @error('item_no') is-invalid @enderror" 
                                            value="{{ old('item_no') }}" placeholder="e.g. CAT-001" required>
                                 </div>
-                                <div class="form-text x-small ps-1 text-muted">Unique identifier for stock tracking.</div>
+                                <div class="form-text x-small ps-1 text-muted">Unique code for the item.</div>
                                 @error('item_no') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
@@ -85,90 +85,96 @@
                                 <input type="text" name="name" 
                                        class="form-control rounded-4 py-3 px-4 shadow-sm form-premium-input @error('name') is-invalid @enderror" 
                                        value="{{ old('name') }}" placeholder="e.g. Electrical Mixer 750 liter" required>
-                                <div class="form-text x-small ps-1 text-muted">Primary name used in logs and reports.</div>
+                                <div class="form-text x-small ps-1 text-muted">Full name of the item.</div>
                                 @error('name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
                             {{-- Description --}}
                             <div class="col-12">
-                                <label class="input-label-premium text-uppercase">Technical Description</label>
+                                <label class="input-label-premium text-uppercase">Description</label>
                                 <textarea name="description" rows="3" 
                                           class="form-control rounded-4 py-3 px-4 shadow-sm form-premium-input @error('description') is-invalid @enderror" 
-                                          placeholder="Enter detailed specifications, model numbers, or usage guidelines...">{{ old('description') }}</textarea>
+                                          placeholder="Item description, specs, or notes...">{{ old('description') }}</textarea>
                                 @error('description') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
                         </div>
                     </div>
 
-                    {{-- Section 2: Logistics --}}
-                    <div class="mb-5 py-4 border-top border-light">
+                    {{-- Section 2: Stock & Valuation --}}
+                    <div class="mb-5">
                         <div class="d-flex align-items-center gap-3 mb-4">
                             <div class="section-icon-box" style="background: var(--erp-primary);">
-                                <i class="bi bi-layers"></i>
+                                <i class="bi bi-graph-up-arrow"></i>
                             </div>
                             <div>
-                                <h5 class="fw-800 text-erp-deep mb-0">Stock Logistics</h5>
-                                <p class="text-muted small mb-0">Manage quantity, placement, and intake scheduling.</p>
+                                <h5 class="fw-800 text-erp-deep mb-0">Stock & Value</h5>
+                                <p class="text-muted small mb-0">Inventory levels and pricing information.</p>
                             </div>
                         </div>
 
                         <div class="row g-4">
-                            {{-- Unit of Measurement --}}
-                            <div class="col-md-3">
-                                <label class="input-label-premium text-uppercase">Unit (UoM)</label>
-                                <select name="unit_of_measurement" class="form-select rounded-4 py-3 px-4 shadow-sm form-premium-input @error('unit_of_measurement') is-invalid @enderror" required>
-                                    <option value="" disabled {{ old('unit_of_measurement') ? '' : 'selected' }}>Select Unit...</option>
-                                    <option value="pcs" {{ old('unit_of_measurement') === 'pcs' ? 'selected' : '' }}>Pieces (pcs)</option>
-                                    <option value="kg" {{ old('unit_of_measurement') === 'kg' ? 'selected' : '' }}>Kilograms (kg)</option>
-                                    <option value="m" {{ old('unit_of_measurement') === 'm' ? 'selected' : '' }}>Meters (m)</option>
-                                    <option value="box" {{ old('unit_of_measurement') === 'box' ? 'selected' : '' }}>Boxes</option>
-                                    <option value="liters" {{ old('unit_of_measurement') === 'liters' ? 'selected' : '' }}>Litres (L)</option>
+                            <div class="col-md-6 col-lg-3">
+                                <label class="input-label-premium text-uppercase">Category</label>
+                                <select name="category" class="form-select rounded-4 py-3 px-4 shadow-sm form-premium-input @error('category') is-invalid @enderror">
+                                    <option value="Material" @selected(old('category') == 'Material')>Material</option>
+                                    <option value="Tool" @selected(old('category') == 'Tool')>Tool</option>
+                                    <option value="Machine" @selected(old('category') == 'Machine')>Machine</option>
+                                    <option value="Vehicle" @selected(old('category') == 'Vehicle')>Vehicle</option>
+                                    <option value="Other" @selected(old('category') == 'Other')>Other</option>
                                 </select>
-                                @error('unit_of_measurement') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                @error('category') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
-                            {{-- Quantity --}}
-                            <div class="col-md-3">
+                            <div class="col-md-6 col-lg-3">
+                                <label class="input-label-premium text-uppercase">Unit of Measure</label>
+                                <input type="text" name="unit" 
+                                       class="form-control rounded-4 py-3 px-4 shadow-sm form-premium-input @error('unit') is-invalid @enderror" 
+                                       value="{{ old('unit') }}" placeholder="e.g. Pcs, Kg, Liters" required>
+                                @error('unit') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                            </div>
+
+                            <div class="col-md-6 col-lg-3">
                                 <label class="input-label-premium text-uppercase">Initial Quantity</label>
-                                <div class="input-group">
-                                    <input type="number" min="0" name="quantity" 
-                                           class="form-control rounded-start-4 py-3 px-4 shadow-sm form-premium-input @error('quantity') is-invalid @enderror" 
-                                           value="{{ old('quantity') }}" placeholder="0" required>
-                                    <span class="input-group-text bg-light border border-start-0 text-muted small fw-bold"><i class="bi bi-plus-slash-minus"></i></span>
-                                </div>
+                                <input type="number" name="quantity" 
+                                       class="form-control rounded-4 py-3 px-4 shadow-sm form-premium-input @error('quantity') is-invalid @enderror" 
+                                       value="{{ old('quantity', 0) }}" min="0" required>
+                                <div class="form-text x-small ps-1 text-muted">Starting stock level.</div>
                                 @error('quantity') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
-
-                            {{-- Store Location --}}
-                            <div class="col-md-3">
-                                <label class="input-label-premium text-uppercase">Store Location</label>
+                            
+                            <div class="col-md-6 col-lg-3">
+                                <label class="input-label-premium text-uppercase">Unit Price (ETB)</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light border border-end-0 text-muted"><i class="bi bi-geo-alt"></i></span>
-                                    <input type="text" name="store_location" 
-                                           class="form-control py-3 px-4 shadow-sm rounded-end-4 form-premium-input @error('store_location') is-invalid @enderror" 
-                                           value="{{ old('store_location') }}" placeholder="e.g. Site B" required>
+                                    <input type="number" step="0.01" name="unit_price" 
+                                           class="form-control py-3 px-4 shadow-sm rounded-start-4 form-premium-input @error('unit_price') is-invalid @enderror" 
+                                           value="{{ old('unit_price') }}" placeholder="0.00">
+                                    <span class="input-group-text bg-light fw-bold text-muted border border-start-0">ETB</span>
                                 </div>
-                                @error('store_location') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                @error('unit_price') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
-                            {{-- In Date --}}
-                            <div class="col-md-3">
-                                <label class="input-label-premium text-uppercase">Arrival Date</label>
-                                <input type="date" name="in_date" 
-                                       class="form-control rounded-4 py-3 px-4 shadow-sm form-premium-input @error('in_date') is-invalid @enderror" 
-                                       value="{{ old('in_date', date('Y-m-d')) }}" required>
-                                @error('in_date') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                            <div class="col-12">
+                                <div class="p-4 rounded-4 bg-light-soft border border-light">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <label class="fw-800 text-erp-deep mb-1">Low Stock Alert Level</label>
+                                            <p class="small text-muted mb-md-0">Set a minimum quantity to trigger reorder notifications.</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="number" name="reorder_point" 
+                                                   class="form-control rounded-4 py-3 px-4 shadow-sm form-premium-input text-center fw-bold @error('reorder_point') is-invalid @enderror" 
+                                                   value="{{ old('reorder_point', 10) }}" min="0">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="d-flex gap-3 justify-content-end pt-4 border-top border-light">
-                        <a href="{{ route('inventory.items.index') }}" class="btn btn-white rounded-pill px-4 py-3 fw-700 shadow-sm border border-light">
-                            <i class="bi bi-x-circle me-2"></i>Cancel
-                        </a>
-                        <button type="submit" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-800 shadow-sm border-0"
-                                onclick="this.disabled=true; this.innerText='Processing...'; this.form.submit();">
-                            <i class="bi bi-save-fill me-2"></i>Register Item
+                    <div class="d-flex gap-3 justify-content-end pt-4 border-top">
+                        <a href="{{ route('inventory.items.index') }}" class="btn btn-light rounded-pill px-4 py-3 fw-bold text-muted">Cancel</a>
+                        <button type="submit" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-800 shadow-lg">
+                            <i class="bi bi-plus-lg me-2"></i>Add Item
                         </button>
                     </div>
                 </form>
