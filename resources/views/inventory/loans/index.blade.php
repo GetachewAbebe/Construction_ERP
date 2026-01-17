@@ -152,6 +152,45 @@
         background: linear-gradient(90deg, #064e43, #0d9488);
         border-radius: 100px;
     }
+    .btn-premium-return {
+        background: white;
+        border: 1.5px solid #edf2f7;
+        border-radius: 100px;
+        color: var(--premium-green);
+        font-weight: 700;
+        padding: 10px 24px;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+
+    .btn-premium-return:hover {
+        border-color: var(--premium-green);
+        background: var(--soft-green-bg);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(6, 78, 67, 0.05);
+    }
+
+    .btn-reset-circle {
+        width: 58px;
+        height: 58px;
+        border: 1.5px solid #edf2f7;
+        border-radius: 50%;
+        background: white;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-reset-circle:hover {
+        border-color: var(--premium-green);
+        color: var(--premium-green);
+        transform: rotate(-45deg);
+        box-shadow: 0 10px 15px -3px rgba(6, 78, 67, 0.1);
+    }
 </style>
 @endpush
 
@@ -198,8 +237,8 @@
                         <button type="submit" class="btn btn-premium-main flex-grow-1 shadow-lg py-3">
                             Search
                         </button>
-                        <a href="{{ route('inventory.loans.index') }}" class="btn btn-outline-light rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center border" style="width: 58px; height: 58px;">
-                            <i class="bi bi-arrow-counterclockwise fs-5 text-muted"></i>
+                        <a href="{{ route('inventory.loans.index') }}" class="btn btn-reset-circle" title="Reset Filters">
+                            <i class="bi bi-arrow-counterclockwise fs-4"></i>
                         </a>
                     </div>
                 </div>
