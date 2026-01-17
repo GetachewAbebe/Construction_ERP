@@ -185,12 +185,12 @@ class AdminUserController extends Controller
             $profilePath = $request->file('profile_picture')->store('employees', 'public');
         }
 
-        // Sync to Employee (Robust)
-        $employee = \App\Models\Employee::where('user_id', $user->id)->first();
+        // Sync to Employee (Robust & Soft-Delete Aware)
+        $employee = \App\Models\Employee::withTrashed()->where('user_id', $user->id)->first();
 
         if (!$employee) {
-            // Fallback: Check if an employee exists with this email (orphan record)
-            $employee = \App\Models\Employee::where('email', $user->email)->first();
+            // Fallback: Check if an employee exists with this email (orphan record or soft deleted)
+            $employee = \App\Models\Employee::withTrashed()->where('email', $user->email)->first();
         }
 
         $employeeData = [
@@ -206,6 +206,9 @@ class AdminUserController extends Controller
         ];
 
         if ($employee) {
+            if ($employee->trashed()) {
+                $employee->restore();
+            }
             $employee->update($employeeData);
         } else {
             // Create new if absolutely no match found

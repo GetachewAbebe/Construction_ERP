@@ -22,7 +22,7 @@ class UpdateUserRequest extends FormRequest
                 'string',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email')->ignore($this->user->id),
+                Rule::unique('users', 'email')->ignore($this->route('user')->id),
             ],
             'password'        => ['nullable', Password::min(8)],
             'role'            => ['required', Rule::in(['Administrator', 'HumanResourceManager', 'InventoryManager', 'FinancialManager'])],
