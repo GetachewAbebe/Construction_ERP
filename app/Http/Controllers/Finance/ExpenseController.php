@@ -157,10 +157,4 @@ class ExpenseController extends Controller
             return back()->with('error', 'Critical Error: Failed to delete expense record.');
         }
     }
-
-    public function report(Expense $expense)
-    {
-        return view('finance.expenses.report', compact('expense'));
-    }
 }
-

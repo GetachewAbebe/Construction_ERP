@@ -137,34 +137,35 @@
                             </div>
                         </td>
                         <td class="text-end pe-4">
-                            <div class="btn-group hardened-glass rounded-pill p-1 shadow-sm">
-                                <a href="{{ route('finance.expenses.show', $expense) }}" class="btn btn-sm btn-white rounded-pill px-3 border-0" title="View Ledger">
-                                    <i class="bi bi-eye-fill"></i>
+                            @if($expense->status === 'approved')
+                                <a href="{{ route('finance.expenses.show', $expense) }}" class="btn btn-sm btn-white rounded-pill px-4 shadow-sm border-0 fw-700 hover-lift">
+                                    <i class="bi bi-printer-fill me-2"></i>Print Report
                                 </a>
-                                @if($expense->status === 'approved')
-                                    <a href="{{ route('finance.expenses.report', $expense) }}" class="btn btn-sm btn-white rounded-pill px-3 border-0 text-dark" title="Print Report">
-                                        <i class="bi bi-printer-fill"></i>
+                            @else
+                                <div class="btn-group hardened-glass rounded-pill p-1 shadow-sm">
+                                    <a href="{{ route('finance.expenses.show', $expense) }}" class="btn btn-sm btn-white rounded-pill px-3 border-0" title="View Ledger">
+                                        <i class="bi bi-eye-fill"></i>
                                     </a>
-                                @endif
-                                @if($expense->status === 'pending')
-                                    <a href="{{ route('finance.expenses.edit', $expense) }}" class="btn btn-sm btn-white rounded-pill px-3 border-0 text-primary" title="Modify">
-                                        <i class="bi bi-pencil-fill"></i>
-                                    </a>
-                                @endif
-                                
-                                @if(Auth::user()->hasAnyRole(['Administrator', 'FinancialManager']) && $expense->status === 'pending')
-                                    <button type="button" class="btn btn-sm btn-white rounded-pill px-3 border-0 text-success" 
-                                            onclick="if(confirm('Authorize this expense?')) document.getElementById('approve-{{ $expense->id }}').submit()" title="Approve">
-                                        <i class="bi bi-check-lg"></i>
-                                        <form id="approve-{{ $expense->id }}" action="{{ route('finance.expenses.approve', $expense) }}" method="POST" class="d-none">@csrf</form>
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-white rounded-pill px-3 border-0 text-danger" 
-                                            onclick="if(confirm('Reject this transaction?')) document.getElementById('reject-{{ $expense->id }}').submit()" title="Reject">
-                                        <i class="bi bi-x-lg"></i>
-                                        <form id="reject-{{ $expense->id }}" action="{{ route('finance.expenses.reject', $expense) }}" method="POST" class="d-none">@csrf</form>
-                                    </button>
-                                @endif
-                            </div>
+                                    @if($expense->status === 'pending')
+                                        <a href="{{ route('finance.expenses.edit', $expense) }}" class="btn btn-sm btn-white rounded-pill px-3 border-0 text-primary" title="Modify">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </a>
+                                    @endif
+                                    
+                                    @if(Auth::user()->hasAnyRole(['Administrator', 'FinancialManager', 'Financial Manager']) && $expense->status === 'pending')
+                                        <button type="button" class="btn btn-sm btn-white rounded-pill px-3 border-0 text-success" 
+                                                onclick="if(confirm('Authorize this expense?')) document.getElementById('approve-{{ $expense->id }}').submit()" title="Approve">
+                                            <i class="bi bi-check-lg"></i>
+                                            <form id="approve-{{ $expense->id }}" action="{{ route('finance.expenses.approve', $expense) }}" method="POST" class="d-none">@csrf</form>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-white rounded-pill px-3 border-0 text-danger" 
+                                                onclick="if(confirm('Reject this transaction?')) document.getElementById('reject-{{ $expense->id }}').submit()" title="Reject">
+                                            <i class="bi bi-x-lg"></i>
+                                            <form id="reject-{{ $expense->id }}" action="{{ route('finance.expenses.reject', $expense) }}" method="POST" class="d-none">@csrf</form>
+                                        </button>
+                                    @endif
+                                </div>
+                            @endif
                         </td>
                     </tr>
                 @empty
