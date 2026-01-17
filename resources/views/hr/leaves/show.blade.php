@@ -1,139 +1,160 @@
 @extends('layouts.app')
-@section('title', 'Leave Request Detail')
+@section('title', 'Leave Authorization Record')
 
 @section('content')
-<div class="row align-items-center mb-4 d-print-none stagger-entrance">
-    <div class="col">
-        <h1 class="h3 mb-1 fw-800 text-erp-deep">Leave Specification</h1>
-        <p class="text-muted mb-0">Detailed analysis and formal documentation of leave filing #LRQ-{{ str_pad($leave->id, 5, '0', STR_PAD_LEFT) }}</p>
-    </div>
-    <div class="col-auto">
-        <button onclick="window.print()" class="btn btn-white rounded-pill px-4 shadow-sm border-0">
-            <i class="bi bi-printer me-2"></i>Print Official Report
-        </button>
-        <a href="{{ route('hr.leaves.index') }}" class="btn btn-erp-deep rounded-pill px-4 shadow-sm border-0 ms-2">
-            <i class="bi bi-arrow-left me-2"></i>Return to Ledger
-        </a>
-    </div>
-</div>
-
-<div class="card hardened-glass border-0 shadow-sm overflow-hidden p-0 stagger-entrance" style="animation-delay: 0.1s;">
-    {{-- Header / Brand Section --}}
-    <div class="p-5 text-white" style="background: linear-gradient(135deg, var(--erp-deep), var(--erp-glass-dark));">
-        <div class="row align-items-center">
-            <div class="col">
-                <div class="text-uppercase small fw-bold mb-2 opacity-75">Formal Personnel Respite Filing</div>
-                <h2 class="fw-800 mb-0">LEAVE AUTHORIZATION DOCUMENT</h2>
-            </div>
-            <div class="col-auto text-end">
-                <div class="fw-800 fs-4 mb-0">#LRQ-{{ str_pad($leave->id, 5, '0', STR_PAD_LEFT) }}</div>
-                <div class="small fw-bold opacity-75">Filed on: {{ $leave->created_at->format('M d, Y') }}</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="card-body p-5">
-        <div class="row g-5">
-            {{-- Employee Section --}}
-            <div class="col-md-6 border-end">
-                <h5 class="fw-800 text-erp-deep mb-4"><i class="bi bi-person-badge me-2 text-primary"></i>Associate Credentials</h5>
-                <div class="mb-4">
-                    <label class="small fw-bold text-muted text-uppercase d-block mb-1">Full Identity</label>
-                    <div class="fw-800 text-dark fs-5">{{ $leave->employee->name }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-6">
-                        <label class="small fw-bold text-muted text-uppercase d-block mb-1">Functional Unit</label>
-                        <div class="fw-700 text-erp-deep">{{ $leave->employee->department ?? 'General Operations' }}</div>
-                    </div>
-                    <div class="col-6">
-                        <label class="small fw-bold text-muted text-uppercase d-block mb-1">Professional Rank</label>
-                        <div class="fw-700 text-erp-deep">{{ $leave->employee->position ?? 'Professional associate' }}</div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Period Section --}}
-            <div class="col-md-6">
-                <h5 class="fw-800 text-erp-deep mb-4"><i class="bi bi-calendar-check me-2 text-primary"></i>Temporal Parameters</h5>
-                <div class="d-flex align-items-center gap-4 mb-4 p-3 bg-light-soft rounded-4 border">
-                    <div class="text-center px-3 border-end">
-                        <label class="small fw-bold text-muted text-uppercase d-block">Start</label>
-                        <div class="fw-800 text-erp-deep fs-5">{{ $leave->start_date->format('M d') }}</div>
-                        <small class="text-muted fw-bold">{{ $leave->start_date->format('Y') }}</small>
-                    </div>
-                    <div class="flex-grow-1 text-center py-2">
-                        <i class="bi bi-arrow-right fs-4 text-muted"></i>
-                        <div class="badge bg-primary rounded-pill px-3">{{ $leave->start_date->diffInDays($leave->end_date) + 1 }} Working Days</div>
-                    </div>
-                    <div class="text-center px-3 border-start">
-                        <label class="small fw-bold text-muted text-uppercase d-block">End</label>
-                        <div class="fw-800 text-erp-deep fs-5">{{ $leave->end_date->format('M d') }}</div>
-                        <small class="text-muted fw-bold">{{ $leave->end_date->format('Y') }}</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <hr class="my-5 opacity-10">
-
-        {{-- Reason Section --}}
-        <div class="mb-5">
-            <h5 class="fw-800 text-erp-deep mb-4"><i class="bi bi-chat-left-dots me-2 text-primary"></i>Contextual Rationale</h5>
-            <div class="p-4 bg-light-soft rounded-4 border-start border-primary border-4 shadow-sm">
-                <p class="mb-0 text-dark fw-600 italic">"{{ $leave->reason }}"</p>
-            </div>
-        </div>
-
-        <div class="row align-items-center">
-            <div class="col">
-                <h5 class="fw-800 text-erp-deep mb-3"><i class="bi bi-shield-check me-2 text-primary"></i>Adjudication Status</h5>
-                @php
-                    $statusColor = match($leave->status) {
-                        'Approved' => 'success',
-                        'Rejected' => 'danger',
-                        default   => 'warning'
-                    };
-                @endphp
-                <div class="d-flex align-items-center gap-3">
-                    <span class="badge bg-{{ $statusColor }} fs-6 rounded-pill px-4 py-2 shadow-sm border-0">
-                        {{ strtoupper($leave->status) }}
-                    </span>
-                    @if($leave->status === 'Approved')
-                        <small class="text-success fw-bold"><i class="bi bi-check-all me-1"></i>Execution Authorized</small>
-                    @elseif($leave->status === 'Pending')
-                        <small class="text-warning fw-bold"><i class="bi bi-hourglass-split me-1"></i>Awaiting Operational Review</small>
-                    @endif
-                </div>
-            </div>
-            <div class="col-md-5 text-end">
-                <div class="p-4 border rounded-4 d-inline-block text-start bg-white shadow-sm" style="min-width: 250px;">
-                    <div class="mb-4">
-                        <label class="small fw-bold text-muted text-uppercase d-block mb-3">Operational Authentication</label>
-                        <div class="border-bottom border-dark border-2 mb-2" style="height: 40px; border-style: dotted !important;"></div>
-                        <div class="small text-muted fw-bold">Executive Signature / Stamp</div>
-                    </div>
-                    <div class="small fw-bold text-erp-deep mt-2">DATED: <span class="ms-1 border-bottom border-dark">__________________</span></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="card-footer bg-light p-4 text-center border-0 opacity-75">
-        <small class="fw-bold text-muted">Generated by NATANEM ERP SYSTEM - Core HR Module • Operational Compliance Verified</small>
-    </div>
-</div>
-
+@push('head')
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-@media print {
-    body { background: white !important; padding: 0 !important; }
-    .stagger-entrance { animation: none !important; opacity: 1 !important; transform: none !important; }
-    .hardened-glass { background: white !important; box-shadow: none !important; border: 1px solid #eee !important; }
-    .card { border: none !important; }
-    .navbar, .sidebar { display: none !important; }
-    .main-content { margin: 0 !important; padding: 0 !important; }
-    .card-footer { border-top: 1px solid #eee !important; }
-    @page { margin: 2cm; }
-}
+    :root {
+        --corporate-blue: #1e3a8a;
+        --slate-900: #0f172a;
+        --slate-600: #475569;
+        --slate-400: #94a3b8;
+        --border-color: #e2e8f0;
+        --bg-soft: #f8fafc;
+    }
+
+    body { font-family: 'Outfit', sans-serif; }
+
+    .premium-document {
+        background: white;
+        width: 210mm;
+        min-height: 297mm;
+        margin: 0 auto;
+        padding: 15mm !important;
+        position: relative;
+        color: var(--slate-900);
+        box-sizing: border-box;
+    }
+
+    @media screen {
+        .document-wrapper { background: #f1f5f9; padding: 2.5rem 1rem; min-height: 100vh; }
+        .premium-document { box-shadow: 0 20px 50px -12px rgba(0,0,0,0.1); border-radius: 4px; }
+    }
+
+    .logo-text { font-weight: 900; font-size: 1.75rem; letter-spacing: -1px; color: var(--corporate-blue); line-height: 1; }
+    .voucher-header-title { font-weight: 800; font-size: 2.25rem; color: var(--slate-900); letter-spacing: -1.5px; }
+    
+    .info-section { border-top: 2px solid var(--slate-900); padding-top: 1.5rem; margin-bottom: 2rem; }
+    .info-item-label { font-size: 0.7rem; font-weight: 800; color: var(--slate-400); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.25rem; }
+    .info-item-value { font-weight: 700; font-size: 1rem; color: var(--slate-900); }
+
+    .auth-stamp {
+        border: 3px solid #10b981;
+        color: #10b981;
+        padding: 5px 15px;
+        font-weight: 950;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        transform: rotate(-10deg);
+        display: inline-block;
+        border-radius: 4px;
+        opacity: 0.8;
+    }
+
+    @media print {
+        @page { size: A4; margin: 0; }
+        .no-print { display: none !important; }
+        .document-wrapper { padding: 0 !important; background: white !important; }
+        .premium-document { box-shadow: none !important; width: 100%; padding: 12mm !important; }
+    }
 </style>
+@endpush
+
+<div class="document-wrapper">
+    <div class="container-fluid no-print mb-4">
+        <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded-3 shadow-sm" style="max-width: 210mm; margin: 0 auto;">
+            <a href="{{ route('hr.leaves.index') }}" class="btn btn-link text-decoration-none text-muted fw-bold">
+                <i class="bi bi-chevron-left"></i> Back to HR Ledger
+            </a>
+            <button onclick="window.print()" class="btn btn-dark rounded-pill px-4 fw-bold">
+                <i class="bi bi-printer-fill me-2"></i>Print Official Report
+            </button>
+        </div>
+    </div>
+
+    <div class="premium-document">
+        <div class="d-flex justify-content-between align-items-start mb-5">
+            <div>
+                <div class="logo-text mb-1">NATANEM</div>
+                <div class="small fw-800 text-slate-600 uppercase tracking-widest mb-2">Human Resource Management</div>
+            </div>
+            <div class="text-end">
+                <div class="voucher-header-title mb-2">LEAVE AUTHORIZATION</div>
+                <div class="badge bg-dark text-white rounded-px px-3 py-2 fw-800">FILING ID #LRQ-{{ str_pad($leave->id, 5, '0', STR_PAD_LEFT) }}</div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="row g-4 mb-4">
+                <div class="col-6">
+                    <div class="info-item-label">Employee Identification</div>
+                    <div class="info-item-value fs-5">{{ $leave->employee->name }}</div>
+                    <div class="small text-slate-400 fw-700 mt-1">{{ $leave->employee->position ?? 'Operations associate' }} | {{ $leave->employee->department ?? 'General Operations' }}</div>
+                </div>
+                <div class="col-6 text-end">
+                    <div class="info-item-label">Adjudicated Status</div>
+                    <div class="fw-900 fs-3 text-{{ $leave->status === 'Approved' ? 'success' : ($leave->status === 'Rejected' ? 'danger' : 'warning') }}">
+                        {{ strtoupper($leave->status) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h5 class="fw-900 text-slate-900 mb-4 border-start border-4 border-dark ps-3">Temporal Metrics</h5>
+        <div class="row g-4 mb-5">
+            <div class="col-4">
+                <div class="p-4 bg-light border-start border-4 border-dark h-100">
+                    <div class="info-item-label">Commencement Date</div>
+                    <div class="fw-900 text-slate-900 fs-4">{{ $leave->start_date->format('d M, Y') }}</div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="p-4 bg-light border-start border-4 border-dark h-100">
+                    <div class="info-item-label">Conclusion Date</div>
+                    <div class="fw-900 text-slate-900 fs-4">{{ $leave->end_date->format('d M, Y') }}</div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="p-4 bg-slate-900 text-white h-100 text-center rounded-3">
+                    <div class="info-item-label text-slate-400">Total Duration</div>
+                    <div class="fw-900 display-6 lh-1">{{ $leave->start_date->diffInDays($leave->end_date) + 1 }}</div>
+                    <div class="small fw-800 uppercase text-slate-400">Working Days</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-5">
+            <h5 class="fw-900 text-slate-900 mb-3 border-start border-4 border-dark ps-3">Narrative & Rationale</h5>
+            <div class="p-4 bg-white border-2 border-slate-100 rounded-3 text-slate-600 fw-500 lh-lg shadow-sm font-italic">
+                "{{ $leave->reason ?? 'Official personal respite request documented for employee leave management.' }}"
+            </div>
+        </div>
+
+        <div class="row mt-auto pt-5 border-top border-4 border-dark">
+            <div class="col-4">
+                <div class="border-top border-dark mx-auto mb-2 text-center" style="width: 150px;"></div>
+                <div class="text-center small fw-800 text-slate-400 uppercase">Employee Signature</div>
+                <div class="text-center fw-900 small text-slate-900 mt-1">{{ $leave->employee->name }}</div>
+            </div>
+            <div class="col-4">
+                <div class="border-top border-dark mx-auto mb-2 text-center" style="width: 150px;"></div>
+                <div class="text-center small fw-800 text-slate-400 uppercase">Supervisor Approval</div>
+            </div>
+            <div class="col-4 text-center">
+                @if($leave->status === 'Approved')
+                    <div class="auth-stamp mb-2">VERIFIED BY HR</div>
+                @endif
+                <div class="border-top border-dark mx-auto mb-2" style="width: 150px;"></div>
+                <div class="small fw-800 text-slate-400 uppercase">HR Director Signature</div>
+                <div class="x-small text-slate-400 mt-1 d-block">Authorized: {{ $leave->updated_at->format('Y-m-d H:i') }}</div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5 pt-3 opacity-25">
+            <div class="fw-900 fs-5 text-slate-900">NATANEM ENGINEERING PERSONNEL ARCHIVE</div>
+            <div class="x-small fw-700 uppercase tracking-widest mt-1">HR Compliance Document | Generated via EPR Enterprise</div>
+        </div>
+    </div>
+</div>
 @endsection

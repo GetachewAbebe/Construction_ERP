@@ -1,361 +1,185 @@
 @extends('layouts.app')
-
-@section('title', 'Loan Details – Inventory')
+@section('title', 'Item Lending Authorization | Natanem')
 
 @section('content')
-<div class="container py-4">
-    {{-- Screen Header (hidden on print) --}}
-    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom d-print-none">
-        <div>
-            <a href="{{ route('inventory.loans.index') }}" class="text-decoration-none text-muted small">
-                ← Back to Item Lending
+@push('head')
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --corporate-blue: #1e3a8a;
+        --slate-900: #0f172a;
+        --slate-600: #475569;
+        --slate-400: #94a3b8;
+        --border-color: #e2e8f0;
+        --bg-soft: #f8fafc;
+    }
+
+    body { font-family: 'Outfit', sans-serif; }
+
+    .premium-document {
+        background: white;
+        width: 210mm;
+        min-height: 297mm;
+        margin: 0 auto;
+        padding: 15mm !important;
+        position: relative;
+        color: var(--slate-900);
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+    }
+
+    @media screen {
+        .document-wrapper { background: #f1f5f9; padding: 2.5rem 1rem; min-height: 100vh; }
+        .premium-document { box-shadow: 0 20px 50px -12px rgba(0,0,0,0.1); border-radius: 4px; }
+    }
+
+    .logo-text { font-weight: 900; font-size: 1.75rem; letter-spacing: -1px; color: var(--corporate-blue); line-height: 1; }
+    .voucher-header-title { font-weight: 800; font-size: 2.25rem; color: var(--slate-900); letter-spacing: -1.5px; }
+    
+    .info-section { border-top: 2px solid var(--slate-900); padding-top: 1.5rem; margin-bottom: 2rem; }
+    .info-item-label { font-size: 0.7rem; font-weight: 800; color: var(--slate-400); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.25rem; }
+    .info-item-value { font-weight: 700; font-size: 1rem; color: var(--slate-900); }
+
+    .official-table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
+    .official-table th { text-align: left; font-size: 0.75rem; font-weight: 800; color: var(--slate-600); text-transform: uppercase; padding: 12px 15px; border-bottom: 2px solid var(--slate-900); background: var(--bg-soft); }
+    .official-table td { padding: 20px 15px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
+
+    .auth-stamp {
+        border: 3px solid #10b981;
+        color: #10b981;
+        padding: 5px 15px;
+        font-weight: 950;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        transform: rotate(-8deg);
+        display: inline-block;
+        border-radius: 4px;
+        opacity: 0.8;
+    }
+
+    @media print {
+        @page { size: A4; margin: 0; }
+        .no-print { display: none !important; }
+        .document-wrapper { padding: 0 !important; background: white !important; }
+        .premium-document { box-shadow: none !important; width: 100%; padding: 12mm !important; }
+        body { background: white !important; }
+    }
+</style>
+@endpush
+
+<div class="document-wrapper">
+    <div class="container-fluid no-print mb-4">
+        <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded-3 shadow-sm" style="max-width: 210mm; margin: 0 auto;">
+            <a href="{{ route('inventory.loans.index') }}" class="btn btn-link text-decoration-none text-muted fw-bold">
+                <i class="bi bi-chevron-left"></i> Back to Inventory Ledger
             </a>
-            <h1 class="h4 mb-0 mt-2">Item Loan Request</h1>
-        </div>
-        <div>
-            @php
-                $statusConfig = match($loan->status) {
-                    'approved' => ['class' => 'success', 'text' => 'APPROVED'],
-                    'returned' => ['class' => 'info', 'text' => 'RETURNED'],
-                    'rejected' => ['class' => 'danger', 'text' => 'REJECTED'],
-                    default    => ['class' => 'warning', 'text' => 'PENDING'],
-                };
-            @endphp
-            <span class="badge bg-{{ $statusConfig['class'] }} fs-6 px-3 py-2">{{ $statusConfig['text'] }}</span>
+            <div class="d-flex gap-2">
+                @if($loan->status === 'approved' && !$loan->returned_at)
+                    <form action="{{ route('inventory.loans.mark-returned', $loan) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm">Mark Returned</button>
+                    </form>
+                @endif
+                <button onclick="window.print()" class="btn btn-dark rounded-pill px-4 fw-bold">
+                    <i class="bi bi-printer-fill me-2"></i>Print Official Voucher
+                </button>
+            </div>
         </div>
     </div>
 
-    {{-- Flash messages --}}
-    @if(session('status'))
-        <div class="alert alert-success alert-dismissible fade show d-print-none" role="alert">
-            {{ session('status') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
-    {{-- Print Layout --}}
-    <div class="print-document">
-        {{-- Company Header --}}
-        <div class="text-center mb-3 pb-2 border-bottom">
-            <h2 class="mb-0 fw-bold">NATANEM CONSTRUCTION PLC</h2>
-            <p class="mb-0 small">ITEM LENDING REQUEST FORM</p>
-        </div>
-
-        {{-- Document Info Row --}}
-        <div class="row mb-3 small">
-            <div class="col-4">
-                <strong>Request ID:</strong> #{{ str_pad($loan->id, 5, '0', STR_PAD_LEFT) }}
+    <div class="premium-document">
+        <div class="d-flex justify-content-between align-items-start mb-5">
+            <div>
+                <div class="logo-text mb-1">NATANEM</div>
+                <div class="small fw-800 text-slate-600 uppercase tracking-widest mb-2">Inventory & Assets Management</div>
             </div>
-            <div class="col-4 text-center">
-                <strong>Date:</strong> {{ optional($loan->requested_at)->format('M d, Y') ?? optional($loan->created_at)->format('M d, Y') }}
-            </div>
-            <div class="col-4 text-end">
-                <strong>Status:</strong> <span class="badge bg-{{ $statusConfig['class'] }} badge-sm">{{ $statusConfig['text'] }}</span>
+            <div class="text-end">
+                <div class="voucher-header-title mb-2">LENDING AUTHORIZATION</div>
+                <div class="badge bg-dark text-white rounded-px px-3 py-2 fw-800">RECORD ID #LND-{{ str_pad($loan->id, 5, '0', STR_PAD_LEFT) }}</div>
             </div>
         </div>
 
-        {{-- Main Content - 2 Columns --}}
-        <div class="row g-3">
-            {{-- Left Column --}}
-            <div class="col-6">
-                {{-- Employee Information --}}
-                <div class="section-box mb-3">
-                    <h6 class="section-title">EMPLOYEE INFORMATION</h6>
-                    <table class="info-table">
-                        <tr>
-                            <td class="label">Name:</td>
-                            <td class="value fw-bold">{{ $loan->employee->name ?? 'N/A' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Position:</td>
-                            <td class="value">{{ $loan->employee->position ?? 'N/A' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Department:</td>
-                            <td class="value">{{ $loan->employee->department ?? 'N/A' }}</td>
-                        </tr>
-                    </table>
+        <div class="info-section">
+            <div class="row g-4">
+                <div class="col-6">
+                    <div class="info-item-label">Accountable Custodian</div>
+                    <div class="info-item-value fs-5">{{ $loan->employee->name }}</div>
+                    <div class="small text-slate-400 fw-700 mt-1">{{ strtoupper($loan->employee->position ?? 'STAFF') }} — {{ strtoupper($loan->employee->department ?? 'OPERATIONS') }}</div>
                 </div>
-
-                {{-- Item Information --}}
-                <div class="section-box mb-3">
-                    <h6 class="section-title">ITEM INFORMATION</h6>
-                    <table class="info-table">
-                        <tr>
-                            <td class="label">Item Name:</td>
-                            <td class="value fw-bold">{{ $loan->item->name ?? 'N/A' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Item No:</td>
-                            <td class="value">{{ $loan->item->item_no ?? 'N/A' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Quantity:</td>
-                            <td class="value"><strong>{{ $loan->quantity }}</strong> {{ $loan->item->unit_of_measurement ?? 'pcs' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Location:</td>
-                            <td class="value">{{ $loan->item->store_location ?? 'N/A' }}</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-
-            {{-- Right Column --}}
-            <div class="col-6">
-                {{-- Lending Details --}}
-                <div class="section-box mb-3">
-                    <h6 class="section-title">LENDING DETAILS</h6>
-                    <table class="info-table">
-                        <tr>
-                            <td class="label">Request Date:</td>
-                            <td class="value">{{ optional($loan->requested_at)->format('M d, Y') ?? optional($loan->created_at)->format('M d, Y') }}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Due Date:</td>
-                            <td class="value">{{ optional($loan->due_date)->format('M d, Y') ?? 'Not set' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Return Date:</td>
-                            <td class="value">{{ optional($loan->returned_at)->format('M d, Y') ?? 'Not returned' }}</td>
-                        </tr>
-                    </table>
-                </div>
-
-                {{-- Approval Information --}}
-                <div class="section-box mb-3">
-                    <h6 class="section-title">APPROVAL</h6>
-                    <table class="info-table">
-                        @if($loan->status === 'approved')
-                            <tr>
-                                <td class="label">Approved By:</td>
-                                <td class="value fw-bold">{{ $loan->approvedBy->name ?? 'N/A' }}</td>
-                            </tr>
-                            <tr>
-                                <td class="label">Date:</td>
-                                <td class="value">{{ optional($loan->approved_at)->format('M d, Y H:i') }}</td>
-                            </tr>
-                        @elseif($loan->status === 'rejected')
-                            <tr>
-                                <td class="label">Rejected By:</td>
-                                <td class="value">{{ $loan->rejectedBy->name ?? 'N/A' }}</td>
-                            </tr>
-                            <tr>
-                                <td class="label">Reason:</td>
-                                <td class="value">{{ $loan->rejection_reason ?? 'N/A' }}</td>
-                            </tr>
-                        @else
-                            <tr>
-                                <td colspan="2" class="value text-warning"><em>Pending approval</em></td>
-                            </tr>
-                        @endif
-                    </table>
+                <div class="col-6 text-end">
+                    <div class="info-item-label">Lending Status</div>
+                    <div class="fw-900 fs-3 text-{{ $loan->status === 'returned' ? 'info' : ($loan->status === 'approved' ? 'success' : 'warning') }}">
+                        {{ strtoupper($loan->status) }}
+                    </div>
+                    @if($loan->returned_at)
+                        <div class="x-small fw-800 text-info uppercase">Returned on: {{ $loan->returned_at->format('d M, Y') }}</div>
+                    @endif
                 </div>
             </div>
         </div>
 
-        {{-- Notes (if any) --}}
+        <h5 class="fw-900 text-slate-900 mb-4 border-start border-4 border-dark ps-3">Asset Distribution Particulars</h5>
+        <table class="official-table mb-5">
+            <thead>
+                <tr>
+                    <th>Item Specification & Serial</th>
+                    <th class="text-center">Quantity</th>
+                    <th class="text-end">Due Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="py-4">
+                        <div class="fw-900 text-dark fs-5">{{ $loan->item->name }}</div>
+                        <div class="small text-slate-400 fw-800">CATEGORY: {{ strtoupper($loan->item->category ?? 'General Asset') }} | NO: {{ $loan->item->item_no ?? 'N/A' }}</div>
+                        <div class="x-small text-slate-400 mt-2">STORE LOCATION: {{ $loan->item->store_location ?? 'Main Warehouse' }}</div>
+                    </td>
+                    <td class="text-center py-4">
+                        <div class="fw-900 fs-4">{{ $loan->quantity }}</div>
+                        <div class="x-small fw-800 text-slate-400 uppercase">{{ $loan->item->unit_of_measurement ?? 'Units' }}</div>
+                    </td>
+                    <td class="text-end py-4">
+                        <div class="fw-900 text-slate-900 fs-5">{{ optional($loan->due_date)->format('d M, Y') ?? 'PERMANENT' }}</div>
+                        <div class="x-small fw-800 text-slate-400 uppercase">Authorized Return</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
         @if($loan->notes)
-            <div class="section-box mb-3">
-                <h6 class="section-title">NOTES</h6>
-                <p class="small mb-0">{{ $loan->notes }}</p>
+        <div class="mb-5">
+            <h5 class="fw-900 text-slate-900 mb-3 border-start border-4 border-dark ps-3">Notes & Operational Context</h5>
+            <div class="p-4 bg-light border-start border-4 border-dark rounded-end shadow-sm">
+                <p class="mb-0 text-slate-700 fw-600 small">{{ $loan->notes }}</p>
             </div>
+        </div>
         @endif
 
-        {{-- Signature Section --}}
-        <div class="row mt-3 pt-2 border-top signature-section">
-            <div class="col-4 text-center">
-                <div class="sig-box">
-                    <div class="sig-line"></div>
-                    <p class="sig-label">Employee Signature</p>
-                    <p class="sig-name">{{ $loan->employee->name ?? '' }}</p>
-                </div>
+        <div class="row mt-auto pt-5 border-top border-4 border-dark">
+            <div class="col-4">
+                <div class="border-top border-dark mx-auto mb-2 text-center" style="width: 150px;"></div>
+                <div class="text-center small fw-800 text-slate-400 uppercase">Custodian Acknowledgement</div>
+                <div class="text-center fw-900 small text-slate-900 mt-1">{{ $loan->employee->name }}</div>
+            </div>
+            <div class="col-4">
+                <div class="border-top border-dark mx-auto mb-2 text-center" style="width: 150px;"></div>
+                <div class="text-center small fw-800 text-slate-400 uppercase">Departmental Verification</div>
             </div>
             <div class="col-4 text-center">
-                <div class="sig-box">
-                    <div class="sig-line"></div>
-                    <p class="sig-label">Approved By</p>
-                    <p class="sig-name">{{ $loan->approvedBy->name ?? '' }}</p>
-                </div>
-            </div>
-            <div class="col-4 text-center">
-                <div class="sig-box">
-                    <div class="sig-line"></div>
-                    <p class="sig-label">Inventory Manager</p>
-                    <p class="sig-name">_________________</p>
-                </div>
+                @if($loan->status === 'approved' || $loan->status === 'returned')
+                    <div class="auth-stamp mb-2">OFFICIALLY DISBURSED</div>
+                @endif
+                <div class="border-top border-dark mx-auto mb-2" style="width: 150px;"></div>
+                <div class="small fw-800 text-slate-400 uppercase">Inventory Manager</div>
+                <div class="fw-900 small text-slate-900 mt-1">{{ optional($loan->approvedBy)->name ?? 'Authorized Official' }}</div>
             </div>
         </div>
 
-        {{-- Footer --}}
-        <div class="text-center mt-2 pt-2 border-top">
-            <p class="small text-muted mb-0">Natanem Construction PLC - Inventory Management System</p>
-        </div>
-    </div>
-
-    {{-- Actions (hidden when printing) --}}
-    <div class="d-flex justify-content-between mt-4 pt-3 border-top d-print-none">
-        <a href="{{ route('inventory.loans.index') }}" class="btn btn-outline-secondary">
-            ← Back to List
-        </a>
-
-        <div class="btn-group">
-            <button onclick="window.print()" class="btn btn-primary">
-                🖨 Print Document
-            </button>
-            
-            @if($loan->status === 'pending')
-                <a href="{{ route('inventory.loans.edit', $loan) }}" class="btn btn-outline-primary">Edit</a>
-                <form action="{{ route('inventory.loans.destroy', $loan) }}" method="POST" class="d-inline"
-                      onsubmit="return confirm('Delete this request?');">
-                    @csrf @method('DELETE')
-                    <button type="submit" class="btn btn-outline-danger">Delete</button>
-                </form>
-            @elseif($loan->status === 'approved' && !$loan->returned_at)
-                <form action="{{ route('inventory.loans.mark-returned', $loan) }}" method="POST"
-                      onsubmit="return confirm('Mark as returned?');">
-                    @csrf
-                    <button type="submit" class="btn btn-success">Mark as Returned</button>
-                </form>
-            @endif
+        <div class="text-center mt-5 pt-3 opacity-25">
+            <div class="fw-900 fs-5 text-slate-900">NATANEM ENGINEERING ASSET LOGISTICS</div>
+            <div class="x-small fw-700 uppercase tracking-widest mt-1">Official Asset Disbursement Voucher - {{ date('Y') }}</div>
         </div>
     </div>
 </div>
-
-<style>
-    /* Print Styles - Optimized for A4 */
-    @media print {
-        @page {
-            size: A4;
-            margin: 15mm;
-        }
-        
-        body {
-            background: white;
-            font-size: 11pt;
-            line-height: 1.3;
-        }
-        
-        .container {
-            max-width: 100%;
-            padding: 0;
-        }
-        
-        .d-print-none {
-            display: none !important;
-        }
-        
-        .print-document {
-            width: 100%;
-            height: 100%;
-        }
-        
-        h2 {
-            font-size: 18pt;
-            margin-bottom: 2px;
-        }
-        
-        .badge {
-            border: 1.5px solid currentColor;
-            background: white !important;
-            color: black !important;
-            padding: 2px 8px;
-            font-size: 9pt;
-        }
-    }
-    
-    /* General Styles */
-    .section-box {
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-        overflow: hidden;
-    }
-    
-    .section-title {
-        background: #f8f9fa;
-        padding: 6px 10px;
-        margin: 0;
-        font-size: 11pt;
-        font-weight: 700;
-        border-bottom: 1px solid #dee2e6;
-    }
-    
-    .info-table {
-        width: 100%;
-        margin: 0;
-        font-size: 10pt;
-    }
-    
-    .info-table tr {
-        border-bottom: 1px solid #f0f0f0;
-    }
-    
-    .info-table tr:last-child {
-        border-bottom: none;
-    }
-    
-    .info-table td {
-        padding: 5px 10px;
-        vertical-align: top;
-    }
-    
-    .info-table .label {
-        width: 35%;
-        color: #6c757d;
-        font-weight: 600;
-    }
-    
-    .info-table .value {
-        width: 65%;
-    }
-    
-    .signature-section {
-        margin-top: 20px;
-    }
-    
-    .sig-box {
-        padding: 10px 5px;
-    }
-    
-    .sig-line {
-        border-bottom: 1.5px solid #000;
-        height: 40px;
-        margin-bottom: 5px;
-    }
-    
-    .sig-label {
-        font-size: 9pt;
-        font-weight: 600;
-        margin-bottom: 2px;
-    }
-    
-    .sig-name {
-        font-size: 9pt;
-        color: #6c757d;
-        margin-bottom: 0;
-    }
-    
-    @media print {
-        .section-title {
-            font-size: 10pt;
-            padding: 4px 8px;
-        }
-        
-        .info-table {
-            font-size: 9pt;
-        }
-        
-        .info-table td {
-            padding: 3px 8px;
-        }
-        
-        .sig-line {
-            height: 35px;
-        }
-        
-        .sig-label, .sig-name {
-            font-size: 8pt;
-        }
-    }
-</style>
 @endsection
