@@ -159,12 +159,12 @@
     {{-- High-End Header --}}
     <div class="row align-items-center mb-5 gx-4">
         <div class="col">
-            <h1 class="premium-header-title mb-1 display-5">Asset Lending Registry</h1>
-            <p class="text-slate-400 fw-600 fs-5 mb-0">Monitor tool lifecycle and equipment distribution logistics.</p>
+            <h1 class="premium-header-title mb-1 display-5">Tool & Equipment Loans</h1>
+            <p class="text-slate-400 fw-600 fs-5 mb-0">Manage item assignments and site equipment tracking.</p>
         </div>
         <div class="col-auto">
             <a href="{{ route('inventory.loans.create') }}" class="btn btn-premium-main">
-                <i class="bi bi-shield-plus me-2"></i>New Loan Request
+                <i class="bi bi-plus-circle me-2"></i>New Loan
             </a>
         </div>
     </div>
@@ -196,7 +196,7 @@
                     </div>
                     <div class="col-lg-4 col-md-2 d-flex gap-3">
                         <button type="submit" class="btn btn-premium-main flex-grow-1 shadow-lg py-3">
-                            Execute Search
+                            Search
                         </button>
                         <a href="{{ route('inventory.loans.index') }}" class="btn btn-outline-light rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center border" style="width: 58px; height: 58px;">
                             <i class="bi bi-arrow-counterclockwise fs-5 text-muted"></i>
@@ -210,10 +210,10 @@
             <table class="table premium-table align-middle">
                 <thead>
                     <tr>
-                        <th style="width: 35%;" class="ps-4">Asset Identification</th>
-                        <th style="width: 25%;">Borrower Identity</th>
-                        <th style="width: 15%;">Operational Status</th>
-                        <th style="width: 15%;">Timeline</th>
+                        <th style="width: 35%;" class="ps-4">Item Details</th>
+                        <th style="width: 25%;">Borrowed By</th>
+                        <th style="width: 15%;">Status</th>
+                        <th style="width: 15%;">Loan Period</th>
                         <th class="text-end ps-4" style="width: 10%;">Actions</th>
                     </tr>
                 </thead>

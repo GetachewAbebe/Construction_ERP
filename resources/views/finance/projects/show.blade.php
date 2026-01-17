@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Project Intelligence Report | ' . $project->name)
+@section('title', 'Project Details | ' . $project->name)
 
 @section('content')
 @push('head')
@@ -62,7 +62,7 @@
             <div class="d-flex gap-2">
                 <a href="{{ route('finance.projects.edit', $project) }}" class="btn btn-outline-dark rounded-pill px-4 fw-bold">Refine Project</a>
                 <button onclick="window.print()" class="btn btn-dark rounded-pill px-4 fw-bold">
-                    <i class="bi bi-printer-fill me-2"></i>Print Intelligence Report
+                    <i class="bi bi-printer-fill me-2"></i>Print Project Details
                 </button>
             </div>
         </div>
@@ -75,7 +75,7 @@
                 <div class="small fw-800 text-slate-600 uppercase tracking-widest mb-2">Engineering & Civil Solutions</div>
             </div>
             <div class="text-end">
-                <div class="voucher-header-title mb-2">PROJECT PROFILE</div>
+                <div class="voucher-header-title mb-2">PROJECT DETAILS</div>
                 <div class="badge bg-dark text-white rounded-px px-3 py-2 fw-800">STATUS: {{ strtoupper($project->status) }}</div>
             </div>
         </div>
@@ -83,15 +83,15 @@
         <div class="info-section">
             <div class="row g-4">
                 <div class="col-4">
-                    <div class="info-item-label">Project Identity</div>
+                    <div class="info-item-label">Project Name</div>
                     <div class="info-item-value fs-5">{{ $project->name }}</div>
                 </div>
                 <div class="col-4">
-                    <div class="info-item-label">Site Location</div>
+                    <div class="info-item-label">Location</div>
                     <div class="info-item-value fs-5">{{ $project->location ?? 'Not Specified' }}</div>
                 </div>
                 <div class="col-4 text-end">
-                    <div class="info-item-label">Implementation Timeline</div>
+                    <div class="info-item-label">Project Dates</div>
                     <div class="info-item-value small">
                         {{ optional($project->start_date)->format('M d, Y') ?? 'TBD' }} — {{ optional($project->end_date)->format('M d, Y') ?? 'TBD' }}
                     </div>
@@ -102,33 +102,33 @@
         <div class="row g-4 mb-5">
             <div class="col-md-4">
                 <div class="p-4 bg-light border-start border-4 border-dark h-100">
-                    <div class="info-item-label">Authorized Budget</div>
+                    <div class="info-item-label">Total Budget</div>
                     <div class="fw-900 text-slate-900 fs-3">ETB {{ number_format($project->budget, 2) }}</div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="p-4 bg-light border-start border-4 border-rose-600 h-100">
-                    <div class="info-item-label">Total Expenditure</div>
+                    <div class="info-item-label">Spent So Far</div>
                     <div class="fw-900 text-rose-600 fs-3">ETB {{ number_format($project->total_expenses, 2) }}</div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="p-4 bg-light border-start border-4 border-emerald-600 h-100">
-                    <div class="info-item-label">Remaining Liquidity</div>
+                    <div class="info-item-label">Balance</div>
                     <div class="fw-900 text-emerald-600 fs-3">ETB {{ number_format($project->budget - $project->total_expenses, 2) }}</div>
                 </div>
             </div>
         </div>
 
         <div class="mb-5">
-            <h5 class="fw-900 text-slate-900 mb-3 border-start border-4 border-dark ps-3">Scope of Works</h5>
+            <h5 class="fw-900 text-slate-900 mb-3 border-start border-4 border-dark ps-3">Project Description</h5>
             <div class="p-4 bg-white border-2 border-slate-100 rounded-3 text-slate-600 fw-500 lh-lg shadow-sm">
                 {{ $project->description ?? 'No detailed scope of work has been defined for this operational unit.' }}
             </div>
         </div>
 
         <div class="mb-5">
-            <h5 class="fw-900 text-slate-900 mb-3 border-start border-4 border-dark ps-3">Financial Ledger</h5>
+            <h5 class="fw-900 text-slate-900 mb-3 border-start border-4 border-dark ps-3">Expense History</h5>
             <div class="table-outer border rounded-3 overflow-hidden">
                 <table class="official-table mb-0">
                     <thead>

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Leave Authorization Record')
+@section('title', 'Leave Record')
 
 @section('content')
 @push('head')
@@ -68,7 +68,7 @@
                 <i class="bi bi-chevron-left"></i> Back to HR Ledger
             </a>
             <button onclick="window.print()" class="btn btn-dark rounded-pill px-4 fw-bold">
-                <i class="bi bi-printer-fill me-2"></i>Print Official Report
+                <i class="bi bi-printer-fill me-2"></i>Print Record
             </button>
         </div>
     </div>
@@ -80,7 +80,7 @@
                 <div class="small fw-800 text-slate-600 uppercase tracking-widest mb-2">Human Resource Management</div>
             </div>
             <div class="text-end">
-                <div class="voucher-header-title mb-2">LEAVE AUTHORIZATION</div>
+                <div class="voucher-header-title mb-2">LEAVE RECORD</div>
                 <div class="badge bg-dark text-white rounded-px px-3 py-2 fw-800">FILING ID #LRQ-{{ str_pad($leave->id, 5, '0', STR_PAD_LEFT) }}</div>
             </div>
         </div>
@@ -88,12 +88,12 @@
         <div class="info-section">
             <div class="row g-4 mb-4">
                 <div class="col-6">
-                    <div class="info-item-label">Employee Identification</div>
+                    <div class="info-item-label">Employee Name</div>
                     <div class="info-item-value fs-5">{{ $leave->employee->name }}</div>
                     <div class="small text-slate-400 fw-700 mt-1">{{ $leave->employee->position ?? 'Operations associate' }} | {{ $leave->employee->department ?? 'General Operations' }}</div>
                 </div>
                 <div class="col-6 text-end">
-                    <div class="info-item-label">Adjudicated Status</div>
+                    <div class="info-item-label">Approval Status</div>
                     <div class="fw-900 fs-3 text-{{ $leave->status === 'Approved' ? 'success' : ($leave->status === 'Rejected' ? 'danger' : 'warning') }}">
                         {{ strtoupper($leave->status) }}
                     </div>
@@ -101,23 +101,23 @@
             </div>
         </div>
 
-        <h5 class="fw-900 text-slate-900 mb-4 border-start border-4 border-dark ps-3">Temporal Metrics</h5>
+        <h5 class="fw-900 text-slate-900 mb-4 border-start border-4 border-dark ps-3">Leave Dates</h5>
         <div class="row g-4 mb-5">
             <div class="col-4">
                 <div class="p-4 bg-light border-start border-4 border-dark h-100">
-                    <div class="info-item-label">Commencement Date</div>
+                    <div class="info-item-label">Start Date</div>
                     <div class="fw-900 text-slate-900 fs-4">{{ $leave->start_date->format('d M, Y') }}</div>
                 </div>
             </div>
             <div class="col-4">
                 <div class="p-4 bg-light border-start border-4 border-dark h-100">
-                    <div class="info-item-label">Conclusion Date</div>
+                    <div class="info-item-label">End Date</div>
                     <div class="fw-900 text-slate-900 fs-4">{{ $leave->end_date->format('d M, Y') }}</div>
                 </div>
             </div>
             <div class="col-4">
                 <div class="p-4 bg-slate-900 text-white h-100 text-center rounded-3">
-                    <div class="info-item-label text-slate-400">Total Duration</div>
+                    <div class="info-item-label text-slate-400">Total Days</div>
                     <div class="fw-900 display-6 lh-1">{{ $leave->start_date->diffInDays($leave->end_date) + 1 }}</div>
                     <div class="small fw-800 uppercase text-slate-400">Working Days</div>
                 </div>
@@ -125,7 +125,7 @@
         </div>
 
         <div class="mb-5">
-            <h5 class="fw-900 text-slate-900 mb-3 border-start border-4 border-dark ps-3">Narrative & Rationale</h5>
+            <h5 class="fw-900 text-slate-900 mb-3 border-start border-4 border-dark ps-3">Reason for Leave</h5>
             <div class="p-4 bg-white border-2 border-slate-100 rounded-3 text-slate-600 fw-500 lh-lg shadow-sm font-italic">
                 "{{ $leave->reason ?? 'Official personal respite request documented for employee leave management.' }}"
             </div>

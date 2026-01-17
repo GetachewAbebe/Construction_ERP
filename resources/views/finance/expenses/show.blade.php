@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Financial Voucher | Natanem Engineering')
+@section('title', 'Expense Voucher | Natanem Engineering')
 
 @section('content')
 @push('head')
@@ -218,7 +218,7 @@
                 </div>
             </div>
             <div class="text-end">
-                <div class="voucher-header-title mb-2">PAYMENT VOUCHER</div>
+                <div class="voucher-header-title mb-2">EXPENSE VOUCHER</div>
                 <div class="d-flex justify-content-end gap-2">
                     <div class="document-badge bg-light border text-dark">VOUCHER ID: #{{ str_pad($expense->id, 6, '0', STR_PAD_LEFT) }}</div>
                     <div class="document-badge bg-dark text-white">REF: {{ $expense->reference_no ?? 'VCH-'.$expense->id }}</div>
@@ -250,16 +250,16 @@
         <div class="row g-4 mb-5">
             <div class="col-6">
                 <div class="p-3 bg-light border-start border-4 border-dark h-100">
-                    <div class="info-item-label">Project Allocation</div>
-                    <div class="info-item-value fs-5">{{ optional($expense->project)->name ?? 'General Administrative' }}</div>
+                    <div class="info-item-label">For Project</div>
+                    <div class="info-item-value fs-5">{{ optional($expense->project)->name ?? 'General Admin' }}</div>
                     <div class="small text-slate-400 mt-1">{{ optional($expense->project)->location }}</div>
                 </div>
             </div>
             <div class="col-6">
                 <div class="p-3 bg-light border-start border-4 border-dark h-100">
-                    <div class="info-item-label">Beneficiary Particulars</div>
-                    <div class="info-item-value fs-5">{{ optional($expense->user)->name ?? 'Natanem Staff' }}</div>
-                    <div class="small text-slate-400 mt-1">{{ optional($expense->user)->position ?? 'Operations Department' }}</div>
+                    <div class="info-item-label">Requested By</div>
+                    <div class="info-item-value fs-5">{{ optional($expense->user)->name ?? 'Staff' }}</div>
+                    <div class="small text-slate-400 mt-1">{{ optional($expense->user)->position ?? 'Operations' }}</div>
                 </div>
             </div>
         </div>
@@ -268,7 +268,7 @@
         <table class="official-table">
             <thead>
                 <tr>
-                    <th>Expenditure Description / Particulars</th>
+                    <th>Expense Description</th>
                     <th class="text-end">Amount (ETB)</th>
                 </tr>
             </thead>
@@ -311,7 +311,7 @@
             </div>
             <div class="col-5">
                 <div class="text-end">
-                    <div class="info-item-label">Authorization Status</div>
+                    <div class="info-item-label">Approval Status</div>
                     <span class="badge {{ $expense->status === 'approved' ? 'bg-success' : 'bg-warning' }} rounded-1 px-3 py-2 fw-900">
                         {{ strtoupper($expense->status ?? 'PENDING') }}
                     </span>
