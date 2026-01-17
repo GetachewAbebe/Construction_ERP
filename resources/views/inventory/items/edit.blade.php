@@ -47,9 +47,8 @@
     </div>
 </div>
 
-<div class="row justify-content-center">
-    <div class="col-lg-10">
-        <div class="card bg-white border-0 overflow-hidden shadow-sm rounded-4">
+<div class="stagger-entrance">
+    <div class="card bg-white border-0 overflow-hidden shadow-sm rounded-4">
             <div class="card-body p-4 p-md-5">
                 <form action="{{ route('inventory.items.update', $item) }}" method="POST">
                     @csrf
@@ -169,7 +168,6 @@
                     </div>
                 </form>
             </div>
-        </div>
     </div>
 </div>
 @endsection

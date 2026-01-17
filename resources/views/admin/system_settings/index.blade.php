@@ -28,10 +28,9 @@
     </div>
 @endif
 
-<div class="row justify-content-center stagger-entrance">
-    <div class="col-lg-10">
-        <div class="card hardened-glass border-0 overflow-hidden shadow-lg">
-            <div class="card-body p-4 p-md-5">
+<div class="stagger-entrance">
+    <div class="card border-0 bg-white shadow-sm">
+        <div class="card-body p-4 p-md-5">
                 <form action="{{ route('admin.system-settings.update') }}" method="POST">
                     @csrf
                     
@@ -166,6 +165,5 @@
                 </div>
             </div>
         </div>
-    </div>
 </div>
 @endsection
