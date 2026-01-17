@@ -141,6 +141,11 @@
                                 <a href="{{ route('finance.expenses.show', $expense) }}" class="btn btn-sm btn-white rounded-pill px-3 border-0" title="View Ledger">
                                     <i class="bi bi-eye-fill"></i>
                                 </a>
+                                @if($expense->status === 'approved')
+                                    <a href="{{ route('finance.expenses.report', $expense) }}" class="btn btn-sm btn-white rounded-pill px-3 border-0 text-dark" title="Print Report">
+                                        <i class="bi bi-printer-fill"></i>
+                                    </a>
+                                @endif
                                 @if($expense->status === 'pending')
                                     <a href="{{ route('finance.expenses.edit', $expense) }}" class="btn btn-sm btn-white rounded-pill px-3 border-0 text-primary" title="Modify">
                                         <i class="bi bi-pencil-fill"></i>

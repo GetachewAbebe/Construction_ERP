@@ -352,6 +352,7 @@ Route::middleware([
 
         // Projects & Expenses
         Route::resource('projects', App\Http\Controllers\Finance\ProjectController::class);
+        Route::get('/expenses/{expense}/report', [App\Http\Controllers\Finance\ExpenseController::class, 'report'])->name('expenses.report');
         Route::resource('expenses', App\Http\Controllers\Finance\ExpenseController::class);
     });
 });

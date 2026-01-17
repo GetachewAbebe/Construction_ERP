@@ -54,8 +54,8 @@ class ExpenseController extends Controller
         try {
             $expense = Expense::create($data);
             
-            // Notify Administrators
-            $admins = User::role('Administrator')->get();
+            // Notify Administrators (Support both naming variants)
+            $admins = User::role(['Administrator', 'Admin'])->get();
             try {
                 Notification::send($admins, new ExpenseStatusNotification($expense, 'request'));
             } catch (\Exception $e) {
@@ -156,6 +156,11 @@ class ExpenseController extends Controller
             Log::error('Expense deletion failed: ' . $e->getMessage());
             return back()->with('error', 'Critical Error: Failed to delete expense record.');
         }
+    }
+
+    public function report(Expense $expense)
+    {
+        return view('finance.expenses.report', compact('expense'));
     }
 }
 

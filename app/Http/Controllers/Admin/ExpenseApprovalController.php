@@ -36,8 +36,8 @@ class ExpenseApprovalController extends Controller
 
         $expense->user->notify(new ExpenseStatusNotification($expense, 'status_change'));
 
-        // Notify Financial Managers
-        $financialManagers = \App\Models\User::role('FinancialManager')->get();
+        // Notify Financial Managers (Support both role naming conventions)
+        $financialManagers = \App\Models\User::role(['Financial Manager', 'FinancialManager'])->get();
         if ($financialManagers->isNotEmpty()) {
             Notification::send($financialManagers, new ExpenseStatusNotification($expense, 'status_update'));
         }
@@ -74,8 +74,8 @@ class ExpenseApprovalController extends Controller
 
         $expense->user->notify(new ExpenseStatusNotification($expense, 'status_change'));
 
-        // Notify Financial Managers
-        $financeManagers = \App\Models\User::role('FinancialManager')->get();
+        // Notify Financial Managers (Support both role naming conventions)
+        $financeManagers = \App\Models\User::role(['Financial Manager', 'FinancialManager'])->get();
         if ($financeManagers->isNotEmpty()) {
             \Illuminate\Support\Facades\Notification::send($financeManagers, new ExpenseStatusNotification($expense, 'status_update'));
         }
