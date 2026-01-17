@@ -79,52 +79,98 @@
                 <div class="bg-erp-deep rounded-4 p-4 mb-5 text-white shadow-sm">
                     <div class="row align-items-center">
                         <div class="col-md-4 mb-3 mb-md-0">
-                            <div class="small fw-800 text-white-50 text-uppercase mb-1">Category</div>
+                            <div class="small fw-800 text-white-50 text-uppercase mb-1">Transaction Category</div>
                             <div class="fw-800 fs-5">{{ strtoupper($expense->category) }}</div>
                         </div>
                         <div class="col-md-4 mb-3 mb-md-0 border-start border-white-10 ps-md-4">
-                            <div class="small fw-800 text-white-50 text-uppercase mb-1">Date of Record</div>
+                            <div class="small fw-800 text-white-50 text-uppercase mb-1">Transaction Date</div>
                             <div class="fw-800 fs-5">{{ $expense->expense_date->format('d M, Y') }}</div>
                         </div>
                         <div class="col-md-4 text-md-end border-start border-white-10 ps-md-4">
-                            <div class="small fw-800 text-white-50 text-uppercase mb-1">Total Amount</div>
-                            <div class="fw-900 fs-2">
-                                <span class="fs-6 fw-400 opacity-75">ETB</span> {{ number_format($expense->amount, 2) }}
-                            </div>
+                            <div class="small fw-800 text-white-50 text-uppercase mb-1">Invoice / Reference</div>
+                            <div class="fw-800 fs-5">{{ $expense->reference_no ?? 'N/A' }}</div>
                         </div>
                     </div>
                 </div>
 
-                {{-- Descriptive Content --}}
+                {{-- Transaction Particulars Table --}}
                 <div class="mb-5">
-                    <div class="small fw-800 text-muted text-uppercase mb-2" style="letter-spacing: 0.1em;">Narrative & Description</div>
-                    <div class="p-4 bg-white border rounded-4 fw-700 text-dark" style="min-height: 120px; line-height: 1.8; font-size: 1.05rem;">
-                        {{ $expense->description ?? 'No detailed description provided for this transaction.' }}
+                    <div class="small fw-800 text-muted text-uppercase mb-2" style="letter-spacing: 0.1em;">Transaction Particulars</div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle">
+                            <thead class="bg-light-soft text-muted small fw-800 text-uppercase">
+                                <tr>
+                                    <th class="py-3 ps-4">Description / Details</th>
+                                    <th class="py-3 text-end pe-4" style="width: 200px;">Amount (ETB)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="py-4 ps-4">
+                                        <div class="fw-800 text-dark mb-1">{{ strtoupper($expense->category) }} REQUISITION</div>
+                                        <div class="text-muted fw-600 small" style="line-height: 1.6;">{{ $expense->description }}</div>
+                                    </td>
+                                    <td class="py-4 text-end pe-4 fw-900 fs-5">
+                                        {{ number_format($expense->amount, 2) }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="bg-light-soft">
+                                <tr>
+                                    <td class="text-end fw-800 py-3">GRAND TOTAL</td>
+                                    <td class="text-end fw-900 py-3 pe-4 fs-4 text-erp-deep">
+                                        {{ number_format($expense->amount, 2) }}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
                 </div>
 
-                {{-- Status & Approvals --}}
+                {{-- Financial & Status Overview --}}
                 <div class="row g-4 mb-5">
-                    <div class="col-md-12">
-                        <div class="p-4 rounded-4 border {{ $expense->status === 'approved' ? 'bg-success-soft border-success-subtle' : ($expense->status === 'rejected' ? 'bg-danger-soft border-danger-subtle' : 'bg-warning-soft border-warning-subtle') }}">
-                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                                <div>
-                                    <div class="small fw-800 text-muted text-uppercase mb-1">Current Status</div>
-                                    <div class="fw-900 fs-4 text-{{ $expense->status === 'approved' ? 'success' : ($expense->status === 'rejected' ? 'danger' : 'warning') }}">
-                                        {{ strtoupper($expense->status ?? 'pending') }}
-                                    </div>
-                                </div>
-                                @if($expense->status === 'approved' && $expense->approved_by)
-                                    <div class="text-md-end">
-                                        <div class="small fw-800 text-muted text-uppercase mb-1">Digital Authorization</div>
-                                        <div class="fw-800 text-dark">{{ $expense->approvedBy->name ?? 'Administrator' }}</div>
-                                        <div class="text-muted small fw-700">{{ $expense->updated_at->format('d M, Y H:i') }}</div>
-                                    </div>
-                                @endif
-                                @if($expense->status === 'pending')
-                                    <div class="text-muted italic fw-700 small">Awaiting Review</div>
-                                @endif
+                    <div class="col-md-6">
+                        <div class="small fw-800 text-muted text-uppercase mb-2" style="letter-spacing: 0.1em;">Project Financial Context</div>
+                        <div class="p-4 bg-light-soft rounded-4 border h-100">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted fw-700">Project Budget:</span>
+                                <span class="fw-800 text-dark">ETB {{ number_format($expense->project->budget, 2) }}</span>
                             </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="text-muted fw-700">Accumulated Costs:</span>
+                                <span class="fw-800 text-danger">ETB {{ number_format($expense->project->total_expenses, 2) }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between pt-3 border-top border-2 border-white">
+                                <span class="fw-800 text-erp-deep uppercase small">Remaining Balance:</span>
+                                <span class="fw-900 text-success fs-5">ETB {{ number_format($expense->project->budget - $expense->project->total_expenses, 2) }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="small fw-800 text-muted text-uppercase mb-2" style="letter-spacing: 0.1em;">Current Transaction Status</div>
+                        <div class="p-4 rounded-4 border h-100 {{ $expense->status === 'approved' ? 'bg-success-soft border-success-subtle' : ($expense->status === 'rejected' ? 'bg-danger-soft border-danger-subtle' : 'bg-warning-soft border-warning-subtle') }}">
+                            <div class="mb-4">
+                                <div class="small fw-800 text-muted text-uppercase mb-1">Status</div>
+                                <div class="fw-900 fs-3 text-{{ $expense->status === 'approved' ? 'success' : ($expense->status === 'rejected' ? 'danger' : 'warning') }}">
+                                    {{ strtoupper($expense->status ?? 'pending') }}
+                                </div>
+                            </div>
+                            @if($expense->status === 'approved' && $expense->approved_by)
+                                <div>
+                                    <div class="small fw-800 text-muted text-uppercase mb-1">Secure Digital Auth</div>
+                                    <div class="fw-800 text-dark">{{ $expense->approvedBy->name ?? 'Administrator' }}</div>
+                                    <div class="text-muted small fw-700">{{ $expense->updated_at->format('d M, Y H:i') }}</div>
+                                </div>
+                            @elseif($expense->status === 'rejected' && $expense->rejected_by)
+                                <div>
+                                    <div class="small fw-800 text-muted text-uppercase mb-1">Rejected By</div>
+                                    <div class="fw-800 text-danger">{{ $expense->rejectedBy->name ?? 'Administrator' }}</div>
+                                    <div class="text-muted small fw-700">{{ $expense->updated_at->format('d M, Y H:i') }}</div>
+                                </div>
+                            @else
+                                <div class="text-muted italic fw-700 small pt-2">Awaiting formal review by the Finance Department.</div>
+                            @endif
                         </div>
                     </div>
                 </div>
