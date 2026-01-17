@@ -163,7 +163,7 @@ class AdminUserController extends Controller
         $user->position     = $request->position;
         $user->department   = $request->department;
         $user->status       = $request->status ?? 'Active';
-        $user->bio          = $request->bio;
+        // $user->bio          = $request->bio; // Disable: Column missing in prod
 
         if (!empty($validated['password'])) {
             $user->password = Hash::make($validated['password']);
