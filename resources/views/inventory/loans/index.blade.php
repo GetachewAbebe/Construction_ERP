@@ -7,110 +7,151 @@
 <style>
     :root {
         --premium-green: #064e43;
+        --accent-teal: #0d9488;
         --soft-green-bg: #f2fdfb;
-        --border-radius-xl: 40px;
-        --border-radius-lg: 24px;
+        --border-radius-xl: 44px;
+        --glass-bg: rgba(255, 255, 255, 0.85);
     }
 
-    body { font-family: 'Outfit', sans-serif; background-color: #f7faf9; color: #1e293b; }
+    /* Supreme Atmosphere */
+    body { 
+        font-family: 'Outfit', sans-serif; 
+        background: radial-gradient(at top right, #f2fdfb, #ffffff), radial-gradient(at bottom left, #f1f5f9, #ffffff);
+        background-attachment: fixed;
+        color: #1a202c;
+    }
 
-    .premium-header-title { font-weight: 900; color: #064e43; letter-spacing: -1.5px; }
+    .premium-header-title { 
+        font-weight: 900; 
+        background: linear-gradient(135deg, #064e43 0%, #0d9488 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -2.5px; 
+    }
 
+    /* Layered Float Effect */
     .premium-card {
-        background: white;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
         border-radius: var(--border-radius-xl);
-        border: none;
-        box-shadow: 0 50px 100px -20px rgba(6, 78, 67, 0.04);
-        padding: 40px;
+        border: 1px solid rgba(255,255,255,0.6);
+        box-shadow: 
+            0 10px 15px -3px rgba(6, 78, 67, 0.02),
+            0 25px 50px -12px rgba(6, 78, 67, 0.05),
+            inset 0 2px 4px 0 rgba(255, 255, 255, 0.05);
+        padding: 50px;
     }
 
     .section-label {
         font-weight: 800;
-        font-size: 0.75rem;
-        color: #064e43;
+        font-size: 0.7rem;
+        color: #64748b;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
-        margin-bottom: 1rem;
+        letter-spacing: 0.15em;
+        margin-bottom: 1.25rem;
         display: block;
+        opacity: 0.8;
     }
 
+    /* Command Bar Hub */
     .search-input-premium {
-        border: 1px solid #e2e8f0;
+        border: 1.5px solid #edf2f7;
         border-radius: 100px;
-        padding: 18px 30px;
-        transition: all 0.3s ease;
-        background: white;
+        padding: 16px 28px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        background: #ffffff;
         font-weight: 500;
-        color: #1e293b;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
     }
 
-    .search-input-premium::placeholder { color: #94a3b8; font-weight: 400; }
-
-    .filter-select-premium {
-        border: 1px solid #e2e8f0;
-        border-radius: 100px;
-        padding: 18px 30px;
-        background-color: white;
-        font-weight: 500;
-        color: #1e293b;
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23064e43' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: right 1.5rem center;
-        background-size: 14px 10px;
+    .search-input-premium:focus {
+        border-color: var(--premium-green);
+        box-shadow: 0 0 0 5px rgba(6, 78, 67, 0.08);
+        outline: none;
     }
 
     .btn-premium-main {
-        background: var(--premium-green);
+        background: linear-gradient(135deg, #064e43 0%, #043831 100%);
         color: white;
         border-radius: 100px;
         font-weight: 700;
-        padding: 14px 35px;
+        padding: 14px 40px;
         border: none;
-        transition: all 0.2s ease;
-        font-size: 0.9rem;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 10px 25px -5px rgba(6, 78, 67, 0.3);
     }
 
-    .btn-premium-main:hover { background: #043831; color: white; transform: scale(1.02); }
+    .btn-premium-main:hover { 
+        transform: translateY(-3px) scale(1.03); 
+        box-shadow: 0 15px 30px -5px rgba(6, 78, 67, 0.4);
+        color: white;
+    }
 
-    .btn-premium-return {
-        background: white;
+    /* Ultra-Refined Table */
+    .premium-table tbody tr {
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .premium-table tbody tr:hover {
+        background-color: #f8fafc;
+        transform: scale(1.005);
+        z-index: 10;
+        box-shadow: 0 10px 30px -15px rgba(0,0,0,0.1);
+    }
+
+    .asset-title { 
+        font-weight: 800; 
+        color: #0f172a; 
+        font-size: 1.05rem; 
+        letter-spacing: -0.3px;
+    }
+
+    .unit-pill { 
+        background: #f1f5f9; 
+        color: #475569; 
+        padding: 3px 12px; 
+        border-radius: 8px; 
+        font-size: 0.65rem; 
+        font-weight: 900;
         border: 1px solid #e2e8f0;
-        border-radius: 100px;
-        color: #064e43;
-        font-weight: 700;
-        padding: 10px 30px;
-        font-size: 0.85rem;
-        transition: all 0.2s ease;
     }
 
-    .btn-premium-return:hover { border-color: #064e43; background: var(--soft-green-bg); }
-
-    .premium-table thead th {
+    /* Glow Status */
+    .status-text {
         font-weight: 800;
-        color: #1a202c;
-        font-size: 0.85rem;
-        padding: 20px 0;
-        border-bottom: 2px solid #f1f5f9;
-        background: white;
+        font-size: 0.75rem;
+        padding: 6px 14px;
+        border-radius: 100px;
+        display: inline-flex;
+        align-items: center;
     }
 
-    .premium-table tbody td {
-        padding: 30px 0;
-        border-bottom: 1px solid #f1f5f9;
-        background: white;
+    .status-active { 
+        background: #ecfdf5; 
+        color: #065f46; 
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
     }
 
-    .asset-title { font-weight: 700; color: #064e43; font-size: 1rem; margin-bottom: 2px; }
-    .asset-meta { font-weight: 600; color: #718096; font-size: 0.8rem; }
-    .unit-pill { background: #edf2f7; color: #2d3748; padding: 2px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
-    
-    .status-text { font-weight: 800; font-size: 0.8rem; }
-    .status-active { color: #064e43; }
-    .status-returned { color: #718096; }
+    .status-returned { 
+        background: #f1f5f9; 
+        color: #64748b; 
+    }
 
-    .timeline-label { color: #718096; font-size: 0.8rem; font-weight: 500; }
-    .timeline-date { color: #1a202c; font-weight: 800; font-size: 0.85rem; }
+    .loan-progress-bar {
+        height: 6px;
+        background: #f1f5f9;
+        border-radius: 100px;
+        margin-top: 8px;
+        overflow: hidden;
+        width: 120px;
+    }
+
+    .loan-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #064e43, #0d9488);
+        border-radius: 100px;
+    }
 </style>
 @endpush
 
@@ -119,29 +160,32 @@
     <div class="row align-items-center mb-5 gx-4">
         <div class="col">
             <h1 class="premium-header-title mb-1 display-5">Asset Lending Registry</h1>
-            <p class="text-slate-400 fw-500 fs-5 mb-0">Track tool assignments, material issuance, and return schedules.</p>
+            <p class="text-slate-400 fw-600 fs-5 mb-0">Monitor tool lifecycle and equipment distribution logistics.</p>
         </div>
         <div class="col-auto">
-            <a href="{{ route('inventory.loans.create') }}" class="btn btn-premium-main shadow-lg">
-                New Loan Request
+            <a href="{{ route('inventory.loans.create') }}" class="btn btn-premium-main">
+                <i class="bi bi-shield-plus me-2"></i>New Loan Request
             </a>
         </div>
     </div>
 
     {{-- Registry Hub --}}
     <div class="premium-card">
-        {{-- Filters --}}
-        <div class="mb-5 px-2">
+        {{-- Filters Hub --}}
+        <div class="mb-5 px-3">
             <form action="{{ route('inventory.loans.index') }}" method="GET">
                 <div class="row g-4 align-items-end">
                     <div class="col-lg-5 col-md-6">
-                        <label class="section-label">Search Records</label>
-                        <input type="text" name="q" class="form-control search-input-premium shadow-sm" 
-                               placeholder="Search employee or item name..." 
-                               value="{{ request('q') }}">
+                        <label class="section-label ps-2">Search Records</label>
+                        <div class="position-relative">
+                            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-4 text-muted opacity-50"></i>
+                            <input type="text" name="q" class="form-control search-input-premium ps-5" 
+                                   placeholder="Search employee or item name..." 
+                                   value="{{ request('q') }}">
+                        </div>
                     </div>
                     <div class="col-lg-3 col-md-4">
-                        <label class="section-label">Loan Status</label>
+                        <label class="section-label ps-2">Loan Status</label>
                         <select name="status" class="form-select filter-select-premium shadow-sm text-muted">
                             <option value="">All Status</option>
                             <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending Approval</option>
@@ -152,7 +196,7 @@
                     </div>
                     <div class="col-lg-4 col-md-2 d-flex gap-3">
                         <button type="submit" class="btn btn-premium-main flex-grow-1 shadow-lg py-3">
-                            Filter
+                            Execute Search
                         </button>
                         <a href="{{ route('inventory.loans.index') }}" class="btn btn-outline-light rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center border" style="width: 58px; height: 58px;">
                             <i class="bi bi-arrow-counterclockwise fs-5 text-muted"></i>
@@ -166,74 +210,92 @@
             <table class="table premium-table align-middle">
                 <thead>
                     <tr>
-                        <th style="width: 35%;">Asset Details</th>
-                        <th style="width: 25%;">Borrower</th>
-                        <th style="width: 15%;">Status</th>
+                        <th style="width: 35%;" class="ps-4">Asset Identification</th>
+                        <th style="width: 25%;">Borrower Identity</th>
+                        <th style="width: 15%;">Operational Status</th>
                         <th style="width: 15%;">Timeline</th>
-                        <th class="text-end" style="width: 10%;">Actions</th>
+                        <th class="text-end ps-4" style="width: 10%;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($loans as $loan)
                         <tr>
-                            <td>
-                                <div class="asset-title text-truncate" style="max-width: 300px;">{{ optional($loan->item)->name ?? 'Unknown Item' }}</div>
-                                <div class="asset-meta">
-                                    {{ optional($loan->item)->item_no ?? 'SN-XXX' }} 
-                                    <span class="unit-pill ms-2">{{ $loan->quantity }} Units</span>
+                            <td class="ps-4">
+                                <div class="asset-title text-truncate" style="max-width: 320px;">{{ optional($loan->item)->name ?? 'Unknown Item' }}</div>
+                                <div class="asset-meta d-flex align-items-center gap-2">
+                                    <span class="text-slate-400 font-monospace">{{ optional($loan->item)->item_no ?? 'SN-XXX' }}</span>
+                                    <span class="unit-pill">{{ $loan->quantity }} Units</span>
                                 </div>
                             </td>
                             <td>
-                                <div class="fw-800 text-slate-800 fs-6">{{ optional($loan->employee)->name ?? 'Haileeyesus Ketyibelu' }}</div>
-                                <div class="x-small text-slate-400 fw-700">{{ strtoupper(optional(optional($loan->employee)->position_rel)->title ?? 'N/A') }}</div>
+                                <div class="fw-800 text-slate-800 fs-6">{{ optional($loan->employee)->name ?? 'Employee' }}</div>
+                                <div class="x-small text-slate-400 fw-700 uppercase tracking-wider">{{ strtoupper(optional(optional($loan->employee)->position_rel)->title ?? 'STAFF') }}</div>
                             </td>
                             <td>
                                 @if($loan->status === 'approved')
-                                    <div class="status-text status-active">Active Loan</div>
+                                    <div class="status-text status-active">
+                                        <i class="bi bi-lightning-charge-fill me-2"></i>Active Loan
+                                    </div>
+                                    @php
+                                        $requested = $loan->requested_at ?? now();
+                                        $due = $loan->expected_return_date ?? now()->addDays(7);
+                                        $total = $due->diffInDays($requested);
+                                        $elapsed = now()->diffInDays($requested);
+                                        $percent = $total > 0 ? min(100, ($elapsed / $total) * 100) : 0;
+                                    @endphp
+                                    <div class="loan-progress-bar">
+                                        <div class="loan-progress-fill" style="width: {{ $percent }}%"></div>
+                                    </div>
                                 @elseif($loan->status === 'returned')
-                                    <div class="status-text status-returned">Returned</div>
+                                    <div class="status-text status-returned">
+                                        <i class="bi bi-check-circle-fill me-2"></i>Returned
+                                    </div>
                                 @elseif($loan->status === 'pending')
-                                    <div class="status-text text-warning">Pending Review</div>
+                                    <div class="status-text text-warning bg-warning-soft px-3">
+                                        <i class="bi bi-hourglass-split me-2"></i>Pending Review
+                                    </div>
                                 @else
-                                    <div class="status-text text-danger">{{ strtoupper($loan->status) }}</div>
+                                    <div class="status-text text-danger bg-danger-soft px-3">
+                                        {{ strtoupper($loan->status) }}
+                                    </div>
                                 @endif
                             </td>
                             <td>
-                                <div class="d-flex flex-column">
-                                    <div class="mb-1">
-                                        <span class="timeline-label">Requested:</span> 
-                                        <span class="timeline-date"> {{ optional($loan->requested_at)->format('M d') }}</span>
+                                <div class="d-flex flex-column gap-1">
+                                    <div>
+                                        <span class="timeline-label">Issued:</span> 
+                                        <span class="timeline-date"> {{ optional($loan->requested_at)->format('d M') }}</span>
                                     </div>
                                     @if($loan->status === 'returned')
                                         <div>
-                                            <span class="timeline-label text-success-soft">Returned:</span> 
-                                            <span class="timeline-date text-success"> {{ optional($loan->returned_at)->format('M d') }}</span>
+                                            <span class="timeline-label text-success-soft">Closed:</span> 
+                                            <span class="timeline-date text-success"> {{ optional($loan->returned_at)->format('d M') }}</span>
                                         </div>
                                     @elseif($loan->expected_return_date)
                                         <div>
                                             <span class="timeline-label">Due:</span> 
-                                            <span class="timeline-date ps-1 {{ $loan->expected_return_date->isPast() && $loan->status == 'approved' ? 'text-danger' : '' }}">
-                                                {{ $loan->expected_return_date->format('M d') }}
+                                            <span class="timeline-date {{ $loan->expected_return_date->isPast() && $loan->status == 'approved' ? 'text-danger' : '' }}">
+                                                {{ $loan->expected_return_date->format('d M') }}
                                             </span>
                                         </div>
                                     @endif
                                 </div>
                             </td>
                             <td class="text-end">
-                                <div class="d-flex justify-content-end gap-2">
+                                <div class="d-flex justify-content-end gap-2 pe-3">
                                     @if($loan->status === 'approved')
-                                        <button type="button" class="btn btn-premium-return" 
-                                                onclick="if(confirm('Verify item return?')) document.getElementById('ret-{{ $loan->id }}').submit()">
-                                            Return
+                                        <button type="button" class="btn btn-premium-return px-4" 
+                                                onclick="if(confirm('Acknowledge item return?')) document.getElementById('ret-{{ $loan->id }}').submit()">
+                                            Acknowledge
                                             <form id="ret-{{ $loan->id }}" action="{{ route('inventory.loans.mark-returned', $loan) }}" method="POST" class="d-none">@csrf</form>
                                         </button>
                                     @elseif($loan->status === 'pending')
-                                        <a href="{{ route('inventory.loans.edit', $loan) }}" class="p-2 text-slate-400">
+                                        <a href="{{ route('inventory.loans.edit', $loan) }}" class="p-2 text-slate-300 hover-teal">
                                             <i class="bi bi-pencil-square fs-5"></i>
                                         </a>
                                     @else
-                                        <a href="{{ route('inventory.loans.show', $loan) }}" class="p-2 text-slate-400">
-                                            <i class="bi bi-three-dots fs-5"></i>
+                                        <a href="{{ route('inventory.loans.show', $loan) }}" class="p-2 text-slate-300">
+                                            <i class="bi bi-shield-lock fs-5"></i>
                                         </a>
                                     @endif
                                 </div>
@@ -243,9 +305,9 @@
                         <tr>
                             <td colspan="5" class="text-center py-5">
                                 <div class="p-5">
-                                    <i class="bi bi-clipboard-x display-1 text-slate-100 mb-3"></i>
-                                    <div class="text-slate-200 fw-900 fs-4">Registry Empty</div>
-                                    <div class="text-slate-400 fw-500">No active assets currently identified in the system.</div>
+                                    <div class="display-1 text-slate-100 mb-4 fw-900 opacity-25">NULL</div>
+                                    <div class="text-slate-400 fw-800 fs-4">Registry Repository Empty</div>
+                                    <div class="text-slate-300 fw-500 x-small tracking-widest uppercase mt-2">No active logistics assets detected</div>
                                 </div>
                             </td>
                         </tr>
