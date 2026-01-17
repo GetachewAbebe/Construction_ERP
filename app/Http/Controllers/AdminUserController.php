@@ -185,9 +185,10 @@ class AdminUserController extends Controller
             $profilePath = $request->file('profile_picture')->store('employees', 'public');
         }
 
-        // Sync to Employee
-        if($employee = $user->employee) {
-            $employee->update([
+        // Sync to Employee (Create if missing)
+        \App\Models\Employee::updateOrCreate(
+            ['user_id' => $user->id],
+            [
                 'first_name'      => $user->first_name,
                 'last_name'       => $user->last_name ?: 'User',
                 'email'           => $user->email,
@@ -196,8 +197,9 @@ class AdminUserController extends Controller
                 'position'        => $user->position,
                 'department'      => $user->department,
                 'profile_picture' => $profilePath,
-            ]);
-        }
+                'hire_date'       => now(), // Default for auto-created records
+            ]
+        );
 
         return redirect()
             ->route('admin.users.index')
