@@ -23,6 +23,36 @@
     </div>
 @endif
 
+{{-- Migration Sync --}}
+<div class="card hardened-glass border-0 overflow-hidden shadow-sm mb-4 stagger-entrance">
+    <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="feature-icon-small bg-primary-subtle text-primary rounded-circle p-3">
+                    <i class="bi bi-database-fill-up fs-4"></i>
+                </div>
+                <div>
+                    <h5 class="fw-800 text-erp-deep mb-1">Database Schema Synchronization</h5>
+                    <p class="text-muted small mb-0 fw-600">
+                        @if($pendingMigrations > 0)
+                            <span class="text-danger"><i class="bi bi-exclamation-circle-fill me-1"></i>{{ $pendingMigrations }} pending database schema updates detected.</span>
+                        @else
+                            <span class="text-success"><i class="bi bi-check-circle-fill me-1"></i>Database schema is currently synchronized with the application codebase.</span>
+                        @endif
+                    </p>
+                </div>
+            </div>
+            <form action="{{ route('admin.maintenance.migrate') }}" method="POST" onsubmit="return confirm('WARNING: This will execute pending database migrations. Database state will be modified. Continue?');">
+                @csrf
+                <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 fw-800 shadow-sm border-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-gear-fill"></i>
+                    Sync Database Schema
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
 {{-- System Information --}}
 <div class="row g-4 mb-4">
     <div class="col-lg-6 stagger-entrance">

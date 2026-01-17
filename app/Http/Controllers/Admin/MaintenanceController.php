@@ -24,6 +24,9 @@ class MaintenanceController extends Controller
             'database_connection' => config('database.default'),
         ];
 
+        // Check if there are pending migrations
+        $pendingMigrations = $this->getPendingMigrations();
+
         // Get cache statistics
         $cacheInfo = [
             'driver' => config('cache.default'),
@@ -40,7 +43,34 @@ class MaintenanceController extends Controller
         // Get recent log files
         $logFiles = $this->getRecentLogFiles();
 
-        return view('admin.maintenance.index', compact('systemInfo', 'cacheInfo', 'storageInfo', 'logFiles'));
+        return view('admin.maintenance.index', compact('systemInfo', 'cacheInfo', 'storageInfo', 'logFiles', 'pendingMigrations'));
+    }
+
+    public function runMigrations()
+    {
+        try {
+            // Use --force for production environment compatibility
+            Artisan::call('migrate', ['--force' => true]);
+            $output = Artisan::output();
+
+            return redirect()->route('admin.maintenance.index')
+                ->with('success', 'Database schema synchronization complete. ' . $output);
+        } catch (\Exception $e) {
+            return redirect()->route('admin.maintenance.index')
+                ->with('error', 'Migration operation failed: ' . $e->getMessage());
+        }
+    }
+
+    private function getPendingMigrations()
+    {
+        try {
+            Artisan::call('migrate:status');
+            $status = Artisan::output();
+            // Count lines that say 'No' in the 'Ran?' column
+            return substr_count($status, '| No');
+        } catch (\Exception $e) {
+            return 0;
+        }
     }
 
     public function clearCache()

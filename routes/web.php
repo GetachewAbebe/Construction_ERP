@@ -170,6 +170,8 @@ Route::middleware([
             ->name('maintenance.index');
         Route::post('/maintenance/clear-cache', [App\Http\Controllers\Admin\MaintenanceController::class, 'clearCache'])
             ->name('maintenance.clear-cache');
+        Route::post('/maintenance/migrate', [App\Http\Controllers\Admin\MaintenanceController::class, 'runMigrations'])
+            ->name('maintenance.migrate');
         Route::post('/maintenance/optimize', [App\Http\Controllers\Admin\MaintenanceController::class, 'optimizeSystem'])
             ->name('maintenance.optimize');
         Route::post('/maintenance/clear-logs', [App\Http\Controllers\Admin\MaintenanceController::class, 'clearLogs'])
