@@ -639,6 +639,105 @@
       }
       .notification-list::-webkit-scrollbar { width: 4px; }
       .notification-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+      /* --- Universal Enterprise Supreme System --- */
+      
+      .erp-card {
+          background: #ffffff;
+          border: 1px solid rgba(226, 232, 240, 0.6);
+          border-radius: 24px;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+          padding: 2.5rem;
+          transition: all 0.3s ease;
+      }
+      .erp-card:hover {
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      }
+
+      .erp-input {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 14px;
+          padding: 0.85rem 1.25rem;
+          color: #1e293b;
+          font-weight: 500;
+          transition: all 0.2s ease;
+          width: 100%;
+          outline: none;
+      }
+      .erp-input:focus {
+          background: #ffffff;
+          border-color: var(--erp-primary);
+          box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1);
+      }
+
+      .erp-label {
+          font-size: 0.75rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: #64748b;
+          margin-bottom: 0.6rem;
+          display: block;
+      }
+
+      .table-premium {
+          width: 100%;
+          border-collapse: separate;
+          border-spacing: 0 10px;
+      }
+      .table-premium thead th {
+          background: transparent;
+          border: none;
+          padding: 1rem 1.5rem;
+          color: #64748b;
+          font-weight: 800;
+          text-transform: uppercase;
+          font-size: 0.7rem;
+          letter-spacing: 0.05em;
+      }
+      .table-premium tbody tr {
+          background: #ffffff;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+          transition: all 0.3s ease;
+      }
+      .table-premium tbody tr:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+          z-index: 10;
+          position: relative;
+      }
+      .table-premium td {
+          padding: 1.25rem 1.5rem;
+          border-top: 1px solid #f1f5f9;
+          border-bottom: 1px solid #f1f5f9;
+          vertical-align: middle;
+      }
+      .table-premium td:first-child {
+          border-left: 1px solid #f1f5f9;
+          border-top-left-radius: 16px;
+          border-bottom-left-radius: 16px;
+      }
+      .table-premium td:last-child {
+          border-right: 1px solid #f1f5f9;
+          border-top-right-radius: 16px;
+          border-bottom-right-radius: 16px;
+      }
+
+      .page-header-premium {
+          margin-bottom: 3rem;
+          animation: slideUpFade 0.6s ease-out;
+      }
+      .page-header-premium h1 {
+          font-weight: 900;
+          color: var(--erp-deep);
+          letter-spacing: -0.02em;
+          margin-bottom: 0.5rem;
+      }
+      .page-header-premium p {
+          color: #64748b;
+          font-weight: 500;
+      }
   </style>
 
   

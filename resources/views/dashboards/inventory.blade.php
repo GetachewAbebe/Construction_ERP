@@ -165,10 +165,10 @@
         
         {{-- High-End Header --}}
         <div class="d-flex align-items-center justify-content-between mb-5">
-            <div>
-                <h1 class="display-5 fw-900 text-erp-deep tracking-enterprise mb-1">Inventory Dashboard</h1>
-                <p class="text-muted fw-600 mb-0">Operational Resource Control Center & Predictive Analysis</p>
-            </div>
+                <div>
+                    <h1 class="display-5 fw-900 text-erp-deep tracking-enterprise mb-1">Inventory Command Center</h1>
+                    <p class="text-muted fw-600 mb-0">Overview of system stock, loans, and resource analytics</p>
+                </div>
             <div class="d-none d-md-flex gap-3">
                 <div class="bg-white px-4 py-2 rounded-pill border border-light shadow-sm d-flex align-items-center gap-3">
                     <span class="bg-success p-1 rounded-circle pulse-lite"></span>
@@ -183,8 +183,8 @@
                 {{-- Health Intelligence --}}
                 <div class="col-lg-4 health-gauge-box p-5 text-center border-end border-light border-opacity-50">
                     <div class="mb-5">
-                        <span class="label-enterprise">Logistical Integrity</span>
-                        <h4 class="fw-900 text-erp-deep mt-2">Inventory Health</h4>
+                        <span class="label-enterprise">Overall Status</span>
+                        <h4 class="fw-900 text-erp-deep mt-2">Stock Health</h4>
                     </div>
 
                     <div class="gauge-container d-inline-flex align-items-center justify-content-center mb-5">
@@ -214,7 +214,7 @@
 
                     <div class="p-4 bg-white bg-opacity-40 backdrop-blur rounded-4 border border-white border-opacity-60 shadow-sm mx-2">
                         <div class="d-flex justify-content-between label-enterprise mb-3">
-                            <span>AGGREGATE ASSETS</span>
+                            <span>Total Items in System</span>
                             <span class="text-erp-deep fw-900">{{ $totalItems }}</span>
                         </div>
                         <div class="progress" style="height: 10px; border-radius: 20px; background: rgba(226, 232, 240, 0.5);">
@@ -227,8 +227,8 @@
                 {{-- Distribution Matrix --}}
                 <div class="col-lg-5 p-5">
                     <div class="mb-5">
-                        <span class="label-enterprise">Resource Matrix</span>
-                        <h4 class="fw-900 text-erp-deep mt-2">Flow Composition</h4>
+                        <span class="label-enterprise">Stock Overview</span>
+                        <h4 class="fw-900 text-erp-deep mt-2">Current Inventory</h4>
                     </div>
 
                     <div class="d-grid gap-3">
@@ -237,8 +237,8 @@
                             <div class="d-flex align-items-center gap-4">
                                 <div class="p-3 bg-white bg-opacity-10 rounded-4 text-white shadow-soft"><i class="bi bi-truck-flatbed fs-4"></i></div>
                                 <div>
-                                    <div class="fw-800 fs-5">Active Field Loans</div>
-                                    <div class="label-enterprise text-white-50 mt-1">Dispatched Capital</div>
+                                    <div class="fw-800 fs-5">Items on Loan</div>
+                                    <div class="label-enterprise mt-1">Dispatched Assets</div>
                                 </div>
                             </div>
                             <div class="display-6 fw-900 mb-0">{{ $openLoanCount }}</div>
@@ -248,8 +248,8 @@
                             <div class="d-flex align-items-center gap-4">
                                 <div class="p-3 bg-success-soft text-success rounded-4"><i class="bi bi-check2-circle fs-4"></i></div>
                                 <div>
-                                    <div class="fw-800 text-erp-deep fs-5">Prime Stock</div>
-                                    <div class="label-enterprise mt-1">High Availability (>5 Units)</div>
+                                    <div class="fw-800 text-erp-deep fs-5">Stable Stock</div>
+                                    <div class="label-enterprise mt-1">Healthy levels (>5 Units)</div>
                                 </div>
                             </div>
                             <div class="display-6 fw-900 text-erp-deep mb-0">{{ $stableItemsCount }}</div>
@@ -259,8 +259,8 @@
                             <div class="d-flex align-items-center gap-4">
                                 <div class="p-3 bg-warning-soft text-warning rounded-4"><i class="bi bi-exclamation-triangle fs-4"></i></div>
                                 <div>
-                                    <div class="fw-800 text-erp-deep fs-5">Scarcity Alerts</div>
-                                    <div class="label-enterprise mt-1">Critical Reserve (1-5 Units)</div>
+                                    <div class="fw-800 text-erp-deep fs-5">Low Stock</div>
+                                    <div class="label-enterprise mt-1">Risk of exhaustion (1-5 Units)</div>
                                 </div>
                             </div>
                             <div class="display-6 fw-900 text-warning mb-0">{{ $lowStockCount }}</div>
@@ -270,8 +270,8 @@
                             <div class="d-flex align-items-center gap-4">
                                 <div class="p-3 bg-danger-soft text-danger rounded-4"><i class="bi bi-x-circle fs-4"></i></div>
                                 <div>
-                                    <div class="fw-800 text-erp-deep fs-5">Null Reserve</div>
-                                    <div class="label-enterprise mt-1">Exhausted Stock Registry</div>
+                                    <div class="fw-800 text-erp-deep fs-5">Out of Stock</div>
+                                    <div class="label-enterprise mt-1">Zero quantity records</div>
                                 </div>
                             </div>
                             <div class="display-6 fw-900 text-danger mb-0">{{ $zeroStockCount }}</div>
@@ -283,29 +283,29 @@
                 <div class="col-lg-3 sidebar-control">
                     <div class="top-ops">
                         <div class="mb-5">
-                            <span class="label-enterprise text-white-50">Operational Hub</span>
-                            <h4 class="fw-900 text-white mt-2">Command</h4>
+                            <span class="label-enterprise text-white-50">Management Hub</span>
+                            <h4 class="fw-900 text-white mt-2">Quick Actions</h4>
                         </div>
                         
                         <div class="d-grid">
                             <a href="{{ route('inventory.items.index') }}" class="btn-command">
                                 <div class="p-2 rounded-3 bg-white bg-opacity-10"><i class="bi bi-grid-3x3-gap"></i></div>
-                                <span>Global Registry</span>
+                                <span>All Inventory</span>
                             </a>
 
                             <a href="{{ route('inventory.items.create') }}" class="btn-command active-op">
                                 <div class="p-2 rounded-3 bg-primary bg-opacity-10"><i class="bi bi-plus-lg"></i></div>
-                                <span>Register Asset</span>
+                                <span>Add New Item</span>
                             </a>
 
                             <a href="{{ (Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin')) ? route('inventory.loans.index') : route('inventory.loans.create') }}" class="btn-command">
                                 <div class="p-2 rounded-3 bg-white bg-opacity-10"><i class="bi bi-arrow-left-right"></i></div>
-                                <span>Loan Logic</span>
+                                <span>Loan Management</span>
                             </a>
 
                             <a href="{{ route('inventory.logs.index') }}" class="btn-command">
                                 <div class="p-2 rounded-3 bg-white bg-opacity-10"><i class="bi bi-clock-history"></i></div>
-                                <span>Audit Stream</span>
+                                <span>Activity Logs</span>
                             </a>
                         </div>
                     </div>
@@ -324,12 +324,12 @@
                 <div class="bg-white p-5 rounded-4 shadow-soft border border-light h-100 position-relative overflow-hidden">
                     <div class="d-flex justify-content-between align-items-start mb-5 position-relative z-index-1">
                         <div>
-                            <span class="label-enterprise">Logistical intelligence</span>
-                            <h4 class="fw-900 text-erp-deep mt-2">Volume Analysis</h4>
-                            <p class="text-muted small mb-0">Distribution across top performing assets.</p>
+                            <span class="label-enterprise">Stock Analytics</span>
+                            <h4 class="fw-900 text-erp-deep mt-2">Top Items in Stock</h4>
+                            <p class="text-muted small mb-0">Breakdown of leading resource volumes</p>
                         </div>
                         <button class="btn btn-light rounded-pill px-4 x-small fw-900 text-uppercase tracking-widest border">
-                            Realtime Data Feed
+                            Real-time Data
                         </button>
                     </div>
                     <div id="stockLevelsChart" style="min-height: 400px;" class="position-relative z-index-1"></div>
@@ -346,8 +346,8 @@
                 <div class="bg-white p-5 rounded-4 shadow-soft border border-light h-100">
                     <div class="d-flex align-items-center justify-content-between mb-5">
                         <div>
-                            <span class="label-enterprise">Priority Buffer</span>
-                            <h4 class="fw-900 text-erp-deep mt-2">Stock Risks</h4>
+                            <span class="label-enterprise">Critical Alerts</span>
+                            <h4 class="fw-900 text-erp-deep mt-2">Low Stock Alerts</h4>
                         </div>
                         <div class="bg-danger p-2 rounded-circle pulse-lite shadow-soft"></div>
                     </div>
