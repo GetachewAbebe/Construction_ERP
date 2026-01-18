@@ -1,259 +1,383 @@
 @extends('layouts.app')
 
-@section('title', 'Logistics Command Center | Natanem Engineering')
+@section('title', 'Logistics Command Center | Enterprise Intelligence')
 
 @section('content')
 <style>
     :root {
-        --dash-bg: #fdfdfd;
+        --dash-bg: #f8fafc;
         --cmd-sidebar: #0f172a;
-        --glass-border: rgba(226, 232, 240, 0.8);
+        --emerald-glow: rgba(16, 185, 129, 0.15);
+        --glass-bg: rgba(255, 255, 255, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.4);
     }
 
     body {
         background-color: var(--dash-bg);
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.05) 0px, transparent 50%);
     }
 
-    /* Command Layout */
+    /* Premium Command Bridge */
     .command-bridge {
-        background: #ffffff;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         border: 1px solid var(--glass-border);
-        border-radius: 24px;
+        border-radius: 35px;
         overflow: hidden;
-        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.02);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.05);
+        margin-top: 1rem;
     }
 
     .sidebar-control {
-        background: var(--cmd-sidebar);
+        background: linear-gradient(165deg, #0f172a 0%, #1e293b 100%);
         color: #ffffff;
-        padding: 3rem 2rem;
+        padding: 3.5rem 2.5rem;
         display: flex;
-        flex-column: column;
+        flex-direction: column;
         justify-content: space-between;
+        position: relative;
+        overflow: hidden;
     }
 
-    /* Metric HUD */
-    .metric-hud-item {
-        background: #f8fafc;
-        border: 1px solid #f1f5f9;
-        border-radius: 16px;
-        padding: 1.25rem;
-        transition: all 0.2s ease;
+    .sidebar-control::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+        pointer-events: none;
     }
-    .metric-hud-item:hover {
+
+    /* Metric HUD Enhancement */
+    .metric-hud-item {
         background: #ffffff;
+        border: 1px solid rgba(226, 232, 240, 0.6);
+        border-radius: 20px;
+        padding: 1.5rem;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .metric-hud-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.04);
         border-color: #cbd5e1;
-        transform: translateX(5px);
+    }
+
+    .metric-hud-item.active-loan {
+        background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+        color: #fff;
+        border: none;
     }
 
     .health-gauge-box {
-        background: radial-gradient(circle at center, #f8fafc 0%, #ffffff 100%);
-        border-right: 1px solid #f1f5f9;
+        background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(248,250,252,0.8) 100%);
+        position: relative;
     }
 
+    /* Kinetic Navigation Buttons */
     .btn-command {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #ffffff;
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #94a3b8;
         font-weight: 700;
-        padding: 1rem;
-        border-radius: 12px;
-        transition: all 0.2s ease;
+        padding: 1.25rem;
+        border-radius: 16px;
+        transition: all 0.3s ease;
         text-align: left;
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 15px;
+        text-decoration: none;
+        margin-bottom: 1rem;
     }
+
     .btn-command:hover {
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.1);
         color: #ffffff;
-        transform: translateY(-2px);
+        transform: translateX(8px);
+        border-color: rgba(255, 255, 255, 0.2);
     }
+
     .btn-command.active-op {
         background: #ffffff;
         color: var(--cmd-sidebar);
         border: none;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        transform: scale(1.02);
     }
 
-    .track-pill {
-        font-size: 0.65rem;
-        letter-spacing: 0.1em;
+    .btn-command.active-op:hover {
+        transform: scale(1.02) translateX(0);
+    }
+
+    /* Gauge Refinement */
+    .gauge-container {
+        position: relative;
+        filter: drop-shadow(0 0 15px var(--emerald-glow));
+    }
+
+    .health-indicator-ring {
+        transition: stroke-dashoffset 2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Typography Upgrades */
+    .tracking-enterprise {
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+    }
+    
+    .label-enterprise {
+        font-size: 0.7rem;
         font-weight: 900;
         text-transform: uppercase;
-        padding: 4px 12px;
-        border-radius: 20px;
+        letter-spacing: 0.15em;
+        color: #64748b;
+    }
+
+    /* Animations */
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+    .floating-asset { animation: float 6s ease-in-out infinite; }
+
+    .pulse-lite {
+        animation: pulse-lite 2s infinite;
+    }
+    @keyframes pulse-lite {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.8; }
+        100% { transform: scale(1); opacity: 1; }
     }
 </style>
 
-<div class="dashboard-container mt-3">
+<div class="dashboard-container mt-4 animate-fade-in">
     <div class="container-fluid px-md-5 py-2">
         
-        {{-- Clean Header Section --}}
-        <div class="mb-4">
-            <h1 class="h2 fw-900 text-erp-deep tracking-tight-custom">Inventory Dashboard</h1>
+        {{-- High-End Header --}}
+        <div class="d-flex align-items-center justify-content-between mb-5">
+            <div>
+                <h1 class="display-5 fw-900 text-erp-deep tracking-enterprise mb-1">Inventory Dashboard</h1>
+                <p class="text-muted fw-600 mb-0">Operational Resource Control Center & Predictive Analysis</p>
+            </div>
+            <div class="d-none d-md-flex gap-3">
+                <div class="bg-white px-4 py-2 rounded-pill border border-light shadow-sm d-flex align-items-center gap-3">
+                    <span class="bg-success p-1 rounded-circle pulse-lite"></span>
+                    <span class="fw-800 text-erp-deep small">SYSTEMS NOMINAL</span>
+                </div>
+            </div>
         </div>
 
         {{-- Main Command Bridge --}}
-        <div class="command-bridge mb-5">
+        <div class="command-bridge mb-5 stagger-entrance">
             <div class="row g-0">
-                {{-- Health & Intelligence Column --}}
-                <div class="col-lg-4 health-gauge-box p-5 text-center">
+                {{-- Health Intelligence --}}
+                <div class="col-lg-4 health-gauge-box p-5 text-center border-end border-light border-opacity-50">
                     <div class="mb-5">
-                        <h5 class="fw-900 text-erp-deep mb-0">Items Health</h5>
+                        <span class="label-enterprise">Logistical Integrity</span>
+                        <h4 class="fw-900 text-erp-deep mt-2">Inventory Health</h4>
                     </div>
 
-                    <div class="position-relative d-inline-flex align-items-center justify-content-center mb-4">
-                        <svg width="220" height="220" viewBox="0 0 120 120">
-                            <circle cx="60" cy="60" r="54" fill="none" stroke="#f1f5f9" stroke-width="8" />
-                            <circle cx="60" cy="60" r="54" fill="none" stroke="var(--erp-primary)" stroke-width="8" 
-                                    stroke-dasharray="339.29" stroke-dashoffset="{{ 339.29 - (339.29 * $healthPercentage / 100) }}"
-                                    stroke-linecap="round" transform="rotate(-90 60 60)" style="transition: stroke-dashoffset 1.5s ease;" />
+                    <div class="gauge-container d-inline-flex align-items-center justify-content-center mb-5">
+                        <svg width="240" height="240" viewBox="0 0 120 120">
+                            <!-- Background Track -->
+                            <circle cx="60" cy="60" r="52" fill="none" stroke="#f1f5f9" stroke-width="10" />
+                            <!-- Health Ring -->
+                            <circle cx="60" cy="60" r="52" fill="none" stroke="url(#emeraldGradient)" 
+                                    stroke-width="10" 
+                                    class="health-indicator-ring"
+                                    stroke-dasharray="326.72" 
+                                    stroke-dashoffset="{{ 326.72 - (326.72 * $healthPercentage / 100) }}"
+                                    stroke-linecap="round" 
+                                    transform="rotate(-90 60 60)" />
+                            <defs>
+                                <linearGradient id="emeraldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#10b981" />
+                                    <stop offset="100%" stop-color="#059669" />
+                                </linearGradient>
+                            </defs>
                         </svg>
                         <div class="position-absolute text-center">
-                            <div class="display-4 fw-900 mb-0 text-erp-deep">{{ $healthPercentage }}%</div>
-                            <div class="small text-muted fw-800 uppercase letter-spacing-1">Stable</div>
+                            <div class="display-3 fw-900 mb-0 text-erp-deep">{{ $healthPercentage }}%</div>
+                            <div class="label-enterprise">Stable</div>
                         </div>
                     </div>
 
-                    <div class="p-4 bg-light-soft rounded-4 border border-light mx-2">
-                        <div class="d-flex justify-content-between small fw-800 mb-2">
-                            <span>TOTAL ASSETS</span>
-                            <span class="text-erp-deep">{{ $totalItems }}</span>
+                    <div class="p-4 bg-white bg-opacity-40 backdrop-blur rounded-4 border border-white border-opacity-60 shadow-sm mx-2">
+                        <div class="d-flex justify-content-between label-enterprise mb-3">
+                            <span>AGGREGATE ASSETS</span>
+                            <span class="text-erp-deep fw-900">{{ $totalItems }}</span>
                         </div>
-                        <div class="progress" style="height: 6px; border-radius: 10px; background: #e2e8f0;">
-                            <div class="progress-bar bg-erp-primary" role="progressbar" style="width: {{ $healthPercentage }}%"></div>
+                        <div class="progress" style="height: 10px; border-radius: 20px; background: rgba(226, 232, 240, 0.5);">
+                            <div class="progress-bar bg-success shadow-sm" role="progressbar" 
+                                 style="width: {{ $healthPercentage }}%; border-radius: 20px;"></div>
                         </div>
                     </div>
                 </div>
 
-                {{-- Distribution HUD --}}
-                <div class="col-lg-5 p-5 border-start border-light">
+                {{-- Distribution Matrix --}}
+                <div class="col-lg-5 p-5">
                     <div class="mb-5">
-                        <h5 class="fw-900 text-erp-deep mb-0">Items Composition</h5>
+                        <span class="label-enterprise">Resource Matrix</span>
+                        <h4 class="fw-900 text-erp-deep mt-2">Flow Composition</h4>
                     </div>
 
                     <div class="d-grid gap-3">
-                        <div class="metric-hud-item d-flex align-items-center justify-content-between bg-erp-deep text-white shadow-lg mb-2">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="p-2 bg-white bg-opacity-10 rounded-3 text-white"><i class="bi bi-truck-flatbed"></i></div>
+                        <a href="{{ (Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin')) ? route('inventory.loans.index') : route('inventory.loans.create') }}" 
+                           class="metric-hud-item active-loan d-flex align-items-center justify-content-between text-decoration-none transition-all">
+                            <div class="d-flex align-items-center gap-4">
+                                <div class="p-3 bg-white bg-opacity-10 rounded-4 text-white shadow-soft"><i class="bi bi-truck-flatbed fs-4"></i></div>
                                 <div>
-                                    <div class="fw-800">Active Field Loans</div>
-                                    <div class="x-small text-white-50 fw-600">Dispatched Assets</div>
+                                    <div class="fw-800 fs-5">Active Field Loans</div>
+                                    <div class="label-enterprise text-white-50 mt-1">Dispatched Capital</div>
                                 </div>
                             </div>
-                            <div class="h4 fw-900 mb-0">{{ $openLoanCount }}</div>
-                        </div>
+                            <div class="display-6 fw-900 mb-0">{{ $openLoanCount }}</div>
+                        </a>
+
                         <div class="metric-hud-item d-flex align-items-center justify-content-between">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="p-2 bg-success text-white rounded-3"><i class="bi bi-check2-circle"></i></div>
+                            <div class="d-flex align-items-center gap-4">
+                                <div class="p-3 bg-success-soft text-success rounded-4"><i class="bi bi-check2-circle fs-4"></i></div>
                                 <div>
-                                    <div class="fw-800 text-erp-deep">Stable Stock</div>
-                                    <div class="x-small text-muted fw-600">Items with Qty > 5</div>
+                                    <div class="fw-800 text-erp-deep fs-5">Prime Stock</div>
+                                    <div class="label-enterprise mt-1">High Availability (>5 Units)</div>
                                 </div>
                             </div>
-                            <div class="h4 fw-900 text-erp-deep mb-0">{{ $stableItemsCount }}</div>
+                            <div class="display-6 fw-900 text-erp-deep mb-0">{{ $stableItemsCount }}</div>
                         </div>
 
                         <div class="metric-hud-item d-flex align-items-center justify-content-between">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="p-2 bg-warning text-white rounded-3"><i class="bi bi-exclamation-square"></i></div>
+                            <div class="d-flex align-items-center gap-4">
+                                <div class="p-3 bg-warning-soft text-warning rounded-4"><i class="bi bi-exclamation-triangle fs-4"></i></div>
                                 <div>
-                                    <div class="fw-800 text-erp-deep">Risk Alerts</div>
-                                    <div class="x-small text-muted fw-600">Items with Qty 1-5</div>
+                                    <div class="fw-800 text-erp-deep fs-5">Scarcity Alerts</div>
+                                    <div class="label-enterprise mt-1">Critical Reserve (1-5 Units)</div>
                                 </div>
                             </div>
-                            <div class="h4 fw-900 text-warning mb-0">{{ $lowStockCount }}</div>
+                            <div class="display-6 fw-900 text-warning mb-0">{{ $lowStockCount }}</div>
                         </div>
 
                         <div class="metric-hud-item d-flex align-items-center justify-content-between">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="p-2 bg-danger text-white rounded-3"><i class="bi bi-trash-fill"></i></div>
+                            <div class="d-flex align-items-center gap-4">
+                                <div class="p-3 bg-danger-soft text-danger rounded-4"><i class="bi bi-x-circle fs-4"></i></div>
                                 <div>
-                                    <div class="fw-800 text-erp-deep">Deleted Records</div>
-                                    <div class="x-small text-muted fw-600">Zero quantity historicals</div>
+                                    <div class="fw-800 text-erp-deep fs-5">Null Reserve</div>
+                                    <div class="label-enterprise mt-1">Exhausted Stock Registry</div>
                                 </div>
                             </div>
-                            <div class="h4 fw-900 text-danger mb-0">{{ $zeroStockCount }}</div>
+                            <div class="display-6 fw-900 text-danger mb-0">{{ $zeroStockCount }}</div>
                         </div>
-
                     </div>
                 </div>
 
-                {{-- Operational Sidebar --}}
+                {{-- Unified Operations Sidebar --}}
                 <div class="col-lg-3 sidebar-control">
                     <div class="top-ops">
-                        <h5 class="fw-900 mb-4 tracking-tight">Quick Actions</h5>
+                        <div class="mb-5">
+                            <span class="label-enterprise text-white-50">Operational Hub</span>
+                            <h4 class="fw-900 text-white mt-2">Command</h4>
+                        </div>
                         
-                        <div class="d-grid gap-3">
+                        <div class="d-grid">
                             <a href="{{ route('inventory.items.index') }}" class="btn-command">
-                                <i class="bi bi-search"></i>
-                                <span>Explore Items</span>
+                                <div class="p-2 rounded-3 bg-white bg-opacity-10"><i class="bi bi-grid-3x3-gap"></i></div>
+                                <span>Global Registry</span>
                             </a>
 
                             <a href="{{ route('inventory.items.create') }}" class="btn-command active-op">
-                                <i class="bi bi-plus-circle-fill"></i>
-                                <span>Register Items</span>
+                                <div class="p-2 rounded-3 bg-primary bg-opacity-10"><i class="bi bi-plus-lg"></i></div>
+                                <span>Register Asset</span>
                             </a>
 
                             <a href="{{ (Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin')) ? route('inventory.loans.index') : route('inventory.loans.create') }}" class="btn-command">
-                                <i class="bi bi-arrow-left-right"></i>
-                                <span>Loan Management</span>
+                                <div class="p-2 rounded-3 bg-white bg-opacity-10"><i class="bi bi-arrow-left-right"></i></div>
+                                <span>Loan Logic</span>
+                            </a>
+
+                            <a href="{{ route('inventory.logs.index') }}" class="btn-command">
+                                <div class="p-2 rounded-3 bg-white bg-opacity-10"><i class="bi bi-clock-history"></i></div>
+                                <span>Audit Stream</span>
                             </a>
                         </div>
                     </div>
 
+                    <div class="bottom-branding text-center pt-5 border-top border-white border-opacity-10 mt-5">
+                        <p class="label-enterprise text-white-50 mb-0">Security Version 4.2.0</p>
+                    </div>
                 </div>
             </div>
         </div>
 
         {{-- Row 2: Deep Analytics & Critical List --}}
-        <div class="row g-4">
-            {{-- Analytics Chart --}}
+        <div class="row g-5">
+            {{-- Enterprise Chart --}}
             <div class="col-lg-8">
-                <div class="bg-white border border-light p-4 p-md-5 rounded-4 shadow-sm h-100">
-                    <div class="d-flex justify-content-between align-items-start mb-5">
+                <div class="bg-white p-5 rounded-4 shadow-soft border border-light h-100 position-relative overflow-hidden">
+                    <div class="d-flex justify-content-between align-items-start mb-5 position-relative z-index-1">
                         <div>
-                            <h5 class="fw-900 text-erp-deep mb-1">Volume Intelligence</h5>
-                            <p class="text-muted small">Resource distribution analysis (Top 10 Materials)</p>
+                            <span class="label-enterprise">Logistical intelligence</span>
+                            <h4 class="fw-900 text-erp-deep mt-2">Volume Analysis</h4>
+                            <p class="text-muted small mb-0">Distribution across top performing assets.</p>
                         </div>
-                        <div class="badge bg-light text-erp-deep border px-3 py-2 fw-800">RANKED BY QTY</div>
+                        <button class="btn btn-light rounded-pill px-4 x-small fw-900 text-uppercase tracking-widest border">
+                            Realtime Data Feed
+                        </button>
                     </div>
-                    <div id="stockLevelsChart" style="min-height: 380px;"></div>
+                    <div id="stockLevelsChart" style="min-height: 400px;" class="position-relative z-index-1"></div>
+                    
+                    {{-- Subtle background decoration --}}
+                    <div class="position-absolute top-0 end-0 p-5 mt-5 opacity-05">
+                        <i class="bi bi-bar-chart-fill display-1"></i>
+                    </div>
                 </div>
             </div>
 
             {{-- Critical Alerts --}}
             <div class="col-lg-4">
-                <div class="bg-white border border-light p-4 p-md-5 rounded-4 shadow-sm h-100">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h5 class="fw-900 text-erp-deep mb-0">At Risk</h5>
-                        <span class="badge bg-danger text-white rounded-pill px-2 py-1 x-small fw-900 uppercase">PRIORITY</span>
+                <div class="bg-white p-5 rounded-4 shadow-soft border border-light h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-5">
+                        <div>
+                            <span class="label-enterprise">Priority Buffer</span>
+                            <h4 class="fw-900 text-erp-deep mt-2">Stock Risks</h4>
+                        </div>
+                        <div class="bg-danger p-2 rounded-circle pulse-lite shadow-soft"></div>
                     </div>
                     
-                    <div class="alerts-tray scrollbar-hide">
+                    <div class="alerts-tray pe-2" style="max-height: 400px; overflow-y: auto;">
                         @forelse($recentAlerts as $alert)
-                            <div class="metric-hud-item p-3 mb-2 d-flex justify-content-between align-items-center">
-                                <div>
-                                    <div class="fw-900 text-erp-deep small">{{ Str::limit($alert->name, 25) }}</div>
-                                    <div class="x-small text-muted fw-800">{{ $alert->item_no }}</div>
+                            <div class="metric-hud-item p-4 mb-3 border-start border-4 border-danger shadow-sm">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <div class="fw-900 text-erp-deep">{{ Str::limit($alert->name, 20) }}</div>
+                                    <div class="fw-900 text-danger fs-5">{{ $alert->quantity }}</div>
                                 </div>
-                                <div class="text-end">
-                                    <div class="fw-900 text-danger">{{ $alert->quantity }}</div>
-                                    <div class="x-small text-muted fw-bold">{{ $alert->unit_of_measurement }}</div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="label-enterprise x-small">{{ $alert->item_no }}</div>
+                                    <div class="label-enterprise x-small">{{ $alert->unit_of_measurement }}</div>
                                 </div>
                             </div>
                         @empty
-                            <div class="text-center py-5">
-                                <i class="bi bi-shield-check text-success display-4 opacity-25"></i>
-                                <p class="text-muted small fw-600 mt-2">Logistics are Stable.</p>
+                            <div class="text-center py-5 opacity-50">
+                                <i class="bi bi-shield-check text-success display-1"></i>
+                                <h6 class="fw-900 text-erp-deep mt-4">Zero Logistics Friction</h6>
+                                <p class="text-muted x-small uppercase fw-800 tracking-widest mt-2">All assets are above reserve levels.</p>
                             </div>
                         @endforelse
                     </div>
 
                     @if(count($recentAlerts) > 0)
-                        <div class="mt-4 pt-3 border-top text-center">
-                            <a href="{{ route('inventory.items.index') }}?status=low_stock" class="text-erp-deep fw-800 x-small text-uppercase tracking-wider text-decoration-none">
-                                View Registry <i class="bi bi-arrow-right ms-1"></i>
+                        <div class="mt-5 text-center">
+                            <a href="{{ route('inventory.items.index') }}?status=low_stock" 
+                               class="btn btn-erp-deep w-100 rounded-pill py-3 fw-900 tracking-widest uppercase fs-7 shadow-lg">
+                                Manage Risk Registry
                             </a>
                         </div>
                     @endif
@@ -269,57 +393,81 @@
     document.addEventListener('DOMContentLoaded', function() {
         var options = {
             series: [{
-                name: 'Units',
+                name: 'Stock Volume',
                 data: {!! json_encode($chartData) !!}
             }],
             chart: {
                 type: 'bar',
-                height: 380,
+                height: 400,
                 toolbar: { show: false },
-                fontFamily: 'Outfit, sans-serif'
+                fontFamily: 'Outfit, sans-serif',
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                    animateOnRender: true
+                }
             },
             plotOptions: {
                 bar: {
-                    borderRadius: 6,
-                    columnWidth: '40%',
+                    borderRadius: 12,
+                    columnWidth: '35%',
                     distributed: true,
                     dataLabels: { position: 'top' }
                 }
             },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['transparent']
+            },
             dataLabels: {
                 enabled: true,
-                offsetY: -20,
+                offsetY: -30,
                 style: {
-                    fontSize: '11px',
-                    colors: ["#334155"],
-                    fontWeight: 800
+                    fontSize: '12px',
+                    colors: ["#0f172a"],
+                    fontWeight: 900
+                },
+                formatter: function (val) {
+                    return val.toLocaleString();
                 }
             },
-            colors: ['#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#064e3b', '#065f46', '#047857', '#059669', '#10b981'],
+            colors: ['#10b981', '#059669', '#0f172a', '#334155', '#64748b', '#94a3b8', '#cbd5e1', '#e2e8f0', '#064e3b', '#065f46'],
             xaxis: {
                 categories: {!! json_encode($chartCategories) !!},
                 labels: {
                     style: {
                         colors: '#64748b',
                         fontSize: '11px',
-                        fontWeight: 700
+                        fontWeight: 900,
+                        cssClass: 'label-enterprise'
                     },
                     rotate: -45,
-                    trim: true
+                    trim: true,
+                    offsetY: 5
                 },
                 axisBorder: { show: false },
                 axisTicks: { show: false }
             },
             yaxis: {
                 labels: {
-                    style: { colors: '#64748b', fontWeight: 600 }
+                    style: { colors: '#94a3b8', fontWeight: 600 }
                 }
             },
             grid: {
                 borderColor: '#f1f5f9',
-                strokeDashArray: 3
+                strokeDashArray: 4,
+                padding: { top: 20 }
             },
-            tooltip: { theme: 'dark' },
+            tooltip: { 
+                theme: 'dark',
+                y: {
+                    formatter: function (val) {
+                        return val + " Units Available";
+                    }
+                }
+            },
             legend: { show: false }
         };
 
