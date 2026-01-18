@@ -120,10 +120,6 @@
                             @error('department') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
-                         <div class="col-12">
-                            <label class="form-label small fw-bold text-muted text-uppercase">Bio / Notes</label>
-                            <textarea name="bio" rows="3" class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm" placeholder="Additional information...">{{ old('bio', $user->bio) }}</textarea>
-                        </div>
                     </div>
 
                     <div class="text-end mt-5">
