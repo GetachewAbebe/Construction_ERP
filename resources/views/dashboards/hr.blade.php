@@ -143,23 +143,31 @@
                             <tr class="transition-all">
                                 <td class="py-3">
                                     <div class="d-flex align-items-center gap-3">
+                                        @php
+                                            // Pre-calculate fallback gradient
+                                            $gradients = [
+                                                'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', // Indigo-Purple
+                                                'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)', // Blue-Cyan
+                                                'linear-gradient(135deg, #10b981 0%, #34d399 100%)', // Emerald-Teal
+                                                'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)', // Amber-Yellow
+                                                'linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)'  // Pink-Rose
+                                            ];
+                                            $index = ord(substr($emp->first_name, 0, 1)) % count($gradients);
+                                            $bg = $gradients[$index];
+                                            $initials = strtoupper(substr($emp->first_name, 0, 1)) . strtoupper(substr($emp->last_name, 0, 1));
+                                        @endphp
+
                                         @if($emp->profile_picture_url)
-                                            <img src="{{ $emp->profile_picture_url }}" class="avatar-pill" alt="{{ $emp->first_name }}">
+                                            <div class="position-relative">
+                                                <img src="{{ $emp->profile_picture_url }}" class="avatar-pill" alt="{{ $emp->first_name }}"
+                                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                <div class="avatar-fallback" style="background: {{ $bg }}; display: none;">
+                                                    {{ $initials }}
+                                                </div>
+                                            </div>
                                         @else
-                                            @php
-                                                // Generate a deterministic color based on the name
-                                                $gradients = [
-                                                    'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', // Indigo-Purple
-                                                    'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)', // Blue-Cyan
-                                                    'linear-gradient(135deg, #10b981 0%, #34d399 100%)', // Emerald-Teal
-                                                    'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)', // Amber-Yellow
-                                                    'linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)'  // Pink-Rose
-                                                ];
-                                                $index = ord(substr($emp->first_name, 0, 1)) % count($gradients);
-                                                $bg = $gradients[$index];
-                                            @endphp
                                             <div class="avatar-fallback" style="background: {{ $bg }};">
-                                                {{ strtoupper(substr($emp->first_name, 0, 1)) }}{{ strtoupper(substr($emp->last_name, 0, 1)) }}
+                                                {{ $initials }}
                                             </div>
                                         @endif
                                         <div>

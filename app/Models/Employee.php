@@ -144,11 +144,16 @@ class Employee extends Model
      */
     public function getProfilePictureUrlAttribute()
     {
-        $path = $this->profile_picture;
+        $path = trim((string)$this->profile_picture, ' /\\');
         if (!$path) return null;
 
-        // Force usage of the secure controller route to bypass symlink issues
-        return route('employee.profile-picture', ['path' => $path]);
+        // Use standard Storage URL if path is valid
+        // This leverages the /storage/ symlink which is more reliable in most browsers
+        $url = \Illuminate\Support\Facades\Storage::disk('public')->url($path);
+        
+        // Add cache-busting timestamp
+        $timestamp = $this->updated_at ? $this->updated_at->timestamp : time();
+        return $url . '?v=' . $timestamp;
     }
 
     /**

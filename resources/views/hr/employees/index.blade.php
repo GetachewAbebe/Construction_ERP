@@ -100,18 +100,24 @@
                 @forelse($employees as $e)
                     <tr>
                         <td class="ps-4">
+                            @php
+                                $initialRef = strtoupper(substr($e->first_name, 0, 1));
+                            @endphp
                             @if($e->profile_picture_url)
-                                <div class="avatar-md hardened-glass p-1 rounded-circle shadow-sm" style="width: 45px; height: 45px;">
+                                <div class="avatar-md rounded-circle overflow-hidden shadow-sm border border-2 border-white position-relative" style="width: 45px; height: 45px;">
                                     <img src="{{ $e->profile_picture_url }}" 
-                                         class="rounded-circle w-100 h-100" 
-                                         style="object-fit: cover; text-indent: -9999px;" 
+                                         class="w-100 h-100 object-fit-cover" 
                                          alt="{{ $e->first_name }}"
-                                         onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2NjYyIgZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDRzMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIvPjwvc3ZnPg==';">
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-erp-deep text-white fw-900" 
+                                         style="display: none; font-size: 1.2rem;">
+                                        {{ $initialRef }}
+                                    </div>
                                 </div>
                             @else
                                 <div class="avatar-md bg-erp-deep text-white rounded-circle d-flex align-items-center justify-content-center fw-800 shadow-sm" 
-                                     style="width: 45px; height: 45px;">
-                                    {{ substr($e->first_name, 0, 1) }}
+                                     style="width: 45px; height: 45px; font-size: 1.2rem;">
+                                    {{ $initialRef }}
                                 </div>
                             @endif
                         </td>
@@ -144,6 +150,20 @@
                             <div class="x-small text-muted">{{ $e->phone ?? 'No Direct Line' }}</div>
                         </td>
                         <td class="text-end pe-4">
+                            @if(Auth::user()->hasAnyRole(['Administrator', 'Admin']))
+                                @if(!$e->user_id)
+                                    <a href="{{ route('admin.users.create', ['employee_id' => $e->id]) }}" 
+                                       class="btn btn-sm btn-outline-erp-deep rounded-pill px-3 py-2 fw-800 me-2" 
+                                       title="Grant Login Access">
+                                        <i class="bi bi-shield-plus me-1"></i>Provision Access
+                                    </a>
+                                @else
+                                    <span class="badge bg-primary-soft text-primary rounded-pill px-3 py-2 fw-800 me-2">
+                                        <i class="bi bi-person-check-fill me-1"></i>System Active
+                                    </span>
+                                @endif
+                            @endif
+
                             @if(Auth::user()->hasAnyRole(['Administrator', 'Admin', 'Human Resource Manager', 'HumanResourceManager']))
                             <div class="btn-group shadow-sm" role="group">
                                 <a href="{{ route('hr.employees.edit', $e) }}" 

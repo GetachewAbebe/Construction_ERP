@@ -74,10 +74,14 @@ class AdminUserController extends Controller
     /**
      * Show create form.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
         $roles = $this->allowedRoles;
-        return view('admin.users.create', compact('roles'));
+        $employee = null;
+        if ($request->filled('employee_id')) {
+            $employee = \App\Models\Employee::find($request->employee_id);
+        }
+        return view('admin.users.create', compact('roles', 'employee'));
     }
 
     /**
@@ -117,23 +121,47 @@ class AdminUserController extends Controller
             $profilePath = $request->file('profile_picture')->store('employees', 'public');
         }
 
-        // Auto-create Employee Record
-        \App\Models\Employee::create([
-            'user_id'         => $user->id,
-            'first_name'      => $firstName,
-            'last_name'       => $lastName ?: 'User',
-            'email'           => $user->email,
-            'status'          => $request->status ?? 'Active',
-            'hire_date'       => now(),
-            'profile_picture' => $profilePath,
-            'phone'           => $request->phone_number,
-            'position'        => $request->position,
-            'department'      => $request->department,
-        ]);
+        // High-Integrity Employee Linking (Intelligent Sync)
+        $email = strtolower(trim($user->email));
+
+        // Use ILIKE for PostgreSQL case-insensitive match
+        $employee = \App\Models\Employee::where('email', 'ILIKE', $email)->first();
+
+        $employeeData = [
+            'user_id'    => $user->id,
+            'email'      => $email,
+            'first_name' => $firstName,
+            'last_name'  => $lastName ?: 'User',
+            'status'     => $request->status ?? 'Active',
+            'phone'      => $request->phone_number,
+            'position'   => $request->position,
+            'department' => $request->department,
+            'hire_date'  => $request->hire_date ?: now(),
+            'salary'     => $request->salary ?? 0,
+        ];
+
+        // Only update profile picture if a new file was actually provided
+        if ($profilePath) {
+            $employeeData['profile_picture'] = $profilePath;
+        }
+
+        if ($employee) {
+            $employee->update($employeeData);
+        } else {
+            \App\Models\Employee::create($employeeData);
+        }
 
         return redirect()
             ->route('admin.users.index')
             ->with('success', "User identity for {$user->name} has been successfully established.");
+    }
+
+    /**
+     * Show a specific user's profile overview (View First).
+     */
+    public function show(User $user): View
+    {
+        return view('admin.users.show', compact('user'));
     }
 
     /**
@@ -190,7 +218,8 @@ class AdminUserController extends Controller
 
         if (!$employee) {
             // Fallback: Check if an employee exists with this email (orphan record or soft deleted)
-            $employee = \App\Models\Employee::withTrashed()->where('email', $user->email)->first();
+            // Use ILIKE for PostgreSQL case-insensitive match
+            $employee = \App\Models\Employee::withTrashed()->where('email', 'ILIKE', $user->email)->first();
         }
 
         $employeeData = [

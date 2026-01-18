@@ -47,14 +47,14 @@
 
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-muted text-uppercase">Full Name</label>
-                            <input name="name" value="{{ old('name') }}" required placeholder="e.g. Getachew Abebe"
+                            <input name="name" value="{{ old('name', $employee ? $employee->first_name . ' ' . $employee->last_name : '') }}" required placeholder="e.g. Getachew Abebe"
                                    class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('name') is-invalid @enderror"/>
                             @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-muted text-uppercase">Email Address</label>
-                            <input type="email" name="email" value="{{ old('email') }}" required placeholder="corporate@natanem.com"
+                            <input type="email" name="email" value="{{ old('email', $employee ? $employee->email : '') }}" required placeholder="corporate@natanem.com"
                                    class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('email') is-invalid @enderror"/>
                             @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
@@ -86,7 +86,7 @@
 
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-muted text-uppercase">Phone Number</label>
-                            <input name="phone_number" value="{{ old('phone_number') }}" placeholder="+251 ..."
+                            <input name="phone_number" value="{{ old('phone_number', $employee ? $employee->phone : '') }}" placeholder="+251 ..."
                                    class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('phone_number') is-invalid @enderror"/>
                             @error('phone_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
@@ -103,16 +103,30 @@
 
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-muted text-uppercase">Job Title / Position</label>
-                            <input name="position" value="{{ old('position') }}" placeholder="e.g. Civil Engineer"
+                            <input name="position" value="{{ old('position', $employee ? $employee->position : '') }}" placeholder="e.g. Civil Engineer"
                                    class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('position') is-invalid @enderror"/>
                             @error('position') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-muted text-uppercase">Department</label>
-                            <input name="department" value="{{ old('department') }}" placeholder="e.g. Engineering"
+                            <input name="department" value="{{ old('department', $employee ? $employee->department : '') }}" placeholder="e.g. Engineering"
                                    class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('department') is-invalid @enderror"/>
                             @error('department') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Hire Date</label>
+                            <input type="date" name="hire_date" value="{{ old('hire_date', $employee ? ($employee->hire_date ? $employee->hire_date->format('Y-m-d') : '') : date('Y-m-d')) }}"
+                                   class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('hire_date') is-invalid @enderror"/>
+                            @error('hire_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Initial Salary (ETB)</label>
+                            <input type="number" step="0.01" name="salary" value="{{ old('salary', $employee ? $employee->salary : '') }}" placeholder="0.00"
+                                   class="form-control border-0 bg-light-soft rounded-4 py-3 px-4 shadow-sm @error('salary') is-invalid @enderror"/>
+                            @error('salary') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
                          <div class="col-12">

@@ -51,12 +51,11 @@ Route::post('/logout', [SimpleAuthController::class, 'logout'])
 
 /**
  * --------------------------------------------------------------------------
- * PROFILE PICTURE SERVING (Symlink-Independent)
+ * PROFILE PICTURE SERVING (Clean Path Standard)
  * --------------------------------------------------------------------------
- * Serves employee profile pictures directly from storage
- * Works even without public/storage symlink
  */
-Route::get('/employee/profile-picture', [App\Http\Controllers\ProfilePictureController::class, 'show'])
+Route::get('/profile-picture/{filename}', [App\Http\Controllers\ProfilePictureController::class, 'show'])
+    ->where('filename', '.*') // Capture subdirectories if any
     ->name('employee.profile-picture');
 
 
@@ -72,6 +71,8 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('home'); // Fallback
     })->name('notifications.index');
     Route::post('/notifications/{id}/mark-as-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+    Route::post('/notifications/mark-all-as-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
+
     Route::post('/notifications/mark-all-as-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
 });
 
@@ -135,6 +136,7 @@ Route::middleware([
         Route::get('/users',              [AdminUserController::class, 'index'])->name('users.index');
         Route::get('/users/create',       [AdminUserController::class, 'create'])->name('users.create');
         Route::post('/users',             [AdminUserController::class, 'store'])->name('users.store');
+        Route::get('/users/{user}',       [AdminUserController::class, 'show'])->name('users.show');
         Route::get('/users/{user}/edit',  [AdminUserController::class, 'edit'])->name('users.edit');
         Route::put('/users/{user}',       [AdminUserController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}',    [AdminUserController::class, 'destroy'])->name('users.destroy');
@@ -190,6 +192,11 @@ Route::middleware([
         // Trash Recovery
         Route::get('/trash',           [App\Http\Controllers\Admin\TrashController::class, 'index'])->name('trash.index');
         Route::post('/trash/restore',  [App\Http\Controllers\Admin\TrashController::class, 'restore'])->name('trash.restore');
+
+        // Professional Identity Management
+        Route::get('/profile',        [App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
+        Route::get('/profile/update', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
     });
 
     // === SHADOW ROUTES FOR ADMIN CONTEXT (Read-Only / Management View) ===
@@ -242,6 +249,11 @@ Route::middleware([
 ])->group(function () {
     Route::get('/hr', [DashboardController::class, 'hr'])->name('hr.dashboard');
     Route::get('/hr/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('hr.notifications');
+    
+    // Professional Identity Management
+    Route::get('/hr/profile',        [App\Http\Controllers\ProfileController::class, 'show'])->name('hr.profile.show');
+    Route::get('/hr/profile/update', [App\Http\Controllers\ProfileController::class, 'edit'])->name('hr.profile.edit');
+    Route::put('/hr/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('hr.profile.update');
 
     Route::prefix('hr')->name('hr.')->group(function () {
         // Employees CRUD
@@ -301,6 +313,11 @@ Route::middleware([
     Route::get('/inventory', [DashboardController::class, 'inventory'])->name('inventory.dashboard');
     Route::get('/inventory/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('inventory.notifications');
 
+    // Professional Identity Management
+    Route::get('/inventory/profile',        [App\Http\Controllers\ProfileController::class, 'show'])->name('inventory.profile.show');
+    Route::get('/inventory/profile/update', [App\Http\Controllers\ProfileController::class, 'edit'])->name('inventory.profile.edit');
+    Route::put('/inventory/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('inventory.profile.update');
+
     Route::prefix('inventory')->name('inventory.')->group(function () {
         /**
          * ITEMS
@@ -349,6 +366,11 @@ Route::middleware([
     Route::prefix('finance')->name('finance.')->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'finance'])->name('dashboard');
         Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications');
+
+        // Professional Identity Management
+        Route::get('/profile',        [App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
+        Route::get('/profile/update', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 
         // Projects & Expenses
         Route::resource('projects', App\Http\Controllers\Finance\ProjectController::class);

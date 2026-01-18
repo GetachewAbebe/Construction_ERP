@@ -25,6 +25,8 @@ class StoreUserRequest extends FormRequest
             'position'        => ['nullable', 'string', 'max:255'],
             'department'      => ['nullable', 'string', 'max:255'],
             'status'          => ['nullable', 'in:Active,Inactive,Suspended'],
+            'hire_date'       => ['nullable', 'date'],
+            'salary'          => ['nullable', 'numeric', 'min:0'],
         ];
     }
 }

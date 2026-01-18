@@ -885,16 +885,19 @@
                 
                 
                 <div class="position-relative">
-                    <?php if(optional(Auth::user()->employee)->profile_picture): ?>
-                        <img src="<?php echo e(asset('storage/' . Auth::user()->employee->profile_picture)); ?>" alt="Profile" 
-                             class="rounded-circle border border-2 border-white-20 shadow-sm" 
-                             style="width: 44px; height: 44px; object-fit: cover;">
-                    <?php else: ?>
-                        <div class="avatar-circle rounded-circle shadow-sm" style="width: 44px; height: 44px; font-size: 1rem; background: linear-gradient(135deg, #3b82f6, #2563eb);">
-                        <?php echo e(substr(Auth::user()->first_name ?? Auth::user()->name, 0, 1)); ?>
-
-                        </div>
-                    <?php endif; ?>
+                    <?php 
+                        $avatarUrl = optional(Auth::user()->employee)->profile_picture_url;
+                        $initial = substr(Auth::user()->first_name ?? Auth::user()->name, 0, 1);
+                    ?>
+                    <div class="avatar-circle rounded-circle shadow-sm overflow-hidden border border-2 border-white-20 d-flex align-items-center justify-content-center" 
+                         style="width: 44px; height: 44px; background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                        <?php if($avatarUrl): ?>
+                            <img src="<?php echo e($avatarUrl); ?>" alt="Profile" 
+                                 class="w-100 h-100 object-fit-cover"
+                                 onerror="this.style.display='none'; this.parentNode.querySelector('.avatar-initial').style.display='flex';">
+                        <?php endif; ?>
+                        <span class="text-white fw-900 avatar-initial" style="display: <?php echo e($avatarUrl ? 'none' : 'flex'); ?>;"><?php echo e($initial); ?></span>
+                    </div>
                     <span class="position-absolute bottom-0 end-0 bg-success border border-2 border-dark rounded-circle p-1"></span>
                 </div>
                 
@@ -919,17 +922,19 @@
                 
                 <li>
                     <a class="dropdown-item rounded-3 d-flex align-items-center gap-2 py-2" href="<?php echo e(Auth::user()->getProfileUrl()); ?>">
-                        <?php if(optional(Auth::user()->employee)->profile_picture): ?>
-                            <img src="<?php echo e(asset('storage/' . Auth::user()->employee->profile_picture)); ?>" alt="Img" 
-                                 class="rounded-circle border border-primary-subtle" 
-                                 style="width: 20px; height: 20px; object-fit: cover;">
-                        <?php else: ?>
-                             <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" 
-                                  style="width: 20px; height: 20px; font-size: 0.6rem;">
-                                 <?php echo e(substr(Auth::user()->first_name ?? Auth::user()->name, 0, 1)); ?>
-
-                             </div>
-                        <?php endif; ?>
+                        <?php 
+                            $avatarUrl = optional(Auth::user()->employee)->profile_picture_url;
+                            $initial = substr(Auth::user()->first_name ?? Auth::user()->name, 0, 1);
+                        ?>
+                        <div class="rounded-circle d-flex align-items-center justify-content-center overflow-hidden border border-primary-subtle" 
+                             style="width: 24px; height: 24px; background: #6366f1;">
+                            <?php if($avatarUrl): ?>
+                                <img src="<?php echo e($avatarUrl); ?>" alt="Img" 
+                                     class="w-100 h-100 object-fit-cover"
+                                     onerror="this.style.display='none'; this.parentNode.querySelector('.avatar-initial-sm').style.display='flex';">
+                            <?php endif; ?>
+                            <span class="text-white fw-bold avatar-initial-sm" style="font-size: 0.6rem; display: <?php echo e($avatarUrl ? 'none' : 'flex'); ?>;"><?php echo e($initial); ?></span>
+                        </div>
                         <span>My Profile</span>
                     </a>
                 </li>
@@ -984,6 +989,36 @@
                       <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm">Confirm Rejection</button>
                   </div>
               </form>
+          </div>
+      </div>
+  </div>
+
+  
+  <div class="modal fade" id="premiumConfirmModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content border-0 shadow-lg" style="border-radius: 28px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(25px);">
+              <div class="modal-body p-5 text-center">
+                  <div class="mb-4 position-relative d-inline-block">
+                      <div id="confirmImageContainer" class="rounded-circle shadow-lg border border-4 border-white overflow-hidden" style="width: 100px; height: 100px; background: #f1f5f9;">
+                          <img id="confirmUserImage" src="" class="w-100 h-100" style="object-fit: cover; display: none;"
+                               onerror="this.style.display='none'; document.getElementById('confirmUserInitial').style.display='flex';">
+                          <div id="confirmUserInitial" class="w-100 h-100 d-flex align-items-center justify-content-center fw-900 text-white fs-1" style="background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);">?</div>
+                      </div>
+                      <div class="position-absolute bottom-0 end-0 bg-danger text-white rounded-circle d-flex align-items-center justify-content-center border border-2 border-white shadow-sm" style="width: 32px; height: 32px; transform: translate(5px, 5px);">
+                          <i class="bi bi-exclamation-triangle-fill small"></i>
+                      </div>
+                  </div>
+                  
+                  <h3 class="fw-900 text-erp-deep mb-1" id="confirmTitle">Confirm Action</h3>
+                  <div id="confirmUserName" class="fw-800 text-danger mb-3 small text-uppercase tracking-widest">Target User Name</div>
+                  
+                  <p class="text-muted mb-4 fs-6" id="confirmMessage">Are you sure you want to proceed with this sensitive operation?</p>
+                  
+                  <div class="d-flex gap-3 justify-content-center mt-2">
+                      <button type="button" class="btn btn-white rounded-pill px-5 py-2 border-0 shadow-sm fw-800" data-bs-dismiss="modal">Cancel</button>
+                      <button type="button" id="confirmActionBtn" class="btn btn-danger rounded-pill px-5 py-2 border-0 shadow-lg fw-800">Proceed</button>
+                  </div>
+              </div>
           </div>
       </div>
   </div>
@@ -1135,6 +1170,58 @@
         toast.show();
     }
 
+    // Global Premium Confirm Utility
+    function premiumConfirm(title, message, formId, name = '', imageUrl = '') {
+        try {
+            const modalEl = document.getElementById('premiumConfirmModal');
+            if (!modalEl) {
+                console.error('Premium Confirm Modal not found');
+                if (confirm(message)) document.getElementById(formId).submit();
+                return;
+            }
+
+            if (typeof bootstrap === 'undefined') {
+                if (confirm(message)) document.getElementById(formId).submit();
+                return;
+            }
+            
+            // Set dynamic content
+            document.getElementById('confirmTitle').innerText = title;
+            document.getElementById('confirmMessage').innerText = message;
+            document.getElementById('confirmUserName').innerText = name || '';
+            document.getElementById('confirmUserName').style.display = name ? 'block' : 'none';
+
+            const userImg = document.getElementById('confirmUserImage');
+            const userInitial = document.getElementById('confirmUserInitial');
+
+            if (imageUrl) {
+                userImg.src = imageUrl;
+                userImg.style.display = 'block';
+                userInitial.style.display = 'none';
+            } else {
+                userImg.style.display = 'none';
+                userInitial.style.display = 'flex';
+                userInitial.innerText = name ? name.charAt(0).toUpperCase() : '?';
+            }
+            
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            const newBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+            
+            newBtn.addEventListener('click', function() {
+                const form = document.getElementById(formId);
+                if (form) form.submit();
+                bootstrap.Modal.getInstance(modalEl).hide();
+            });
+            
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        } catch (e) {
+            console.error('Confirm Error:', e);
+            if (confirm(message)) document.getElementById(formId).submit();
+        }
+    }
+
     // Auto-show session flashes as toasts
     document.addEventListener('DOMContentLoaded', function() {
         <?php if(session('status')): ?>
@@ -1146,6 +1233,12 @@
         <?php if(session('success')): ?>
             showToast("<?php echo e(session('success')); ?>", 'success', 'Success');
         <?php endif; ?>
+
+        // Initialize Bootstrap Tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
     });
   </script>
 

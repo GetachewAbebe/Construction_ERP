@@ -95,17 +95,24 @@ class User extends Authenticatable
      */
     public function getProfileUrl(): string
     {
-        if ($this->hasRole('Administrator')) {
-            return route('admin.users.edit', $this->id);
-        }
-        
-        if (($this->hasRole('Human Resource Manager') || $this->hasRole('HumanResourceManager')) && $this->employee) {
-            return route('hr.employees.edit', $this->employee->id);
-        }
+        return route($this->getProfileRouteName('show'));
+    }
 
-        // Add more specific profile routes here as they are developed
-        // Fallback to dashboard for now if no specific profile edit exists
-        return route($this->getDashboardRouteName());
+    /**
+     * Determines the correct profile route name based on the user's role.
+     */
+    public function getProfileRouteName(string $action = 'show'): string
+    {
+        $role = strtolower(trim((string)$this->role));
+        
+        $prefix = 'admin'; // Fallback
+        if (str_contains($role, 'admin')) $prefix = 'admin';
+        elseif (str_contains($role, 'human') || str_contains($role, 'hr')) $prefix = 'hr';
+        elseif (str_contains($role, 'inventory')) $prefix = 'inventory';
+        elseif (str_contains($role, 'finance') || str_contains($role, 'financial')) $prefix = 'finance';
+
+        // Match the route names defined in web.php
+        return "{$prefix}.profile.{$action}";
     }
 
     /**
@@ -137,5 +144,24 @@ class User extends Authenticatable
         return $this->unreadNotifications->filter(function ($notification) use ($types, $module) {
             return in_array($notification->data['type'] ?? '', $types[$module]);
         })->count();
+    }
+
+    /**
+     * System-Wide Avatar Resolution
+     * Centralizes profile picture logic for the entire platform.
+     */
+    public function getAvatarUrlAttribute(): ?string
+    {
+        return $this->employee ? $this->employee->profile_picture_url : null;
+    }
+
+    /**
+     * Generate a URL-friendly slug based on role and name.
+     */
+    public function getSlugAttribute(): string
+    {
+        $rolePart = str_replace(' ', '-', strtolower($this->role ?? 'user'));
+        $namePart = str_replace(' ', '-', strtolower($this->name));
+        return "{$rolePart}-{$namePart}";
     }
 }

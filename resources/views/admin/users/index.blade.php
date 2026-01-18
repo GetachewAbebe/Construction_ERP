@@ -2,6 +2,56 @@
 @section('title', 'System Identities Control')
 
 @section('content')
+@push('head')
+<style>
+    .btn-action-group {
+        display: inline-flex;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .btn-action-group:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+    }
+
+    .btn-action {
+        width: 110px; /* Exact uniform sizing */
+        padding: 11px 0;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        text-decoration: none;
+        color: white !important;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center; /* Center text perfectly */
+        gap: 8px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-action-edit {
+        background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); /* Premium Indigo Gradient */
+        border-right: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .btn-action-delete {
+        background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); /* Premium Rose Gradient */
+    }
+
+    .btn-action:hover {
+        filter: saturate(1.2) brightness(1.1);
+    }
+
+    .btn-action:active {
+        transform: scale(0.95);
+    }
+</style>
+@endpush
 <div class="row align-items-center mb-4 stagger-entrance">
     <div class="col">
         <h1 class="h3 mb-1 fw-800 text-erp-deep">User Management</h1>
@@ -57,9 +107,18 @@
                         <tr>
                             <td class="ps-4">
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="avatar-sm bg-erp-deep text-white rounded-pill d-flex align-items-center justify-content-center fw-800" style="width: 40px; height: 40px;">
-                                        {{ strtoupper(substr($user->first_name, 0, 1) . substr($user->last_name, 0, 1)) }}
-                                    </div>
+                                    @php 
+                                        $avatarUrl = optional($user->employee)->profile_picture_url;
+                                        $initials = strtoupper(substr($user->first_name, 0, 1) . substr($user->last_name, 0, 1));
+                                    @endphp
+                                    <div class="avatar-sm bg-erp-deep text-white rounded-pill d-flex align-items-center justify-content-center fw-800 overflow-hidden" 
+                                         style="width: 45px; height: 45px; background: linear-gradient(135deg, #064e3b 0%, #059669 100%); border: 2px solid #fff; shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                                         @if($avatarUrl)
+                                             <img src="{{ $avatarUrl }}" class="w-100 h-100 object-fit-cover" 
+                                                  onerror="this.style.display='none'; this.parentNode.querySelector('.avatar-initial').style.display='flex';">
+                                         @endif
+                                         <span class="avatar-initial" style="display: {{ $avatarUrl ? 'none' : 'flex' }};">{{ $initials }}</span>
+                                     </div>
                                     <div>
                                         <div class="fw-800 text-erp-deep">{{ $user->name }}</div>
                                         <small class="text-muted fw-bold">{{ $user->position ?? 'Unassigned' }}</small>
@@ -98,26 +157,31 @@
                                 </span>
                             </td>
                             <td class="text-end pe-4">
-                                <div class="btn-group shadow-sm rounded-pill overflow-hidden">
-                                    <a href="{{ route('admin.users.edit', $user) }}" 
-                                       class="btn btn-white btn-sm px-3" title="Edit User">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    @if($user->id !== auth()->id())
-                                        <form action="{{ route('admin.users.destroy', $user) }}" 
-                                              method="POST" class="d-inline"
-                                              onsubmit="return confirm('Are you sure you want to delete this user?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-white btn-sm px-3 text-danger" title="Delete User">
-                                                <i class="bi bi-trash3-fill"></i>
+                                <div class="d-flex justify-content-end">
+                                    <div class="btn-action-group">
+                                        <a href="{{ route('admin.users.show', $user) }}" 
+                                           class="btn-action btn-action-edit" 
+                                           title="View Profile">
+                                            Profile
+                                        </a>
+                                        
+                                        @if($user->id !== auth()->id())
+                                            <form action="{{ route('admin.users.destroy', $user) }}" 
+                                                  method="POST" class="d-inline" id="delete-form-{{ $user->id }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button" class="btn-action btn-action-delete" 
+                                                        onclick="premiumConfirm('Delete User', 'Are you sure you want to permanently delete this user account? This will revoke all system access immediately.', 'delete-form-{{ $user->id }}', '{{ $user->name }}', '{{ optional($user->employee)->profile_picture_url }}')">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button type="button" class="btn-action btn-action-delete" 
+                                                    onclick="showToast('As a security integrity measure, active Administrator identities cannot be deleted via the console.', 'danger', 'System Protection')">
+                                                Delete
                                             </button>
-                                        </form>
-                                    @else
-                                        <button class="btn btn-white btn-sm px-3 text-muted disabled" title="Protected">
-                                            <i class="bi bi-lock-fill"></i>
-                                        </button>
-                                    @endif
+                                        @endif
+                                    </div>
                                 </div>
                             </td>
                         </tr>
