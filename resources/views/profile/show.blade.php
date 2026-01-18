@@ -119,20 +119,6 @@
                         </div>
                     </div>
 
-                    {{-- Full Width: Bio Section --}}
-                    <div class="col-12">
-                        <div class="p-4 rounded-4 bg-light-soft border border-light shadow-sm-hover transition-all">
-                            <h5 class="fw-900 text-erp-deep mb-3 d-flex align-items-center gap-3">
-                                <span class="bg-erp-deep text-white p-2 rounded-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                    <i class="bi bi-quote"></i>
-                                </span>
-                                Professional Biography & Notes
-                            </h5>
-                            <div class="text-muted fs-5 ps-2" style="line-height: 1.8; border-left: 3px solid #e2e8f0;">
-                                {{ $user->bio ?: 'The administrative biography for this identity has not been established. This section serves as a professional record of qualifications and system notes.' }}
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 {{-- Unified Action Footer --}}

@@ -97,12 +97,6 @@
                         @error('phone_number') <div class="invalid-feedback fw-bold">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="col-12 mt-4">
-                        <label class="form-label small fw-bold text-muted text-uppercase tracking-wider">Professional Bio</label>
-                        <textarea name="bio" rows="4" class="form-control border-0 bg-light rounded-4 py-3 px-4 shadow-sm" 
-                                  placeholder="Brief description of your expertise and professional background...">{{ old('bio', $user->bio) }}</textarea>
-                    </div>
-
                     <div class="col-12">
                         <div class="bg-light-soft p-4 rounded-4 border-start border-4 border-primary mt-4">
                             <div class="d-flex gap-3 align-items-center">

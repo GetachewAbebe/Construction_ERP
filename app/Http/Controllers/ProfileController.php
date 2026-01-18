@@ -42,7 +42,6 @@ class ProfileController extends Controller
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'profile_picture' => ['nullable', 'image', 'max:2048'],
             'phone_number' => ['nullable', 'string', 'max:20'],
-            'bio' => ['nullable', 'string', 'max:1000'],
         ]);
 
         // Handle Name Parts
@@ -53,7 +52,7 @@ class ProfileController extends Controller
 
         $user->email = $request->email;
         $user->phone_number = $request->phone_number;
-        $user->bio = $request->bio;
+        // $user->bio = $request->bio; // Disabled: Column missing in production schema
 
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
