@@ -63,7 +63,7 @@ class ExpenseController extends Controller
             }
 
             return redirect()->route('finance.expenses.index')
-                ->with('success', 'Financial requisition has been successfully logged and queued for approval.');
+                ->with('success', 'Financial requisition has been logged and queued for authorization.');
 
         } catch (\Exception $e) {
             Log::error('Expense recording failed: ' . $e->getMessage());
@@ -89,7 +89,7 @@ class ExpenseController extends Controller
         try {
             $expense->update($data);
             return redirect()->route('finance.expenses.index')
-                ->with('success', 'Expense transaction details have been successfully modified.');
+                ->with('success', 'Requisition details have been successfully updated.');
         } catch (\Exception $e) {
             Log::error('Expense update failed: ' . $e->getMessage());
             return back()->withInput()->with('error', 'Critical Error: Failed to update expense record.');
@@ -115,7 +115,7 @@ class ExpenseController extends Controller
                 }
             }
 
-            return back()->with('success', "Expense #{$expense->id} has been formally authorized.");
+            return back()->with('success', "Requisition #{$expense->id} has been authorized.");
         } catch (\Exception $e) {
             return back()->with('error', 'Authorization failed: ' . $e->getMessage());
         }
@@ -140,7 +140,7 @@ class ExpenseController extends Controller
                 }
             }
 
-            return back()->with('success', "Expense #{$expense->id} has been declined.");
+            return back()->with('success', "Requisition #{$expense->id} has been declined.");
         } catch (\Exception $e) {
             return back()->with('error', 'Rejection failed: ' . $e->getMessage());
         }
@@ -151,7 +151,7 @@ class ExpenseController extends Controller
         try {
             $expense->delete();
             return redirect()->route('finance.expenses.index')
-                ->with('success', 'Expense record has been permanently expunged from the ledger.');
+                ->with('success', 'Requisition record has been removed.');
         } catch (\Exception $e) {
             Log::error('Expense deletion failed: ' . $e->getMessage());
             return back()->with('error', 'Critical Error: Failed to delete expense record.');

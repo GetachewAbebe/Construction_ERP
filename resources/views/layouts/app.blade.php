@@ -119,7 +119,32 @@
           color: white;
           box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
           flex-shrink: 0;
+          transition: all 0.3s ease;
       }
+      .metric-icon-circle {
+          width: 56px;
+          height: 56px;
+          border-radius: 50% !important;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: var(--erp-primary);
+          color: white;
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+          flex-shrink: 0;
+          transition: all 0.3s ease;
+      }
+      .metric-icon-circle:hover {
+          transform: scale(1.05);
+      }
+
+      /* Premium Soft Backgrounds */
+      .bg-primary-soft { background-color: rgba(5, 150, 105, 0.1) !important; color: var(--erp-primary) !important; }
+      .bg-success-soft { background-color: rgba(16, 185, 129, 0.1) !important; color: #10b981 !important; }
+      .bg-warning-soft { background-color: rgba(245, 158, 11, 0.1) !important; color: #f59e0b !important; }
+      .bg-danger-soft  { background-color: rgba(239, 68, 68, 0.1) !important; color: #ef4444 !important; }
+      .bg-info-soft    { background-color: rgba(59, 130, 246, 0.1) !important; color: #3b82f6 !important; }
+      .bg-white-10     { background-color: rgba(255, 255, 255, 0.1) !important; }
 
       /* Entrance Animations */
       @keyframes slideUpFade {
@@ -726,7 +751,8 @@
 
       .page-header-premium {
           margin-bottom: 3rem;
-          animation: slideUpFade 0.6s ease-out;
+          position: relative;
+          z-index: 10;
       }
       .page-header-premium h1 {
           font-weight: 900;

@@ -2,15 +2,16 @@
 @section('title', 'Leave Management Portfolio')
 
 @section('content')
-<div class="row align-items-center mb-4 stagger-entrance">
-    <div class="col">
-        <h1 class="h3 mb-1 fw-800 text-erp-deep">Leave Portfolio</h1>
-        <p class="text-muted mb-0">Lifecycle management of personnel absence and respite requests.</p>
-    </div>
-    <div class="col-auto">
-        <a href="{{ route('hr.leaves.create') }}" class="btn btn-primary rounded-pill px-4 shadow-sm hardened-glass border-0">
-            <i class="bi bi-calendar-plus me-2"></i>Draft New Request
-        </a>
+<div class="page-header-premium mb-5">
+    <div class="row align-items-center">
+        <div class="col">
+            <h1 class="display-3 fw-900 text-erp-deep mb-0 tracking-tight">Leave Portfolio</h1>
+        </div>
+        <div class="col-auto">
+            <a href="{{ route('hr.leaves.create') }}" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-900 shadow-xl border-0 transform-hover">
+                <i class="bi bi-calendar-plus me-2 fs-5"></i>NEW LEAVE REQUEST
+            </a>
+        </div>
     </div>
 </div>
 
@@ -73,7 +74,7 @@
     <div class="row g-4 mb-4 stagger-entrance">
         <div class="col-md-4">
             <div class="card hardened-glass border-0 p-4 shadow-sm">
-                <div class="small text-muted fw-bold text-uppercase mb-2">Awaiting Adjudication</div>
+                <div class="small text-muted fw-bold text-uppercase mb-2">Pending Approval</div>
                 <div class="d-flex align-items-end gap-2">
                     <div class="fw-800 fs-2 text-warning">{{ $pendingCount }}</div>
                     <div class="text-muted small fw-600 mb-2">Active Filings</div>
@@ -82,7 +83,7 @@
         </div>
         <div class="col-md-4">
             <div class="card hardened-glass border-0 p-4 shadow-sm">
-                <div class="small text-muted fw-bold text-uppercase mb-2">Authorized Respite</div>
+                <div class="small text-muted fw-bold text-uppercase mb-2">Approved Leaves</div>
                 <div class="d-flex align-items-end gap-2">
                     <div class="fw-800 fs-2 text-success">{{ $approvedCount }}</div>
                     <div class="text-muted small fw-600 mb-2">Total Executed</div>
@@ -91,7 +92,7 @@
         </div>
         <div class="col-md-4">
             <div class="card hardened-glass border-0 p-4 shadow-sm">
-                <div class="small text-muted fw-bold text-uppercase mb-2">Declined Filings</div>
+                <div class="small text-muted fw-bold text-uppercase mb-2">Rejected Requests</div>
                 <div class="d-flex align-items-end gap-2">
                     <div class="fw-800 fs-2 text-danger">{{ $rejectedCount }}</div>
                     <div class="text-muted small fw-600 mb-2">Record Set</div>

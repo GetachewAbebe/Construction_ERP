@@ -2,16 +2,15 @@
 @section('title', 'Corporate Directory')
 
 @section('content')
-<div class="page-header-premium">
+<div class="page-header-premium mb-5">
     <div class="row align-items-center">
         <div class="col">
-            <h1>Employee Directory</h1>
-            <p>Workforce overview and organizational directory.</p>
+            <h1 class="display-3 fw-900 text-erp-deep mb-0 tracking-tight">Employee Directory</h1>
         </div>
         <div class="col-auto">
             @if(Auth::user()->hasAnyRole(['Administrator', 'Admin', 'Human Resource Manager', 'HumanResourceManager']))
-            <a href="{{ route('hr.employees.create') }}" class="btn btn-erp-deep rounded-pill px-4 shadow-sm border-0">
-                <i class="bi bi-person-plus-fill me-2"></i>Add Employee
+            <a href="{{ route('hr.employees.create') }}" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-900 shadow-xl border-0 transform-hover">
+                <i class="bi bi-person-plus-fill me-3 fs-5"></i>EXECUTE ONBOARDING PROTOCOL
             </a>
             @endif
         </div>
@@ -33,59 +32,39 @@
 @endif
 
 {{-- Search & Filter --}}
-<div class="erp-card mb-4">
-    <form action="{{ route('hr.employees.index') }}" method="GET" class="row g-3 align-items-end">
-        <div class="col-md-9">
-            <label class="erp-label">Search Employees</label>
-            <div class="input-group bg-light rounded-pill overflow-hidden px-3 border-0">
-                <span class="input-group-text bg-transparent border-0 text-muted"><i class="bi bi-search"></i></span>
-                <input type="text" name="q" class="form-control border-0 bg-transparent py-2" 
-                       placeholder="Search by name, email, department, or position..." 
-                       value="{{ request('q') }}">
-            </div>
+<div class="hardened-glass p-2 mb-5 stagger-entrance shadow-lg">
+    <div class="card bg-transparent border-0">
+        <div class="card-body p-4">
+            <form action="{{ route('hr.employees.index') }}" method="GET" class="row g-4 align-items-end">
+                <div class="col-lg-8">
+                    <label class="erp-label text-uppercase tracking-widest small mb-3 d-block opacity-75 fw-800">Global Personnel Search</label>
+                    <div class="input-group bg-white rounded-pill px-4 py-2 shadow-sm border transaction-all">
+                        <span class="input-group-text bg-transparent border-0 text-primary"><i class="bi bi-search fs-5"></i></span>
+                        <input type="text" name="q" class="form-control border-0 bg-transparent py-2 fw-600" 
+                               placeholder="Scan registry by name, identity credentials, or organizational unit..." 
+                               value="{{ request('q') }}">
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <label class="erp-label text-uppercase tracking-widest small mb-3 d-block opacity-75 fw-800">Filter by Status</label>
+                    <select name="status" class="form-select border-pill bg-white rounded-pill py-3 px-4 shadow-sm fw-700 text-erp-deep border" onchange="this.form.submit()">
+                        <option value="">Status: All Personnel</option>
+                        <option value="Active" {{ request('status') === 'Active' ? 'selected' : '' }}>Operational (Active)</option>
+                        <option value="On Leave" {{ request('status') === 'On Leave' ? 'selected' : '' }}>On Leave Portfolio</option>
+                        <option value="Terminated" {{ request('status') === 'Terminated' ? 'selected' : '' }}>Deactivated / Terminated</option>
+                        <option value="Resigned" {{ request('status') === 'Resigned' ? 'selected' : '' }}>Voluntary Departure</option>
+                    </select>
+                </div>
+                <div class="col-lg-1">
+                    <button type="submit" class="btn btn-erp-deep rounded-circle p-0 d-flex align-items-center justify-content-center shadow-lg transform-hover" style="width: 58px; height: 58px;">
+                        <i class="bi bi-funnel-fill fs-5"></i>
+                    </button>
+                </div>
+            </form>
         </div>
-        <div class="col-md-3">
-            <label class="erp-label">Status Filter</label>
-            <select name="status" class="erp-input" style="appearance: auto;" onchange="this.form.submit()">
-                <option value="">All Statuses</option>
-                <option value="Active" {{ request('status') === 'Active' ? 'selected' : '' }}>Active</option>
-                <option value="On Leave" {{ request('status') === 'On Leave' ? 'selected' : '' }}>On Leave</option>
-                <option value="Terminated" {{ request('status') === 'Terminated' ? 'selected' : '' }}>Terminated</option>
-                <option value="Resigned" {{ request('status') === 'Resigned' ? 'selected' : '' }}>Resigned</option>
-            </select>
-        </div>
-    </form>
+    </div>
 </div>
 
-{{-- Workforce Stats --}}
-<div class="row g-4 mb-4">
-    <div class="col-md-3">
-        <div class="erp-card border-start border-4 border-primary">
-            <div class="d-flex align-items-center gap-3">
-                <div class="bg-primary-soft text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                    <i class="bi bi-people-fill fs-5"></i>
-                </div>
-                <div>
-                    <div class="erp-label mb-1">Total Employees</div>
-                    <div class="display-6 fw-900 text-erp-deep">{{ $employees->total() }}</div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="erp-card border-start border-4 border-success">
-            <div class="d-flex align-items-center gap-3">
-                <div class="bg-success-soft text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                    <i class="bi bi-patch-check-fill fs-5"></i>
-                </div>
-                <div>
-                    <div class="erp-label mb-1">Active</div>
-                    <div class="display-6 fw-900 text-erp-deep">{{ \App\Models\Employee::where('status', 'Active')->count() }}</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <div class="table-responsive">
     <table class="table-premium">

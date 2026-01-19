@@ -2,17 +2,18 @@
 @section('title', 'Attendance Control')
 
 @section('content')
-<div class="row align-items-center mb-4 stagger-entrance">
-    <div class="col">
-        <h1 class="h3 mb-1 fw-800 text-erp-deep">Operational Presence</h1>
-        <p class="text-muted mb-0">Real-time tracking of human capital availability and site attendance.</p>
-    </div>
-    <div class="col-auto">
-        @can('manage-attendance')
-        <a href="{{ route('hr.attendance.monthly-summary') }}" class="btn btn-white rounded-pill px-4 shadow-sm border-0">
-            <i class="bi bi-file-earmark-bar-graph me-2"></i>Analytical Summary
-        </a>
-        @endcan
+<div class="page-header-premium mb-5">
+    <div class="row align-items-center">
+        <div class="col">
+            <h1 class="display-3 fw-900 text-erp-deep mb-0 tracking-tight">Attendance Registry</h1>
+        </div>
+        <div class="col-auto">
+            @can('manage-attendance')
+            <a href="{{ route('hr.attendance.monthly-summary') }}" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-900 shadow-xl border-0 transform-hover">
+                <i class="bi bi-file-earmark-bar-graph me-2 fs-5"></i>VIEW MONTHLY SUMMARY
+            </a>
+            @endcan
+        </div>
     </div>
 </div>
 
@@ -20,7 +21,7 @@
 <div class="row g-4 mb-4 stagger-entrance">
     <div class="col-md-3">
         <div class="card hardened-glass border-0 p-4 shadow-sm">
-            <div class="small text-muted fw-bold text-uppercase mb-2">On-Site Today</div>
+            <div class="small text-muted fw-bold text-uppercase mb-2">Present Today</div>
             <div class="d-flex align-items-end gap-2">
                 <div class="fw-800 fs-2 text-success">{{ $todayStats['present'] ?? 0 }}</div>
                 <div class="text-muted small fw-600 mb-2">/ {{ $employees->count() }} Total</div>
@@ -29,7 +30,7 @@
     </div>
     <div class="col-md-3">
         <div class="card hardened-glass border-0 p-4 shadow-sm">
-            <div class="small text-muted fw-bold text-uppercase mb-2">Lateness Index</div>
+            <div class="small text-muted fw-bold text-uppercase mb-2">Late Arrivals</div>
             <div class="d-flex align-items-end gap-2">
                 <div class="fw-800 fs-2 text-warning">{{ $todayStats['late'] ?? 0 }}</div>
                 <div class="text-muted small fw-600 mb-2">Incidents</div>
@@ -38,7 +39,7 @@
     </div>
     <div class="col-md-3">
         <div class="card hardened-glass border-0 p-4 shadow-sm">
-            <div class="small text-muted fw-bold text-uppercase mb-2">Missing Personnel</div>
+            <div class="small text-muted fw-bold text-uppercase mb-2">Absent Today</div>
             <div class="d-flex align-items-end gap-2">
                 <div class="fw-800 fs-2 text-danger">{{ $todayStats['absent'] ?? 0 }}</div>
                 <div class="text-muted small fw-600 mb-2">Unaccounted</div>

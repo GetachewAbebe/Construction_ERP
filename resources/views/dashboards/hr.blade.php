@@ -4,18 +4,6 @@
 
 @push('head')
 <style>
-    .metric-icon {
-        width: 64px;
-        height: 64px;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1.5rem;
-        background: var(--erp-primary);
-        color: white;
-        box-shadow: 0 10px 20px rgba(30, 64, 175, 0.2);
-    }
     
     /* New Avatar Styling */
     .avatar-pill {
@@ -52,54 +40,73 @@
 
 @section('content')
 <div class="py-4 px-2">
-    {{-- Premium Header --}}
-    <div class="d-flex flex-column mb-5">
-        <h1 class="display-4 fw-800 text-erp-deep mb-2 tracking-tight">Human Resource Dashboard</h1>
+<div class="page-header-premium mb-5">
+    <div class="row align-items-center">
+        <div class="col">
+            <h1 class="display-3 fw-900 text-erp-deep mb-0 tracking-tight">Human Resources Dashboard</h1>
+        </div>
     </div>
+</div>
 
     {{-- HIGHLIGHT METRICS --}}
-    <div class="row g-4 mb-5">
+    <div class="row g-4 mb-5 stagger-entrance">
         <div class="col-md-3">
-            <div class="hardened-glass stagger-entrance">
-                <div class="metric-icon">
-                    <i class="bi bi-people fs-4"></i>
+            <div class="hardened-glass p-5 h-100 transition-all hover-translate-y position-relative overflow-hidden">
+                <div class="position-absolute top-0 end-0 p-5 opacity-10">
+                    <i class="bi bi-people-fill display-1"></i>
                 </div>
-                <h6 class="text-muted text-uppercase fw-bold small mb-1">Total Employees</h6>
-                <div class="h2 fw-800 mb-0">{{ $employeeCount }}</div>
-                <div class="text-primary small fw-bold mt-2">Active Human Resource</div>
+                <div class="position-relative z-index-1">
+                    <div class="text-muted text-uppercase fw-bold small tracking-widest mb-3">Total Employees</div>
+                    <div class="display-4 fw-900 text-erp-deep mb-0">{{ $employeeCount }}</div>
+                    <div class="text-primary small fw-800 mt-2 d-flex align-items-center gap-1">
+                        <i class="bi bi-people"></i> CORPORATE RECORDS
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="hardened-glass stagger-entrance">
-                <div class="metric-icon" style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%);">
-                    <i class="bi bi-person-check fs-4"></i>
+            <div class="hardened-glass p-5 h-100 transition-all hover-translate-y position-relative overflow-hidden">
+                <div class="position-absolute top-0 end-0 p-5 opacity-10 text-success">
+                    <i class="bi bi-person-check-fill display-1"></i>
                 </div>
-                <h6 class="text-muted text-uppercase fw-bold small mb-1">Active Staff</h6>
-                <div class="h2 fw-800 mb-0">{{ $activeEmployees }}</div>
-                <div class="text-success small fw-bold mt-2">On Duty Today</div>
+                <div class="position-relative z-index-1">
+                    <div class="text-muted text-uppercase fw-bold small tracking-widest mb-3">Active Staff</div>
+                    <div class="display-4 fw-900 text-success mb-0">{{ $activeEmployees }}</div>
+                    <div class="text-success small fw-800 mt-2 d-flex align-items-center gap-1">
+                        <i class="bi bi-person-check-fill"></i> ACTIVE ON DUTY
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="hardened-glass stagger-entrance">
-                <div class="metric-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);">
-                    <i class="bi bi-briefcase fs-4"></i>
+            <div class="hardened-glass p-5 h-100 transition-all hover-translate-y position-relative overflow-hidden border-start border-4 border-warning">
+                <div class="position-absolute top-0 end-0 p-5 opacity-10 text-warning">
+                    <i class="bi bi-briefcase-fill display-1"></i>
                 </div>
-                <h6 class="text-muted text-uppercase fw-bold small mb-1">On Leave Today</h6>
-                <div class="h2 fw-800 mb-0">{{ $onLeaveTodayCount }}</div>
-                <div class="text-warning small fw-bold mt-2">Active Approvals</div>
+                <div class="position-relative z-index-1">
+                    <div class="text-muted text-uppercase fw-bold small tracking-widest mb-3">Staff on Leave</div>
+                    <div class="display-4 fw-900 text-warning mb-0">{{ $onLeaveTodayCount }}</div>
+                    <div class="text-warning small fw-800 mt-2 d-flex align-items-center gap-1">
+                        <i class="bi bi-clock"></i> DAILY ABSENCES
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="hardened-glass stagger-entrance">
-                <div class="metric-icon" style="background: linear-gradient(135deg, #f43f5e 0%, #fb7185 100%);">
-                    <i class="bi bi-bell fs-4"></i>
+            <div class="hardened-glass p-5 h-100 transition-all hover-translate-y position-relative overflow-hidden border-start border-4 border-danger">
+                <div class="position-absolute top-0 end-0 p-5 opacity-10 text-danger">
+                    <i class="bi bi-bell-fill display-1"></i>
                 </div>
-                <h6 class="text-muted text-uppercase fw-bold small mb-1">Pending Requests</h6>
-                <div class="h2 fw-800 mb-0 text-danger">{{ $pendingLeaveApprovals }}</div>
-                <div class="text-danger small fw-bold mt-2">Action Required</div>
+                <div class="position-relative z-index-1">
+                    <div class="text-muted text-uppercase fw-bold small tracking-widest mb-3">Pending Actions</div>
+                    <div class="display-4 fw-900 text-danger mb-0">{{ $pendingLeaveApprovals }}</div>
+                    <div class="text-danger small fw-800 mt-2 d-flex align-items-center gap-1">
+                        <i class="bi bi-exclamation-triangle-fill"></i> REQUIRES ADJUDICATION
+                    </div>
+                </div>
             </div>
         </div>
     </div>

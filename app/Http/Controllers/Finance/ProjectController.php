@@ -43,10 +43,10 @@ class ProjectController extends Controller
         try {
             $project = Project::create($data);
             return redirect()->route('finance.projects.index')
-                ->with('success', "Strategic initiative '{$project->name}' has been successfully commissioned.");
+                ->with('success', "Project site '{$project->name}' has been successfully added to registry.");
         } catch (\Exception $e) {
             Log::error('Project creation failed: ' . $e->getMessage());
-            return back()->withInput()->with('error', 'Critical Error: Failed to initialize project parameters. Contact system administrator.');
+            return back()->withInput()->with('error', 'Error: Failed to initialize project site. Please check input values.');
         }
     }
 
@@ -68,7 +68,7 @@ class ProjectController extends Controller
         try {
             $project->update($data);
             return redirect()->route('finance.projects.index')
-                ->with('success', "Operational parameters for '{$project->name}' have been successfully recalibrated.");
+                ->with('success', "Project details for '{$project->name}' have been successfully updated.");
         } catch (\Exception $e) {
             Log::error('Project update failed: ' . $e->getMessage());
             return back()->withInput()->with('error', 'Critical Error: Failed to update project configuration.');
@@ -81,7 +81,7 @@ class ProjectController extends Controller
             $name = $project->name;
             $project->delete();
             return redirect()->route('finance.projects.index')
-                ->with('success', "Project '{$name}' has been archived and removed from active operations.");
+                ->with('success', "Project '{$name}' has been removed from registry.");
         } catch (\Exception $e) {
             Log::error('Project deletion failed: ' . $e->getMessage());
             return back()->with('error', 'Critical Error: Failed to execute project archival sequence.');

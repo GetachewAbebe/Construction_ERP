@@ -160,15 +160,14 @@
     }
 </style>
 
-<div class="dashboard-container mt-4 animate-fade-in">
+<div class="dashboard-container mt-4">
     <div class="container-fluid px-md-5 py-2">
         
         {{-- High-End Header --}}
-        <div class="d-flex align-items-center justify-content-between mb-5">
-                <div>
-                    <h1 class="display-5 fw-900 text-erp-deep tracking-enterprise mb-1">Inventory Command Center</h1>
-                    <p class="text-muted fw-600 mb-0">Overview of system stock, loans, and resource analytics</p>
-                </div>
+        <div class="page-header-premium mb-5">
+            <h1 class="display-3 fw-900 text-erp-deep mb-2 tracking-tight">Inventory Logistics Console</h1>
+            <p class="text-muted fs-5 mb-0">Strategic overview of system material flow, logistics health, and resource analytics.</p>
+        </div>
             <div class="d-none d-md-flex gap-3">
                 <div class="bg-white px-4 py-2 rounded-pill border border-light shadow-sm d-flex align-items-center gap-3">
                     <span class="bg-success p-1 rounded-circle pulse-lite"></span>
@@ -235,7 +234,7 @@
                         <a href="{{ (Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin')) ? route('inventory.loans.index') : route('inventory.loans.create') }}" 
                            class="metric-hud-item active-loan d-flex align-items-center justify-content-between text-decoration-none transition-all">
                             <div class="d-flex align-items-center gap-4">
-                                <div class="p-3 bg-white bg-opacity-10 rounded-4 text-white shadow-soft"><i class="bi bi-truck-flatbed fs-4"></i></div>
+                                {{-- Icon removed --}}
                                 <div>
                                     <div class="fw-800 fs-5">Items on Loan</div>
                                     <div class="label-enterprise mt-1">Dispatched Assets</div>
@@ -246,7 +245,7 @@
 
                         <div class="metric-hud-item d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-4">
-                                <div class="p-3 bg-success-soft text-success rounded-4"><i class="bi bi-check2-circle fs-4"></i></div>
+                                {{-- Icon removed --}}
                                 <div>
                                     <div class="fw-800 text-erp-deep fs-5">Stable Stock</div>
                                     <div class="label-enterprise mt-1">Healthy levels (>5 Units)</div>
@@ -257,7 +256,7 @@
 
                         <div class="metric-hud-item d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-4">
-                                <div class="p-3 bg-warning-soft text-warning rounded-4"><i class="bi bi-exclamation-triangle fs-4"></i></div>
+                                {{-- Icon removed --}}
                                 <div>
                                     <div class="fw-800 text-erp-deep fs-5">Low Stock</div>
                                     <div class="label-enterprise mt-1">Risk of exhaustion (1-5 Units)</div>
@@ -268,7 +267,7 @@
 
                         <div class="metric-hud-item d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-4">
-                                <div class="p-3 bg-danger-soft text-danger rounded-4"><i class="bi bi-x-circle fs-4"></i></div>
+                                {{-- Icon removed --}}
                                 <div>
                                     <div class="fw-800 text-erp-deep fs-5">Out of Stock</div>
                                     <div class="label-enterprise mt-1">Zero quantity records</div>
@@ -289,12 +288,12 @@
                         
                         <div class="d-grid">
                             <a href="{{ route('inventory.items.index') }}" class="btn-command">
-                                <div class="p-2 rounded-3 bg-white bg-opacity-10"><i class="bi bi-grid-3x3-gap"></i></div>
+                                {{-- Icon removed --}}
                                 <span>All Inventory</span>
                             </a>
 
                             <a href="{{ route('inventory.items.create') }}" class="btn-command active-op">
-                                <div class="p-2 rounded-3 bg-primary bg-opacity-10"><i class="bi bi-plus-lg"></i></div>
+                                {{-- Icon removed --}}
                                 <span>Add New Item</span>
                             </a>
 

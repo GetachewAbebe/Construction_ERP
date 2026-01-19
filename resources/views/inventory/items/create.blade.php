@@ -1,198 +1,166 @@
 @extends('layouts.app')
 
-@section('title', 'Add Inventory Item | Natanem Engineering')
+@section('title', 'Register New Item | Natanem Engineering')
 
-@section('content')
+@push('head')
 <style>
-    .form-premium-input {
-        transition: all 0.2s ease;
-        border: 1.5px solid #e2e8f0 !important; /* Clearly defined border */
-        background-color: #ffffff !important;
-    }
-    .form-premium-input:focus {
-        background: #fff !important;
-        border-color: var(--erp-primary) !important;
-        box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1) !important;
-    }
-    .section-icon-box {
-        width: 42px;
-        height: 42px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 12px;
-        background: var(--erp-deep);
-        color: white;
-        font-size: 1.2rem;
-    }
-    .input-label-premium {
+    /* Scoped minimalist styles for this form */
+    .form-section-title {
         font-family: 'Outfit', sans-serif;
-        font-weight: 700;
+        font-weight: 800;
         color: var(--erp-deep);
-        font-size: 0.75rem;
-        letter-spacing: 0.05em;
-        margin-bottom: 0.6rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--erp-border);
     }
 </style>
+@endpush
 
-<div class="row align-items-center mb-5">
-    <div class="col">
-        <h1 class="h3 mb-1 fw-800 text-erp-deep">Add Inventory Item</h1>
-        <p class="text-muted mb-0">Add a new item to the inventory system.</p>
-    </div>
-    <div class="col-auto">
-        <a href="{{ route('inventory.items.index') }}" class="btn btn-white rounded-pill px-4 py-2 shadow-sm border border-light fw-700">
-            <i class="bi bi-arrow-left me-2"></i>Back to Inventory
-        </a>
+@section('content')
+<div class="page-header-premium mb-5">
+    <div class="row align-items-center">
+        <div class="col">
+            <h1 class="display-3 fw-900 text-erp-deep mb-0 tracking-tight">Register New Item</h1>
+        </div>
+        <div class="col-auto">
+            <a href="{{ route('inventory.items.index') }}" class="btn btn-white rounded-pill px-4 py-3 fw-700 shadow-sm border-0">
+                <i class="bi bi-arrow-left me-2"></i>Back to Stock Registry
+            </a>
+        </div>
     </div>
 </div>
 
-<div class="stagger-entrance">
-    <div class="card bg-white border-0 overflow-hidden shadow-sm rounded-4">
-            <div class="card-body p-4 p-md-5">
-                <form action="{{ route('inventory.items.store') }}" method="POST">
-                    @csrf
-                    
-                    {{-- Section 1: Item Details --}}
-                    <div class="mb-5">
-                        <div class="d-flex align-items-center gap-3 mb-4">
-                            <div class="section-icon-box">
-                                <i class="bi bi-box-seam"></i>
-                            </div>
-                            <div>
-                                <h5 class="fw-800 text-erp-deep mb-0">Item Details</h5>
-                                <p class="text-muted small mb-0">Basic information about the item.</p>
-                            </div>
-                        </div>
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <form action="{{ route('inventory.items.store') }}" method="POST">
+            @csrf
+            
+            {{-- Technical Specifications Card --}}
+            <div class="erp-card mb-4">
+                <h5 class="form-section-title">
+                    <i class="bi bi-cpu text-primary me-2"></i>
+                    Technical Specifications
+                </h5>
 
-                        <div class="row g-4">
-                            {{-- Item No --}}
-                            <div class="col-md-4">
-                                <label class="input-label-premium text-uppercase">SKU / Code</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border border-end-0 text-muted"><i class="bi bi-hash"></i></span>
-                                    <input type="text" name="item_no" 
-                                           class="form-control py-3 px-4 shadow-sm rounded-end-4 form-premium-input @error('item_no') is-invalid @enderror" 
-                                           value="{{ old('item_no') }}" placeholder="e.g. CAT-001" required>
-                                </div>
-                                <div class="form-text x-small ps-1 text-muted">Unique code for the item.</div>
-                                @error('item_no') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                            </div>
-
-                            {{-- Name --}}
-                            <div class="col-md-8">
-                                <label class="input-label-premium text-uppercase">Item Name</label>
-                                <input type="text" name="name" 
-                                       class="form-control rounded-4 py-3 px-4 shadow-sm form-premium-input @error('name') is-invalid @enderror" 
-                                       value="{{ old('name') }}" placeholder="e.g. Electrical Mixer 750 liter" required>
-                                <div class="form-text x-small ps-1 text-muted">Full name of the item.</div>
-                                @error('name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                            </div>
-
-                            {{-- Description --}}
-                            <div class="col-12">
-                                <label class="input-label-premium text-uppercase">Description</label>
-                                <textarea name="description" rows="3" 
-                                          class="form-control rounded-4 py-3 px-4 shadow-sm form-premium-input @error('description') is-invalid @enderror" 
-                                          placeholder="Item description, specs, or notes...">{{ old('description') }}</textarea>
-                                @error('description') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                            </div>
-                        </div>
+                <div class="row g-4">
+                    {{-- SKU / Code --}}
+                    <div class="col-md-4">
+                        <label class="erp-label">SKU / Identification Code</label>
+                        <input type="text" name="item_no" 
+                               class="erp-input @error('item_no') is-invalid @enderror" 
+                               value="{{ old('item_no') }}" placeholder="e.g. CAT-202X-001" required>
+                        @error('item_no') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                     </div>
 
-                    {{-- Section 2: Stock & Valuation --}}
-                    <div class="mb-5">
-                        <div class="d-flex align-items-center gap-3 mb-4">
-                            <div class="section-icon-box" style="background: var(--erp-primary);">
-                                <i class="bi bi-graph-up-arrow"></i>
-                            </div>
-                            <div>
-                                <h5 class="fw-800 text-erp-deep mb-0">Stock & Value</h5>
-                                <p class="text-muted small mb-0">Inventory levels and pricing information.</p>
-                            </div>
-                        </div>
-
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <label class="input-label-premium text-uppercase">Item Category</label>
-                                <select name="classification_id" class="form-select rounded-4 py-3 px-4 shadow-sm form-premium-input @error('classification_id') is-invalid @enderror">
-                                    <option value="">-- Select Category --</option>
-                                    @foreach($classifications as $item)
-                                        <option value="{{ $item->id }}" @selected(old('classification_id') == $item->id)>
-                                            {{ $item->name }} ({{ $item->code }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('classification_id') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                            </div>
-
-                            <div class="col-md-6 col-lg-3">
-                                <label class="input-label-premium text-uppercase">Unit of Measure</label>
-                                <input type="text" name="unit_of_measurement" 
-                                       class="form-control rounded-4 py-3 px-4 shadow-sm form-premium-input @error('unit_of_measurement') is-invalid @enderror" 
-                                       value="{{ old('unit_of_measurement') }}" placeholder="e.g. Pcs, Kg, Liters" required>
-                                @error('unit_of_measurement') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                            </div>
-
-                            <div class="col-md-6 col-lg-3">
-                                <label class="input-label-premium text-uppercase">Initial Quantity</label>
-                                <input type="number" name="quantity" 
-                                       class="form-control rounded-4 py-3 px-4 shadow-sm form-premium-input @error('quantity') is-invalid @enderror" 
-                                       value="{{ old('quantity', 0) }}" min="0" required>
-                                <div class="form-text x-small ps-1 text-muted">Starting stock level.</div>
-                                @error('quantity') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                            </div>
-                            
-                            <div class="col-md-6 col-lg-3">
-                                <label class="input-label-premium text-uppercase">Supplier / Vendor</label>
-                                <select name="vendor_id" class="form-select rounded-4 py-3 px-4 shadow-sm form-premium-input @error('vendor_id') is-invalid @enderror">
-                                    <option value="">-- No Specific Vendor --</option>
-                                    @foreach($vendors as $vendor)
-                                        <option value="{{ $vendor->id }}" @selected(old('vendor_id') == $vendor->id)>
-                                            {{ $vendor->name }} ({{ $vendor->code }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('vendor_id') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                            </div>
-                            
-                            <div class="col-md-6 col-lg-3">
-                                <label class="input-label-premium text-uppercase">Unit Price (ETB)</label>
-                                <div class="input-group">
-                                    <input type="number" step="0.01" name="unit_price" 
-                                           class="form-control py-3 px-4 shadow-sm rounded-start-4 form-premium-input @error('unit_price') is-invalid @enderror" 
-                                           value="{{ old('unit_price') }}" placeholder="0.00">
-                                    <span class="input-group-text bg-light fw-bold text-muted border border-start-0">ETB</span>
-                                </div>
-                                @error('unit_price') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                            </div>
-
-                            <div class="col-12">
-                                <div class="p-4 rounded-4 bg-light-soft border border-light">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-8">
-                                            <label class="fw-800 text-erp-deep mb-1">Low Stock Alert Level</label>
-                                            <p class="small text-muted mb-md-0">Set a minimum quantity to trigger reorder notifications.</p>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <input type="number" name="reorder_point" 
-                                                   class="form-control rounded-4 py-3 px-4 shadow-sm form-premium-input text-center fw-bold @error('reorder_point') is-invalid @enderror" 
-                                                   value="{{ old('reorder_point', 10) }}" min="0">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    {{-- Item Name --}}
+                    <div class="col-md-8">
+                        <label class="erp-label">Item Designation</label>
+                        <input type="text" name="name" 
+                               class="erp-input @error('name') is-invalid @enderror" 
+                               value="{{ old('name') }}" placeholder="e.g. Industrial Mixer Model X" required>
+                        @error('name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="d-flex gap-3 justify-content-end pt-4 border-top">
-                        <a href="{{ route('inventory.items.index') }}" class="btn btn-light rounded-pill px-4 py-3 fw-bold text-muted">Cancel</a>
-                        <button type="submit" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-800 shadow-lg">
-                            <i class="bi bi-plus-lg me-2"></i>Add Item
-                        </button>
+                    {{-- Description --}}
+                    <div class="col-12">
+                        <label class="erp-label">Technical Description</label>
+                        <textarea name="description" rows="4" 
+                                  class="erp-input @error('description') is-invalid @enderror" 
+                                  placeholder="Detailed specifications, dimensions, and operational notes..." style="resize: vertical; min-height: 100px;">{{ old('description') }}</textarea>
+                        @error('description') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                     </div>
-                </form>
+                </div>
             </div>
+
+            {{-- Logistics & Valuation Card --}}
+            <div class="erp-card mb-4">
+                <h5 class="form-section-title">
+                    <i class="bi bi-bar-chart-steps text-success me-2"></i>
+                    Logistics & Valuation
+                </h5>
+
+                <div class="row g-4">
+                     {{-- Category --}}
+                     <div class="col-md-6">
+                        <label class="erp-label">Resource Classification</label>
+                        <select name="classification_id" class="erp-input @error('classification_id') is-invalid @enderror">
+                            <option value="">Select classification...</option>
+                            @foreach($classifications as $item)
+                                <option value="{{ $item->id }}" @selected(old('classification_id') == $item->id)>
+                                    {{ $item->name }} ({{ $item->code }})
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('classification_id') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                    </div>
+
+                    {{-- Vendor --}}
+                    <div class="col-md-6">
+                        <label class="erp-label">Primary Vendor</label>
+                        <select name="vendor_id" class="erp-input @error('vendor_id') is-invalid @enderror">
+                            <option value="">Select vendor...</option>
+                            @foreach($vendors as $vendor)
+                                <option value="{{ $vendor->id }}" @selected(old('vendor_id') == $vendor->id)>
+                                    {{ $vendor->name }} ({{ $vendor->code }})
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('vendor_id') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                    </div>
+
+                    {{-- Initial Quantity --}}
+                    <div class="col-md-4">
+                        <label class="erp-label">Initial Quantity</label>
+                        <input type="number" name="quantity" 
+                               class="erp-input @error('quantity') is-invalid @enderror" 
+                               value="{{ old('quantity', 0) }}" min="0" required>
+                        @error('quantity') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                    </div>
+
+                    {{-- UoM --}}
+                    <div class="col-md-4">
+                        <label class="erp-label">Unit of Measure</label>
+                        <input type="text" name="unit_of_measurement" 
+                               class="erp-input @error('unit_of_measurement') is-invalid @enderror" 
+                               value="{{ old('unit_of_measurement') }}" placeholder="e.g. PCS, KG, LTR" required>
+                        @error('unit_of_measurement') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                    </div>
+
+                    {{-- Unit Price --}}
+                    <div class="col-md-4">
+                        <label class="erp-label">Unit Value (ETB)</label>
+                        <input type="number" step="0.01" name="unit_price" 
+                               class="erp-input @error('unit_price') is-invalid @enderror" 
+                               value="{{ old('unit_price') }}" placeholder="0.00">
+                        @error('unit_price') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                    </div>
+
+                    {{-- Reorder Point --}}
+                    <div class="col-12">
+                        <div class="p-4 rounded-4 bg-gradient-to-r from-gray-50 to-gray-100 border border-light d-flex align-items-center justify-content-between" style="background: rgba(243, 244, 246, 0.5);">
+                            <div>
+                                <label class="fw-800 text-erp-deep mb-1 d-block">Low Stock Threshold</label>
+                                <span class="small text-muted">Minimum quantity to trigger replenishment alerts.</span>
+                            </div>
+                            <div style="width: 120px;">
+                                <input type="number" name="reorder_point" 
+                                       class="erp-input text-center fw-bold @error('reorder_point') is-invalid @enderror" 
+                                       value="{{ old('reorder_point', 10) }}" min="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-3 justify-content-end">
+                <a href="{{ route('inventory.items.index') }}" class="btn btn-white rounded-pill px-5 py-3 fw-700 shadow-sm border-0">
+                    <i class="bi bi-x-circle me-2"></i>Cancel
+                </a>
+                <button type="submit" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-900 shadow-xl border-0">
+                    <i class="bi bi-plus-lg me-2 fs-5"></i>REGISTER ITEM
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 @endsection

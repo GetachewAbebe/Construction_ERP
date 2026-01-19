@@ -2,11 +2,11 @@
 @section('title', 'Asset Classifications')
 
 @section('content')
-<div class="page-header-premium">
+<div class="page-header-premium mb-5">
     <div class="row align-items-center">
         <div class="col">
-            <h1 class="display-6">Asset Classifications</h1>
-            <p>Manage and organize your inventory categories and resource groups.</p>
+            <h1 class="display-3 fw-900 text-erp-deep mb-2 tracking-tight">Resource Classification Registry</h1>
+            <p class="text-muted fs-5 mb-0">Organizational taxonomy for physical assets and material inventory categories.</p>
         </div>
         <div class="col-auto">
             <a href="{{ route('inventory.asset-classifications.create') }}" class="btn btn-erp-deep rounded-pill px-4 shadow-sm border-0">

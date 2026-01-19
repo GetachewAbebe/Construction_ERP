@@ -3,11 +3,11 @@
 @section('title', 'Admin Command Center | Natanem Engineering')
 
 @section('content')
-<div class="py-4 px-2 stagger-entrance">
+<div class="py-4 px-2">
     {{-- Page Header --}}
-    <div class="d-flex flex-column mb-5">
-        <h1 class="display-4 fw-800 text-erp-deep mb-2 tracking-tight">System Administration</h1>
-        <p class="text-muted">Central command for user management, approvals, and system configuration.</p>
+    <div class="page-header-premium mb-5">
+        <h1 class="display-3 fw-900 text-erp-deep mb-2 tracking-tight">System Administration</h1>
+        <p class="text-muted fs-5 mb-0">Central command for user management, approvals, and system configuration.</p>
     </div>
 
     {{-- ALERT / ACTION CENTER (Only if pending items exist) --}}
@@ -33,7 +33,7 @@
                 @if(($pendingExpenseCount ?? 0) > 0)
                     <div class="col-md-4">
                         <a href="{{ route('admin.requests.finance') }}" class="d-flex align-items-center justify-content-between p-3 bg-white rounded-3 shadow-sm text-decoration-none transition-all hover-translate-y">
-                            <span class="text-muted fw-bold small text-uppercase">Expense Claims</span>
+                            <span class="text-muted fw-bold small text-uppercase">Financial Requisitions</span>
                             <span class="badge bg-danger rounded-pill px-3">{{ $pendingExpenseCount }}</span>
                         </a>
                     </div>
@@ -55,10 +55,8 @@
     <div class="row g-4">
         {{-- Users --}}
         <div class="col-md-6 col-lg-4">
-            <div class="hardened-glass h-100 p-4 stagger-entrance">
-                <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: var(--erp-primary);">
-                    <i class="bi bi-person-gear fs-4"></i>
-                </div>
+            <div class="erp-card h-100 p-4 stagger-entrance">
+                {{-- Icon removed per user request --}}
                 <h5 class="fw-800 mb-2">User Management</h5>
                 <p class="text-muted small mb-4">
                     Manage system accounts, assign roles, and control access permissions.
@@ -76,10 +74,8 @@
 
         {{-- HR Hub --}}
         <div class="col-md-6 col-lg-4">
-            <div class="hardened-glass h-100 p-4 stagger-entrance">
-                <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: linear-gradient(135deg, #10b981 0%, #34d399 100%);">
-                    <i class="bi bi-person-vcard fs-4"></i>
-                </div>
+            <div class="erp-card h-100 p-4 stagger-entrance">
+                {{-- Icon removed per user request --}}
                 <h5 class="fw-800 mb-2">Human Resources</h5>
                 <p class="text-muted small mb-4">
                     View employee directory, attendance logs, and leave history.
@@ -94,10 +90,8 @@
 
         {{-- Inventory Hub --}}
         <div class="col-md-6 col-lg-4">
-            <div class="hardened-glass h-100 p-4 stagger-entrance">
-                <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);">
-                    <i class="bi bi-boxes fs-4"></i>
-                </div>
+            <div class="erp-card h-100 p-4 stagger-entrance">
+                {{-- Icon removed per user request --}}
                 <h5 class="fw-800 mb-2">Inventory Control</h5>
                 <p class="text-muted small mb-4">
                     Track material stock, manage equipment loans, and view audit trails.
@@ -112,10 +106,8 @@
 
         {{-- Finance Hub --}}
         <div class="col-md-6 col-lg-4">
-            <div class="hardened-glass h-100 p-4 stagger-entrance">
-                <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);">
-                    <i class="bi bi-wallet2 fs-4"></i>
-                </div>
+            <div class="erp-card h-100 p-4 stagger-entrance">
+                {{-- Icon removed per user request --}}
                 <h5 class="fw-800 mb-2">Financial Operations</h5>
                 <p class="text-muted small mb-4">
                     Oversee project budgets, approve expenses, and analyze spending.
@@ -130,10 +122,8 @@
 
         {{-- Logs & Trash (Maintenance) --}}
         <div class="col-md-6 col-lg-4">
-            <div class="hardened-glass h-100 p-4 stagger-entrance">
-                <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);">
-                    <i class="bi bi-activity fs-4"></i>
-                </div>
+            <div class="erp-card h-100 p-4 stagger-entrance">
+                {{-- Icon removed per user request --}}
                 <h5 class="fw-800 mb-2">System Maintenance</h5>
                 <p class="text-muted small mb-4">
                     View activity logs, system health, backups, and restore deleted items.
@@ -150,10 +140,8 @@
 
         {{-- Global Settings --}}
         <div class="col-md-6 col-lg-4">
-            <div class="hardened-glass h-100 p-4 stagger-entrance">
-                <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: linear-gradient(135deg, #1e293b 0%, #334155 100%);">
-                    <i class="bi bi-gear-wide-connected fs-4"></i>
-                </div>
+            <div class="erp-card h-100 p-4 stagger-entrance">
+                {{-- Icon removed per user request --}}
                 <h5 class="fw-800 mb-2">Global Config</h5>
                 <p class="text-muted small mb-4">
                     Adjust system parameters, attendance rules, and notification templates.

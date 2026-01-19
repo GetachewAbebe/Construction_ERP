@@ -3,17 +3,18 @@
 @section('title', 'Finance Overview | Natanem Engineering')
 
 @section('content')
-<div class="py-4 px-2 stagger-entrance">
-    {{-- Premium Header --}}
-    <h1 class="display-4 fw-800 text-erp-deep mb-2 tracking-tight">Finance Dashboard</h1>
+<div class="py-4 px-2">
+    {{-- Page Header --}}
+    <div class="page-header-premium mb-5">
+        <h1 class="display-3 fw-900 text-erp-deep mb-2 tracking-tight">Financial Intelligence Hub</h1>
+        <p class="text-muted fs-5 mb-0">Unified telemetry for project fiscal health and expenditure approval workflows.</p>
+    </div>
 
     {{-- HIGHLIGHT METRICS --}}
     <div class="row g-4 mb-5">
         <div class="col-md-4">
             <div class="hardened-glass stagger-entrance h-100 p-4">
-                <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: var(--erp-primary);">
-                    <i class="bi bi-diagram-3 fs-4"></i>
-                </div>
+                {{-- Icon removed per user request --}}
                 <h6 class="text-muted text-uppercase fw-bold small mb-1">Total Active Projects</h6>
                 <div class="h2 fw-800 mb-0">{{ $totalProjects }}</div>
                 <div class="text-success small fw-bold mt-2 d-flex align-items-center gap-1">
@@ -25,9 +26,7 @@
 
         <div class="col-md-4">
             <div class="hardened-glass stagger-entrance h-100 p-4">
-                <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                    <i class="bi bi-wallet2 fs-4"></i>
-                </div>
+                {{-- Icon removed per user request --}}
                 <h6 class="text-muted text-uppercase fw-bold small mb-1">Total Project Portfolio</h6>
                 <div class="h2 fw-800 mb-0"><small class="text-muted fw-normal fs-6">ETB</small> {{ number_format($totalBudget, 0) }}</div>
                 <p class="text-muted small mt-2 mb-0">Aggregate budget across all sites</p>
@@ -36,9 +35,7 @@
 
         <div class="col-md-4">
             <div class="hardened-glass stagger-entrance h-100 p-4">
-                <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-                    <i class="bi bi-graph-down-arrow fs-4"></i>
-                </div>
+                {{-- Icon removed per user request --}}
                 <h6 class="text-muted text-uppercase fw-bold small mb-1">Certified Expenditures</h6>
                 <div class="h2 fw-800 mb-0 text-danger"><small class="text-muted fw-normal fs-6">ETB</small> {{ number_format($totalExpenses, 0) }}</div>
                 <div class="progress mt-3" style="height: 10px; border-radius: 10px;">
@@ -53,7 +50,7 @@
     </div>
 
     <div class="row g-4 mb-5">
-        <div class="col-lg-12 stagger-entrance">
+        <div class="col-lg-12">
             <div class="erp-card p-4 shadow-lg rounded-4">
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <div>

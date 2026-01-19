@@ -60,7 +60,7 @@ class ExpenseApprovalController extends Controller
                     ->markAsRead();
             } catch (\Exception $e) {}
 
-            return back()->with('status', 'Expense approved successfully.');
+            return back()->with('status', 'Requisition authorized successfully.');
         } catch (\Exception $e) {
             return back()->with('error', 'Approval failed. This is likely due to missing database columns. Please run "Sync Database Schema" in the Maintenance page. Error: ' . $e->getMessage());
         }
@@ -102,7 +102,7 @@ class ExpenseApprovalController extends Controller
                     ->markAsRead();
             } catch (\Exception $e) {}
 
-            return back()->with('status', 'Expense rejected.');
+            return back()->with('status', 'Requisition declined.');
         } catch (\Exception $e) {
             return back()->with('error', 'Rejection failed: ' . $e->getMessage());
         }
