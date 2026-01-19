@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 class Vendor extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory; // SoftDeletes;
 
     protected $fillable = [
         'name',
