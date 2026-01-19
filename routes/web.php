@@ -169,6 +169,8 @@ Route::middleware([
         Route::put('/users/{user}',       [AdminUserController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}',    [AdminUserController::class, 'destroy'])->name('users.destroy');
 
+        // Administrative Tasks (User Management, etc)
+
         // Attendance Settings
         Route::get('/attendance-settings', [App\Http\Controllers\Admin\AttendanceSettingsController::class, 'index'])
             ->name('attendance-settings.index');
@@ -357,6 +359,11 @@ Route::middleware([
         Route::put('/items/{item}',       [InventoryItemController::class, 'update'])->name('items.update');
         Route::delete('/items/{item}',    [InventoryItemController::class, 'destroy'])->name('items.destroy');
 
+        /**
+         * VENDORS
+         */
+        Route::resource('vendors', App\Http\Controllers\Inventory\VendorController::class);
+
         // Inventory Audit Trail (Logs)
         Route::get('/logs', [App\Http\Controllers\Inventory\InventoryLogController::class, 'index'])
             ->name('logs.index');
@@ -376,6 +383,17 @@ Route::middleware([
             '/loans/{loan}/mark-returned',
             [InventoryLoanController::class, 'markReturned']
         )->name('loans.mark-returned');
+
+        Route::resource('asset-classifications', App\Http\Controllers\Admin\AssetClassificationController::class)
+            ->except(['show'])
+            ->names([
+                'index'   => 'asset-classifications.index',
+                'create'  => 'asset-classifications.create',
+                'store'   => 'asset-classifications.store',
+                'edit'    => 'asset-classifications.edit',
+                'update'  => 'asset-classifications.update',
+                'destroy' => 'asset-classifications.destroy',
+            ]);
     });
 });
 

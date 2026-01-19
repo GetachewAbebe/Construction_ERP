@@ -32,6 +32,7 @@ class UpdateInventoryItemRequest extends FormRequest
             'item_no'             => ['required', 'string', 'max:255'],
             'name'                => ['required', 'string', 'max:255'],
             'description'         => ['nullable', 'string', 'max:1000'],
+            'classification_id'   => ['nullable', 'exists:asset_classifications,id'],
             'unit_of_measurement' => ['required', 'string', 'max:255'],
             'quantity'            => ['required', 'integer', 'min:0'],
             'store_location'      => ['required', 'string', 'max:255'],

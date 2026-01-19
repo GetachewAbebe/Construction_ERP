@@ -867,6 +867,7 @@
             <div class="ms-1 ps-3 border-start border-white-10 mb-2">
                  <a href="{{ route('admin.inventory') }}" class="sidebar-sublink {{ request()->routeIs('admin.inventory') ? 'text-white fw-bold' : '' }}">Dashboard</a>
                  <a href="{{ route('admin.inventory.items.index') }}" class="sidebar-sublink {{ request()->routeIs('admin.inventory.items.*') ? 'text-white fw-bold' : '' }}">Items Catalogue</a>
+                 <a href="{{ route('inventory.asset-classifications.index') }}" class="sidebar-sublink {{ request()->routeIs('inventory.asset-classifications.*') ? 'text-white fw-bold' : '' }}">Asset Classifications</a>
                  <a href="{{ route('admin.inventory.loans.index') }}" class="sidebar-sublink d-flex align-items-center justify-content-between {{ request()->routeIs('admin.inventory.loans.*') ? 'text-white fw-bold' : '' }}">
                      <span>Lending Requests</span>
                      @if($inventoryReqCount > 0)
@@ -889,9 +890,9 @@
         <div class="collapse {{ request()->routeIs('admin.finance*') ? 'show' : '' }}" id="adminFinMenu">
             <div class="ms-1 ps-3 border-start border-white-10 mb-2">
                  <a href="{{ route('admin.finance') }}" class="sidebar-sublink {{ request()->routeIs('admin.finance') ? 'text-white fw-bold' : '' }}">Dashboard</a>
-                 <a href="{{ route('admin.finance.projects.index') }}" class="sidebar-sublink {{ request()->routeIs('admin.finance.projects.*') ? 'text-white fw-bold' : '' }}">Projects</a>
-                 <a href="{{ route('admin.finance.expenses.index') }}" class="sidebar-sublink d-flex align-items-center justify-content-between {{ request()->routeIs('admin.finance.expenses.*') ? 'text-white fw-bold' : '' }}">
-                     <span>Expenses</span>
+                  <a href="{{ route('admin.finance.projects.index') }}" class="sidebar-sublink {{ request()->routeIs('admin.finance.projects.*') ? 'text-white fw-bold' : '' }}">Project Registry</a>
+                  <a href="{{ route('admin.finance.expenses.index') }}" class="sidebar-sublink d-flex align-items-center justify-content-between {{ request()->routeIs('admin.finance.expenses.*') ? 'text-white fw-bold' : '' }}">
+                      <span>Financial Requisitions</span>
                      @if($expenseReqCount > 0)
                         <span class="badge bg-danger rounded-pill x-small">{{ $expenseReqCount }}</span>
                      @endif
@@ -943,6 +944,12 @@
             <a href="{{ route('inventory.items.index') }}" class="sidebar-link {{ request()->routeIs('inventory.items.*') ? 'active' : '' }}">
                 <i class="bi bi-box-seam"></i> <span>Items Catalogue</span>
             </a>
+            <a href="{{ route('inventory.asset-classifications.index') }}" class="sidebar-link {{ request()->routeIs('inventory.asset-classifications.*') ? 'active' : '' }}">
+                <i class="bi bi-tags"></i> <span>Asset Classifications</span>
+            </a>
+            <a href="{{ route('inventory.vendors.index') }}" class="sidebar-link {{ request()->routeIs('inventory.vendors.*') ? 'active' : '' }}">
+                <i class="bi bi-truck"></i> <span>Vendor Registry</span>
+            </a>
             <a href="{{ route('inventory.loans.index') }}" class="sidebar-link {{ request()->routeIs('inventory.loans.*') ? 'active' : '' }}">
                 <i class="bi bi-arrow-left-right"></i> <span>Item Lending</span>
                 @php
@@ -964,10 +971,10 @@
                 <i class="bi bi-grid-1x2"></i> <span>Dashboard</span>
             </a>
             <a href="{{ route('finance.projects.index') }}" class="sidebar-link {{ request()->routeIs('finance.projects.*') ? 'active' : '' }}">
-                <i class="bi bi-briefcase"></i> <span>Projects</span>
+                <i class="bi bi-briefcase"></i> <span>Project Registry</span>
             </a>
             <a href="{{ route('finance.expenses.index') }}" class="sidebar-link {{ request()->routeIs('finance.expenses.*') ? 'active' : '' }}">
-                <i class="bi bi-receipt"></i> <span>Expenses</span>
+                <i class="bi bi-receipt"></i> <span>Financial Requisitions</span>
                 @php
                     $finSubCount = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') === 'expense_request')->count();
                 @endphp

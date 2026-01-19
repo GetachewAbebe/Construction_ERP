@@ -67,12 +67,14 @@
 
 <div class="erp-card mb-4">
     <form action="{{ route('inventory.items.index') }}" method="GET" class="row g-3 align-items-end">
-        <div class="col-md-4">
-            <label class="erp-label">Search Registry</label>
-            <div class="input-group bg-light rounded-pill overflow-hidden px-3 border-0">
-                <span class="input-group-text bg-transparent border-0 text-muted"><i class="bi bi-search"></i></span>
-                <input type="text" name="q" class="form-control border-0 bg-transparent py-2" placeholder="Item name, ID or specs..." value="{{ request('q') }}">
-            </div>
+        <div class="col-md-3">
+            <label class="erp-label">Category</label>
+            <select name="classification_id" class="erp-input" style="appearance: auto;">
+                <option value="">All Categories</option>
+                @foreach($classifications as $cl)
+                    <option value="{{ $cl->id }}" @selected(request('classification_id') == $cl->id)>{{ $cl->name }}</option>
+                @endforeach
+            </select>
         </div>
         <div class="col-md-3">
             <label class="erp-label">Store Location</label>
@@ -83,7 +85,7 @@
                 @endforeach
             </select>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <label class="erp-label">Stock Status</label>
             <select name="status" class="erp-input" style="appearance: auto;">
                 <option value="">All Status</option>
@@ -91,6 +93,13 @@
                 <option value="low_stock" @selected(request('status') === 'low_stock')>Low Stock</option>
                 <option value="out_of_stock" @selected(request('status') === 'out_of_stock')>Out of Stock</option>
             </select>
+        </div>
+        <div class="col-md-4">
+            <label class="erp-label">Search Registry</label>
+            <div class="input-group bg-light rounded-pill overflow-hidden px-3 border-0">
+                <span class="input-group-text bg-transparent border-0 text-muted"><i class="bi bi-search"></i></span>
+                <input type="text" name="q" class="form-control border-0 bg-transparent py-2" placeholder="Item name, ID or specs..." value="{{ request('q') }}">
+            </div>
         </div>
         <div class="col-md-2">
             <div class="d-flex gap-2">
@@ -128,7 +137,19 @@
                             </div>
                             <div>
                                 <div class="fw-800 text-erp-deep">{{ $item->name }}</div>
-                                <small class="text-muted fw-bold">REF: {{ $item->item_no }}</small>
+                                <div class="d-flex align-items-center gap-2">
+                                    <small class="text-muted fw-bold">REF: {{ $item->item_no }}</small>
+                                    @if($item->classification)
+                                        <span class="badge bg-erp-deep text-white border-0 rounded-pill px-2 py-0 fw-800" style="font-size: 0.65rem; background: linear-gradient(90deg, #064e3b, #059669);">
+                                            <i class="bi bi-diagram-3-fill me-1"></i>{{ $item->classification->name }}
+                                        </span>
+                                    @endif
+                                    @if($item->vendor)
+                                        <span class="badge bg-light text-muted border-0 rounded-pill px-2 py-0 fw-800" style="font-size: 0.65rem;">
+                                            <i class="bi bi-truck me-1"></i>{{ $item->vendor->name }}
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </td>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Inventory;
 
 use App\Http\Controllers\Controller;
 use App\Models\InventoryItem;
+use App\Models\AssetClassification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -27,6 +28,7 @@ class InventoryItemController extends Controller
         $from = $request->input('from_date');
         $to   = $request->input('to_date');
         $status = $request->input('status');
+        $classification_id = $request->input('classification_id');
 
         $query = InventoryItem::query()
             ->when($q !== '', function ($query) use ($q) {
@@ -39,6 +41,7 @@ class InventoryItemController extends Controller
             ->when($loc !== '', fn($query) => $query->where('store_location', $loc))
             ->when($from, fn($query) => $query->whereDate('in_date', '>=', $from))
             ->when($to,   fn($query) => $query->whereDate('in_date', '<=', $to))
+            ->when($classification_id, fn($query) => $query->where('classification_id', $classification_id))
             ->when($status, function($query) use ($status) {
                 if ($status === 'in_stock') {
                     $query->where('quantity', '>', 5);
@@ -70,12 +73,16 @@ class InventoryItemController extends Controller
             ->orderBy('store_location')
             ->pluck('store_location');
 
-        return view('inventory.items.index', compact('items', 'totals', 'q', 'loc', 'from', 'to', 'storeLocations'));
+        $classifications = AssetClassification::orderBy('name')->get();
+
+        return view('inventory.items.index', compact('items', 'totals', 'q', 'loc', 'from', 'to', 'storeLocations', 'classifications'));
     }
 
     public function create()
     {
-        return view('inventory.items.create');
+        $classifications = AssetClassification::orderBy('name')->get();
+        $vendors = \App\Models\Vendor::active()->orderBy('name')->get();
+        return view('inventory.items.create', compact('classifications', 'vendors'));
     }
 
     public function store(\App\Http\Requests\Inventory\StoreInventoryItemRequest $request)
@@ -118,7 +125,9 @@ class InventoryItemController extends Controller
 
     public function edit(InventoryItem $item)
     {
-        return view('inventory.items.edit', compact('item'));
+        $classifications = AssetClassification::orderBy('name')->get();
+        $vendors = \App\Models\Vendor::active()->orderBy('name')->get();
+        return view('inventory.items.edit', compact('item', 'classifications', 'vendors'));
     }
 
     public function update(\App\Http\Requests\Inventory\UpdateInventoryItemRequest $request, InventoryItem $item)

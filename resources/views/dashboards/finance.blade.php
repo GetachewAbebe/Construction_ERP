@@ -28,9 +28,9 @@
                 <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                     <i class="bi bi-wallet2 fs-4"></i>
                 </div>
-                <h6 class="text-muted text-uppercase fw-bold small mb-1">Total Budget Portfolio</h6>
-                <div class="h2 fw-800 mb-0">${{ number_format($totalBudget, 2) }}</div>
-                <p class="text-muted small mt-2 mb-0">Allocated across all sites</p>
+                <h6 class="text-muted text-uppercase fw-bold small mb-1">Total Project Portfolio</h6>
+                <div class="h2 fw-800 mb-0"><small class="text-muted fw-normal fs-6">ETB</small> {{ number_format($totalBudget, 0) }}</div>
+                <p class="text-muted small mt-2 mb-0">Aggregate budget across all sites</p>
             </div>
         </div>
 
@@ -39,14 +39,14 @@
                 <div class="d-flex align-items-center justify-content-center rounded-4 shadow-lg mb-3 text-white" style="width: 64px; height: 64px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
                     <i class="bi bi-graph-down-arrow fs-4"></i>
                 </div>
-                <h6 class="text-muted text-uppercase fw-bold small mb-1">Total Expenses Used</h6>
-                <div class="h2 fw-800 mb-0 text-danger">${{ number_format($totalExpenses, 2) }}</div>
+                <h6 class="text-muted text-uppercase fw-bold small mb-1">Certified Expenditures</h6>
+                <div class="h2 fw-800 mb-0 text-danger"><small class="text-muted fw-normal fs-6">ETB</small> {{ number_format($totalExpenses, 0) }}</div>
                 <div class="progress mt-3" style="height: 10px; border-radius: 10px;">
                     <div class="progress-bar" role="progressbar" style="width: {{ $usagePercentage }}%; background: var(--erp-primary);" aria-valuenow="{{ $usagePercentage }}" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
                 <div class="d-flex justify-content-between mt-1">
-                    <span class="text-muted small">{{ $usagePercentage }}% Exhausted</span>
-                    <span class="text-muted small">${{ number_format($remainingBudget, 2) }} Left</span>
+                    <span class="text-muted small fw-bold">{{ $usagePercentage }}% Portfolio Exhausted</span>
+                    <span class="text-muted small"><small class="fw-normal">ETB</small> {{ number_format($remainingBudget, 0) }} Left</span>
                 </div>
             </div>
         </div>
@@ -54,11 +54,11 @@
 
     <div class="row g-4 mb-5">
         <div class="col-lg-12 stagger-entrance">
-            <div class="glass-card-global p-4 shadow-lg rounded-4">
+            <div class="erp-card p-4 shadow-lg rounded-4">
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <div>
-                        <h5 class="fw-800 text-erp-deep mb-0">Project Portfolio Health</h5>
-                        <p class="text-muted small mb-0">Comparison of allocated budget vs actual expenses</p>
+                        <h5 class="fw-800 text-erp-deep mb-1">Site-specific Financial Health</h5>
+                        <p class="text-muted small mb-0">Correlation between allocated funds and actual field spending.</p>
                     </div>
                 </div>
                 <div id="portfolioChart" style="min-height: 400px;"></div>
@@ -68,39 +68,40 @@
 
     <div class="row">
         <div class="col stagger-entrance">
-            <div class="glass-card-global p-4 shadow-lg rounded-4">
-                <div class="d-flex align-items-center justify-content-between mb-4">
-                    <h5 class="fw-800 text-erp-deep mb-0">Recent Projects</h5>
-                    <a href="{{ (Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin')) ? route('admin.finance.projects.index') : route('finance.projects.index') }}" class="btn btn-sm btn-outline-erp-deep rounded-pill px-3">Manage all</a>
+            <div class="erp-card p-4 shadow-lg rounded-4">
+                <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+                    <h5 class="fw-800 text-erp-deep mb-0">Active Construction Sites</h5>
+                    <a href="{{ (Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin')) ? route('admin.finance.projects.index') : route('finance.projects.index') }}" class="btn btn-sm btn-erp-deep rounded-pill px-4">Detailed Registry</a>
                 </div>
                 
-                <div class="row g-3">
+                <div class="row g-4">
                     @forelse($recentProjects as $p)
                         <div class="col-md-4">
-                            <div class="p-3 border rounded-4 bg-white hover-shadow transition-all">
-                                <h6 class="fw-bold mb-1">{{ $p->name }}</h6>
-                                <p class="text-muted small mb-2">{{ \Illuminate\Support\Str::limit($p->description, 50) }}</p>
-                                <div class="d-flex justify-content-between small">
-                                    <span class="text-muted">Budget:</span>
-                                    <span class="fw-bold text-erp-deep">${{ number_format($p->budget, 0) }}</span>
+                            <div class="p-4 border rounded-4 bg-light-soft hover-lift transition-all">
+                                <h6 class="fw-800 text-erp-deep mb-1">{{ $p->name }}</h6>
+                                <p class="text-muted small mb-3">{{ \Illuminate\Support\Str::limit($p->description, 60) }}</p>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted small fw-bold text-uppercase">Total Budget</span>
+                                    <span class="fw-800 text-erp-deep"><small class="text-muted fw-normal x-small">ETB</small> {{ number_format($p->budget, 0) }}</span>
                                 </div>
-                                <div class="progress mt-2" style="height: 4px;">
+                                <div class="progress" style="height: 6px; border-radius: 10px;">
                                     @php
-                                        // Calc percentage locally if not present
                                         $usage = 0;
-                                        if($p->budget > 0 && $p->expenses_sum_amount) {
-                                            $usage = ($p->expenses_sum_amount / $p->budget) * 100;
-                                        } elseif ($p->budget > 0 && $p->budget_usage_percentage) {
-                                            $usage = $p->budget_usage_percentage;
+                                        if($p->budget > 0 && ($p->expenses_sum_amount || $p->total_expenses)) {
+                                            $val = $p->expenses_sum_amount ?? $p->total_expenses;
+                                            $usage = ($val / $p->budget) * 100;
                                         }
                                     @endphp
-                                    <div class="progress-bar bg-success" style="width: {{ $usage }}%"></div>
+                                    <div class="progress-bar bg-success rounded-pill" style="width: {{ $usage }}%"></div>
+                                </div>
+                                <div class="text-end mt-1">
+                                    <span class="x-small fw-800 text-muted">{{ round($usage) }}% Used</span>
                                 </div>
                             </div>
                         </div>
                     @empty
                         <div class="col text-center py-5">
-                            <p class="text-muted">No projects found. <a href="{{ (Auth::user()->hasRole('Administrator') || Auth::user()->hasRole('Admin')) ? route('admin.finance.projects.index') : route('finance.projects.create') }}">Create one now</a></p>
+                            <p class="text-muted fw-bold">No active construction sites found.</p>
                         </div>
                     @endforelse
                 </div>
@@ -117,7 +118,7 @@
                 name: 'Budget',
                 data: {!! json_encode($portfolioBudgets) !!}
             }, {
-                name: 'Expenses',
+                name: 'Spending',
                 data: {!! json_encode($portfolioExpenses) !!}
             }],
             chart: {
@@ -127,12 +128,12 @@
                 toolbar: { show: false },
                 fontFamily: 'Outfit, sans-serif'
             },
-            colors: ['#059669', '#f59e0b'],
+            colors: ['#059669', '#ef4444'],
             plotOptions: {
                 bar: {
                     horizontal: false,
-                    columnWidth: '55%',
-                    borderRadius: 8
+                    columnWidth: '45%',
+                    borderRadius: 10
                 },
             },
             dataLabels: {
@@ -146,14 +147,14 @@
             xaxis: {
                 categories: {!! json_encode($portfolioLabels) !!},
                 labels: {
-                    style: { colors: '#64748b', fontSize: '12px' }
+                    style: { colors: '#64748b', fontSize: '12px', fontWeight: 600 }
                 }
             },
             yaxis: {
-                title: { text: 'Amount ($)', style: { color: '#64748b' } },
+                title: { text: 'Currency (ETB)', style: { color: '#64748b', fontWeight: 800 } },
                 labels: {
-                    formatter: function (val) { return "$" + val.toLocaleString(); },
-                    style: { colors: '#64748b' }
+                    formatter: function (val) { return val.toLocaleString() + " ETB"; },
+                    style: { colors: '#64748b', fontWeight: 600 }
                 }
             },
             fill: {
@@ -161,7 +162,7 @@
             },
             tooltip: {
                 y: {
-                    formatter: function (val) { return "$" + val.toLocaleString(); }
+                    formatter: function (val) { return val.toLocaleString() + " ETB"; }
                 }
             },
             grid: {

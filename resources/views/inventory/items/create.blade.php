@@ -113,24 +113,25 @@
                         </div>
 
                         <div class="row g-4">
-                            <div class="col-md-6 col-lg-3">
-                                <label class="input-label-premium text-uppercase">Category</label>
-                                <select name="category" class="form-select rounded-4 py-3 px-4 shadow-sm form-premium-input @error('category') is-invalid @enderror">
-                                    <option value="Material" @selected(old('category') == 'Material')>Material</option>
-                                    <option value="Tool" @selected(old('category') == 'Tool')>Tool</option>
-                                    <option value="Machine" @selected(old('category') == 'Machine')>Machine</option>
-                                    <option value="Vehicle" @selected(old('category') == 'Vehicle')>Vehicle</option>
-                                    <option value="Other" @selected(old('category') == 'Other')>Other</option>
+                            <div class="col-md-6">
+                                <label class="input-label-premium text-uppercase">Item Category</label>
+                                <select name="classification_id" class="form-select rounded-4 py-3 px-4 shadow-sm form-premium-input @error('classification_id') is-invalid @enderror">
+                                    <option value="">-- Select Category --</option>
+                                    @foreach($classifications as $item)
+                                        <option value="{{ $item->id }}" @selected(old('classification_id') == $item->id)>
+                                            {{ $item->name }} ({{ $item->code }})
+                                        </option>
+                                    @endforeach
                                 </select>
-                                @error('category') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                @error('classification_id') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="col-md-6 col-lg-3">
                                 <label class="input-label-premium text-uppercase">Unit of Measure</label>
-                                <input type="text" name="unit" 
-                                       class="form-control rounded-4 py-3 px-4 shadow-sm form-premium-input @error('unit') is-invalid @enderror" 
-                                       value="{{ old('unit') }}" placeholder="e.g. Pcs, Kg, Liters" required>
-                                @error('unit') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                <input type="text" name="unit_of_measurement" 
+                                       class="form-control rounded-4 py-3 px-4 shadow-sm form-premium-input @error('unit_of_measurement') is-invalid @enderror" 
+                                       value="{{ old('unit_of_measurement') }}" placeholder="e.g. Pcs, Kg, Liters" required>
+                                @error('unit_of_measurement') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="col-md-6 col-lg-3">
@@ -140,6 +141,19 @@
                                        value="{{ old('quantity', 0) }}" min="0" required>
                                 <div class="form-text x-small ps-1 text-muted">Starting stock level.</div>
                                 @error('quantity') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                            </div>
+                            
+                            <div class="col-md-6 col-lg-3">
+                                <label class="input-label-premium text-uppercase">Supplier / Vendor</label>
+                                <select name="vendor_id" class="form-select rounded-4 py-3 px-4 shadow-sm form-premium-input @error('vendor_id') is-invalid @enderror">
+                                    <option value="">-- No Specific Vendor --</option>
+                                    @foreach($vendors as $vendor)
+                                        <option value="{{ $vendor->id }}" @selected(old('vendor_id') == $vendor->id)>
+                                            {{ $vendor->name }} ({{ $vendor->code }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('vendor_id') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
                             
                             <div class="col-md-6 col-lg-3">

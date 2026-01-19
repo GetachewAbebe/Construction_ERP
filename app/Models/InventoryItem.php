@@ -21,11 +21,14 @@ class InventoryItem extends Model
         'item_no',
         'name',
         'description',
+        'classification_id',
+        'category', // Legacy
         'unit_of_measurement',
         'quantity',
         'store_location',
         'in_date',
         'status',
+        'vendor_id', // Added by instruction
     ];
 
     /**
@@ -34,7 +37,24 @@ class InventoryItem extends Model
     protected $casts = [
         'in_date'  => 'date',
         'quantity' => 'integer',
+        'classification_id' => 'integer',
     ];
+
+    /**
+     * Relationship: The strategic classification this asset belongs to.
+     */
+    public function classification()
+    {
+        return $this->belongsTo(AssetClassification::class, 'classification_id');
+    }
+
+    /**
+     * Relationship: The vendor / supplier of this item.
+     */
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class);
+    }
 
     /**
      * Relationships
