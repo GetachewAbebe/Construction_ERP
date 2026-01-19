@@ -5,12 +5,11 @@
 <div class="page-header-premium mb-5">
     <div class="row align-items-center">
         <div class="col">
-            <h1 class="display-3 fw-900 text-erp-deep mb-2 tracking-tight">Resource Classification Registry</h1>
-            <p class="text-muted fs-5 mb-0">Organizational taxonomy for physical assets and material inventory categories.</p>
+            <h1 class="display-3 fw-900 text-erp-deep mb-0 tracking-tight">Asset Classifications</h1>
         </div>
         <div class="col-auto">
-            <a href="{{ route('inventory.asset-classifications.create') }}" class="btn btn-erp-deep rounded-pill px-4 shadow-sm border-0">
-                <i class="bi bi-plus-circle-fill me-2"></i>Add Category
+            <a href="{{ route('inventory.asset-classifications.create') }}" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-900 shadow-xl border-0 transform-hover">
+                <i class="bi bi-plus-lg me-2 fs-5"></i>NEW CATEGORY
             </a>
         </div>
     </div>
@@ -67,18 +66,19 @@
                     <td class="text-end pe-4">
                         <div class="d-flex justify-content-end gap-2">
                             <a href="{{ route('inventory.asset-classifications.edit', $item) }}" 
-                               class="btn btn-sm btn-white rounded-pill px-3 py-2 fw-bold shadow-sm" 
-                               title="Edit Category">
-                                <i class="bi bi-pencil-square"></i>
+                               class="btn btn-primary rounded-pill px-4 py-2 fw-700 shadow-sm border-0 d-inline-flex align-items-center gap-2"
+                               style="font-size: 0.85rem;">
+                                <i class="bi bi-pencil-square"></i> <span>Edit</span>
                             </a>
                             
                             <form action="{{ route('inventory.asset-classifications.destroy', $item) }}" 
                                   method="POST" class="d-inline" id="delete-form-{{ $item->id }}">
                                 @csrf
                                 @method('DELETE')
-                                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-2 fw-bold" 
-                                        onclick="premiumConfirm('Delete Category', 'Are you sure you want to delete this category?', 'delete-form-{{ $item->id }}', '{{ $item->name }}')">
-                                    <i class="bi bi-trash3"></i>
+                                <button type="button" class="btn btn-danger rounded-pill px-4 py-2 fw-700 shadow-sm border-0 d-inline-flex align-items-center gap-2" 
+                                        onclick="premiumConfirm('Delete Category', 'Are you sure you want to delete this category?', 'delete-form-{{ $item->id }}', '{{ $item->name }}')"
+                                        style="font-size: 0.85rem;">
+                                    <i class="bi bi-trash3"></i> <span>Delete</span>
                                 </button>
                             </form>
                         </div>
