@@ -15,6 +15,7 @@ class User extends Authenticatable
 
 
     protected $fillable = [
+        'name',
         'first_name',
         'middle_name',
         'last_name',
@@ -40,6 +41,7 @@ class User extends Authenticatable
      */
     public function setNameAttribute($value)
     {
+        $this->attributes['name'] = $value;
         $parts = explode(' ', $value);
         $this->attributes['first_name'] = array_shift($parts);
         $this->attributes['last_name']  = array_pop($parts);
