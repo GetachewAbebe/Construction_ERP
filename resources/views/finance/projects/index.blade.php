@@ -5,12 +5,11 @@
 <div class="page-header-premium mb-4">
     <div class="row align-items-center">
         <div class="col">
-            <h1 class="display-6">Project Registry</h1>
-            <p>Operational oversight and budget tracking for all active construction sites.</p>
+            <h1 class="display-3 fw-900 text-erp-deep mb-0 tracking-tight">Project Registry</h1>
         </div>
         <div class="col-auto">
-            <a href="{{ route('finance.projects.create') }}" class="btn btn-erp-deep rounded-pill px-4 shadow-sm border-0">
-                <i class="bi bi-building-plus me-2"></i>New Project Site
+            <a href="{{ route('finance.projects.create') }}" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-900 shadow-xl border-0 transform-hover">
+                <i class="bi bi-building-plus me-2 fs-5"></i>NEW PROJECT
             </a>
         </div>
     </div>
@@ -122,17 +121,18 @@
                     </td>
                     <td class="text-end pe-4">
                         <div class="d-flex justify-content-end gap-2">
-                            <a href="{{ route('finance.projects.show', $project) }}" class="btn btn-sm btn-white rounded-pill px-3 py-2 fw-bold shadow-sm" title="Intelligence">
-                                <i class="bi bi-bar-chart-fill"></i>
+                            <a href="{{ route('finance.projects.show', $project) }}" class="btn btn-white rounded-pill px-4 py-2 fw-700 shadow-sm border-0 d-inline-flex align-items-center gap-2" style="font-size: 0.85rem;">
+                                <i class="bi bi-eye-fill"></i> <span>View</span>
                             </a>
-                            <a href="{{ route('finance.projects.edit', $project) }}" class="btn btn-sm btn-white rounded-pill px-3 py-2 fw-bold shadow-sm" title="Settings">
-                                <i class="bi bi-gear-fill"></i>
+                            <a href="{{ route('finance.projects.edit', $project) }}" class="btn btn-primary rounded-pill px-4 py-2 fw-700 shadow-sm border-0 d-inline-flex align-items-center gap-2" style="font-size: 0.85rem;">
+                                <i class="bi bi-pencil-square"></i> <span>Edit</span>
                             </a>
                             <form action="{{ route('finance.projects.destroy', $project) }}" method="POST" class="d-inline" id="del-proj-{{ $project->id }}">
                                 @csrf @method('DELETE')
-                                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-2 fw-bold" 
-                                        onclick="premiumConfirm('Archive Site', 'Deactivate and archive this production site?', 'del-proj-{{ $project->id }}', '{{ $project->name }}')">
-                                    <i class="bi bi-archive-fill"></i>
+                                <button type="button" class="btn btn-danger rounded-pill px-4 py-2 fw-700 shadow-sm border-0 d-inline-flex align-items-center gap-2" 
+                                        onclick="premiumConfirm('Archive Site', 'Deactivate and archive this production site?', 'del-proj-{{ $project->id }}', '{{ $project->name }}')"
+                                        style="font-size: 0.85rem;">
+                                    <i class="bi bi-archive-fill"></i> <span>Archive</span>
                                 </button>
                             </form>
                         </div>

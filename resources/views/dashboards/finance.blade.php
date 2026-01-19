@@ -6,8 +6,7 @@
 <div class="py-4 px-2">
     {{-- Page Header --}}
     <div class="page-header-premium mb-5">
-        <h1 class="display-3 fw-900 text-erp-deep mb-2 tracking-tight">Financial Intelligence Hub</h1>
-        <p class="text-muted fs-5 mb-0">Unified telemetry for project fiscal health and expenditure approval workflows.</p>
+        <h1 class="display-3 fw-900 text-erp-deep mb-0 tracking-tight">Finance Dashboard</h1>
     </div>
 
     {{-- HIGHLIGHT METRICS --}}

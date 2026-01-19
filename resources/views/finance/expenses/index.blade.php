@@ -5,12 +5,11 @@
 <div class="page-header-premium mb-4">
     <div class="row align-items-center">
         <div class="col">
-            <h1 class="display-6">Financial Requisitions</h1>
-            <p>Field expenditure tracking and real-time project spending audit.</p>
+            <h1 class="display-3 fw-900 text-erp-deep mb-0 tracking-tight">Expenses</h1>
         </div>
         <div class="col-auto">
-            <a href="{{ route('finance.expenses.create') }}" class="btn btn-erp-deep rounded-pill px-4 shadow-sm border-0">
-                <i class="bi bi-plus-lg me-2"></i>New Requisition
+            <a href="{{ route('finance.expenses.create') }}" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-900 shadow-xl border-0 transform-hover">
+                <i class="bi bi-plus-lg me-2 fs-5"></i>NEW EXPENSE
             </a>
         </div>
     </div>
@@ -122,25 +121,25 @@
                     </td>
                     <td class="text-end pe-4">
                         @if($expense->status === 'approved')
-                            <a href="{{ route('finance.expenses.show', $expense) }}" class="btn btn-sm btn-white rounded-pill px-4 shadow-sm border-0 fw-800 hover-lift">
-                                <i class="bi bi-printer-fill me-2"></i>Voucher
+                            <a href="{{ route('finance.expenses.show', $expense) }}" class="btn btn-white rounded-pill px-4 py-2 fw-700 shadow-sm border-0 d-inline-flex align-items-center gap-2" style="font-size: 0.85rem;">
+                                <i class="bi bi-printer-fill text-erp-deep"></i> <span>Voucher</span>
                             </a>
                         @else
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('finance.expenses.show', $expense) }}" class="btn btn-sm btn-white rounded-pill px-3 py-2 shadow-sm" title="View Detail">
-                                    <i class="bi bi-eye-fill"></i>
+                                <a href="{{ route('finance.expenses.show', $expense) }}" class="btn btn-white rounded-pill px-4 py-2 fw-700 shadow-sm border-0 d-inline-flex align-items-center gap-2" style="font-size: 0.85rem;">
+                                    <i class="bi bi-eye-fill"></i> <span>View</span>
                                 </a>
                                 @if($expense->status === 'pending')
-                                    <a href="{{ route('finance.expenses.edit', $expense) }}" class="btn btn-sm btn-white rounded-pill px-3 py-2 shadow-sm text-primary" title="Modify">
-                                        <i class="bi bi-pencil-fill"></i>
+                                    <a href="{{ route('finance.expenses.edit', $expense) }}" class="btn btn-primary rounded-pill px-4 py-2 fw-700 shadow-sm border-0 d-inline-flex align-items-center gap-2" style="font-size: 0.85rem;">
+                                        <i class="bi bi-pencil-square"></i> <span>Edit</span>
                                     </a>
                                 @endif
                                 
                                 @if(Auth::user()->hasAnyRole(['Administrator', 'FinancialManager', 'Financial Manager', 'Admin']) && $expense->status === 'pending')
                                     <form action="{{ route('finance.expenses.approve', $expense) }}" method="POST" class="d-inline" id="app-exp-{{ $expense->id }}">
                                         @csrf
-                                        <button type="submit" class="btn btn-sm btn-erp-deep rounded-pill px-3 py-2 shadow-sm" title="Authorize">
-                                            <i class="bi bi-check-lg"></i>
+                                        <button type="submit" class="btn btn-success rounded-pill px-4 py-2 fw-700 shadow-sm border-0 d-inline-flex align-items-center gap-2" style="font-size: 0.85rem;">
+                                            <i class="bi bi-check-lg"></i> <span>Approve</span>
                                         </button>
                                     </form>
                                 @endif
