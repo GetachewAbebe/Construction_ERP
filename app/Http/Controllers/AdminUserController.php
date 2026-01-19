@@ -10,13 +10,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
+use Spatie\Permission\Models\Role;
 
 class AdminUserController extends Controller
 {
     /**
-     * These must match the "role" values used in:
-     *  - RoleMiddleware
-     *  - web.php redirects
+     * Core system roles allowed for management.
      */
     private array $allowedRoles = [
         'Administrator',
@@ -113,6 +112,7 @@ class AdminUserController extends Controller
 
         // Sync role via Spatie if applicable
         if (method_exists($user, 'assignRole')) {
+            Role::firstOrCreate(['name' => $validated['role'], 'guard_name' => 'web']);
             $user->assignRole($validated['role']);
         }
 
@@ -203,6 +203,7 @@ class AdminUserController extends Controller
 
         // Sync role via Spatie
         if (method_exists($user, 'syncRoles')) {
+            Role::firstOrCreate(['name' => $validated['role'], 'guard_name' => 'web']);
             $user->syncRoles([$validated['role']]);
         }
 
