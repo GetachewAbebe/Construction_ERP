@@ -4,6 +4,8 @@ npm-debug.log
 /public/storage/*
 # Environment Variables
 .env
+.gemini
+
 /storage/framework/views
 /storage/framework/cache
 /storage/framework/sessions

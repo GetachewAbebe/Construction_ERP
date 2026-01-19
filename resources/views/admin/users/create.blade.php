@@ -62,9 +62,24 @@
 
                 <div class="col-md-6">
                     <label class="erp-label">Password</label>
-                    <input type="password" name="password" required placeholder="Min. 8 characters"
-                           class="erp-input @error('password') is-invalid @enderror"/>
-                    @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    <div class="input-group">
+                        <input type="password" name="password" id="password" required placeholder="Min. 8 characters" onkeyup="checkStrength(this.value)"
+                            class="erp-input form-control border-end-0 rounded-end-0 @error('password') is-invalid @enderror"/>
+                        <button class="btn btn-secondary border-start-0" type="button" onclick="togglePasswordVis('password', 'admin-eye-text')" style="min-width: 80px;">
+                            <span id="admin-eye-text">Show</span> <i class="bi bi-eye ms-1"></i>
+                        </button>
+                    </div>
+                    {{-- Strength Meter --}}
+                    <div class="mt-2 d-none" id="strength-container">
+                        <div class="progress" style="height: 4px;">
+                            <div class="progress-bar transition-all" role="progressbar" id="strength-bar" style="width: 0%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-1">
+                            <small class="text-muted" style="font-size: 0.75rem;">Strength</small>
+                            <small class="fw-bold" id="strength-text" style="font-size: 0.75rem;">Weak</small>
+                        </div>
+                    </div>
+                    @error('password') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="col-md-6">
@@ -156,6 +171,65 @@
             reader.readAsDataURL(input.files[0]);
         }
     }
+
+    function togglePasswordVis(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        } else {
+            input.type = "password";
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        }
+    }
+
+    function checkStrength(password) {
+        const container = document.getElementById('strength-container');
+        const bar = document.getElementById('strength-bar');
+        const text = document.getElementById('strength-text');
+        
+        if (password.length > 0) {
+            container.classList.remove('d-none');
+        } else {
+            container.classList.add('d-none');
+            return;
+        }
+
+        let strength = 0;
+        if (password.length >= 8) strength += 1;
+        if (password.match(/[A-Z]/)) strength += 1;
+        if (password.match(/[0-9]/)) strength += 1;
+        if (password.match(/[^a-zA-Z0-9]/)) strength += 1;
+
+        if (password.length < 8) {
+            strength = 0; 
+        }
+
+        switch(strength) {
+            case 0:
+            case 1:
+                bar.style.width = "33%";
+                bar.className = "progress-bar bg-danger";
+                text.innerHTML = "Weak";
+                text.className = "fw-bold text-danger";
+                break;
+            case 2:
+            case 3:
+                bar.style.width = "66%";
+                bar.className = "progress-bar bg-warning";
+                text.innerHTML = "Medium";
+                text.className = "fw-bold text-warning";
+                break;
+            case 4:
+                bar.style.width = "100%";
+                bar.className = "progress-bar bg-success";
+                text.innerHTML = "Strong";
+                text.className = "fw-bold text-success";
+                break;
+        }
+    }
 </script>
 @endsection
-

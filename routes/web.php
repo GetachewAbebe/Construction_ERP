@@ -34,6 +34,34 @@ Route::post('/', [SimpleAuthController::class, 'login'])->name('login');
 
 /**
  * --------------------------------------------------------------------------
+ * PASSWORD RESET
+ * --------------------------------------------------------------------------
+ * GET  /forgot-password → show forgot password form
+ * POST /forgot-password → send password reset link
+ * GET  /reset-password/{token} → show reset password form
+ * POST /reset-password → update password
+ */
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\NewPasswordController;
+
+Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
+    ->middleware('guest')
+    ->name('password.request');
+
+Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
+    ->middleware('guest')
+    ->name('password.email');
+
+Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
+    ->middleware('guest')
+    ->name('password.reset');
+
+Route::post('/reset-password', [NewPasswordController::class, 'store'])
+    ->middleware('guest')
+    ->name('password.update');
+
+/**
+ * --------------------------------------------------------------------------
  * OPTIONAL PUBLIC PAGES
  * --------------------------------------------------------------------------
  */
@@ -387,5 +415,34 @@ Route::get('/debug-db', function() {
         'users'      => \Illuminate\Support\Facades\Schema::getColumnListing('users'),
         'projects'   => \Illuminate\Support\Facades\Schema::getColumnListing('projects'),
     ];
+});
+
+Route::get('/debug-config', function () {
+    return [
+        'mail_from' => config('mail.from'),
+        'mail_driver' => config('mail.default'),
+        'sub_smtp' => config('mail.mailers.smtp'),
+        'env_mail_host' => env('MAIL_HOST'),
+    ];
+});
+
+Route::get('/debug-reset-test', function () {
+    $user = \App\Models\User::where('email', 'inventorymanager@natanemengineering.com')->first();
+    if (!$user) return 'User not found';
+
+    $token = 'dummy-token';
+    $notification = new \Illuminate\Auth\Notifications\ResetPassword($token);
+    
+    try {
+        $user->notify($notification);
+        return 'Notification sent successfully via WEB';
+    } catch (\Throwable $e) {
+        return [
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString()
+        ];
+    }
 });
 
