@@ -97,6 +97,7 @@ class AdminUserController extends Controller
         $middleName = implode(' ', $parts);
 
         $user = User::create([
+            'name'              => $validated['name'],
             'first_name'        => $firstName,
             'middle_name'       => $middleName,
             'last_name'         => $lastName ?: 'User',
@@ -181,6 +182,7 @@ class AdminUserController extends Controller
         $validated = $request->validated();
 
         $parts = explode(' ', $validated['name']);
+        $user->name       = $validated['name'];
         $user->first_name = array_shift($parts);
         $user->last_name  = array_pop($parts);
         $user->middle_name = implode(' ', $parts);
