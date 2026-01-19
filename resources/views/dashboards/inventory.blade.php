@@ -165,15 +165,7 @@
         
         {{-- High-End Header --}}
         <div class="page-header-premium mb-5">
-            <h1 class="display-3 fw-900 text-erp-deep mb-2 tracking-tight">Inventory Logistics Console</h1>
-            <p class="text-muted fs-5 mb-0">Strategic overview of system material flow, logistics health, and resource analytics.</p>
-        </div>
-            <div class="d-none d-md-flex gap-3">
-                <div class="bg-white px-4 py-2 rounded-pill border border-light shadow-sm d-flex align-items-center gap-3">
-                    <span class="bg-success p-1 rounded-circle pulse-lite"></span>
-                    <span class="fw-800 text-erp-deep small">SYSTEMS NOMINAL</span>
-                </div>
-            </div>
+            <h1 class="display-3 fw-900 text-erp-deep mb-0 tracking-tight">Inventory Dashboard</h1>
         </div>
 
         {{-- Main Command Bridge --}}
