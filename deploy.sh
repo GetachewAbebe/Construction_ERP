@@ -28,9 +28,9 @@ echo "📦 Updating dependencies..."
 # We use a subshell to catch failures and attempt a clean rebuild if it fails
 (
   if [ -f "composer.phar" ]; then
-      php composer.phar install --no-dev --optimize-autoloader --no-scripts
+      php composer.phar install --no-dev --optimize-autoloader
   else
-      composer install --no-dev --optimize-autoloader --no-scripts
+      composer install --no-dev --optimize-autoloader
   fi
 ) || (
   echo "⚠️ Composer install failed. Attempting a clean rebuild (purging vendor)..."
