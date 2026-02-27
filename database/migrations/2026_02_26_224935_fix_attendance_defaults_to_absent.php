@@ -2,12 +2,14 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
     /**
      * Run the migrations.
+     */
     public function up(): void
     {
         if (DB::getDriverName() === 'pgsql') {
@@ -18,8 +20,13 @@ return new class extends Migration
             // Also update existing NULL values if any (though they were NOT NULL with 'present' default before)
             DB::statement("UPDATE attendances SET morning_status = 'absent' WHERE morning_status IS NULL");
             DB::statement("UPDATE attendances SET afternoon_status = 'absent' WHERE afternoon_status IS NULL");
+        } else {
+            Schema::table('attendances', function (Blueprint $table) {
+                $table->string('morning_status')->default('absent')->change();
+                $table->string('afternoon_status')->default('absent')->change();
+                $table->decimal('total_credit', 3, 2)->default(0.00)->change();
+            });
         }
-    }
     }
 
     /**
@@ -32,3 +39,4 @@ return new class extends Migration
         });
     }
 };
+
