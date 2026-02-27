@@ -13,11 +13,11 @@ $autoloader = __DIR__.'/../vendor/autoload.php';
 if (! file_exists($autoloader)) {
     header('HTTP/1.1 503 Service Unavailable');
     header('Retry-After: 300'); // 5 minutes
-    
+
     $vendorDir = __DIR__.'/../vendor';
     $vendorExists = is_dir($vendorDir) ? 'Yes' : 'No';
     $vendorFiles = is_dir($vendorDir) ? implode(', ', array_slice(scandir($vendorDir), 0, 20)) : 'N/A';
-    
+
     // Attempt Auto-Repair if not already triggered in this request
     $repairOutput = 'Not attempted';
     if (isset($_GET['repair'])) {
