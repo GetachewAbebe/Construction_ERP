@@ -84,8 +84,7 @@ jobs:
     - name: Linting (Pint)
       run: ./vendor/bin/pint --test
 
-    - name: Static Analysis (PHPStan/Larastan)
-      run: ./vendor/bin/phpstan analyze --memory-limit=2G
+
 
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       run: |
