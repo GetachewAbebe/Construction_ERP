@@ -230,6 +230,17 @@ body {
     background: #3b82f6;
 }
 
+/* Data Badge Animations */
+.badge {
+    transition: all 0.3s ease;
+}
+
+.sidebar-link:hover .badge {
+    transform: scale(1.1);
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+}
+
 .btn-outline-danger:hover {
     background-color: #f43f5e;
     border-color: #f43f5e;
@@ -315,13 +326,13 @@ body {
 
 /* Sidebar Footer Premium Card */
 .sidebar-footer {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 16px;
-    padding: 1.25rem;
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 20px;
+    padding: 0.75rem;
     margin-top: auto;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(10px);
-    transition: transform 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar-footer:hover {
@@ -366,13 +377,14 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* Active State - "The Glow" */
+/* Active State - "The Premium Glow" */
 .sidebar-link.active {
-    background: linear-gradient(90deg, rgba(5, 150, 105, 0.15) 0%, rgba(5, 150, 105, 0.05) 100%);
-    color: white;
-    border: 1px solid rgba(5, 150, 105, 0.3);
-    box-shadow: 0 4px 20px rgba(5, 150, 105, 0.15);
+    background: linear-gradient(90deg, rgba(5, 150, 105, 0.25) 0%, rgba(5, 150, 105, 0.08) 100%);
+    color: #ffffff;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.2);
     backdrop-filter: blur(12px);
+    font-weight: 700;
 }
 
 /* Active Border Indicator */

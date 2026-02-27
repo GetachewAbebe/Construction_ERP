@@ -40,6 +40,14 @@
           $leaveReqCount   = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') === 'leave_request')->count();
           $inventoryReqCount = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') === 'inventory_request')->count();
           $expenseReqCount = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') === 'expense_request')->count();
+
+          // Live Data Metrics
+          $totalEmployees = \App\Models\Employee::count();
+          $pendingLeaves = \App\Models\LeaveRequest::where('status', 'pending')->count();
+          
+          // Today's attendance summary
+          $todayAttendanceRecords = \App\Models\Attendance::today()->count();
+          $attendanceStatus = $totalEmployees > 0 ? round(($todayAttendanceRecords / $totalEmployees) * 100) : 0;
       @endphp
 
 
@@ -146,21 +154,28 @@
                 <i class="bi bi-grid-1x2"></i> <span>Dashboard</span>
             </a>
             <a href="{{ route('hr.employees.index') }}" class="sidebar-link {{ request()->routeIs('hr.employees.*') ? 'active' : '' }}">
-                <i class="bi bi-people"></i> <span>Employees</span>
+                <i class="bi bi-people"></i> 
+                <span>Employees</span>
+                <span class="badge bg-white-10 text-white-50 ms-auto x-small">{{ $totalEmployees }} Total</span>
             </a>
             <a href="{{ route('hr.leaves.index') }}" class="sidebar-link {{ request()->routeIs('hr.leaves.*') ? 'active' : '' }}">
-                <i class="bi bi-calendar-check"></i> <span>Leave Management</span>
-                @if($leaveReqCount > 0)
-                    <span class="badge bg-danger rounded-pill x-small ms-auto">{{ $leaveReqCount }}</span>
+                <i class="bi bi-calendar-check"></i> 
+                <span>Leave Management</span>
+                @if($pendingLeaves > 0)
+                    <span class="badge bg-danger rounded-pill x-small ms-auto">{{ $pendingLeaves }} Pending</span>
                 @endif
             </a>
             <a href="{{ route('hr.attendance.index') }}" class="sidebar-link {{ request()->routeIs('hr.attendance.index') ? 'active' : '' }}">
-                <i class="bi bi-clock-history"></i> <span>Attendance Records</span>
+                <i class="bi bi-clock-history"></i> 
+                <span>Attendance Records</span>
+                <span class="badge bg-{{ $attendanceStatus < 80 ? 'warning' : 'success' }} rounded-pill x-small ms-auto">{{ $attendanceStatus }}% Today</span>
             </a>
-            <a href="{{ route('hr.attendance.daily-sheet') }}" class="sidebar-link {{ request()->routeIs('hr.attendance.daily-sheet') ? 'active' : '' }}">
+            {{-- Mobile Only: Daily Sheet --}}
+            <a href="{{ route('hr.attendance.daily-sheet') }}" class="sidebar-link d-lg-none {{ request()->routeIs('hr.attendance.daily-sheet') ? 'active' : '' }}">
                 <i class="bi bi-shield-check"></i> <span>Daily Session Sheet</span>
             </a>
-            <a href="{{ route('hr.attendance.weekly-sheet') }}" class="sidebar-link {{ request()->routeIs('hr.attendance.weekly-sheet') ? 'active' : '' }}">
+            {{-- Desktop Only: Weekly Sheet --}}
+            <a href="{{ route('hr.attendance.weekly-sheet') }}" class="sidebar-link d-none d-lg-flex {{ request()->routeIs('hr.attendance.weekly-sheet') ? 'active' : '' }}">
                 <i class="bi bi-calendar-range"></i> <span>Weekly Batch Sheet</span>
             </a>
         @endif
