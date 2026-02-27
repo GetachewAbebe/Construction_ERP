@@ -25,11 +25,22 @@ rm -f bootstrap/cache/*.php
 
 # 4. Rebuild dependencies
 echo "📦 Updating dependencies..."
-if [ -f "composer.phar" ]; then
-    php composer.phar install --no-dev --optimize-autoloader --no-scripts
-else
-    composer install --no-dev --optimize-autoloader --no-scripts
-fi
+# We use a subshell to catch failures and attempt a clean rebuild if it fails
+(
+  if [ -f "composer.phar" ]; then
+      php composer.phar install --no-dev --optimize-autoloader --no-scripts
+  else
+      composer install --no-dev --optimize-autoloader --no-scripts
+  fi
+) || (
+  echo "⚠️ Composer install failed. Attempting a clean rebuild (purging vendor)..."
+  rm -rf vendor
+  if [ -f "composer.phar" ]; then
+      php composer.phar install --no-dev --optimize-autoloader --no-scripts
+  else
+      composer install --no-dev --optimize-autoloader --no-scripts
+  fi
+)
 
 # 5. Run migrations (CRITICAL STEP)
 # We run this BEFORE optimization so the app is schema-ready.
