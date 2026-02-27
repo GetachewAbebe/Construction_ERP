@@ -30,32 +30,45 @@
 
     <div class="sidebar-nav flex-grow-1 pt-2">
       @php
-          $unreadNotifications = Auth::user()->unreadNotifications;
-          $totalUnread = $unreadNotifications->count();
-          $hrCount     = Auth::user()->getUnreadCountByModule('hr');
-          $invCount    = Auth::user()->getUnreadCountByModule('inventory');
-          $finCount    = Auth::user()->getUnreadCountByModule('finance');
-
-          // Granular counts for sub-menus
-          $leaveReqCount   = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') === 'leave_request')->count();
-          $inventoryReqCount = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') === 'inventory_request')->count();
-          $expenseReqCount = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') === 'expense_request')->count();
-
-          // Live Data Metrics (Safe for CLI/Boot)
+          // Initialize defaults for safe rendering
+          $unreadNotifications = collect();
+          $totalUnread = 0;
+          $hrCount = 0;
+          $invCount = 0;
+          $finCount = 0;
+          $leaveReqCount = 0;
+          $inventoryReqCount = 0;
+          $expenseReqCount = 0;
           $totalEmployees = 0;
           $pendingLeaves = 0;
           $attendanceStatus = 0;
 
-          if (! app()->runningInConsole()) {
+          // Only attempt database queries if authenticated and NOT in CLI (e.g. migration)
+          if (Auth::check() && ! app()->runningInConsole()) {
               try {
+                  $user = Auth::user();
+                  $unreadNotifications = $user->unreadNotifications;
+                  $totalUnread = $unreadNotifications->count();
+                  
+                  // Use robust counts from model helpers
+                  $hrCount  = $user->getUnreadCountByModule('hr');
+                  $invCount = $user->getUnreadCountByModule('inventory');
+                  $finCount = $user->getUnreadCountByModule('finance');
+
+                  // Type-specific counts for badges
+                  $leaveReqCount = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') === 'leave_request')->count();
+                  $inventoryReqCount = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') === 'inventory_request')->count();
+                  $expenseReqCount = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') === 'expense_request')->count();
+
+                  // Live Metrics (Protected)
                   $totalEmployees = \App\Models\Employee::count();
                   $pendingLeaves = \App\Models\LeaveRequest::where('status', 'pending')->count();
                   
-                  // Today's attendance summary
                   $todayAttendanceRecords = \App\Models\Attendance::today()->count();
                   $attendanceStatus = $totalEmployees > 0 ? round(($todayAttendanceRecords / $totalEmployees) * 100) : 0;
               } catch (\Throwable $e) {
-                  // Fail gracefully during migrations or if DB is down
+                  // If database is unavailable, leave defaults at 0
+                  // This prevents 500 errors on the Login page and during pushes.
               }
           }
       @endphp
