@@ -15,9 +15,11 @@ if (! file_exists($autoloader)) {
     header('Retry-After: 300'); // 5 minutes
     $vendorDir = __DIR__.'/../vendor';
     $vendorExists = is_dir($vendorDir) ? 'Yes' : 'No';
+    $vendorFiles = is_dir($vendorDir) ? implode(', ', array_slice(scandir($vendorDir), 0, 10)) : 'N/A';
+    $composerFound = shell_exec('composer --version') ? 'Yes' : 'No';
     echo '<h1>System Maintenance</h1>';
     echo '<p>The application is currently rebuilding its dependencies. Please refresh in a few moments.</p>';
-    echo '<!-- Diagnostics: Autoloader: '.$autoloader.' | Vendor exists: '.$vendorExists.' -->';
+    echo '<!-- Diagnostics: Autoloader: '.$autoloader.' | Vendor exists: '.$vendorExists.' | Composer Found: '.$composerFound.' | Vendor Contents (partial): '.$vendorFiles.' -->';
     exit;
 }
 

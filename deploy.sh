@@ -25,21 +25,29 @@ rm -f bootstrap/cache/*.php
 
 # 4. Rebuild dependencies
 echo "📦 Updating dependencies..."
+
+# Ensure we have a composer binary
+if ! command -v composer &> /dev/null && [ ! -f "composer.phar" ]; then
+    echo "📥 Composer not found. Downloading composer.phar..."
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+    php composer-setup.php --quiet
+    php -r "unlink('composer-setup.php');"
+fi
+
+# Determine composer command
+if [ -f "composer.phar" ]; then
+    COMPOSER="php composer.phar"
+else
+    COMPOSER="composer"
+fi
+
 # We use a subshell to catch failures and attempt a clean rebuild if it fails
 (
-  if [ -f "composer.phar" ]; then
-      php composer.phar install --no-dev --optimize-autoloader
-  else
-      composer install --no-dev --optimize-autoloader
-  fi
+  $COMPOSER install --no-dev --optimize-autoloader
 ) || (
   echo "⚠️ Composer install failed. Attempting a clean rebuild (purging vendor)..."
   rm -rf vendor
-  if [ -f "composer.phar" ]; then
-      php composer.phar install --no-dev --optimize-autoloader --no-scripts
-  else
-      composer install --no-dev --optimize-autoloader --no-scripts
-  fi
+  $COMPOSER install --no-dev --optimize-autoloader --no-scripts
 )
 
 # 5. Run migrations (CRITICAL STEP)
