@@ -203,5 +203,7 @@ class InventoryLoanController extends Controller
             $loan->save();
         });
 
+        return redirect()->route('inventory.loans.index')
+            ->with('success', 'Loan successfully marked as returned.');
     }
 }
