@@ -9,6 +9,10 @@ set -e
 
 echo "🚀 Initiating Robust Deployment..."
 
+# Set HOME and COMPOSER_HOME for environments where it's missing (e.g. shell_exec)
+export HOME=/home/natanewn
+export COMPOSER_HOME=$HOME/.composer
+
 # 1. Enter Maintenance Mode
 # This prevents users from hitting the site while it's in a transitional state.
 # We ignore failures here in case the app is already "broken".
