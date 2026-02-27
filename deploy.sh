@@ -1,35 +1,48 @@
 #!/bin/bash
 
-# --- NATANEM ERP SAFE DEPLOYMENT SCRIPT ---
-# This script ensures a clean deployment by bypassing common 
-# bootstrap crashes and clearing stale caches before updating.
+# --- NATANEM ERP ROBUST DEPLOYMENT ENGINE ---
+# This script ensures high availability and prevents deployment crashes.
+# It uses maintenance mode and rigorous error checking.
 
-echo "🚀 Starting Safe Deployment..."
+# Exit immediately if a command exits with a non-zero status.
+set -e
 
-# 1. Force clear bootstrap caches (Bypasses Artisan crashes)
-echo "🧹 Clearing bootstrap caches..."
-rm -f bootstrap/cache/*.php
+echo "🚀 Initiating Robust Deployment..."
+
+# 1. Enter Maintenance Mode
+# This prevents users from hitting the site while it's in a transitional state.
+# We ignore failures here in case the app is already "broken".
+echo "🚧 Entering maintenance mode..."
+php artisan down || true
 
 # 2. Pull latest code
 echo "📥 Pulling latest code from GitHub..."
 git pull origin main
 
-# 3. Clean and rebuild dependencies
-# We use --no-dev to keep the server light and prevent autoloader pollution.
-echo "📦 Rebuilding dependencies..."
+# 3. Clean stale caches
+echo "🧹 Clearing old bootstrap/cache..."
+rm -f bootstrap/cache/*.php
+
+# 4. Rebuild dependencies
+echo "📦 Updating dependencies..."
 if [ -f "composer.phar" ]; then
     php composer.phar install --no-dev --optimize-autoloader --no-scripts
 else
     composer install --no-dev --optimize-autoloader --no-scripts
 fi
 
-# 4. Run migrations
+# 5. Run migrations (CRITICAL STEP)
+# We run this BEFORE optimization so the app is schema-ready.
 echo "🗄️ Running database migrations..."
 php artisan migrate --force
 
-# 5. Final optimization
-echo "⚡ Optimizing application..."
+# 6. Final Optimization & Warmup
+echo "⚡ Generating production caches..."
 php artisan optimize:clear
 php artisan optimize
 
-echo "✅ Deployment Successful! Your website should be back online."
+# 7. Exit Maintenance Mode
+echo "🌐 Bringing system back online..."
+php artisan up
+
+echo "✅ Deployment Successful! Natanem ERP is stable and live."

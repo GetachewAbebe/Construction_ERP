@@ -41,13 +41,23 @@
           $inventoryReqCount = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') === 'inventory_request')->count();
           $expenseReqCount = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') === 'expense_request')->count();
 
-          // Live Data Metrics
-          $totalEmployees = \App\Models\Employee::count();
-          $pendingLeaves = \App\Models\LeaveRequest::where('status', 'pending')->count();
-          
-          // Today's attendance summary
-          $todayAttendanceRecords = \App\Models\Attendance::today()->count();
-          $attendanceStatus = $totalEmployees > 0 ? round(($todayAttendanceRecords / $totalEmployees) * 100) : 0;
+          // Live Data Metrics (Safe for CLI/Boot)
+          $totalEmployees = 0;
+          $pendingLeaves = 0;
+          $attendanceStatus = 0;
+
+          if (! app()->runningInConsole()) {
+              try {
+                  $totalEmployees = \App\Models\Employee::count();
+                  $pendingLeaves = \App\Models\LeaveRequest::where('status', 'pending')->count();
+                  
+                  // Today's attendance summary
+                  $todayAttendanceRecords = \App\Models\Attendance::today()->count();
+                  $attendanceStatus = $totalEmployees > 0 ? round(($todayAttendanceRecords / $totalEmployees) * 100) : 0;
+              } catch (\Throwable $e) {
+                  // Fail gracefully during migrations or if DB is down
+              }
+          }
       @endphp
 
 
