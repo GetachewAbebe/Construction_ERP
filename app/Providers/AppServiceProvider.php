@@ -19,7 +19,7 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrapFive();
 
         // --- PRODUCTION HARDENING: Rate Limiters ---
-        
+
         // 1. Global API Rate Limiter
         \Illuminate\Support\Facades\RateLimiter::for('api', function (\Illuminate\Http\Request $request) {
             return \Illuminate\Cache\RateLimiting\Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
@@ -36,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // --- ACCESS CONTROL: Gates ---
-        
+
         // Super Admin Bypass
         Gate::before(function ($user, $ability) {
             return ($user->hasRole('Administrator') || $user->hasRole('Admin')) ? true : null;
@@ -44,7 +44,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Attendance Management
         Gate::define('manage-attendance', function ($user) {
-            return $user->hasRole('HumanResourceManager') || 
+            return $user->hasRole('HumanResourceManager') ||
                    $user->hasRole('Human Resource Manager');
         });
     }

@@ -14,7 +14,7 @@ class AuthenticationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create roles needed for login redirects
         Role::create(['name' => 'Administrator', 'guard_name' => 'web']);
         Role::create(['name' => 'Human Resource Manager', 'guard_name' => 'web']);

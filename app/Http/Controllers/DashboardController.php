@@ -31,7 +31,7 @@ class DashboardController extends Controller
         $totalUsers = \App\Models\User::count();
         $totalProjects = Project::count();
         $totalEmployees = Employee::count();
-        
+
         // 3. Activity Stream
         $activities = \App\Models\ActivityLog::with('user')
             ->latest()

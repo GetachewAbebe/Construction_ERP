@@ -12,8 +12,11 @@ class Attendance extends Model
 
     // ---- SESSION STATUS CONSTANTS ----
     public const SESSION_PRESENT = 'present';
+
     public const SESSION_ABSENT = 'absent';
+
     public const SESSION_LEAVE = 'leave';
+
     public const SESSION_LATE = 'late';
 
     protected $fillable = [
@@ -86,6 +89,7 @@ class Attendance extends Model
     public function scopeSessionStatus($query, string $session, string $status)
     {
         $column = $session === 'morning' ? 'morning_status' : 'afternoon_status';
+
         return $query->where($column, $status);
     }
 
@@ -151,15 +155,19 @@ class Attendance extends Model
     }
 
     /**
-     * Calculate session-based "Payable Weight" 
+     * Calculate session-based "Payable Weight"
      * e.g. AM Present + PM Absent = 0.5 Credits
      */
     public function calculateCredits(): float
     {
         $credit = 0.0;
-        if (in_array($this->morning_status, [self::SESSION_PRESENT, self::SESSION_LATE])) $credit += 0.5;
-        if ($this->afternoon_status === self::SESSION_PRESENT) $credit += 0.5;
-        
+        if (in_array($this->morning_status, [self::SESSION_PRESENT, self::SESSION_LATE])) {
+            $credit += 0.5;
+        }
+        if ($this->afternoon_status === self::SESSION_PRESENT) {
+            $credit += 0.5;
+        }
+
         return $credit;
     }
 }

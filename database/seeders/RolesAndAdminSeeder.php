@@ -31,7 +31,7 @@ class RolesAndAdminSeeder extends Seeder
                 'middle_name' => '',
                 'password' => Hash::make($pass),
                 'role' => 'Administrator',
-                'email_verified_at' => now()
+                'email_verified_at' => now(),
             ]
         );
 

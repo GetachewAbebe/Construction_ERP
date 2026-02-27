@@ -14,7 +14,7 @@ class ProfileTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create role needed for profile redirects
         Role::create(['name' => 'Administrator', 'guard_name' => 'web']);
     }

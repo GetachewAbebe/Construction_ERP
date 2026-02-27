@@ -5,8 +5,6 @@ namespace App\Services;
 use App\Models\Attendance;
 use App\Models\Employee;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class AttendanceService
 {
@@ -24,7 +22,7 @@ class AttendanceService
             ->count();
 
         $totalEmployees = Employee::count();
-        
+
         return [
             'morning_present' => $presentAM,
             'afternoon_present' => $presentPM,
@@ -46,13 +44,13 @@ class AttendanceService
         $attendance->morning_status = $morning;
         $attendance->afternoon_status = $afternoon;
         $attendance->note = $note;
-        
+
         // Auto-set clock times if missing for today's date
         if ($date->isToday()) {
-            if (in_array($morning, [Attendance::SESSION_PRESENT, Attendance::SESSION_LATE]) && !$attendance->clock_in) {
+            if (in_array($morning, [Attendance::SESSION_PRESENT, Attendance::SESSION_LATE]) && ! $attendance->clock_in) {
                 $attendance->clock_in = Carbon::now();
             }
-            if (in_array($afternoon, [Attendance::SESSION_PRESENT]) && !$attendance->clock_out) {
+            if (in_array($afternoon, [Attendance::SESSION_PRESENT]) && ! $attendance->clock_out) {
                 $attendance->clock_out = Carbon::now();
             }
         }
@@ -79,10 +77,10 @@ class AttendanceService
         }
 
         $attendance->clock_in = $now;
-        
+
         // Threshold: 08:30 AM
         $threshold = (clone $now)->setTime(8, 30, 0);
-        
+
         if ($now->lte($threshold)) {
             $attendance->morning_status = Attendance::SESSION_PRESENT;
         } else {
@@ -133,10 +131,10 @@ class AttendanceService
         if ($session === 'morning') {
             $attendance->morning_status = $status;
             if (in_array($status, [Attendance::SESSION_PRESENT, Attendance::SESSION_LATE])) {
-                // If it's today, we want the CURRENT time. 
+                // If it's today, we want the CURRENT time.
                 // We overwrite if it's currently null or midnight (default from seeder).
                 if ($date->isToday()) {
-                    if (!$attendance->clock_in || $attendance->clock_in->format('H:i:s') === '00:00:00') {
+                    if (! $attendance->clock_in || $attendance->clock_in->format('H:i:s') === '00:00:00') {
                         $attendance->clock_in = Carbon::now();
                     }
                 } else {
@@ -151,7 +149,7 @@ class AttendanceService
             $attendance->afternoon_status = $status;
             if ($status === Attendance::SESSION_PRESENT) {
                 if ($date->isToday()) {
-                    if (!$attendance->clock_out || $attendance->clock_out->format('H:i:s') === '00:00:00') {
+                    if (! $attendance->clock_out || $attendance->clock_out->format('H:i:s') === '00:00:00') {
                         $attendance->clock_out = Carbon::now();
                     }
                 } else {
@@ -199,22 +197,22 @@ class AttendanceService
         $attendancesGrouped = $attendances->groupBy('employee_id');
 
         $perEmployee = $allEmployees->map(function (Employee $employee) use ($attendancesGrouped) {
-                $rows = $attendancesGrouped->get($employee->id, collect());
-                
-                $totalCredits = $rows->sum('total_credit');
-                $records = $rows->count();
+            $rows = $attendancesGrouped->get($employee->id, collect());
 
-                $monthlySalary = (float) ($employee->salary ?: 0);
-                $dailyRate = $monthlySalary / 22; 
-                $payableAmount = $totalCredits * $dailyRate;
+            $totalCredits = $rows->sum('total_credit');
+            $records = $rows->count();
 
-                return [
-                    'employee' => $employee,
-                    'total_credits' => $totalCredits,
-                    'records' => $records,
-                    'payable_amount' => $payableAmount,
-                ];
-            })
+            $monthlySalary = (float) ($employee->salary ?: 0);
+            $dailyRate = $monthlySalary / 22;
+            $payableAmount = $totalCredits * $dailyRate;
+
+            return [
+                'employee' => $employee,
+                'total_credits' => $totalCredits,
+                'records' => $records,
+                'payable_amount' => $payableAmount,
+            ];
+        })
             ->sortBy(function ($row) {
                 return [
                     $row['employee']->department,
@@ -243,7 +241,7 @@ class AttendanceService
 
         $totalCredits = $attendances->sum('total_credit');
         $baseSalary = (float) ($employee->salary ?: 0);
-        $dailyRate = $baseSalary / 22; 
+        $dailyRate = $baseSalary / 22;
         $payableAmount = $totalCredits * $dailyRate;
 
         return [
@@ -252,7 +250,7 @@ class AttendanceService
             'payable_amount' => $payableAmount,
             'start_date' => $startDate,
             'end_date' => $endDate,
-            'attendances' => $attendances
+            'attendances' => $attendances,
         ];
     }
 }

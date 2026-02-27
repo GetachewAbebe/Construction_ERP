@@ -2,14 +2,14 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use App\Models\Employee;
-use App\Models\Project;
 use App\Models\Expense;
 use App\Models\InventoryItem;
+use App\Models\Project;
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class ComprehensiveSeeder extends Seeder
 {
@@ -41,7 +41,7 @@ class ComprehensiveSeeder extends Seeder
                 'password' => 'HumanResource@123',
                 'role' => 'HumanResourceManager',
                 'dept' => 'Human Resources',
-                'pos' => 'Human Resource Manager'
+                'pos' => 'Human Resource Manager',
             ],
             [
                 'first_name' => 'Inventory',
@@ -50,7 +50,7 @@ class ComprehensiveSeeder extends Seeder
                 'password' => 'InventoryManager@123',
                 'role' => 'InventoryManager',
                 'dept' => 'Logistics',
-                'pos' => 'Inventory Manager'
+                'pos' => 'Inventory Manager',
             ],
             [
                 'first_name' => 'Finance',
@@ -59,7 +59,7 @@ class ComprehensiveSeeder extends Seeder
                 'password' => 'FinancialManager@123',
                 'role' => 'FinancialManager',
                 'dept' => 'Finance',
-                'pos' => 'Financial Manager'
+                'pos' => 'Financial Manager',
             ],
         ];
 
@@ -145,7 +145,7 @@ class ComprehensiveSeeder extends Seeder
                 'category' => collect(['materials', 'labor', 'transport', 'equipment', 'utility', 'other'])->random(),
                 'description' => 'Sample expense.',
                 'expense_date' => now()->subDays(rand(1, 30)),
-                'reference_no' => 'INV-' . rand(10000, 99999),
+                'reference_no' => 'INV-'.rand(10000, 99999),
             ]);
         }
     }

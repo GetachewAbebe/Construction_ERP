@@ -15,7 +15,7 @@ return new class extends Migration
             $table->enum('morning_status', ['present', 'absent', 'leave'])->default('present')->after('date');
             $table->enum('afternoon_status', ['present', 'absent', 'leave'])->default('present')->after('morning_status');
             $table->decimal('total_credit', 3, 2)->default(1.00)->after('afternoon_status');
-            
+
             // Note: clock_in and clock_out now become optional for back-office entry
             $table->timestamp('clock_in')->nullable()->change();
             $table->timestamp('clock_out')->nullable()->change();

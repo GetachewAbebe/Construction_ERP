@@ -77,7 +77,7 @@ class EmployeeController extends Controller
     public function storeDepartment(Request $request)
     {
         $request->validate(['name' => 'required|string|max:255|unique:departments,name']);
-        
+
         $this->hrService->getOrCreateDepartment($request->name);
 
         return redirect()->route('hr.departments.index')->with('success', 'Department added to organizational structure.');
@@ -103,7 +103,7 @@ class EmployeeController extends Controller
     public function storePosition(Request $request)
     {
         $request->validate(['title' => 'required|string|max:255|unique:positions,title']);
-        
+
         $this->hrService->getOrCreatePosition($request->title);
 
         return redirect()->route('hr.positions.index')->with('success', 'Position designation established.');

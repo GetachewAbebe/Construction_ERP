@@ -81,13 +81,13 @@ class AttendanceController extends Controller
 
         $date = $request->filled('date') ? Carbon::parse($request->date) : Carbon::today();
         $employees = Employee::orderBy('first_name')->get();
-        
+
         $attendances = Attendance::whereDate('date', $date)->get()->keyBy('employee_id');
 
         return view('hr.attendance.daily-sheet', [
             'date' => $date,
             'employees' => $employees,
-            'attendances' => $attendances
+            'attendances' => $attendances,
         ]);
     }
 
@@ -141,7 +141,7 @@ class AttendanceController extends Controller
         $saturday = (clone $monday)->addDays(5);
 
         $employees = Employee::orderBy('first_name')->get();
-        
+
         // Fetch all attendance for these employees within the week range
         $attendances = Attendance::whereBetween('date', [$monday->toDateString(), $saturday->toDateString()])
             ->get()
@@ -154,7 +154,7 @@ class AttendanceController extends Controller
             'saturday' => $saturday,
             'employees' => $employees,
             'attendances' => $attendances,
-            'date' => $date
+            'date' => $date,
         ]);
     }
 
@@ -195,7 +195,7 @@ class AttendanceController extends Controller
         });
 
         return redirect()->route('hr.attendance.index')
-            ->with('success', "Weekly Batch Attendance has been validated and synchronized.");
+            ->with('success', 'Weekly Batch Attendance has been validated and synchronized.');
     }
 
     /**
@@ -209,17 +209,17 @@ class AttendanceController extends Controller
             'employee_id' => 'required|exists:employees,id',
             'date' => 'required|date',
             'session' => 'required|in:morning,afternoon',
-            'action' => 'required|in:check-in,check-out,leave,reset'
+            'action' => 'required|in:check-in,check-out,leave,reset',
         ]);
 
         $employeeId = $request->employee_id;
         $date = Carbon::parse($request->date);
 
         // --- NEW: Strict Date Lock ---
-        if (!$date->isToday()) {
+        if (! $date->isToday()) {
             return response()->json([
-                'success' => false, 
-                'message' => 'Attendance can only be managed for the current day (' . Carbon::today()->format('M d, Y') . ').'
+                'success' => false,
+                'message' => 'Attendance can only be managed for the current day ('.Carbon::today()->format('M d, Y').').',
             ], 422);
         }
 
@@ -250,7 +250,7 @@ class AttendanceController extends Controller
                 $newStatus = Attendance::SESSION_ABSENT;
             } else {
                 if ($date->isToday()) {
-                    if (!$att) {
+                    if (! $att) {
                         $att = $this->attendanceService->autoCheckIn(Employee::find($employeeId), $date);
                     }
                     $tempAtt = $this->attendanceService->autoCheckOut($att, $date);
@@ -272,7 +272,7 @@ class AttendanceController extends Controller
             'success' => true,
             'status' => $session === 'morning' ? $attendance->morning_status : $attendance->afternoon_status,
             'time' => ($session === 'morning' ? ($attendance->clock_in ? $attendance->clock_in->format('H:i') : null) : ($attendance->clock_out ? $attendance->clock_out->format('H:i') : null)),
-            'total_credit' => $attendance->total_credit
+            'total_credit' => $attendance->total_credit,
         ]);
     }
 
@@ -285,20 +285,20 @@ class AttendanceController extends Controller
 
         // Default to current week (starting Monday)
         $date = $request->filled('week_start') ? Carbon::parse($request->week_start) : Carbon::now()->startOfWeek();
-        
+
         $employees = Employee::orderBy('first_name')->get();
         $analysis = [];
 
         foreach ($employees as $employee) {
             $analysis[] = $this->attendanceService->calculateWeeklySalaryAnalysis($employee, $date);
             // We'll wrap the employee in the result
-            $analysis[count($analysis)-1]['employee'] = $employee;
+            $analysis[count($analysis) - 1]['employee'] = $employee;
         }
 
         return view('hr.attendance.weekly-salary', [
             'weekStart' => $date,
             'weekEnd' => (clone $date)->addDays(6),
-            'analysis' => $analysis
+            'analysis' => $analysis,
         ]);
     }
 
@@ -329,7 +329,7 @@ class AttendanceController extends Controller
             // Record attendance via automated rule-based service
             $attendance = $this->attendanceService->autoCheckIn($employee);
 
-            return back()->with('success', "Access granted: {$employee->name} checked in successfully at ".$attendance->clock_in->format('H:i') . " (" . strtoupper($attendance->morning_status) . ")");
+            return back()->with('success', "Access granted: {$employee->name} checked in successfully at ".$attendance->clock_in->format('H:i').' ('.strtoupper($attendance->morning_status).')');
 
         } catch (\Exception $e) {
             \Log::error('Attendance check-in failed: '.$e->getMessage());
@@ -359,7 +359,7 @@ class AttendanceController extends Controller
 
         $this->attendanceService->autoCheckOut($attendance);
 
-        return back()->with('success', 'Checked out successfully at ' . $attendance->clock_out->format('H:i') . " (" . strtoupper($attendance->afternoon_status) . ")");
+        return back()->with('success', 'Checked out successfully at '.$attendance->clock_out->format('H:i').' ('.strtoupper($attendance->afternoon_status).')');
     }
 
     /**
