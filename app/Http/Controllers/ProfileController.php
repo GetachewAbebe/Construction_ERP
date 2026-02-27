@@ -17,6 +17,7 @@ class ProfileController extends Controller
     public function show()
     {
         $user = Auth::user();
+
         return view('profile.show', compact('user'));
     }
 
@@ -26,6 +27,7 @@ class ProfileController extends Controller
     public function edit()
     {
         $user = Auth::user();
+
         return view('profile.edit', compact('user'));
     }
 
@@ -47,7 +49,7 @@ class ProfileController extends Controller
         // Handle Name Parts
         $parts = explode(' ', $request->name);
         $user->first_name = array_shift($parts);
-        $user->last_name  = array_pop($parts) ?: '';
+        $user->last_name = array_pop($parts) ?: '';
         $user->middle_name = implode(' ', $parts);
 
         $user->email = $request->email;
@@ -61,30 +63,30 @@ class ProfileController extends Controller
         $user->save();
 
         // Unified Identity Synchronization (Ensure link exists)
-    $employee = $user->employee;
-    
-    // Auto-repair link if it's missing (e.g. from legacy import or case mismatch)
-    if (!$employee) {
-        $employee = \App\Models\Employee::where('email', 'ILIKE', $user->email)->first();
-        if ($employee) {
-            $employee->update(['user_id' => $user->id]);
-        }
-    }
+        $employee = $user->employee;
 
-    // Handle Profile Picture
-    if ($request->hasFile('profile_picture')) {
-        if ($employee) {
-            // Delete old picture if it exists
-            if ($employee->profile_picture && Storage::disk('public')->exists($employee->profile_picture)) {
-                Storage::disk('public')->delete($employee->profile_picture);
+        // Auto-repair link if it's missing (e.g. from legacy import or case mismatch)
+        if (! $employee) {
+            $employee = \App\Models\Employee::where('email', $user->email)->first();
+            if ($employee) {
+                $employee->update(['user_id' => $user->id]);
             }
-            
-            $path = $request->file('profile_picture')->store('employees', 'public');
-            // Ensure forward slashes for cross-platform compatibility
-            $standardPath = str_replace('\\', '/', $path);
-            $employee->update(['profile_picture' => $standardPath]);
         }
-    }
+
+        // Handle Profile Picture
+        if ($request->hasFile('profile_picture')) {
+            if ($employee) {
+                // Delete old picture if it exists
+                if ($employee->profile_picture && Storage::disk('public')->exists($employee->profile_picture)) {
+                    Storage::disk('public')->delete($employee->profile_picture);
+                }
+
+                $path = $request->file('profile_picture')->store('employees', 'public');
+                // Ensure forward slashes for cross-platform compatibility
+                $standardPath = str_replace('\\', '/', $path);
+                $employee->update(['profile_picture' => $standardPath]);
+            }
+        }
 
         return redirect()->route($user->getProfileRouteName('show'))->with('success', 'Profile identity updated successfully.');
     }

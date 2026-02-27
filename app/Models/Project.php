@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Traits\LogsActivity;
 
 class Project extends Model
 {
-    use SoftDeletes, HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -23,8 +23,8 @@ class Project extends Model
 
     protected $casts = [
         'start_date' => 'date',
-        'end_date'   => 'date',
-        'budget'     => 'decimal:2',
+        'end_date' => 'date',
+        'budget' => 'decimal:2',
     ];
 
     public function expenses()
@@ -39,7 +39,10 @@ class Project extends Model
 
     public function getBudgetUsagePercentageAttribute()
     {
-        if ($this->budget <= 0) return 0;
+        if ($this->budget <= 0) {
+            return 0;
+        }
+
         return round(($this->total_expenses / $this->budget) * 100, 2);
     }
 }

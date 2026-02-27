@@ -16,7 +16,7 @@ class StoreEmployeeRequest extends FormRequest
             'HumanResourceManager',
             'Human Resource Manager',
             'Administrator',
-            'Admin'
+            'Admin',
         ]);
     }
 
@@ -26,16 +26,16 @@ class StoreEmployeeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_name'      => ['required', 'string', 'max:120'],
-            'last_name'       => ['required', 'string', 'max:120'],
-            'email'           => ['required', 'email', 'max:255', 'unique:employees,email'],
-            'phone'           => ['nullable', 'string', 'max:20'],
+            'first_name' => ['required', 'string', 'max:120'],
+            'last_name' => ['required', 'string', 'max:120'],
+            'email' => ['required', 'email', 'max:255', 'unique:employees,email'],
+            'phone' => ['nullable', 'string', 'max:20'],
             'profile_picture' => ['nullable', 'image', 'max:2048'], // Max 2MB
-            'hire_date'       => ['nullable', 'date'],
-            'salary'          => ['nullable', 'numeric'],
-            'status'          => ['required', 'in:Active,On Leave,Terminated,Resigned'],
+            'hire_date' => ['nullable', 'date'],
+            'salary' => ['nullable', 'numeric'],
+            'status' => ['required', 'in:Active,On Leave,Terminated,Resigned'],
             'department_name' => ['nullable', 'string', 'max:255'],
-            'position_title'  => ['nullable', 'string', 'max:255'],
+            'position_title' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

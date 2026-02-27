@@ -11,7 +11,7 @@ class SystemSettingsController extends Controller
     public function index()
     {
         $settings = SystemSetting::all()->pluck('value', 'key');
-        
+
         // Ensure defaults if missing
         $defaults = [
             'company_name' => 'Natanem Engineering',
@@ -25,7 +25,7 @@ class SystemSettingsController extends Controller
         ];
 
         foreach ($defaults as $key => $val) {
-            if (!isset($settings[$key])) {
+            if (! isset($settings[$key])) {
                 $settings[$key] = $val;
             }
         }

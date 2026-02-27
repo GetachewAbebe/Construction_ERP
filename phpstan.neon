@@ -1,0 +1,19 @@
+includes:
+    - phpstan-baseline.neon
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+    - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+
+parameters:
+
+    paths:
+        - app/
+        - database/
+        - routes/
+        - tests/
+
+    # Level 9 is the highest level
+    level: 5
+
+    excludePaths:
+        - ./*/*/FileToBeExcluded.php

@@ -68,7 +68,7 @@
                         <h2 class="fw-800 text-erp-deep tracking-tight mb-0">Login</h2>
                     </div>
 
-                        <form method="POST" action="{{ route('login') }}" class="mb-3">
+                        <form method="POST" action="{{ route('login', absolute: false) }}" class="mb-3">
                             @csrf
 
                             <div class="mb-4">

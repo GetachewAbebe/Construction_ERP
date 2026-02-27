@@ -13,7 +13,7 @@ class StoreInventoryLoanRequest extends FormRequest
             'InventoryManager',
             'Inventory Manager',
             'Administrator',
-            'Admin'
+            'Admin',
         ]);
     }
 
@@ -21,11 +21,11 @@ class StoreInventoryLoanRequest extends FormRequest
     {
         return [
             'inventory_item_id' => ['required', 'exists:inventory_items,id'],
-            'employee_id'       => ['required', 'exists:employees,id'],
-            'quantity'          => ['required', 'integer', 'min:1'],
-            'requested_at'      => ['nullable', 'date'],
-            'due_date'          => ['nullable', 'date'],
-            'notes'             => ['nullable', 'string', 'max:2000'],
+            'employee_id' => ['required', 'exists:employees,id'],
+            'quantity' => ['required', 'integer', 'min:1'],
+            'requested_at' => ['nullable', 'date'],
+            'due_date' => ['nullable', 'date'],
+            'notes' => ['nullable', 'string', 'max:2000'],
         ];
     }
 }

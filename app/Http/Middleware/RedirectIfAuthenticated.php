@@ -33,11 +33,11 @@ class RedirectIfAuthenticated
         $normalized = strtolower(trim($rawRole));
 
         return match ($normalized) {
-            'administrator'        => route('admin.dashboard'),
+            'administrator' => route('admin.dashboard'),
             'humanresourcemanager' => route('hr.dashboard'),
-            'inventorymanager'     => route('inventory.dashboard'),
-            'financialmanager'     => route('finance.dashboard'),
-            default                => route('home'),
+            'inventorymanager' => route('inventory.dashboard'),
+            'financialmanager' => route('finance.dashboard'),
+            default => route('home'),
         };
     }
 }

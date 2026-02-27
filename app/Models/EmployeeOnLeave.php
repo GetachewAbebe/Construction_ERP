@@ -10,13 +10,13 @@ class EmployeeOnLeave extends Model
     protected $table = 'employees_on_leave';
 
     protected $fillable = [
-        'employee_id','start_date','end_date','reason','approved_by','approved_at'
+        'employee_id', 'start_date', 'end_date', 'reason', 'approved_by', 'approved_at',
     ];
 
     protected $casts = [
         'start_date' => 'date',
-        'end_date'   => 'date',
-        'approved_at'=> 'datetime',
+        'end_date' => 'date',
+        'approved_at' => 'datetime',
     ];
 
     public function employee(): BelongsTo

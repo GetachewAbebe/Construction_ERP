@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class InventoryItem extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity;
+    use HasFactory, LogsActivity, SoftDeletes;
 
     protected $table = 'inventory_items';
 
@@ -35,7 +35,7 @@ class InventoryItem extends Model
      * Attribute casting.
      */
     protected $casts = [
-        'in_date'  => 'date',
+        'in_date' => 'date',
         'quantity' => 'integer',
         'classification_id' => 'integer',
     ];

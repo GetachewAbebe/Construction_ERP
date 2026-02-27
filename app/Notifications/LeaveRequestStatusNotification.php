@@ -2,15 +2,16 @@
 
 namespace App\Notifications;
 
+use App\Models\LeaveRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
-use App\Models\LeaveRequest;
 
 class LeaveRequestStatusNotification extends Notification
 {
     use Queueable;
 
     protected $leaveRequest;
+
     protected $type;
 
     public function __construct(LeaveRequest $leaveRequest, $type = 'status_change')
@@ -28,10 +29,10 @@ class LeaveRequestStatusNotification extends Notification
     {
         if ($this->type === 'request') {
             // Safely get name: Try Employee User -> Employee Name -> Fallback
-            $name = $this->leaveRequest->employee?->user?->name 
-                    ?? $this->leaveRequest->employee?->first_name . ' ' . $this->leaveRequest->employee?->last_name 
+            $name = $this->leaveRequest->employee?->user?->name
+                    ?? $this->leaveRequest->employee?->first_name.' '.$this->leaveRequest->employee?->last_name
                     ?? 'An employee';
-                    
+
             return [
                 'type' => 'leave_request',
                 'title' => 'New Leave Request',
@@ -40,28 +41,29 @@ class LeaveRequestStatusNotification extends Notification
                 'url' => route('admin.requests.leave-approvals.index'),
                 'icon' => 'bi-calendar-event',
                 'color' => 'primary',
-                'priority' => $this->leaveRequest->start_date->diffInDays($this->leaveRequest->end_date) > 5 ? 'high' : 'medium'
+                'priority' => $this->leaveRequest->start_date->diffInDays($this->leaveRequest->end_date) > 5 ? 'high' : 'medium',
             ];
         }
 
         if ($this->type === 'status_update') {
-            $name = $this->leaveRequest->employee?->user?->name 
-                    ?? $this->leaveRequest->employee?->first_name . ' ' . $this->leaveRequest->employee?->last_name 
+            $name = $this->leaveRequest->employee?->user?->name
+                    ?? $this->leaveRequest->employee?->first_name.' '.$this->leaveRequest->employee?->last_name
                     ?? 'An employee';
 
             return [
                 'type' => 'leave_status',
-                'title' => "Leave Request " . $this->leaveRequest->status,
+                'title' => 'Leave Request '.$this->leaveRequest->status,
                 'message' => "{$name}'s leave request has been {$this->leaveRequest->status}.",
                 'leave_id' => $this->leaveRequest->id,
                 'url' => route('hr.leaves.index'),
                 'icon' => $this->leaveRequest->status === 'Approved' ? 'bi-calendar-check' : 'bi-calendar-x',
                 'color' => $this->leaveRequest->status === 'Approved' ? 'success' : 'danger',
-                'priority' => 'medium'
+                'priority' => 'medium',
             ];
         }
 
         $color = $this->leaveRequest->status === 'Approved' ? 'success' : 'danger';
+
         return [
             'type' => 'leave_status',
             'title' => "Leave Request {$this->leaveRequest->status}",
@@ -70,7 +72,7 @@ class LeaveRequestStatusNotification extends Notification
             'url' => route('hr.leaves.index'),
             'icon' => $this->leaveRequest->status === 'Approved' ? 'bi-calendar-check' : 'bi-calendar-x',
             'color' => $color,
-            'priority' => 'medium'
+            'priority' => 'medium',
         ];
     }
 }

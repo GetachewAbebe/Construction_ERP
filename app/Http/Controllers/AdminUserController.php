@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 use Spatie\Permission\Models\Role;
 
@@ -36,7 +34,7 @@ class AdminUserController extends Controller
             abort(403, 'Unauthorized.');
         }
 
-        $rawRole  = $user->role ?? '';
+        $rawRole = $user->role ?? '';
         $roleSlug = strtolower(trim((string) $rawRole));
 
         if ($roleSlug !== 'administrator') {
@@ -80,6 +78,7 @@ class AdminUserController extends Controller
         if ($request->filled('employee_id')) {
             $employee = \App\Models\Employee::find($request->employee_id);
         }
+
         return view('admin.users.create', compact('roles', 'employee'));
     }
 
@@ -92,21 +91,21 @@ class AdminUserController extends Controller
 
         $parts = explode(' ', $validated['name']);
         $firstName = array_shift($parts);
-        $lastName  = array_pop($parts);
+        $lastName = array_pop($parts);
         $middleName = implode(' ', $parts);
 
         $user = User::create([
-            'name'              => $validated['name'],
-            'first_name'        => $firstName,
-            'middle_name'       => $middleName,
-            'last_name'         => $lastName ?: 'User',
-            'email'             => $validated['email'],
-            'password'          => Hash::make($validated['password']),
-            'role'              => $validated['role'],
-            'phone_number'      => $request->phone_number,
-            'position'          => $request->position,
-            'department'        => $request->department,
-            'status'            => $request->status ?? 'Active',
+            'name' => $validated['name'],
+            'first_name' => $firstName,
+            'middle_name' => $middleName,
+            'last_name' => $lastName ?: 'User',
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role' => $validated['role'],
+            'phone_number' => $request->phone_number,
+            'position' => $request->position,
+            'department' => $request->department,
+            'status' => $request->status ?? 'Active',
             'email_verified_at' => now(),
         ]);
 
@@ -129,16 +128,16 @@ class AdminUserController extends Controller
         $employee = \App\Models\Employee::where('email', 'ILIKE', $email)->first();
 
         $employeeData = [
-            'user_id'    => $user->id,
-            'email'      => $email,
+            'user_id' => $user->id,
+            'email' => $email,
             'first_name' => $firstName,
-            'last_name'  => $lastName ?: 'User',
-            'status'     => $request->status ?? 'Active',
-            'phone'      => $request->phone_number,
-            'position'   => $request->position,
+            'last_name' => $lastName ?: 'User',
+            'status' => $request->status ?? 'Active',
+            'phone' => $request->phone_number,
+            'position' => $request->position,
             'department' => $request->department,
-            'hire_date'  => $request->hire_date ?: now(),
-            'salary'     => $request->salary ?? 0,
+            'hire_date' => $request->hire_date ?: now(),
+            'salary' => $request->salary ?? 0,
         ];
 
         // Only update profile picture if a new file was actually provided
@@ -170,7 +169,8 @@ class AdminUserController extends Controller
      */
     public function edit(User $user): View
     {
-        $roles        = $this->allowedRoles;
+        $roles = $this->allowedRoles;
+
         return view('admin.users.edit', compact('user', 'roles'));
     }
 
@@ -182,20 +182,20 @@ class AdminUserController extends Controller
         $validated = $request->validated();
 
         $parts = explode(' ', $validated['name']);
-        $user->name       = $validated['name'];
+        $user->name = $validated['name'];
         $user->first_name = array_shift($parts);
-        $user->last_name  = array_pop($parts);
+        $user->last_name = array_pop($parts);
         $user->middle_name = implode(' ', $parts);
 
-        $user->email       = $validated['email'];
-        $user->role        = $validated['role'];
+        $user->email = $validated['email'];
+        $user->role = $validated['role'];
         $user->phone_number = $request->phone_number;
-        $user->position     = $request->position;
-        $user->department   = $request->department;
-        $user->status       = $request->status ?? 'Active';
+        $user->position = $request->position;
+        $user->department = $request->department;
+        $user->status = $request->status ?? 'Active';
         // $user->bio          = $request->bio; // Disable: Column missing in prod
 
-        if (!empty($validated['password'])) {
+        if (! empty($validated['password'])) {
             $user->password = Hash::make($validated['password']);
         }
 
@@ -219,21 +219,21 @@ class AdminUserController extends Controller
         // Sync to Employee (Robust & Soft-Delete Aware)
         $employee = \App\Models\Employee::withTrashed()->where('user_id', $user->id)->first();
 
-        if (!$employee) {
+        if (! $employee) {
             // Fallback: Check if an employee exists with this email (orphan record or soft deleted)
             // Use ILIKE for PostgreSQL case-insensitive match
             $employee = \App\Models\Employee::withTrashed()->where('email', 'ILIKE', $user->email)->first();
         }
 
         $employeeData = [
-            'user_id'         => $user->id, // Ensure linked
-            'first_name'      => $user->first_name,
-            'last_name'       => $user->last_name ?: 'User',
-            'email'           => $user->email,
-            'status'          => $user->status,
-            'phone'           => $user->phone_number,
-            'position'        => $user->position,
-            'department'      => $user->department,
+            'user_id' => $user->id, // Ensure linked
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name ?: 'User',
+            'email' => $user->email,
+            'status' => $user->status,
+            'phone' => $user->phone_number,
+            'position' => $user->position,
+            'department' => $user->department,
             'profile_picture' => $profilePath,
         ];
 
@@ -269,5 +269,4 @@ class AdminUserController extends Controller
             ->route('admin.users.index')
             ->with('success', "Account identity for {$name} has been expunged from active records.");
     }
-
 }

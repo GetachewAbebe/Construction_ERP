@@ -3,14 +3,12 @@
 namespace App\Http\Controllers\Inventory;
 
 use App\Http\Controllers\Controller;
-use App\Models\InventoryItem;
 use App\Models\AssetClassification;
+use App\Models\InventoryItem;
+use App\Services\InventoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Database\QueryException;
-
-use App\Services\InventoryService;
 
 class InventoryItemController extends Controller
 {
@@ -23,10 +21,10 @@ class InventoryItemController extends Controller
 
     public function index(Request $request)
     {
-        $q    = trim((string) $request->input('q', ''));
-        $loc  = trim((string) $request->input('store_location', ''));
+        $q = trim((string) $request->input('q', ''));
+        $loc = trim((string) $request->input('store_location', ''));
         $from = $request->input('from_date');
-        $to   = $request->input('to_date');
+        $to = $request->input('to_date');
         $status = $request->input('status');
         $classification_id = $request->input('classification_id');
 
@@ -34,15 +32,15 @@ class InventoryItemController extends Controller
             ->when($q !== '', function ($query) use ($q) {
                 $query->where(function ($qq) use ($q) {
                     $qq->where('item_no', 'ILIKE', "%{$q}%")
-                       ->orWhere('name', 'ILIKE', "%{$q}%")
-                       ->orWhere('description', 'ILIKE', "%{$q}%");
+                        ->orWhere('name', 'ILIKE', "%{$q}%")
+                        ->orWhere('description', 'ILIKE', "%{$q}%");
                 });
             })
-            ->when($loc !== '', fn($query) => $query->where('store_location', $loc))
-            ->when($from, fn($query) => $query->whereDate('in_date', '>=', $from))
-            ->when($to,   fn($query) => $query->whereDate('in_date', '<=', $to))
-            ->when($classification_id, fn($query) => $query->where('classification_id', $classification_id))
-            ->when($status, function($query) use ($status) {
+            ->when($loc !== '', fn ($query) => $query->where('store_location', $loc))
+            ->when($from, fn ($query) => $query->whereDate('in_date', '>=', $from))
+            ->when($to, fn ($query) => $query->whereDate('in_date', '<=', $to))
+            ->when($classification_id, fn ($query) => $query->where('classification_id', $classification_id))
+            ->when($status, function ($query) use ($status) {
                 if ($status === 'in_stock') {
                     $query->where('quantity', '>', 5);
                 } elseif ($status === 'low_stock') {
@@ -50,7 +48,7 @@ class InventoryItemController extends Controller
                 } elseif ($status === 'out_of_stock') {
                     $query->where('quantity', '<=', 0);
                 }
-            }, function($query) use ($q, $loc) {
+            }, function ($query) use ($q, $loc) {
                 // Default behavior: Hide deleted items unless searching or filtering by location
                 if ($q === '' && $loc === '') {
                     $query->where('quantity', '>', 0);
@@ -82,6 +80,7 @@ class InventoryItemController extends Controller
     {
         $classifications = AssetClassification::orderBy('name')->get();
         $vendors = \App\Models\Vendor::active()->orderBy('name')->get();
+
         return view('inventory.items.create', compact('classifications', 'vendors'));
     }
 
@@ -92,8 +91,8 @@ class InventoryItemController extends Controller
         try {
             // Check for existing item with same item_no and store_location
             $exists = InventoryItem::where('item_no', $data['item_no'])
-                        ->where('store_location', $data['store_location'])
-                        ->exists();
+                ->where('store_location', $data['store_location'])
+                ->exists();
 
             if ($exists) {
                 return back()->withInput()->with('error', 'An item with this ID already exists in this location.');
@@ -105,12 +104,12 @@ class InventoryItemController extends Controller
                 // Log initial stock via Service if needed or manual
                 \App\Models\InventoryLog::create([
                     'inventory_item_id' => $item->id,
-                    'user_id'           => auth()->id(),
-                    'change_amount'     => $item->quantity,
+                    'user_id' => auth()->id(),
+                    'change_amount' => $item->quantity,
                     'previous_quantity' => 0,
-                    'new_quantity'      => $item->quantity,
-                    'reason'            => 'Initial Entry',
-                    'remarks'           => 'New inventory item created',
+                    'new_quantity' => $item->quantity,
+                    'reason' => 'Initial Entry',
+                    'remarks' => 'New inventory item created',
                 ]);
             });
 
@@ -118,7 +117,8 @@ class InventoryItemController extends Controller
                 ->with('success', 'Inventory item added successfully.');
 
         } catch (\Exception $e) {
-            Log::error('Inventory creation failed: ' . $e->getMessage());
+            Log::error('Inventory creation failed: '.$e->getMessage());
+
             return back()->withInput()->with('error', 'Failed to save inventory item.');
         }
     }
@@ -127,6 +127,7 @@ class InventoryItemController extends Controller
     {
         $classifications = AssetClassification::orderBy('name')->get();
         $vendors = \App\Models\Vendor::active()->orderBy('name')->get();
+
         return view('inventory.items.edit', compact('item', 'classifications', 'vendors'));
     }
 
@@ -140,7 +141,7 @@ class InventoryItemController extends Controller
 
             DB::transaction(function () use ($item, $data, $newQuantity) {
                 $item->update($data);
-                
+
                 // If quantity changed, log it via Service
                 if ($item->quantity != $newQuantity) {
                     $this->inventoryService->adjustQuantity($item, $newQuantity, 'Manual Adjustment', 'Updated via item edit form');
@@ -151,11 +152,11 @@ class InventoryItemController extends Controller
                 ->with('success', 'Inventory record updated.');
 
         } catch (\Exception $e) {
-            Log::error('Inventory update failed: ' . $e->getMessage());
+            Log::error('Inventory update failed: '.$e->getMessage());
+
             return back()->withInput()->with('error', 'Failed to update record.');
         }
     }
-
 
     public function destroy(InventoryItem $item)
     {
@@ -169,6 +170,7 @@ class InventoryItemController extends Controller
                 ->with('success', 'Item deleted.');
         } catch (\Throwable $e) {
             Log::error('InventoryItem delete failed', ['message' => $e->getMessage(), 'id' => $item->id]);
+
             return back()->with('error', 'Could not delete the item.');
         }
     }

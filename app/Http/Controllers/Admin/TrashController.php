@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\Employee;
 use App\Models\Expense;
 use App\Models\InventoryItem;
-use App\Models\Project;
 use App\Models\LeaveRequest;
+use App\Models\Project;
+use App\Models\User;
+use Illuminate\Http\Request;
 
 class TrashController extends Controller
 {
@@ -19,22 +19,22 @@ class TrashController extends Controller
 
         // Collect trashed items from core models
         $models = [
-            'User'          => User::onlyTrashed()->get(),
-            'Employee'      => Employee::onlyTrashed()->get(),
-            'Expense'       => Expense::onlyTrashed()->get(),
+            'User' => User::onlyTrashed()->get(),
+            'Employee' => Employee::onlyTrashed()->get(),
+            'Expense' => Expense::onlyTrashed()->get(),
             'InventoryItem' => InventoryItem::onlyTrashed()->get(),
-            'Project'       => Project::onlyTrashed()->get(),
-            'LeaveRequest'  => LeaveRequest::onlyTrashed()->get(),
+            'Project' => Project::onlyTrashed()->get(),
+            'LeaveRequest' => LeaveRequest::onlyTrashed()->get(),
         ];
 
         foreach ($models as $type => $collection) {
             foreach ($collection as $item) {
                 $trashedItems->push([
-                    'id'         => $item->id,
-                    'type'       => $type,
-                    'name'       => $item->name ?? $item->email ?? $item->id,
+                    'id' => $item->id,
+                    'type' => $type,
+                    'name' => $item->name ?? $item->email ?? $item->id,
                     'deleted_at' => $item->deleted_at,
-                    'model'      => get_class($item),
+                    'model' => get_class($item),
                 ]);
             }
         }
@@ -54,6 +54,7 @@ class TrashController extends Controller
             if ($item) {
                 $item->restore();
                 $resourceType = class_basename($modelClass);
+
                 return redirect()->back()->with('success', "Asset restoration complete: {$resourceType} #{$id} has been successfully recovered from the vault.");
             }
         }

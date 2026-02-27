@@ -72,7 +72,7 @@ class ItemCategoryController extends Controller
     public function update(Request $request, ItemCategory $itemCategory)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:item_categories,name,' . $itemCategory->id,
+            'name' => 'required|string|max:255|unique:item_categories,name,'.$itemCategory->id,
             'description' => 'nullable|string',
             'icon' => 'nullable|string|max:50',
             'parent_id' => 'nullable|exists:item_categories,id',
@@ -92,8 +92,8 @@ class ItemCategoryController extends Controller
     public function destroy(ItemCategory $itemCategory)
     {
         $name = $itemCategory->name;
-        
-        // Prevent deletion if it has items or children? 
+
+        // Prevent deletion if it has items or children?
         // For now, Eloquent soft-delete is fine, but maybe warn if it has items.
         if ($itemCategory->items()->count() > 0) {
             return back()->with('error', "Operational Lock: Cannot expunge '{$name}' while active inventory assets are linked to this classification.");

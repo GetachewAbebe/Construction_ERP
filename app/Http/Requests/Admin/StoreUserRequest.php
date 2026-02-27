@@ -3,8 +3,8 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class StoreUserRequest extends FormRequest
 {
@@ -16,17 +16,17 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'            => ['required', 'string', 'max:255'],
-            'email'           => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password'        => ['required', Password::min(8)],
-            'role'            => ['required', Rule::in(['Administrator', 'HumanResourceManager', 'InventoryManager', 'FinancialManager'])],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', Password::min(8)],
+            'role' => ['required', Rule::in(['Administrator', 'HumanResourceManager', 'InventoryManager', 'FinancialManager'])],
             'profile_picture' => ['nullable', 'image', 'max:2048'],
-            'phone_number'    => ['nullable', 'string', 'max:20'],
-            'position'        => ['nullable', 'string', 'max:255'],
-            'department'      => ['nullable', 'string', 'max:255'],
-            'status'          => ['nullable', 'in:Active,Inactive,Suspended'],
-            'hire_date'       => ['nullable', 'date'],
-            'salary'          => ['nullable', 'numeric', 'min:0'],
+            'phone_number' => ['nullable', 'string', 'max:20'],
+            'position' => ['nullable', 'string', 'max:255'],
+            'department' => ['nullable', 'string', 'max:255'],
+            'status' => ['nullable', 'in:Active,Inactive,Suspended'],
+            'hire_date' => ['nullable', 'date'],
+            'salary' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 }

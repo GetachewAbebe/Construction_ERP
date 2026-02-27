@@ -16,7 +16,7 @@ trait LogsActivity
         static::updated(function ($model) {
             $changes = [
                 'before' => array_intersect_key($model->getOriginal(), $model->getDirty()),
-                'after'  => $model->getDirty(),
+                'after' => $model->getDirty(),
             ];
             $model->logActivity('updated', $changes);
         });
@@ -35,11 +35,11 @@ trait LogsActivity
     protected function logActivity($action, $changes = null)
     {
         ActivityLog::create([
-            'user_id'    => Auth::id(),
-            'action'     => $action,
+            'user_id' => Auth::id(),
+            'action' => $action,
             'model_type' => get_class($this),
-            'model_id'   => $this->id,
-            'changes'    => $changes,
+            'model_id' => $this->id,
+            'changes' => $changes,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
         ]);

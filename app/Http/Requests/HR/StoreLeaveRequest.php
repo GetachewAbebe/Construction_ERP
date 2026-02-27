@@ -16,7 +16,7 @@ class StoreLeaveRequest extends FormRequest
             'Human Resource Manager',
             'Administrator',
             'Admin',
-            'Employee'
+            'Employee',
         ]) || $this->user()->employee_id > 0;
         // Adjust based on your specific role hierarchy. For now, allow all authenticated users.
     }
@@ -25,24 +25,26 @@ class StoreLeaveRequest extends FormRequest
     {
         return [
             'employee_id' => ['required', 'exists:employees,id'],
-            'start_date'  => [
-                'required', 
+            'start_date' => [
+                'required',
                 'date',
                 function ($attribute, $value, $fail) {
                     $employeeId = $this->input('employee_id');
-                    $endDate    = $this->input('end_date');
-                    
-                    if (!$employeeId || !$endDate) return;
+                    $endDate = $this->input('end_date');
+
+                    if (! $employeeId || ! $endDate) {
+                        return;
+                    }
 
                     $overlap = \App\Models\LeaveRequest::where('employee_id', $employeeId)
                         ->whereIn('status', ['Pending', 'Approved']) // Only check active requests
                         ->where(function ($query) use ($value, $endDate) {
                             $query->whereBetween('start_date', [$value, $endDate])
-                                  ->orWhereBetween('end_date', [$value, $endDate])
-                                  ->orWhere(function ($q) use ($value, $endDate) {
-                                      $q->where('start_date', '<', $value)
+                                ->orWhereBetween('end_date', [$value, $endDate])
+                                ->orWhere(function ($q) use ($value, $endDate) {
+                                    $q->where('start_date', '<', $value)
                                         ->where('end_date', '>', $endDate);
-                                  });
+                                });
                         })
                         ->exists();
 
@@ -51,8 +53,8 @@ class StoreLeaveRequest extends FormRequest
                     }
                 },
             ],
-            'end_date'    => ['required', 'date', 'after_or_equal:start_date'],
-            'reason'      => ['nullable', 'string', 'max:500'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
+            'reason' => ['nullable', 'string', 'max:500'],
         ];
     }
 }

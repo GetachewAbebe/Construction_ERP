@@ -3,18 +3,19 @@
 namespace App\Http\Controllers\Inventory;
 
 use App\Http\Controllers\Controller;
+use App\Mail\NewInventoryLoanRequestMail;
+use App\Models\Employee;
 use App\Models\InventoryItem;
 use App\Models\InventoryLoan;
-use App\Models\Employee;
-use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Notification;
 use App\Models\User;
 use App\Notifications\InventoryLoanStatusNotification;
-
 use App\Services\InventoryService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\View\View;
 
 class InventoryLoanController extends Controller
 {
@@ -79,10 +80,10 @@ class InventoryLoanController extends Controller
     {
         $data = $request->validated();
         $item = InventoryItem::findOrFail($data['inventory_item_id']);
-        
+
         if ($item->available_quantity < $data['quantity']) {
             return back()->withInput()->withErrors([
-                'quantity' => "Insufficient stock. Only {$item->available_quantity} units available."
+                'quantity' => "Insufficient stock. Only {$item->available_quantity} units available.",
             ]);
         }
 
@@ -90,22 +91,26 @@ class InventoryLoanController extends Controller
             DB::transaction(function () use ($data) {
                 $loan = InventoryLoan::create(array_merge($data, [
                     'requested_by_user_id' => auth()->id(),
-                    'requested_at'         => $data['requested_at'] ?? now(),
-                    'status'               => 'pending',
+                    'requested_at' => $data['requested_at'] ?? now(),
+                    'status' => 'pending',
                 ]));
 
                 $admins = User::role('Administrator')->get();
                 try {
                     Notification::send($admins, new InventoryLoanStatusNotification($loan, 'request'));
+                    foreach ($admins as $admin) {
+                        Mail::to($admin->email)->send(new NewInventoryLoanRequestMail($loan, auth()->user()));
+                    }
                 } catch (\Exception $e) {
-                    \Log::warning('Loan notification failed: ' . $e->getMessage());
+                    \Log::warning('Loan notification failed: '.$e->getMessage());
                 }
             });
 
             return redirect()->route('inventory.loans.index')
                 ->with('success', 'Asset loan request has been successfully queued for approval.');
         } catch (\Exception $e) {
-            \Log::error('Loan request failed: ' . $e->getMessage());
+            \Log::error('Loan request failed: '.$e->getMessage());
+
             return back()->withInput()->with('error', 'Critical failure during loan initialization.');
         }
     }
@@ -113,13 +118,14 @@ class InventoryLoanController extends Controller
     public function show(InventoryLoan $loan): View
     {
         $loan->load(['item', 'employee', 'approvedBy', 'rejectedBy']);
+
         return view('inventory.loans.show', compact('loan'));
     }
 
     public function edit(InventoryLoan $loan): View
     {
         $loan->load(['item', 'employee']);
-        $items     = InventoryItem::orderBy('name')->get();
+        $items = InventoryItem::orderBy('name')->get();
         $employees = Employee::orderBy('first_name')->get();
 
         return view('inventory.loans.edit', compact('loan', 'items', 'employees'));
@@ -136,16 +142,18 @@ class InventoryLoanController extends Controller
 
         if ($item->available_quantity < $data['quantity']) {
             return back()->withInput()->withErrors([
-                'quantity' => "Insufficient stock for update. Only {$item->available_quantity} units available."
+                'quantity' => "Insufficient stock for update. Only {$item->available_quantity} units available.",
             ]);
         }
 
         try {
             $loan->update($data);
+
             return redirect()->route('inventory.loans.index')
                 ->with('success', 'Loan request parameters updated.');
         } catch (\Exception $e) {
-            \Log::error('Loan update failed: ' . $e->getMessage());
+            \Log::error('Loan update failed: '.$e->getMessage());
+
             return back()->withInput()->with('error', 'Failed to update loan record.');
         }
     }
@@ -183,14 +191,14 @@ class InventoryLoanController extends Controller
             if ($item) {
                 // Use Service to log change and handle quantity
                 $this->inventoryService->logLoanChange(
-                    $item, 
-                    $loan->quantity, 
-                    'loan_returned', 
+                    $item,
+                    $loan->quantity,
+                    'loan_returned',
                     "Returned loan ID: {$loan->id} from employee: {$loan->employee->name}"
                 );
             }
 
-            $loan->status      = 'returned';
+            $loan->status = 'returned';
             $loan->returned_at = now();
             $loan->save();
         });

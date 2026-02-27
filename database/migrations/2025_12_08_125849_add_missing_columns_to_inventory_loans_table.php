@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::table('inventory_loans', function (Blueprint $table) {
             // Add notes column (controller uses this instead of remarks)
-            if (!Schema::hasColumn('inventory_loans', 'notes')) {
+            if (! Schema::hasColumn('inventory_loans', 'notes')) {
                 $table->text('notes')->nullable()->after('remarks');
             }
 
             // Add quantity column (controller uses this for loan quantity)
-            if (!Schema::hasColumn('inventory_loans', 'quantity')) {
+            if (! Schema::hasColumn('inventory_loans', 'quantity')) {
                 $table->unsignedInteger('quantity')->default(1)->after('approved_by_user_id');
             }
         });
@@ -31,16 +31,16 @@ return new class extends Migration
     {
         Schema::table('inventory_loans', function (Blueprint $table) {
             $drops = [];
-            
+
             if (Schema::hasColumn('inventory_loans', 'notes')) {
                 $drops[] = 'notes';
             }
-            
+
             if (Schema::hasColumn('inventory_loans', 'quantity')) {
                 $drops[] = 'quantity';
             }
-            
-            if (!empty($drops)) {
+
+            if (! empty($drops)) {
                 $table->dropColumn($drops);
             }
         });

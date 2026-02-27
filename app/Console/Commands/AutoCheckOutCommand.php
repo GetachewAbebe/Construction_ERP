@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\Attendance;
 use App\Services\AttendanceService;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class AutoCheckOutCommand extends Command
 {
@@ -35,20 +35,21 @@ class AutoCheckOutCommand extends Command
 
         if ($openAttendances->isEmpty()) {
             $this->info('No open attendance records found for today.');
+
             return;
         }
 
         $shiftEndTime = $attendanceService->getSetting('shift_end_time', '17:00');
         $checkoutTime = Carbon::parse($shiftEndTime)->setDate($today->year, $today->month, $today->day);
 
-        // If current time is earlier than shift end, use current time? 
+        // If current time is earlier than shift end, use current time?
         // No, typically this runs at midnight or end of day, so we use shift_end_time.
-        
+
         $count = 0;
         foreach ($openAttendances as $attendance) {
             $attendance->update([
                 'clock_out' => $checkoutTime,
-                'note' => ($attendance->note ? $attendance->note . ' | ' : '') . 'Auto-checked out by system.',
+                'note' => ($attendance->note ? $attendance->note.' | ' : '').'Auto-checked out by system.',
             ]);
             $count++;
         }

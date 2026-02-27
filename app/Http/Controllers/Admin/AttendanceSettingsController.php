@@ -11,16 +11,16 @@ class AttendanceSettingsController extends Controller
     public function index()
     {
         $settings = AttendanceSetting::all()->pluck('value', 'key');
-        
+
         // Ensure defaults if missing (though they should be seeded)
         $defaults = [
             'shift_start_time' => '09:00',
-            'shift_end_time'   => '17:00',
+            'shift_end_time' => '17:00',
             'grace_period_minutes' => '15',
         ];
 
         foreach ($defaults as $key => $val) {
-            if (!isset($settings[$key])) {
+            if (! isset($settings[$key])) {
                 $settings[$key] = $val;
             }
         }
@@ -32,7 +32,7 @@ class AttendanceSettingsController extends Controller
     {
         $data = $request->validate([
             'shift_start_time' => 'required|date_format:H:i',
-            'shift_end_time'   => 'required|date_format:H:i',
+            'shift_end_time' => 'required|date_format:H:i',
             'grace_period_minutes' => 'required|integer|min:0|max:120',
         ]);
 

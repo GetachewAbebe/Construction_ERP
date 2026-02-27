@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class MaintenanceController extends Controller
 {
@@ -54,10 +52,10 @@ class MaintenanceController extends Controller
             $output = Artisan::output();
 
             return redirect()->route('admin.maintenance.index')
-                ->with('success', 'Database schema synchronization complete. ' . $output);
+                ->with('success', 'Database schema synchronization complete. '.$output);
         } catch (\Exception $e) {
             return redirect()->route('admin.maintenance.index')
-                ->with('error', 'Migration operation failed: ' . $e->getMessage());
+                ->with('error', 'Migration operation failed: '.$e->getMessage());
         }
     }
 
@@ -66,6 +64,7 @@ class MaintenanceController extends Controller
         try {
             Artisan::call('migrate:status');
             $status = Artisan::output();
+
             // Count lines that say 'No' in the 'Ran?' column
             return substr_count($status, '| No');
         } catch (\Exception $e) {
@@ -85,7 +84,7 @@ class MaintenanceController extends Controller
                 ->with('success', 'System cache matrix successfully purged. All cached configurations, routes, and views have been expunged from memory.');
         } catch (\Exception $e) {
             return redirect()->route('admin.maintenance.index')
-                ->with('error', 'Cache purge operation failed: ' . $e->getMessage());
+                ->with('error', 'Cache purge operation failed: '.$e->getMessage());
         }
     }
 
@@ -101,7 +100,7 @@ class MaintenanceController extends Controller
                 ->with('success', 'System optimization protocols executed successfully. Application performance has been enhanced through strategic caching.');
         } catch (\Exception $e) {
             return redirect()->route('admin.maintenance.index')
-                ->with('error', 'Optimization operation failed: ' . $e->getMessage());
+                ->with('error', 'Optimization operation failed: '.$e->getMessage());
         }
     }
 
@@ -110,7 +109,7 @@ class MaintenanceController extends Controller
         try {
             $logPath = storage_path('logs');
             $files = File::files($logPath);
-            
+
             foreach ($files as $file) {
                 if ($file->getExtension() === 'log') {
                     File::delete($file->getPathname());
@@ -121,7 +120,7 @@ class MaintenanceController extends Controller
                 ->with('success', 'System log archives successfully expunged. All historical log files have been removed from storage.');
         } catch (\Exception $e) {
             return redirect()->route('admin.maintenance.index')
-                ->with('error', 'Log purge operation failed: ' . $e->getMessage());
+                ->with('error', 'Log purge operation failed: '.$e->getMessage());
         }
     }
 
@@ -133,7 +132,7 @@ class MaintenanceController extends Controller
             $backupPath = storage_path("app/backups/{$backupFileName}");
 
             // Ensure backup directory exists
-            if (!File::exists(storage_path('app/backups'))) {
+            if (! File::exists(storage_path('app/backups'))) {
                 File::makeDirectory(storage_path('app/backups'), 0755, true);
             }
 
@@ -150,12 +149,12 @@ class MaintenanceController extends Controller
                     escapeshellarg($connection['database']),
                     escapeshellarg($backupPath)
                 );
-                
+
                 // Set password environment variable
                 putenv("PGPASSWORD={$connection['password']}");
                 exec($command, $output, $returnVar);
-                putenv("PGPASSWORD");
-                
+                putenv('PGPASSWORD');
+
             } elseif ($database === 'mysql') {
                 // MySQL backup
                 $command = sprintf(
@@ -181,7 +180,7 @@ class MaintenanceController extends Controller
             }
         } catch (\Exception $e) {
             return redirect()->route('admin.maintenance.index')
-                ->with('error', 'Backup creation failed: ' . $e->getMessage());
+                ->with('error', 'Backup creation failed: '.$e->getMessage());
         }
     }
 
@@ -189,7 +188,7 @@ class MaintenanceController extends Controller
     {
         $backupPath = storage_path("app/backups/{$filename}");
 
-        if (!File::exists($backupPath)) {
+        if (! File::exists($backupPath)) {
             return redirect()->route('admin.maintenance.index')
                 ->with('error', 'Backup file not found in repository.');
         }
@@ -200,8 +199,8 @@ class MaintenanceController extends Controller
     public function listBackups()
     {
         $backupPath = storage_path('app/backups');
-        
-        if (!File::exists($backupPath)) {
+
+        if (! File::exists($backupPath)) {
             return [];
         }
 
@@ -221,7 +220,7 @@ class MaintenanceController extends Controller
 
     private function getDirectorySize($path)
     {
-        if (!File::exists($path)) {
+        if (! File::exists($path)) {
             return '0 B';
         }
 
@@ -241,14 +240,14 @@ class MaintenanceController extends Controller
             $bytes /= 1024;
         }
 
-        return round($bytes, $precision) . ' ' . $units[$i];
+        return round($bytes, $precision).' '.$units[$i];
     }
 
     private function getRecentLogFiles($limit = 5)
     {
         $logPath = storage_path('logs');
-        
-        if (!File::exists($logPath)) {
+
+        if (! File::exists($logPath)) {
             return [];
         }
 
@@ -266,7 +265,7 @@ class MaintenanceController extends Controller
         }
 
         // Sort by modification time (newest first)
-        usort($logs, function($a, $b) {
+        usort($logs, function ($a, $b) {
             return strtotime($b['modified']) - strtotime($a['modified']);
         });
 

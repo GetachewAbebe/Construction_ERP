@@ -13,20 +13,20 @@ class StoreProjectRequest extends FormRequest
             'FinancialManager',
             'Financial Manager',
             'Administrator',
-            'Admin'
+            'Admin',
         ]);
     }
 
     public function rules(): array
     {
         return [
-            'name'        => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'location'    => ['nullable', 'string', 'max:255'],
-            'start_date'  => ['nullable', 'date'],
-            'end_date'    => ['nullable', 'date', 'after_or_equal:start_date'],
-            'budget'      => ['nullable', 'numeric', 'min:0'],
-            'status'      => ['required', 'in:Planned,In Progress,Completed,On Hold,Cancelled'],
+            'location' => ['nullable', 'string', 'max:255'],
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'budget' => ['nullable', 'numeric', 'min:0'],
+            'status' => ['required', 'in:Planned,In Progress,Completed,On Hold,Cancelled'],
         ];
     }
 }

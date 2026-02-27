@@ -13,24 +13,24 @@ return new class extends Migration
     {
         Schema::create('asset_classifications', function (Blueprint $table) {
             $table->id();
-            
+
             // Core Identity
             $table->string('name')->unique();
             $table->string('code')->unique(); // Professional code like MTRL, TOOL-HW
             $table->string('slug')->unique();
-            
+
             // Context
             $table->text('description')->nullable();
             $table->string('icon_identifier')->nullable(); // bi-hammer, etc.
-            
+
             // Hierarchy (Materialized Path + Parent)
             $table->foreignId('parent_id')->nullable()->constrained('asset_classifications')->nullOnDelete();
             $table->string('hierarchy_path')->nullable(); // e.g., 1/5/12/
             $table->integer('depth')->default(0);
-            
+
             $table->timestamps();
             $table->softDeletes();
-            
+
             // Performance Indexes
             $table->index('slug');
             $table->index('code');

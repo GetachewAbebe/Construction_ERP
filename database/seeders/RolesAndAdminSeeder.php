@@ -21,15 +21,23 @@ class RolesAndAdminSeeder extends Seeder
         }
 
         $email = 'administrator@natanemengineering.com';
-        $pass  = 'AdminNatanem@123';
+        $pass = 'AdminNatanem@123';
 
         $admin = User::firstOrCreate(
             ['email' => $email],
-            ['name' => 'System Admin', 'password' => Hash::make($pass), 'email_verified_at' => now()]
+            [
+                'first_name' => 'System',
+                'last_name' => 'Admin',
+                'middle_name' => '',
+                'password' => Hash::make($pass),
+                'role' => 'Administrator',
+                'email_verified_at' => now()
+            ]
         );
 
-        // Keep password in sync with the provided one
+        // Keep password and role in sync with the provided one
         $admin->password = Hash::make($pass);
+        $admin->role = 'Administrator';
         $admin->save();
 
         // Ensure role assignment

@@ -1,10 +1,10 @@
 <?php
 
+use App\Models\Employee;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use App\Models\User;
-use App\Models\Employee;
 
 return new class extends Migration
 {
@@ -14,20 +14,20 @@ return new class extends Migration
     public function up(): void
     {
         // 1. Add user_id column if it doesn't exist
-        if (!Schema::hasColumn('employees', 'user_id')) {
+        if (! Schema::hasColumn('employees', 'user_id')) {
             Schema::table('employees', function (Blueprint $table) {
                 $table->foreignId('user_id')->nullable()->after('id')->constrained('users')->nullOnDelete();
             });
         }
 
         // 2. Sync Users to Employees
-        $users = User::all();
+        $users = DB::table('users')->get();
 
         foreach ($users as $user) {
             // Check if employee exists by email
             $employee = Employee::where('email', $user->email)->first();
 
-            if (!$employee) {
+            if (! $employee) {
                 // Split name
                 $parts = explode(' ', $user->name, 2);
                 $firstName = $parts[0];
@@ -45,7 +45,7 @@ return new class extends Migration
                 ]);
             } else {
                 // Update user_id if missing
-                if (!$employee->user_id) {
+                if (! $employee->user_id) {
                     $employee->user_id = $user->id;
                     $employee->save();
                 }

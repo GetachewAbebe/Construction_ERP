@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Inventory;
 use App\Http\Controllers\Controller;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class VendorController extends Controller
 {
@@ -15,13 +14,13 @@ class VendorController extends Controller
     public function index(Request $request)
     {
         $q = $request->input('q');
-        
+
         $vendors = Vendor::query()
             ->when($q, function ($query) use ($q) {
                 $query->where('name', 'ILIKE', "%{$q}%")
-                      ->orWhere('code', 'ILIKE', "%{$q}%")
-                      ->orWhere('contact_person', 'ILIKE', "%{$q}%")
-                      ->orWhere('email', 'ILIKE', "%{$q}%");
+                    ->orWhere('code', 'ILIKE', "%{$q}%")
+                    ->orWhere('contact_person', 'ILIKE', "%{$q}%")
+                    ->orWhere('email', 'ILIKE', "%{$q}%");
             })
             ->latest()
             ->paginate(20);
@@ -43,14 +42,14 @@ class VendorController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'           => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'contact_person' => 'nullable|string|max:255',
-            'email'          => 'nullable|email|max:255',
-            'phone'          => 'nullable|string|max:20',
-            'tax_id'         => 'nullable|string|max:50',
-            'category'       => 'nullable|string|max:100',
-            'address'        => 'nullable|string',
-            'payment_terms'  => 'nullable|string|max:100',
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:20',
+            'tax_id' => 'nullable|string|max:50',
+            'category' => 'nullable|string|max:100',
+            'address' => 'nullable|string',
+            'payment_terms' => 'nullable|string|max:100',
         ]);
 
         $vendor = Vendor::create($validated);
@@ -81,15 +80,15 @@ class VendorController extends Controller
     public function update(Request $request, Vendor $vendor)
     {
         $validated = $request->validate([
-            'name'           => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'contact_person' => 'nullable|string|max:255',
-            'email'          => 'nullable|email|max:255',
-            'phone'          => 'nullable|string|max:20',
-            'tax_id'         => 'nullable|string|max:50',
-            'category'       => 'nullable|string|max:100',
-            'address'        => 'nullable|string',
-            'payment_terms'  => 'nullable|string|max:100',
-            'is_active'      => 'nullable|boolean',
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:20',
+            'tax_id' => 'nullable|string|max:50',
+            'category' => 'nullable|string|max:100',
+            'address' => 'nullable|string',
+            'payment_terms' => 'nullable|string|max:100',
+            'is_active' => 'nullable|boolean',
         ]);
 
         // Fix for checkbox boolean if missing

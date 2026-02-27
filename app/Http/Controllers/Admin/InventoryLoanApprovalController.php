@@ -3,15 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\InventoryLoanStatusMail;
 use App\Models\InventoryLoan;
+use App\Notifications\InventoryLoanStatusNotification;
+use App\Services\InventoryService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
-use App\Notifications\InventoryLoanStatusNotification;
-
-use App\Services\InventoryService;
+use Illuminate\View\View;
 
 class InventoryLoanApprovalController extends Controller
 {
@@ -59,20 +60,25 @@ class InventoryLoanApprovalController extends Controller
 
             // Use Service to log change and handle quantity
             $this->inventoryService->logLoanChange(
-                $item, 
-                -$loan->quantity, 
-                'loan_approved', 
+                $item,
+                -$loan->quantity,
+                'loan_approved',
                 "Approved loan ID: {$loan->id} for employee: {$loan->employee->name}"
             );
 
             // Update loan status
-            $loan->status      = 'approved';
+            $loan->status = 'approved';
             $loan->approved_by = auth()->id();
             $loan->approved_at = now();
             $loan->save();
 
             if ($loan->employee && $loan->employee->user) {
                 $loan->employee->user->notify(new InventoryLoanStatusNotification($loan, 'status_change'));
+                try {
+                    Mail::to($loan->employee->user->email)->send(new InventoryLoanStatusMail($loan, $loan->employee->user));
+                } catch (\Exception $e) {
+                    \Log::error('Loan status mail failed: '.$e->getMessage());
+                }
             }
 
             // Notify Inventory Managers
@@ -91,7 +97,6 @@ class InventoryLoanApprovalController extends Controller
         });
     }
 
-
     /**
      * Reject a loan:
      * - only if status = pending
@@ -103,13 +108,18 @@ class InventoryLoanApprovalController extends Controller
             return back()->with('status', 'This request has already been processed.');
         }
 
-        $loan->status      = 'rejected';
+        $loan->status = 'rejected';
         $loan->approved_by = auth()->id();
         $loan->approved_at = now();
         $loan->save();
 
         if ($loan->employee && $loan->employee->user) {
             $loan->employee->user->notify(new InventoryLoanStatusNotification($loan, 'status_change'));
+            try {
+                Mail::to($loan->employee->user->email)->send(new InventoryLoanStatusMail($loan, $loan->employee->user));
+            } catch (\Exception $e) {
+                \Log::error('Loan status mail failed: '.$e->getMessage());
+            }
         }
 
         // Notify Inventory Managers

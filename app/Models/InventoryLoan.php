@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Model;
 use App\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class InventoryLoan extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity;
+    use HasFactory, LogsActivity, SoftDeletes;
 
     protected $fillable = [
         'inventory_item_id',
@@ -32,11 +32,11 @@ class InventoryLoan extends Model
 
     protected $casts = [
         'requested_at' => 'datetime',
-        'due_date'     => 'date',
-        'approved_at'  => 'datetime',
-        'returned_at'  => 'datetime',
-        'rejected_at'  => 'datetime',
-        'quantity'     => 'integer',
+        'due_date' => 'date',
+        'approved_at' => 'datetime',
+        'returned_at' => 'datetime',
+        'rejected_at' => 'datetime',
+        'quantity' => 'integer',
     ];
 
     // Relationships

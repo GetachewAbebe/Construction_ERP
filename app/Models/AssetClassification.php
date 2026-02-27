@@ -80,13 +80,13 @@ class AssetClassification extends Model
     {
         if ($this->parent_id) {
             $parent = $this->parent;
-            $this->hierarchy_path = ($parent->hierarchy_path ?: '') . $this->id . '/';
+            $this->hierarchy_path = ($parent->hierarchy_path ?: '').$this->id.'/';
             $this->depth = $parent->depth + 1;
         } else {
-            $this->hierarchy_path = $this->id . '/';
+            $this->hierarchy_path = $this->id.'/';
             $this->depth = 0;
         }
-        
+
         // Use saveQuietly to avoid infinite loop
         $this->saveQuietly();
     }
@@ -96,11 +96,11 @@ class AssetClassification extends Model
      */
     public function getFullNomenclatureAttribute()
     {
-        if (!$this->parent_id) {
+        if (! $this->parent_id) {
             return $this->name;
         }
 
-        return $this->parent->full_nomenclature . ' › ' . $this->name;
+        return $this->parent->full_nomenclature.' › '.$this->name;
     }
 
     /**
@@ -110,7 +110,7 @@ class AssetClassification extends Model
     {
         // Simple implementation: count where hierarchy_path starts with this level path
         return InventoryItem::whereHas('classification', function ($query) {
-            $query->where('hierarchy_path', 'LIKE', $this->hierarchy_path . '%');
+            $query->where('hierarchy_path', 'LIKE', $this->hierarchy_path.'%');
         })->count();
     }
 }

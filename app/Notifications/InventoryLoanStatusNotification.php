@@ -2,15 +2,16 @@
 
 namespace App\Notifications;
 
+use App\Models\InventoryLoan;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
-use App\Models\InventoryLoan;
 
 class InventoryLoanStatusNotification extends Notification
 {
     use Queueable;
 
     protected $loan;
+
     protected $type;
 
     public function __construct(InventoryLoan $loan, $type = 'status_change')
@@ -35,35 +36,36 @@ class InventoryLoanStatusNotification extends Notification
                 'url' => route('admin.requests.items'),
                 'icon' => 'bi-box-seam',
                 'color' => 'primary',
-                'priority' => 'medium'
+                'priority' => 'medium',
             ];
         }
 
         if ($this->type === 'status_update') {
             $name = $this->loan->employee->user->name ?? $this->loan->employee->name ?? 'An employee';
-            
+
             return [
                 'type' => 'inventory_status',
-                'title' => "Inventory Request " . ucfirst($this->loan->status),
+                'title' => 'Inventory Request '.ucfirst($this->loan->status),
                 'message' => "{$name}'s request for {$this->loan->item->name} has been {$this->loan->status}.",
                 'loan_id' => $this->loan->id,
                 'url' => route('inventory.loans.index'),
                 'icon' => $this->loan->status === 'approved' ? 'bi-patch-check' : 'bi-patch-exclamation',
                 'color' => $this->loan->status === 'approved' ? 'success' : 'danger',
-                'priority' => 'medium'
+                'priority' => 'medium',
             ];
         }
 
         $color = $this->loan->status === 'approved' ? 'success' : 'danger';
+
         return [
             'type' => 'inventory_status',
-            'title' => "Inventory Request " . ucfirst($this->loan->status),
+            'title' => 'Inventory Request '.ucfirst($this->loan->status),
             'message' => "Your request for {$this->loan->item->name} has been {$this->loan->status}.",
             'loan_id' => $this->loan->id,
             'url' => route('inventory.loans.index'),
             'icon' => $this->loan->status === 'approved' ? 'bi-patch-check' : 'bi-patch-exclamation',
             'color' => $color,
-            'priority' => 'medium'
+            'priority' => 'medium',
         ];
     }
 }

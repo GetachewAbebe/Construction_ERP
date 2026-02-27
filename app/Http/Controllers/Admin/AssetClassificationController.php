@@ -34,6 +34,7 @@ class AssetClassificationController extends Controller
     public function create()
     {
         $parents = AssetClassification::orderBy('name')->get();
+
         return view('admin.asset_classifications.create', compact('parents'));
     }
 
@@ -43,11 +44,11 @@ class AssetClassificationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'            => 'required|string|max:255|unique:asset_classifications,name',
-            'code'            => 'nullable|string|max:10|unique:asset_classifications,code',
-            'description'     => 'nullable|string',
+            'name' => 'required|string|max:255|unique:asset_classifications,name',
+            'code' => 'nullable|string|max:10|unique:asset_classifications,code',
+            'description' => 'nullable|string',
             'icon_identifier' => 'nullable|string|max:50',
-            'parent_id'       => 'nullable|exists:asset_classifications,id',
+            'parent_id' => 'nullable|exists:asset_classifications,id',
         ]);
 
         $this->service->create($validated);
@@ -62,13 +63,13 @@ class AssetClassificationController extends Controller
     public function edit(AssetClassification $assetClassification)
     {
         $parents = AssetClassification::where('id', '!=', $assetClassification->id)
-            ->where('hierarchy_path', 'NOT LIKE', $assetClassification->hierarchy_path . '%')
+            ->where('hierarchy_path', 'NOT LIKE', $assetClassification->hierarchy_path.'%')
             ->orderBy('name')
             ->get();
 
         return view('admin.asset_classifications.edit', [
             'classification' => $assetClassification,
-            'parents'        => $parents,
+            'parents' => $parents,
         ]);
     }
 
@@ -78,11 +79,11 @@ class AssetClassificationController extends Controller
     public function update(Request $request, AssetClassification $assetClassification)
     {
         $validated = $request->validate([
-            'name'            => 'required|string|max:255|unique:asset_classifications,name,' . $assetClassification->id,
-            'code'            => 'required|string|max:10|unique:asset_classifications,code,' . $assetClassification->id,
-            'description'     => 'nullable|string',
+            'name' => 'required|string|max:255|unique:asset_classifications,name,'.$assetClassification->id,
+            'code' => 'required|string|max:10|unique:asset_classifications,code,'.$assetClassification->id,
+            'description' => 'nullable|string',
             'icon_identifier' => 'nullable|string|max:50',
-            'parent_id'       => 'nullable|exists:asset_classifications,id',
+            'parent_id' => 'nullable|exists:asset_classifications,id',
         ]);
 
         $this->service->update($assetClassification, $validated);

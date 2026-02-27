@@ -4,11 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         // If the table doesn't exist, create it from scratch
-        if (!Schema::hasTable('inventory_items')) {
+        if (! Schema::hasTable('inventory_items')) {
             Schema::create('inventory_items', function (Blueprint $table) {
                 $table->id();
 
@@ -71,13 +72,13 @@ return new class extends Migration {
                     'approved_by' => 'string',
                     'remark' => 'text',
                 ] as $col => $type) {
-                    if (!Schema::hasColumn('inventory_items', $col)) {
+                    if (! Schema::hasColumn('inventory_items', $col)) {
                         // add columns with sane defaults
                         match ($type) {
                             'integer' => $table->integer($col)->nullable(),
-                            'date'    => $table->date($col)->nullable(),
-                            'text'    => $table->text($col)->nullable(),
-                            default   => $table->string($col)->nullable(),
+                            'date' => $table->date($col)->nullable(),
+                            'text' => $table->text($col)->nullable(),
+                            default => $table->string($col)->nullable(),
                         };
                     }
                 }

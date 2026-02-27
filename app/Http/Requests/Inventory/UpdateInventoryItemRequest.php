@@ -13,7 +13,7 @@ class UpdateInventoryItemRequest extends FormRequest
             'InventoryManager',
             'Inventory Manager',
             'Administrator',
-            'Admin'
+            'Admin',
         ]);
     }
 
@@ -21,7 +21,7 @@ class UpdateInventoryItemRequest extends FormRequest
     {
         if ($this->filled('quantity')) {
             $this->merge([
-                'quantity' => (int) preg_replace('/[^\d\-]/', '', (string) $this->input('quantity'))
+                'quantity' => (int) preg_replace('/[^\d\-]/', '', (string) $this->input('quantity')),
             ]);
         }
     }
@@ -29,14 +29,14 @@ class UpdateInventoryItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'item_no'             => ['required', 'string', 'max:255'],
-            'name'                => ['required', 'string', 'max:255'],
-            'description'         => ['nullable', 'string', 'max:1000'],
-            'classification_id'   => ['nullable', 'exists:asset_classifications,id'],
+            'item_no' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:1000'],
+            'classification_id' => ['nullable', 'exists:asset_classifications,id'],
             'unit_of_measurement' => ['required', 'string', 'max:255'],
-            'quantity'            => ['required', 'integer', 'min:0'],
-            'store_location'      => ['required', 'string', 'max:255'],
-            'in_date'             => ['required', 'date'],
+            'quantity' => ['required', 'integer', 'min:0'],
+            'store_location' => ['required', 'string', 'max:255'],
+            'in_date' => ['required', 'date'],
         ];
     }
 }

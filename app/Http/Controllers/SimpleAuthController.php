@@ -14,7 +14,7 @@ class SimpleAuthController extends Controller
     {
         // Change this to 'username' if you log in with username
         $credentials = $request->validate([
-            'email'    => ['required', 'email'],
+            'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
@@ -26,41 +26,17 @@ class SimpleAuthController extends Controller
 
         $request->session()->regenerate();
 
-        $user    = Auth::user();
-        $rawRole = $user->role; // Get the role from the 'role' column in users table
+        $user = Auth::user();
 
-        // Redirect based on roles using Spatie's hasRole
-        if ($user->hasRole('Administrator') || $user->hasRole('Admin')) {
-            return redirect()->route('admin.dashboard');
-        } elseif ($user->hasRole('Human Resource Manager')) {
-            return redirect()->route('hr.dashboard');
-        } elseif ($user->hasRole('Inventory Manager')) {
-            return redirect()->route('inventory.dashboard');
-        } elseif ($user->hasRole('Financial Manager')) {
-            return redirect()->route('finance.dashboard');
+        // Centralized redirection logic from User model
+        $routeName = $user->getDashboardRouteName();
+
+        if ($routeName === 'home') {
+            Auth::logout();
+            abort(403, "Unknown or unmapped role '{$user->role}'. Please check the user's role in the database.");
         }
 
-        // Fallback: If Spatie hasRole fails, try checking the 'role' column (for backward compatibility or misconfiguration)
-        $roleMap = [
-            'Administrator'           => 'admin.dashboard',
-            'administrator'           => 'admin.dashboard',
-            'Human Resource Manager'  => 'hr.dashboard',
-            'HumanResourceManager'    => 'hr.dashboard',
-            'Inventory Manager'       => 'inventory.dashboard',
-            'InventoryManager'        => 'inventory.dashboard',
-            'Financial Manager'       => 'finance.dashboard',
-            'FinancialManager'        => 'finance.dashboard',
-        ];
-
-        if (isset($roleMap[$rawRole])) {
-            return redirect()->route($roleMap[$rawRole]);
-        }
-
-        // Unknown role → show a clear error
-        abort(
-            403,
-            "Unknown or unmapped role '{$rawRole}'. Please check the user's role value in the database."
-        );
+        return redirect()->route($routeName);
     }
 
     /**

@@ -1,0 +1,1921 @@
+parameters:
+	ignoreErrors:
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Attendance::whereDate().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Console/Commands/AutoCheckOutCommand.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$department.
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/SyncUsersToEmployees.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$email.
+			identifier: property.notFound
+			count: 4
+			path: app/Console/Commands/SyncUsersToEmployees.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$first_name.
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/SyncUsersToEmployees.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$id.
+			identifier: property.notFound
+			count: 4
+			path: app/Console/Commands/SyncUsersToEmployees.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$last_name.
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/SyncUsersToEmployees.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$name.
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/SyncUsersToEmployees.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$phone_number.
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/SyncUsersToEmployees.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$position.
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/SyncUsersToEmployees.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Employee::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Console/Commands/SyncUsersToEmployees.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Employee::where().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Console/Commands/SyncUsersToEmployees.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\AssetClassification::$hierarchy_path.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/AssetClassificationController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\AssetClassification::$id.
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/Admin/AssetClassificationController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\AssetClassification::$name.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/AssetClassificationController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\AssetClassification::orderBy().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/AssetClassificationController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\AssetClassification::where().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/AssetClassificationController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\AttendanceSetting::updateOrCreate().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/AttendanceSettingsController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Expense::$id.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Expense::$user.
+			identifier: property.notFound
+			count: 6
+			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Http\Request::$rejection_reason.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Authenticatable::unreadNotifications().'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\User::role().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
+
+		-
+			rawMessage: 'Call to static method warning() on an unknown class Log.'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryLoan::$approved_at.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryLoan::$approved_by.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryLoan::$employee.
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryLoan::$id.
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryLoan::$item.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryLoan::$quantity.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryLoan::$status.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::id().'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::user().'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\User::role().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
+
+		-
+			rawMessage: 'Call to static method error() on an unknown class Log.'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\InventoryLoanApprovalController::index() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\ItemCategory::$id.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/ItemCategoryController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\ItemCategory::$name.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/ItemCategoryController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\ItemCategory::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/ItemCategoryController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\ItemCategory::whereNull().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/ItemCategoryController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\LeaveRequest::$employee.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/LeaveApprovalController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\LeaveRequest::$employee_id.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/LeaveApprovalController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\LeaveRequest::$end_date.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/LeaveApprovalController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\LeaveRequest::$id.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/LeaveApprovalController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\LeaveRequest::$reason.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/LeaveApprovalController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\LeaveRequest::$start_date.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/LeaveApprovalController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\LeaveRequest::$status.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/LeaveApprovalController.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::id().'
+			identifier: method.notFound
+			count: 3
+			path: app/Http/Controllers/Admin/LeaveApprovalController.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::user().'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/LeaveApprovalController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\EmployeeOnLeave::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/LeaveApprovalController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\User::role().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/LeaveApprovalController.php
+
+		-
+			rawMessage: 'Call to static method error() on an unknown class Log.'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/LeaveApprovalController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\NotificationTemplate::$id.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/NotificationTemplateController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\NotificationTemplate::$name.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/NotificationTemplateController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\NotificationTemplate::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/NotificationTemplateController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\NotificationTemplate::orderBy().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/NotificationTemplateController.php
+
+		-
+			rawMessage: Access to an undefined property Spatie\Permission\Models\Role::$permissions.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/RolePermissionController.php
+
+		-
+			rawMessage: Offset 0 on non-empty-list<string> on left side of ?? always exists and is not nullable.
+			identifier: nullCoalesce.offset
+			count: 4
+			path: app/Http/Controllers/Admin/RolePermissionController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\SystemSetting::updateOrCreate().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/SystemSettingsController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Employee|App\Models\Expense|App\Models\InventoryItem|App\Models\LeaveRequest|App\Models\Project|App\Models\User::$deleted_at.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Employee|App\Models\Expense|App\Models\InventoryItem|App\Models\LeaveRequest|App\Models\Project|App\Models\User::$id.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			rawMessage: Access to an undefined property App\Http\Requests\Admin\StoreUserRequest::$department.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Http\Requests\Admin\StoreUserRequest::$hire_date.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Http\Requests\Admin\StoreUserRequest::$phone_number.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Http\Requests\Admin\StoreUserRequest::$position.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Http\Requests\Admin\UpdateUserRequest::$department.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Http\Requests\Admin\UpdateUserRequest::$phone_number.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Http\Requests\Admin\UpdateUserRequest::$position.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$department.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$email.
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$employee.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$first_name.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$id.
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$last_name.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$middle_name.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$name.
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$password.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$phone_number.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$position.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$role.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$status.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Http\Request::$employee_id.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Support\Optional::$profile_picture.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Employee::create().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Employee::find().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Employee::where().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\User::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: 'Call to an undefined static method Spatie\Permission\Models\Role::firstOrCreate().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: 'Call to function method_exists() with App\Models\User and ''syncRoles'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\AdminUserController::create() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\AdminUserController::edit() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\AdminUserController::enforceAdmin() is unused.'
+			identifier: method.unused
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\AdminUserController::index() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\AdminUserController::show() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/AdminUserController.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Guard::logout().'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Auth/AuthenticatedSessionController.php
+
+		-
+			rawMessage: Cannot access property $email on class-string|object.
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Controllers/Auth/AuthenticatedSessionController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Auth\AuthenticatedSessionController::create() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Auth/AuthenticatedSessionController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Http\Request::$password.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Auth/ConfirmablePasswordController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Auth\ConfirmablePasswordController::show() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Auth/ConfirmablePasswordController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Http\Request::$password.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Auth/NewPasswordController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Auth\NewPasswordController::create() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Auth/NewPasswordController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Auth\PasswordResetLinkController::create() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Auth/PasswordResetLinkController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Http\Request::$email.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Auth/RegisteredUserController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Http\Request::$name.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Auth/RegisteredUserController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Http\Request::$password.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Auth/RegisteredUserController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\User::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Auth/RegisteredUserController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Auth\RegisteredUserController::create() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Auth/RegisteredUserController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Attendance::selectRaw().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Employee::count().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Employee::where().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\EmployeeOnLeave::where().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Expense::sum().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Expense::where().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\InventoryItem::where().'
+			identifier: staticMethod.notFound
+			count: 5
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\InventoryLoan::where().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\InventoryLoan::whereIn().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\LeaveRequest::where().'
+			identifier: staticMethod.notFound
+			count: 3
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Project::count().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Project::latest().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Project::sum().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Project::withSum().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Expense::$id.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Finance/ExpenseController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Expense::$user.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Finance/ExpenseController.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::id().'
+			identifier: method.notFound
+			count: 3
+			path: app/Http/Controllers/Finance/ExpenseController.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::user().'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Finance/ExpenseController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Expense::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Finance/ExpenseController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Project::orderBy().'
+			identifier: staticMethod.notFound
+			count: 3
+			path: app/Http/Controllers/Finance/ExpenseController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\User::role().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Finance/ExpenseController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Project::$name.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Finance/ProjectController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Project::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Finance/ProjectController.php
+
+		-
+			rawMessage: 'Access to an undefined property App\Models\Attendance|Illuminate\Database\Eloquent\Collection<int, App\Models\Attendance>::$clock_out.'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Access to an undefined property App\Models\Attendance|Illuminate\Database\Eloquent\Collection<int, App\Models\Attendance>::$employee_id.'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$employee_id.
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Authenticatable::can().'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Attendance::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Attendance::where().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Employee::findOrFail().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Employee::orderBy().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Call to static method error() on an unknown class Log.'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Employee::$profile_picture.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Http\Request::$q.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Http\Request::$status.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Department::firstOrCreate().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Employee::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Position::firstOrCreate().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Employee::$id.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/HR/LeaveRequestController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Http\Request::$q.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/HR/LeaveRequestController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Http\Request::$status.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/HR/LeaveRequestController.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::user().'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/HR/LeaveRequestController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Employee::orderBy().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/HR/LeaveRequestController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\LeaveRequest::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/HR/LeaveRequestController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\LeaveRequest::where().'
+			identifier: staticMethod.notFound
+			count: 4
+			path: app/Http/Controllers/HR/LeaveRequestController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\User::role().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/HR/LeaveRequestController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\User::where().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/HR/LeaveRequestController.php
+
+		-
+			rawMessage: 'Call to static method error() on an unknown class Log.'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/HR/LeaveRequestController.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Authenticatable::getDashboardRouteName().'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/HomeController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryItem::$id.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryItemController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryItem::$quantity.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryItemController.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::id().'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryItemController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\AssetClassification::orderBy().'
+			identifier: staticMethod.notFound
+			count: 3
+			path: app/Http/Controllers/Inventory/InventoryItemController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\InventoryItem::count().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryItemController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\InventoryItem::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryItemController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\InventoryItem::where().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Http/Controllers/Inventory/InventoryItemController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\InventoryItem::whereNotNull().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryItemController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\InventoryLog::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryItemController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Vendor::active().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Http/Controllers/Inventory/InventoryItemController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryLoan::$employee.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryLoan::$id.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryLoan::$quantity.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryLoan::$returned_at.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryLoan::$status.
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::id().'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::user().'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Employee::orderBy().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\InventoryItem::findOrFail().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\InventoryItem::orderBy().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\InventoryLoan::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\User::role().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
+
+		-
+			rawMessage: 'Call to static method error() on an unknown class Log.'
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
+
+		-
+			rawMessage: 'Call to static method warning() on an unknown class Log.'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Inventory\InventoryLoanController::create() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Inventory\InventoryLoanController::edit() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Inventory\InventoryLoanController::index() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Inventory\InventoryLoanController::show() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Http\Request::$item_id.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryLogController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Http\Request::$user_id.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryLogController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Vendor::$name.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Inventory/VendorController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Vendor::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Inventory/VendorController.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::user().'
+			identifier: method.notFound
+			count: 3
+			path: app/Http/Controllers/NotificationController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$email.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$employee.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$first_name.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$id.
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$last_name.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$middle_name.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$password.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$phone_number.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Http\Request::$email.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Http\Request::$name.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Http\Request::$password.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Http\Request::$phone_number.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Authenticatable::getProfileRouteName().'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Authenticatable::save().'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Employee::where().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			rawMessage: 'Call to static method warning() on an unknown class Log.'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/ProfilePictureController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$role.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/SimpleAuthController.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Authenticatable::hasRole().'
+			identifier: method.notFound
+			count: 5
+			path: app/Http/Controllers/SimpleAuthController.php
+
+		-
+			rawMessage: 'Array has 3 duplicate keys with value ''role'' (''role'', ''role'', ''role'').'
+			identifier: array.duplicateKey
+			count: 1
+			path: app/Http/Kernel.php
+
+		-
+			rawMessage: Class App\Http\Middleware\EncryptCookies not found.
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Kernel.php
+
+		-
+			rawMessage: Class App\Http\Middleware\PreventRequestsDuringMaintenance not found.
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Kernel.php
+
+		-
+			rawMessage: Class App\Http\Middleware\TrimStrings not found.
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Kernel.php
+
+		-
+			rawMessage: Class App\Http\Middleware\TrustProxies not found.
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Kernel.php
+
+		-
+			rawMessage: Class App\Http\Middleware\VerifyCsrfToken not found.
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Kernel.php
+
+		-
+			rawMessage: Class Spatie\Permission\Middlewares\PermissionMiddleware not found.
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Kernel.php
+
+		-
+			rawMessage: Class Spatie\Permission\Middlewares\RoleMiddleware not found.
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Kernel.php
+
+		-
+			rawMessage: Class Spatie\Permission\Middlewares\RoleOrPermissionMiddleware not found.
+			identifier: class.notFound
+			count: 2
+			path: app/Http/Kernel.php
+
+		-
+			rawMessage: 'Call to an undefined method Symfony\Component\HttpFoundation\Response::header().'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Middleware/PreventBackHistory.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::check().'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Middleware/RedirectIfAuthenticated.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::user().'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Middleware/RedirectIfAuthenticated.php
+
+		-
+			rawMessage: Cannot access property $id on object|string.
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Requests/Admin/UpdateUserRequest.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Guard::attempt().'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Requests/Auth/LoginRequest.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\LeaveRequest::where().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Requests/HR/StoreLeaveRequest.php
+
+		-
+			rawMessage: Access to an undefined property App\Http\Requests\HR\UpdateEmployeeRequest::$employee.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Requests/HR/UpdateEmployeeRequest.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\AssetClassification::$depth.
+			identifier: property.notFound
+			count: 2
+			path: app/Models/AssetClassification.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\AssetClassification::$hierarchy_path.
+			identifier: property.notFound
+			count: 3
+			path: app/Models/AssetClassification.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\AssetClassification::$id.
+			identifier: property.notFound
+			count: 2
+			path: app/Models/AssetClassification.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\AssetClassification::$name.
+			identifier: property.notFound
+			count: 2
+			path: app/Models/AssetClassification.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\AssetClassification::$parent.
+			identifier: property.notFound
+			count: 2
+			path: app/Models/AssetClassification.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\AssetClassification::$parent_id.
+			identifier: property.notFound
+			count: 2
+			path: app/Models/AssetClassification.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\InventoryItem::whereHas().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Models/AssetClassification.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Attendance::$clock_in.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Attendance::$clock_out.
+			identifier: property.notFound
+			count: 3
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Attendance::$status.
+			identifier: property.notFound
+			count: 3
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Attendance::$worked_minutes.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Access to an undefined property $this(App\Models\Employee)::$profile_picture_url.'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Employee::$department_rel.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Employee::$id.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Employee::$name.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Employee::$position_rel.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Employee::$profile_picture.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Employee::$updated_at.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Filesystem\Filesystem::url().'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\ActivityLog::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Department::firstOrCreate().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Position::firstOrCreate().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Call to function method_exists() with class-string<static(App\Models\Employee)> and ''restored'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Expense::$id.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Expense.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\ActivityLog::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Models/Expense.php
+
+		-
+			rawMessage: 'Call to function method_exists() with class-string<static(App\Models\Expense)> and ''restored'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Models/Expense.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryItem::$id.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/InventoryItem.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryItem::$on_loan_quantity.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/InventoryItem.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryItem::$quantity.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/InventoryItem.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\ActivityLog::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Models/InventoryItem.php
+
+		-
+			rawMessage: 'Call to function method_exists() with class-string<static(App\Models\InventoryItem)> and ''restored'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Models/InventoryItem.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryLoan::$id.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/InventoryLoan.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\ActivityLog::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Models/InventoryLoan.php
+
+		-
+			rawMessage: 'Call to function method_exists() with class-string<static(App\Models\InventoryLoan)> and ''restored'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Models/InventoryLoan.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\LeaveRequest::$id.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/LeaveRequest.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\ActivityLog::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Models/LeaveRequest.php
+
+		-
+			rawMessage: 'Call to function method_exists() with class-string<static(App\Models\LeaveRequest)> and ''restored'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Models/LeaveRequest.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\NotificationTemplate::$body.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/NotificationTemplate.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Project::$budget.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Project.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Project::$id.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Project.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Project::$total_expenses.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Project.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\ActivityLog::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Models/Project.php
+
+		-
+			rawMessage: 'Call to function method_exists() with class-string<static(App\Models\Project)> and ''restored'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Models/Project.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$employee.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/User.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$first_name.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/User.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$id.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/User.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$last_name.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/User.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$middle_name.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/User.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$name.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/User.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$role.
+			identifier: property.notFound
+			count: 2
+			path: app/Models/User.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$unreadNotifications.
+			identifier: property.notFound
+			count: 1
+			path: app/Models/User.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\ActivityLog::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Models/User.php
+
+		-
+			rawMessage: 'Call to function method_exists() with class-string<static(App\Models\User)> and ''restored'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Models/User.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Vendor::where().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Models/Vendor.php
+
+		-
+			rawMessage: 'Parameter #1 $string of function str_pad expects string, (float|int) given.'
+			identifier: argument.type
+			count: 2
+			path: app/Models/Vendor.php
+
+		-
+			rawMessage: Expression on left side of ?? is not nullable.
+			identifier: nullCoalesce.expr
+			count: 2
+			path: app/Notifications/LeaveRequestStatusNotification.php
+
+		-
+			rawMessage: Using nullsafe property access "?->name" on left side of ?? is unnecessary. Use -> instead.
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Notifications/LeaveRequestStatusNotification.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryItem::$id.
+			identifier: property.notFound
+			count: 2
+			path: app/Notifications/LowStockNotification.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryItem::$item_no.
+			identifier: property.notFound
+			count: 1
+			path: app/Notifications/LowStockNotification.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryItem::$name.
+			identifier: property.notFound
+			count: 4
+			path: app/Notifications/LowStockNotification.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryItem::$quantity.
+			identifier: property.notFound
+			count: 3
+			path: app/Notifications/LowStockNotification.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\AssetClassification::$children.
+			identifier: property.notFound
+			count: 1
+			path: app/Services/AssetClassificationService.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\AssetClassification::$name.
+			identifier: property.notFound
+			count: 1
+			path: app/Services/AssetClassificationService.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\AssetClassification::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Services/AssetClassificationService.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\Attendance::$employee.
+			identifier: property.notFound
+			count: 1
+			path: app/Services/AttendanceService.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Database\Query\Builder::whereHas().'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/AttendanceService.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Attendance::whereDate().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Services/AttendanceService.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\AttendanceSetting::where().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Services/AttendanceService.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Employee::count().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Services/AttendanceService.php
+
+		-
+			rawMessage: 'Parameter #1 $callback of method Illuminate\Support\Collection<(int|string),Illuminate\Support\Collection<int, stdClass>>::map() contains unresolvable type.'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Services/AttendanceService.php
+
+		-
+			rawMessage: 'Parameter #1 $callback of method Illuminate\Support\Collection<(int|string),array<string, mixed>>::sortBy() contains unresolvable type.'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Services/AttendanceService.php
+
+		-
+			rawMessage: Using nullsafe property access "?->value" on left side of ?? is unnecessary. Use -> instead.
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/AttendanceService.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryItem::$id.
+			identifier: property.notFound
+			count: 2
+			path: app/Services/InventoryService.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\InventoryItem::$quantity.
+			identifier: property.notFound
+			count: 3
+			path: app/Services/InventoryService.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\InventoryLog::create().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Services/InventoryService.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\User::role().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Services/InventoryService.php
+
+		-
+			rawMessage: 'Method App\View\Components\AppLayout::render() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
+			identifier: return.type
+			count: 1
+			path: app/View/Components/AppLayout.php
+
+		-
+			rawMessage: 'Method App\View\Components\GuestLayout::render() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
+			identifier: return.type
+			count: 1
+			path: app/View/Components/GuestLayout.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Employee::create().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: database/migrations/2026_01_15_000000_sync_users_to_employees.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\Employee::where().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: database/migrations/2026_01_15_000000_sync_users_to_employees.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Database\Schema\ForeignKeyDefinition::after().'
+			identifier: method.notFound
+			count: 2
+			path: database/migrations/2026_01_15_105136_add_status_and_approvals_to_expenses_table.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\User::firstOrCreate().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: database/seeders/RolesAndAdminSeeder.php
+
+		-
+			rawMessage: 'Call to an undefined static method Spatie\Permission\Models\Role::firstOrCreate().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: database/seeders/RolesAndAdminSeeder.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$email.
+			identifier: property.notFound
+			count: 1
+			path: routes/api.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$id.
+			identifier: property.notFound
+			count: 1
+			path: routes/api.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$name.
+			identifier: property.notFound
+			count: 1
+			path: routes/api.php
+
+		-
+			rawMessage: 'Call to static method middleware() on an unknown class Route.'
+			identifier: class.notFound
+			count: 2
+			path: routes/api.php
+
+		-
+			rawMessage: 'Call to static method post() on an unknown class Route.'
+			identifier: class.notFound
+			count: 1
+			path: routes/api.php
+
+		-
+			rawMessage: 'Undefined variable: $this'
+			identifier: variable.undefined
+			count: 1
+			path: routes/console.php
+
+		-
+			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::user().'
+			identifier: method.notFound
+			count: 1
+			path: routes/web.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\User::where().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: routes/web.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\User::factory().'
+			identifier: staticMethod.notFound
+			count: 3
+			path: tests/Feature/Auth/AuthenticationTest.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\User::factory().'
+			identifier: staticMethod.notFound
+			count: 3
+			path: tests/Feature/Auth/EmailVerificationTest.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\User::factory().'
+			identifier: staticMethod.notFound
+			count: 3
+			path: tests/Feature/Auth/PasswordConfirmationTest.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\User::factory().'
+			identifier: staticMethod.notFound
+			count: 3
+			path: tests/Feature/Auth/PasswordResetTest.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\User::factory().'
+			identifier: staticMethod.notFound
+			count: 2
+			path: tests/Feature/Auth/PasswordUpdateTest.php
+
+		-
+			rawMessage: 'Call to an undefined static method App\Models\User::factory().'
+			identifier: staticMethod.notFound
+			count: 5
+			path: tests/Feature/ProfileTest.php
+
+		-
+			rawMessage: 'Call to method PHPUnit\Framework\Assert::assertTrue() with true will always evaluate to true.'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/ExampleTest.php

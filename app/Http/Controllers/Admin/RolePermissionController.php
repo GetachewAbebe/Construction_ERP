@@ -4,17 +4,18 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RolePermissionController extends Controller
 {
     public function index()
     {
         $roles = Role::with('permissions')->get();
-        $permissions = Permission::all()->groupBy(function($permission) {
+        $permissions = Permission::all()->groupBy(function ($permission) {
             // Group permissions by module (e.g., 'user.create' -> 'user')
             $parts = explode('.', $permission->name);
+
             return $parts[0] ?? 'general';
         });
 
@@ -23,8 +24,9 @@ class RolePermissionController extends Controller
 
     public function create()
     {
-        $permissions = Permission::all()->groupBy(function($permission) {
+        $permissions = Permission::all()->groupBy(function ($permission) {
             $parts = explode('.', $permission->name);
+
             return $parts[0] ?? 'general';
         });
 
@@ -46,7 +48,7 @@ class RolePermissionController extends Controller
             'guard_name' => 'web',
         ]);
 
-        if (!empty($validated['permissions'])) {
+        if (! empty($validated['permissions'])) {
             $role->syncPermissions($validated['permissions']);
         }
 
@@ -56,8 +58,9 @@ class RolePermissionController extends Controller
 
     public function edit(Role $role)
     {
-        $permissions = Permission::all()->groupBy(function($permission) {
+        $permissions = Permission::all()->groupBy(function ($permission) {
             $parts = explode('.', $permission->name);
+
             return $parts[0] ?? 'general';
         });
 
@@ -69,7 +72,7 @@ class RolePermissionController extends Controller
     public function update(Request $request, Role $role)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
+            'name' => 'required|string|max:255|unique:roles,name,'.$role->id,
             'display_name' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:500',
             'permissions' => 'nullable|array',
@@ -90,7 +93,7 @@ class RolePermissionController extends Controller
     {
         // Prevent deletion of core system roles
         $protectedRoles = ['Administrator', 'HumanResourceManager', 'InventoryManager', 'FinancialManager'];
-        
+
         if (in_array($role->name, $protectedRoles)) {
             return back()->with('error', 'Critical Error: Core system roles are protected and cannot be expunged from the authorization matrix.');
         }
@@ -104,8 +107,9 @@ class RolePermissionController extends Controller
 
     public function permissions()
     {
-        $permissions = Permission::all()->groupBy(function($permission) {
+        $permissions = Permission::all()->groupBy(function ($permission) {
             $parts = explode('.', $permission->name);
+
             return $parts[0] ?? 'general';
         });
 

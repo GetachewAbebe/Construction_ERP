@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         // 1. Create Departments Table
-        if (!Schema::hasTable('departments')) {
+        if (! Schema::hasTable('departments')) {
             Schema::create('departments', function (Blueprint $table) {
                 $table->id();
                 $table->string('name')->unique();
@@ -21,7 +21,7 @@ return new class extends Migration
         }
 
         // 2. Create Positions Table
-        if (!Schema::hasTable('positions')) {
+        if (! Schema::hasTable('positions')) {
             Schema::create('positions', function (Blueprint $table) {
                 $table->id();
                 $table->string('title')->unique();
@@ -31,10 +31,10 @@ return new class extends Migration
 
         // 3. Add FK columns to Employees Table
         Schema::table('employees', function (Blueprint $table) {
-            if (!Schema::hasColumn('employees', 'department_id')) {
+            if (! Schema::hasColumn('employees', 'department_id')) {
                 $table->foreignId('department_id')->nullable()->constrained('departments')->nullOnDelete();
             }
-            if (!Schema::hasColumn('employees', 'position_id')) {
+            if (! Schema::hasColumn('employees', 'position_id')) {
                 $table->foreignId('position_id')->nullable()->constrained('positions')->nullOnDelete();
             }
         });
@@ -47,10 +47,14 @@ return new class extends Migration
     {
         Schema::table('employees', function (Blueprint $table) {
             $drops = [];
-            if (Schema::hasColumn('employees', 'department_id')) $drops[] = 'department_id';
-            if (Schema::hasColumn('employees', 'position_id')) $drops[] = 'position_id';
-            
-            if (!empty($drops)) {
+            if (Schema::hasColumn('employees', 'department_id')) {
+                $drops[] = 'department_id';
+            }
+            if (Schema::hasColumn('employees', 'position_id')) {
+                $drops[] = 'position_id';
+            }
+
+            if (! empty($drops)) {
                 $table->dropForeign(['department_id']);
                 $table->dropForeign(['position_id']);
                 $table->dropColumn($drops);

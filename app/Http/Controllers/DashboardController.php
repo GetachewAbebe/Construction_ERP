@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\Attendance;
+use App\Models\Employee;
+use App\Models\Expense;
 use App\Models\InventoryItem;
 use App\Models\InventoryLoan;
-use App\Models\Project;
-use App\Models\Expense;
-use App\Models\Employee;
 use App\Models\LeaveRequest;
-use App\Models\Attendance;
+use App\Models\Project;
+use Illuminate\Support\Facades\DB;
+
 // use App\Models\EmployeeOnLeave; // Removed as it might be a custom view/model not standard.
 // If code below uses it, I will assume it exists or replace with DB query.
 
@@ -22,15 +22,36 @@ class DashboardController extends Controller
      */
     public function admin()
     {
-        // Pending requests counts
-        $pendingLoanCount    = InventoryLoan::where('status', 'pending')->count();
+        // 1. Pending Approvals
+        $pendingLoanCount = InventoryLoan::where('status', 'pending')->count();
         $pendingExpenseCount = Expense::where('status', 'pending')->count();
-        $pendingLeaveCount   = LeaveRequest::where('status', 'pending')->count(); // Standardized to lowercase
+        $pendingLeaveCount = LeaveRequest::where('status', 'pending')->count();
+
+        // 2. System Intelligence (Stats)
+        $totalUsers = \App\Models\User::count();
+        $totalProjects = Project::count();
+        $totalEmployees = Employee::count();
+        
+        // 3. Activity Stream
+        $activities = \App\Models\ActivityLog::with('user')
+            ->latest()
+            ->take(10)
+            ->get();
+
+        // 4. System Health calculation (Simple logic: Pending vs total relevant records)
+        // High pending count reduces health. Higher approvals/records increase it.
+        $totalCritical = $pendingLoanCount + $pendingExpenseCount + $pendingLeaveCount;
+        $systemHealth = $totalCritical > 15 ? max(65, 100 - ($totalCritical * 2)) : 98;
 
         return view('dashboards.admin', [
-            'pendingLoanCount'    => $pendingLoanCount,
-            'pendingLeaveCount'   => $pendingLeaveCount,
+            'pendingLoanCount' => $pendingLoanCount,
+            'pendingLeaveCount' => $pendingLeaveCount,
             'pendingExpenseCount' => $pendingExpenseCount,
+            'totalUsers' => $totalUsers,
+            'totalProjects' => $totalProjects,
+            'totalEmployees' => $totalEmployees,
+            'activities' => $activities,
+            'systemHealth' => $systemHealth,
         ]);
     }
 
@@ -41,7 +62,7 @@ class DashboardController extends Controller
     {
         $employeeCount = Employee::count();
         $activeEmployees = Employee::where('status', 'Active')->count();
-        
+
         // Calculate real-time "On Leave Today"
         $today = now()->toDateString();
         // Using DB query instead of possibly missing Model if safe, but user had it working. I'll invoke Model as per original.
@@ -60,7 +81,7 @@ class DashboardController extends Controller
 
         $pendingLeaveApprovals = LeaveRequest::where('status', 'pending')->count();
         $recentHires = Employee::where('hire_date', '>=', now()->subDays(30))->count();
-        
+
         // Latest 5 employees
         $latestEmployees = Employee::with(['department_rel', 'position_rel'])->latest('created_at')->take(5)->get();
 
@@ -81,7 +102,7 @@ class DashboardController extends Controller
 
         $attendanceByDate = [];
         foreach ($rawAttendance as $row) {
-            // $row->date might be just the date string depending on DB driver, 
+            // $row->date might be just the date string depending on DB driver,
             // casting in model might make it Carbon. Safest to handle both.
             $d = is_string($row->date) ? substr($row->date, 0, 10) : $row->date->format('Y-m-d');
             $attendanceByDate[$d][$row->status] = $row->count;
@@ -94,18 +115,18 @@ class DashboardController extends Controller
         for ($i = 6; $i >= 0; $i--) {
             $dateObj = now()->subDays($i);
             $dateString = $dateObj->format('Y-m-d');
-            
+
             $chartLabels[] = $dateObj->format('D'); // e.g. Mon, Tue
-            
+
             // Use constants from Model or hardcoded strings matching DB
             $onTimeData[] = $attendanceByDate[$dateString]['present'] ?? 0;
-            $lateData[]   = $attendanceByDate[$dateString]['late'] ?? 0;
+            $lateData[] = $attendanceByDate[$dateString]['late'] ?? 0;
         }
 
         return view('dashboards.hr', compact(
-            'employeeCount', 
-            'activeEmployees', 
-            'onLeaveTodayCount', 
+            'employeeCount',
+            'activeEmployees',
+            'onLeaveTodayCount',
             'pendingLeaveApprovals',
             'recentHires',
             'latestEmployees',
@@ -127,7 +148,7 @@ class DashboardController extends Controller
             ->where('quantity', '<=', 5)
             ->count();
         $zeroStockCount = InventoryItem::where('quantity', '<=', 0)->count();
-        
+
         $totalItems = $stableItemsCount + $lowStockCount + $zeroStockCount;
 
         // Open loans: active commitments
@@ -179,7 +200,7 @@ class DashboardController extends Controller
         $projectsParams = Project::withSum('expenses', 'amount')->orderByDesc('budget')->take(8)->get();
         $portfolioLabels = $projectsParams->pluck('name')->toArray();
         $portfolioBudgets = $projectsParams->pluck('budget')->toArray();
-        $portfolioExpenses = $projectsParams->pluck('expenses_sum_amount')->map(fn($v) => $v ?? 0)->toArray();
+        $portfolioExpenses = $projectsParams->pluck('expenses_sum_amount')->map(fn ($v) => $v ?? 0)->toArray();
 
         return view('dashboards.finance', compact(
             'totalProjects',

@@ -11,7 +11,7 @@ class NotificationTemplateController extends Controller
     public function index()
     {
         $templates = NotificationTemplate::orderBy('type')->orderBy('name')->get();
-        
+
         return view('admin.notification_templates.index', compact('templates'));
     }
 
@@ -33,7 +33,7 @@ class NotificationTemplateController extends Controller
         ]);
 
         // Convert comma-separated variables to array
-        if (!empty($validated['variables'])) {
+        if (! empty($validated['variables'])) {
             $validated['variables'] = array_map('trim', explode(',', $validated['variables']));
         } else {
             $validated['variables'] = [];
@@ -55,7 +55,7 @@ class NotificationTemplateController extends Controller
     public function update(Request $request, NotificationTemplate $notificationTemplate)
     {
         $validated = $request->validate([
-            'key' => 'required|string|max:255|regex:/^[a-z0-9_]+$/|unique:notification_templates,key,' . $notificationTemplate->id,
+            'key' => 'required|string|max:255|regex:/^[a-z0-9_]+$/|unique:notification_templates,key,'.$notificationTemplate->id,
             'name' => 'required|string|max:255',
             'subject' => 'nullable|string|max:255',
             'body' => 'required|string',
@@ -65,7 +65,7 @@ class NotificationTemplateController extends Controller
         ]);
 
         // Convert comma-separated variables to array
-        if (!empty($validated['variables'])) {
+        if (! empty($validated['variables'])) {
             $validated['variables'] = array_map('trim', explode(',', $validated['variables']));
         } else {
             $validated['variables'] = [];
@@ -92,9 +92,9 @@ class NotificationTemplateController extends Controller
     {
         // Generate sample data for preview
         $sampleData = [];
-        if (!empty($notificationTemplate->variables)) {
+        if (! empty($notificationTemplate->variables)) {
             foreach ($notificationTemplate->variables as $variable) {
-                $sampleData[$variable] = '[' . strtoupper($variable) . '_VALUE]';
+                $sampleData[$variable] = '['.strtoupper($variable).'_VALUE]';
             }
         }
 

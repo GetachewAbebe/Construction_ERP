@@ -7,12 +7,13 @@
         <div class="col">
             <h1 class="display-3 fw-900 text-erp-deep mb-0 tracking-tight">Attendance Registry</h1>
         </div>
-        <div class="col-auto">
-            @can('manage-attendance')
-            <a href="{{ route('hr.attendance.monthly-summary') }}" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-900 shadow-xl border-0 transform-hover">
-                <i class="bi bi-file-earmark-bar-graph me-2 fs-5"></i>VIEW MONTHLY SUMMARY
+        <div class="col-auto d-flex gap-2">
+            <a href="{{ route('hr.attendance.daily-sheet') }}" class="btn btn-erp-primary rounded-pill px-4 fw-800 shadow-lg border-0">
+                <i class="bi bi-shield-check me-2"></i>DAILY SESSION SHEET
             </a>
-            @endcan
+            <a href="{{ route('hr.attendance.weekly-salary') }}" class="btn btn-outline-erp rounded-pill px-4 fw-bold">
+                <i class="bi bi-cash-stack me-2"></i>SALARY ANALYSIS
+            </a>
         </div>
     </div>
 </div>
@@ -21,28 +22,28 @@
 <div class="row g-4 mb-4 stagger-entrance">
     <div class="col-md-3">
         <div class="card hardened-glass border-0 p-4 shadow-sm">
-            <div class="small text-muted fw-bold text-uppercase mb-2">Present Today</div>
+            <div class="small text-muted fw-bold text-uppercase mb-2">Morning Session</div>
             <div class="d-flex align-items-end gap-2">
-                <div class="fw-800 fs-2 text-success">{{ $todayStats['present'] ?? 0 }}</div>
-                <div class="text-muted small fw-600 mb-2">/ {{ $employees->count() }} Total</div>
+                <div class="fw-800 fs-2 text-primary">{{ $todayStats['morning_present'] ?? 0 }}</div>
+                <div class="text-muted small fw-600 mb-2">/ {{ $employees->count() }} Present</div>
             </div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="card hardened-glass border-0 p-4 shadow-sm">
-            <div class="small text-muted fw-bold text-uppercase mb-2">Late Arrivals</div>
+            <div class="small text-muted fw-bold text-uppercase mb-2">Afternoon Session</div>
             <div class="d-flex align-items-end gap-2">
-                <div class="fw-800 fs-2 text-warning">{{ $todayStats['late'] ?? 0 }}</div>
-                <div class="text-muted small fw-600 mb-2">Incidents</div>
+                <div class="fw-800 fs-2 text-info">{{ $todayStats['afternoon_present'] ?? 0 }}</div>
+                <div class="text-muted small fw-600 mb-2">/ {{ $employees->count() }} Present</div>
             </div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="card hardened-glass border-0 p-4 shadow-sm">
-            <div class="small text-muted fw-bold text-uppercase mb-2">Absent Today</div>
+            <div class="small text-muted fw-bold text-uppercase mb-2">Daily Capacity</div>
             <div class="d-flex align-items-end gap-2">
-                <div class="fw-800 fs-2 text-danger">{{ $todayStats['absent'] ?? 0 }}</div>
-                <div class="text-muted small fw-600 mb-2">Unaccounted</div>
+                <div class="fw-800 fs-2 text-erp-deep">{{ $employees->count() }}</div>
+                <div class="text-muted small fw-600 mb-2">Associates</div>
             </div>
         </div>
     </div>
@@ -171,10 +172,11 @@
                 <tr>
                     <th class="ps-4">Operational Date</th>
                     <th>Personnel Identity</th>
-                    <th class="text-center">Entry</th>
-                    <th class="text-center">Exit</th>
-                    <th>Status Context</th>
-                    <th class="text-end pe-4">Actions</th>
+                    <th class="text-center">Morning Session</th>
+                    <th class="text-center">Afternoon Session</th>
+                    <th class="text-center">Clock Timeline</th>
+                    <th class="text-center">Credit Units</th>
+                    <th class="text-end pe-4">Context</th>
                 </tr>
             </thead>
             <tbody>
@@ -185,33 +187,40 @@
                             <div class="fw-800 text-dark">{{ $at->employee->name ?? 'Legacy Identity' }}</div>
                             <small class="text-muted fw-bold">{{ $at->employee->department ?? 'General Operations' }}</small>
                         </td>
-                        <td class="text-center fw-600">{{ $at->clock_in ? $at->clock_in->format('H:i') : '—' }}</td>
-                        <td class="text-center fw-600">{{ $at->clock_out ? $at->clock_out->format('H:i') : '—' }}</td>
-                        <td>
+                        <td class="text-center">
                             @php
-                                $statusIcon = match($at->status) {
-                                    'present' => 'bi-circle-fill text-success',
-                                    'late' => 'bi-dash-circle-fill text-warning',
-                                    'absent' => 'bi-x-circle-fill text-danger',
-                                    default => 'bi-question-circle text-muted'
+                                $mColor = match($at->morning_status) {
+                                    'present' => 'bg-success',
+                                    'late' => 'bg-warning text-dark',
+                                    'leave' => 'bg-info',
+                                    default => 'bg-danger'
                                 };
                             @endphp
-                            <span class="d-flex align-items-center gap-2 fw-700 text-erp-deep">
-                                <i class="bi {{ $statusIcon }}" style="font-size: 8px;"></i>
-                                {{ ucfirst($at->status) }}
+                            <span class="badge {{ $mColor }} rounded-pill px-3">
+                                {{ strtoupper($at->morning_status) }}
                             </span>
                         </td>
+                        <td class="text-center">
+                            @php
+                                $aColor = match($at->afternoon_status) {
+                                    'present' => 'bg-success',
+                                    'leave' => 'bg-info',
+                                    default => 'bg-danger'
+                                };
+                            @endphp
+                            <span class="badge {{ $aColor }} rounded-pill px-3">
+                                {{ strtoupper($at->afternoon_status) }}
+                            </span>
+                        </td>
+                        <td class="text-center fw-800 text-erp-primary">
+                            {{ number_format($at->total_credit, 1) }}
+                        </td>
+                        <td class="text-center">
+                            <div class="small fw-bold text-dark">IN: {{ $at->clock_in ? $at->clock_in->format('H:i') : '—' }}</div>
+                            <div class="small fw-bold text-muted">OUT: {{ $at->clock_out ? $at->clock_out->format('H:i') : '—' }}</div>
+                        </td>
                         <td class="text-end pe-4">
-                            @if(!$at->clock_out)
-                                <form action="{{ route('hr.attendance.check-out', $at->id) }}" method="POST" onsubmit="return confirm('Authorize site departure?');">
-                                    @csrf
-                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-800">
-                                        Force Depart
-                                    </button>
-                                </form>
-                            @else
-                                <span class="badge bg-light text-muted fw-normal rounded-pill px-3">Duty Concluded</span>
-                            @endif
+                            <small class="text-muted">{{ $at->note ?: 'Operational record' }}</small>
                         </td>
                     </tr>
                 @empty

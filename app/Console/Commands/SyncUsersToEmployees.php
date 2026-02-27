@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\User;
 use App\Models\Employee;
+use App\Models\User;
+use Illuminate\Console\Command;
 
 class SyncUsersToEmployees extends Command
 {
@@ -36,12 +36,12 @@ class SyncUsersToEmployees extends Command
         foreach ($users as $user) {
             // Try to find employee by user_id first, then email
             $employee = Employee::where('user_id', $user->id)
-                                ->orWhere('email', $user->email)
-                                ->first();
+                ->orWhere('email', $user->email)
+                ->first();
 
-            if (!$employee) {
+            if (! $employee) {
                 $this->info("Creating employee for user: {$user->email}");
-                
+
                 // Handle name components
                 // If user has direct columns, use them. If not, split the accessor 'name'.
                 $firstName = $user->first_name;
@@ -55,14 +55,14 @@ class SyncUsersToEmployees extends Command
                 }
 
                 Employee::create([
-                    'user_id'    => $user->id,
+                    'user_id' => $user->id,
                     'first_name' => $firstName,
-                    'last_name'  => $lastName ?: 'User',
-                    'email'      => $user->email,
-                    'status'     => $user->status ?? 'Active',
-                    'hire_date'  => now(),
-                    'phone'      => $user->phone_number,
-                    'position'   => $user->position,
+                    'last_name' => $lastName ?: 'User',
+                    'email' => $user->email,
+                    'status' => $user->status ?? 'Active',
+                    'hire_date' => now(),
+                    'phone' => $user->phone_number,
+                    'position' => $user->position,
                     'department' => $user->department,
                 ]);
                 $count++;
@@ -76,7 +76,7 @@ class SyncUsersToEmployees extends Command
             }
         }
 
-        $this->info("Sync Complete.");
+        $this->info('Sync Complete.');
         $this->info("Created: $count");
         $this->info("Linked: $linked");
     }

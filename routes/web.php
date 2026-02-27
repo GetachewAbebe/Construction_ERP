@@ -1,22 +1,17 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-
-use App\Http\Controllers\SimpleAuthController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\AdminUserController;
-
-use App\Http\Controllers\HR\EmployeeController;
-use App\Http\Controllers\HR\LeaveRequestController;
-use App\Http\Controllers\Admin\LeaveApprovalController;
-
-use App\Http\Controllers\Inventory\InventoryItemController;
-use App\Http\Controllers\Inventory\InventoryLoanController;
 use App\Http\Controllers\Admin\InventoryLoanApprovalController;
-
+use App\Http\Controllers\Admin\LeaveApprovalController;
+use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HR\ApprovedLeavesController;
+use App\Http\Controllers\HR\EmployeeController;
+use App\Http\Controllers\HR\LeaveRequestController;
+use App\Http\Controllers\Inventory\InventoryItemController;
+use App\Http\Controllers\Inventory\InventoryLoanController;
+use App\Http\Controllers\SimpleAuthController;
+use Illuminate\Support\Facades\Route;
 
 /**
  * --------------------------------------------------------------------------
@@ -26,11 +21,10 @@ use App\Http\Controllers\HR\ApprovedLeavesController;
  *          if authed -> redirect to dashboard based on role
  * POST /  -> perform login and redirect based on role
  */
-
-Route::get('/', HomeController::class)->name('home');
+Route::get('/', HomeController::class)->middleware('throttle:system_global')->name('home');
 
 // Login submit
-Route::post('/', [SimpleAuthController::class, 'login'])->name('login');
+Route::post('/', [SimpleAuthController::class, 'login'])->middleware('throttle:auth')->name('login');
 
 /**
  * --------------------------------------------------------------------------
@@ -41,15 +35,15 @@ Route::post('/', [SimpleAuthController::class, 'login'])->name('login');
  * GET  /reset-password/{token} → show reset password form
  * POST /reset-password → update password
  */
-use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
 
 Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
     ->middleware('guest')
     ->name('password.request');
 
 Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
-    ->middleware('guest')
+    ->middleware(['guest', 'throttle:auth'])
     ->name('password.email');
 
 Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
@@ -57,7 +51,7 @@ Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
     ->name('password.reset');
 
 Route::post('/reset-password', [NewPasswordController::class, 'store'])
-    ->middleware('guest')
+    ->middleware(['guest', 'throttle:auth'])
     ->name('password.update');
 
 /**
@@ -86,16 +80,23 @@ Route::get('/profile-picture/{filename}', [App\Http\Controllers\ProfilePictureCo
     ->where('filename', '.*') // Capture subdirectories if any
     ->name('employee.profile-picture');
 
-
 // Notifications
 Route::middleware('auth')->group(function () {
     Route::get('/notifications', function () {
         $user = auth()->user();
-        if ($user->hasRole('Administrator')) return redirect()->route('admin.notifications');
-        if ($user->hasRole('HumanResourceManager')) return redirect()->route('hr.notifications');
-        if ($user->hasRole('InventoryManager')) return redirect()->route('inventory.notifications');
-        if ($user->hasRole('FinancialManager')) return redirect()->route('finance.notifications');
-        
+        if ($user->hasRole('Administrator')) {
+            return redirect()->route('admin.notifications');
+        }
+        if ($user->hasRole('HumanResourceManager')) {
+            return redirect()->route('hr.notifications');
+        }
+        if ($user->hasRole('InventoryManager')) {
+            return redirect()->route('inventory.notifications');
+        }
+        if ($user->hasRole('FinancialManager')) {
+            return redirect()->route('finance.notifications');
+        }
+
         return redirect()->route('home'); // Fallback
     })->name('notifications.index');
     Route::post('/notifications/{id}/mark-as-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
@@ -118,20 +119,20 @@ Route::middleware([
 ])->group(function () {
 
     // Admin dashboards
-    Route::get('/admin',      [DashboardController::class, 'admin'])->name('admin.dashboard');
+    Route::get('/admin', [DashboardController::class, 'admin'])->name('admin.dashboard');
     Route::get('/admin/home', [DashboardController::class, 'admin'])->name('admin.home');
 
     // Admin "sections" - reusing the same dashboards but keeping /admin prefix for sidebar context
-    Route::get('/admin/hr',        [DashboardController::class, 'hr'])->name('admin.hr');
+    Route::get('/admin/hr', [DashboardController::class, 'hr'])->name('admin.hr');
     Route::get('/admin/inventory', [DashboardController::class, 'inventory'])->name('admin.inventory');
-    Route::get('/admin/finance',   [DashboardController::class, 'finance'])->name('admin.finance');
+    Route::get('/admin/finance', [DashboardController::class, 'finance'])->name('admin.finance');
     Route::get('/admin/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('admin.notifications');
 
     /**
      * Admin: requests / approvals (leave, purchases, items, finance)
      */
     Route::prefix('admin/requests')->name('admin.requests.')->group(function () {
-        Route::view('/leave',     'admin.requests.leave')->name('leave');
+        Route::view('/leave', 'admin.requests.leave')->name('leave');
         Route::view('/purchases', 'admin.requests.purchases')->name('purchases');
         Route::get('/finance', [App\Http\Controllers\Admin\ExpenseApprovalController::class, 'index'])->name('finance');
         Route::post('/finance/{expense}/approve', [App\Http\Controllers\Admin\ExpenseApprovalController::class, 'approve'])->name('finance.approve');
@@ -153,7 +154,7 @@ Route::middleware([
         Route::post('/leave/{leave}/approve', [LeaveApprovalController::class, 'approve'])
             ->name('leave.approve');
 
-        Route::post('/leave/{leave}/reject',  [LeaveApprovalController::class, 'reject'])
+        Route::post('/leave/{leave}/reject', [LeaveApprovalController::class, 'reject'])
             ->name('leave.reject');
     });
 
@@ -161,13 +162,13 @@ Route::middleware([
      * Admin Users CRUD
      */
     Route::prefix('admin')->name('admin.')->group(function () {
-        Route::get('/users',              [AdminUserController::class, 'index'])->name('users.index');
-        Route::get('/users/create',       [AdminUserController::class, 'create'])->name('users.create');
-        Route::post('/users',             [AdminUserController::class, 'store'])->name('users.store');
-        Route::get('/users/{user}',       [AdminUserController::class, 'show'])->name('users.show');
-        Route::get('/users/{user}/edit',  [AdminUserController::class, 'edit'])->name('users.edit');
-        Route::put('/users/{user}',       [AdminUserController::class, 'update'])->name('users.update');
-        Route::delete('/users/{user}',    [AdminUserController::class, 'destroy'])->name('users.destroy');
+        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');
+        Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+        Route::get('/users/{user}', [AdminUserController::class, 'show'])->name('users.show');
+        Route::get('/users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
+        Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
 
         // Administrative Tasks (User Management, etc)
 
@@ -220,11 +221,11 @@ Route::middleware([
             ->name('activity-logs');
 
         // Trash Recovery
-        Route::get('/trash',           [App\Http\Controllers\Admin\TrashController::class, 'index'])->name('trash.index');
-        Route::post('/trash/restore',  [App\Http\Controllers\Admin\TrashController::class, 'restore'])->name('trash.restore');
+        Route::get('/trash', [App\Http\Controllers\Admin\TrashController::class, 'index'])->name('trash.index');
+        Route::post('/trash/restore', [App\Http\Controllers\Admin\TrashController::class, 'restore'])->name('trash.restore');
 
         // Professional Identity Management
-        Route::get('/profile',        [App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
+        Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
         Route::get('/profile/update', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
     });
@@ -233,20 +234,20 @@ Route::middleware([
     Route::prefix('admin')->name('admin.')->group(function () {
         // HR Shadow
         Route::prefix('hr')->name('hr.')->group(function () {
-            Route::get('/employees',      [EmployeeController::class, 'index'])->name('employees.index');
+            Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
             Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit'); // Keep edit accessible for viewing? Or just index. User said "approval and viewer". Let's keep index/show mostly. The controller limits write.
-            // Actually, the Views check for Admin role to hide edit buttons. So we can map the generic routes or specific ones. 
+            // Actually, the Views check for Admin role to hide edit buttons. So we can map the generic routes or specific ones.
             // Lets map index and generic read pages.
-            Route::get('/leaves',         [LeaveRequestController::class, 'index'])->name('leaves.index');
-            Route::get('/attendance',     [App\Http\Controllers\HR\AttendanceController::class, 'index'])->name('attendance.index');
+            Route::get('/leaves', [LeaveRequestController::class, 'index'])->name('leaves.index');
+            Route::get('/attendance', [App\Http\Controllers\HR\AttendanceController::class, 'index'])->name('attendance.index');
             Route::get('/leaves/approved', ApprovedLeavesController::class)->name('leaves.approved');
         });
 
         // Inventory Shadow
         Route::prefix('inventory')->name('inventory.')->group(function () {
-            Route::get('/items',          [InventoryItemController::class, 'index'])->name('items.index');
-            Route::get('/loans',          [InventoryLoanController::class, 'index'])->name('loans.index');
-            Route::get('/logs',           [App\Http\Controllers\Inventory\InventoryLogController::class, 'index'])->name('logs.index');
+            Route::get('/items', [InventoryItemController::class, 'index'])->name('items.index');
+            Route::get('/loans', [InventoryLoanController::class, 'index'])->name('loans.index');
+            Route::get('/logs', [App\Http\Controllers\Inventory\InventoryLogController::class, 'index'])->name('logs.index');
         });
 
         // Finance Shadow
@@ -256,12 +257,7 @@ Route::middleware([
 
             // Expenses
             Route::resource('expenses', App\Http\Controllers\Finance\ExpenseController::class);
-            
-            // Expense Approval Workflow
-            Route::post('/expenses/{expense}/approve', [App\Http\Controllers\Finance\ExpenseController::class, 'approve'])
-                ->name('expenses.approve');
-            Route::post('/expenses/{expense}/reject', [App\Http\Controllers\Finance\ExpenseController::class, 'reject'])
-                ->name('expenses.reject');
+
         });
     });
 });
@@ -279,25 +275,25 @@ Route::middleware([
 ])->group(function () {
     Route::get('/hr', [DashboardController::class, 'hr'])->name('hr.dashboard');
     Route::get('/hr/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('hr.notifications');
-    
+
     // Professional Identity Management
-    Route::get('/hr/profile',        [App\Http\Controllers\ProfileController::class, 'show'])->name('hr.profile.show');
+    Route::get('/hr/profile', [App\Http\Controllers\ProfileController::class, 'show'])->name('hr.profile.show');
     Route::get('/hr/profile/update', [App\Http\Controllers\ProfileController::class, 'edit'])->name('hr.profile.edit');
     Route::put('/hr/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('hr.profile.update');
 
     Route::prefix('hr')->name('hr.')->group(function () {
         // Employees CRUD
-        Route::get('/employees',                 [EmployeeController::class, 'index'])->name('employees.index');
-        Route::get('/employees/create',          [EmployeeController::class, 'create'])->name('employees.create');
-        Route::post('/employees',                [EmployeeController::class, 'store'])->name('employees.store');
+        Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
+        Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
+        Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
         Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
-        Route::put('/employees/{employee}',      [EmployeeController::class, 'update'])->name('employees.update');
-        Route::delete('/employees/{employee}',   [EmployeeController::class, 'destroy'])->name('employees.destroy');
+        Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
+        Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
 
         // Leave Requests
-        Route::get('/leaves',        [LeaveRequestController::class, 'index'])->name('leaves.index');
+        Route::get('/leaves', [LeaveRequestController::class, 'index'])->name('leaves.index');
         Route::get('/leaves/create', [LeaveRequestController::class, 'create'])->name('leaves.create');
-        Route::post('/leaves',       [LeaveRequestController::class, 'store'])->name('leaves.store');
+        Route::post('/leaves', [LeaveRequestController::class, 'store'])->name('leaves.store');
         // Approved leaves view
         Route::get('/leaves/approved', ApprovedLeavesController::class)->name('leaves.approved');
 
@@ -306,6 +302,20 @@ Route::middleware([
         // Attendance
         Route::get('/attendance', [App\Http\Controllers\HR\AttendanceController::class, 'index'])
             ->name('attendance.index');
+
+        // --- NEW: Session Based Attendance ---
+        Route::get('/attendance/daily-sheet', [App\Http\Controllers\HR\AttendanceController::class, 'dailySheet'])
+            ->name('attendance.daily-sheet');
+        Route::post('/attendance/daily-sheet', [App\Http\Controllers\HR\AttendanceController::class, 'storeDailySheet'])
+            ->name('attendance.daily-sheet.store');
+
+        Route::get('/attendance/weekly-sheet', [App\Http\Controllers\HR\AttendanceController::class, 'weeklySheet'])
+            ->name('attendance.weekly-sheet');
+        Route::post('/attendance/weekly-sheet', [App\Http\Controllers\HR\AttendanceController::class, 'storeWeeklySheet'])
+            ->name('attendance.weekly-sheet.store');
+
+        Route::post('/attendance/toggle', [App\Http\Controllers\HR\AttendanceController::class, 'toggleSession'])
+            ->name('attendance.toggle');
 
         Route::post('/attendance/check-in', [App\Http\Controllers\HR\AttendanceController::class, 'checkIn'])
             ->name('attendance.check-in');
@@ -321,6 +331,11 @@ Route::middleware([
         Route::get('/attendance/monthly-summary/export', [App\Http\Controllers\HR\AttendanceController::class, 'exportMonthlySummaryCsv'])
             ->middleware('can:manage-attendance')
             ->name('attendance.monthly-summary.export');
+
+        // ✅ NEW: Weekly Salary Analysis
+        Route::get('/attendance/weekly-salary', [App\Http\Controllers\HR\AttendanceController::class, 'weeklySalary'])
+            ->middleware('can:manage-attendance')
+            ->name('attendance.weekly-salary');
 
         // Fetch employee leave dates for UI validation
         Route::get('/employees/{employee}/leave-dates', [LeaveRequestController::class, 'getLeaveDates'])
@@ -344,7 +359,7 @@ Route::middleware([
     Route::get('/inventory/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('inventory.notifications');
 
     // Professional Identity Management
-    Route::get('/inventory/profile',        [App\Http\Controllers\ProfileController::class, 'show'])->name('inventory.profile.show');
+    Route::get('/inventory/profile', [App\Http\Controllers\ProfileController::class, 'show'])->name('inventory.profile.show');
     Route::get('/inventory/profile/update', [App\Http\Controllers\ProfileController::class, 'edit'])->name('inventory.profile.edit');
     Route::put('/inventory/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('inventory.profile.update');
 
@@ -352,12 +367,12 @@ Route::middleware([
         /**
          * ITEMS
          */
-        Route::get('/items',              [InventoryItemController::class, 'index'])->name('items.index');
-        Route::get('/items/create',       [InventoryItemController::class, 'create'])->name('items.create');
-        Route::post('/items',             [InventoryItemController::class, 'store'])->name('items.store');
-        Route::get('/items/{item}/edit',  [InventoryItemController::class, 'edit'])->name('items.edit');
-        Route::put('/items/{item}',       [InventoryItemController::class, 'update'])->name('items.update');
-        Route::delete('/items/{item}',    [InventoryItemController::class, 'destroy'])->name('items.destroy');
+        Route::get('/items', [InventoryItemController::class, 'index'])->name('items.index');
+        Route::get('/items/create', [InventoryItemController::class, 'create'])->name('items.create');
+        Route::post('/items', [InventoryItemController::class, 'store'])->name('items.store');
+        Route::get('/items/{item}/edit', [InventoryItemController::class, 'edit'])->name('items.edit');
+        Route::put('/items/{item}', [InventoryItemController::class, 'update'])->name('items.update');
+        Route::delete('/items/{item}', [InventoryItemController::class, 'destroy'])->name('items.destroy');
 
         /**
          * VENDORS
@@ -371,13 +386,13 @@ Route::middleware([
         /**
          * LOANS (lending items to employees)
          */
-        Route::get('/loans',              [InventoryLoanController::class, 'index'])->name('loans.index');
-        Route::get('/loans/create',       [InventoryLoanController::class, 'create'])->name('loans.create');
-        Route::post('/loans',             [InventoryLoanController::class, 'store'])->name('loans.store');
-        Route::get('/loans/{loan}',       [InventoryLoanController::class, 'show'])->name('loans.show');
-        Route::get('/loans/{loan}/edit',  [InventoryLoanController::class, 'edit'])->name('loans.edit');
-        Route::put('/loans/{loan}',       [InventoryLoanController::class, 'update'])->name('loans.update');
-        Route::delete('/loans/{loan}',    [InventoryLoanController::class, 'destroy'])->name('loans.destroy');
+        Route::get('/loans', [InventoryLoanController::class, 'index'])->name('loans.index');
+        Route::get('/loans/create', [InventoryLoanController::class, 'create'])->name('loans.create');
+        Route::post('/loans', [InventoryLoanController::class, 'store'])->name('loans.store');
+        Route::get('/loans/{loan}', [InventoryLoanController::class, 'show'])->name('loans.show');
+        Route::get('/loans/{loan}/edit', [InventoryLoanController::class, 'edit'])->name('loans.edit');
+        Route::put('/loans/{loan}', [InventoryLoanController::class, 'update'])->name('loans.update');
+        Route::delete('/loans/{loan}', [InventoryLoanController::class, 'destroy'])->name('loans.destroy');
 
         Route::post(
             '/loans/{loan}/mark-returned',
@@ -387,11 +402,11 @@ Route::middleware([
         Route::resource('asset-classifications', App\Http\Controllers\Admin\AssetClassificationController::class)
             ->except(['show'])
             ->names([
-                'index'   => 'asset-classifications.index',
-                'create'  => 'asset-classifications.create',
-                'store'   => 'asset-classifications.store',
-                'edit'    => 'asset-classifications.edit',
-                'update'  => 'asset-classifications.update',
+                'index' => 'asset-classifications.index',
+                'create' => 'asset-classifications.create',
+                'store' => 'asset-classifications.store',
+                'edit' => 'asset-classifications.edit',
+                'update' => 'asset-classifications.update',
                 'destroy' => 'asset-classifications.destroy',
             ]);
     });
@@ -414,24 +429,30 @@ Route::middleware([
         Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications');
 
         // Professional Identity Management
-        Route::get('/profile',        [App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
+        Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
         Route::get('/profile/update', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 
         // Projects & Expenses
         Route::resource('projects', App\Http\Controllers\Finance\ProjectController::class);
         Route::resource('expenses', App\Http\Controllers\Finance\ExpenseController::class);
+
+        // Expense Approval Workflow
+        Route::post('/expenses/{expense}/approve', [App\Http\Controllers\Finance\ExpenseController::class, 'approve'])
+            ->name('expenses.approve');
+        Route::post('/expenses/{expense}/reject', [App\Http\Controllers\Finance\ExpenseController::class, 'reject'])
+            ->name('expenses.reject');
     });
 });
 
-Route::get('/debug-db', function() {
+Route::get('/debug-db', function () {
     return [
-        'database'   => \Illuminate\Support\Facades\DB::connection()->getDatabaseName(),
-        'schema'     => \Illuminate\Support\Facades\DB::select('SHOW search_path'),
-        'expenses'   => \Illuminate\Support\Facades\Schema::getColumnListing('expenses'),
-        'employees'  => \Illuminate\Support\Facades\Schema::getColumnListing('employees'),
-        'users'      => \Illuminate\Support\Facades\Schema::getColumnListing('users'),
-        'projects'   => \Illuminate\Support\Facades\Schema::getColumnListing('projects'),
+        'database' => \Illuminate\Support\Facades\DB::connection()->getDatabaseName(),
+        'schema' => \Illuminate\Support\Facades\DB::select('SHOW search_path'),
+        'expenses' => \Illuminate\Support\Facades\Schema::getColumnListing('expenses'),
+        'employees' => \Illuminate\Support\Facades\Schema::getColumnListing('employees'),
+        'users' => \Illuminate\Support\Facades\Schema::getColumnListing('users'),
+        'projects' => \Illuminate\Support\Facades\Schema::getColumnListing('projects'),
     ];
 });
 
@@ -446,21 +467,23 @@ Route::get('/debug-config', function () {
 
 Route::get('/debug-reset-test', function () {
     $user = \App\Models\User::where('email', 'inventorymanager@natanemengineering.com')->first();
-    if (!$user) return 'User not found';
+    if (! $user) {
+        return 'User not found';
+    }
 
     $token = 'dummy-token';
     $notification = new \Illuminate\Auth\Notifications\ResetPassword($token);
-    
+
     try {
         $user->notify($notification);
+
         return 'Notification sent successfully via WEB';
     } catch (\Throwable $e) {
         return [
             'error' => $e->getMessage(),
             'file' => $e->getFile(),
             'line' => $e->getLine(),
-            'trace' => $e->getTraceAsString()
+            'trace' => $e->getTraceAsString(),
         ];
     }
 });
-

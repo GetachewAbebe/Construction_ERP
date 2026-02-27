@@ -2,18 +2,18 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Traits\LogsActivity;
-use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable, HasRoles, SoftDeletes, LogsActivity;
-
+    use HasApiTokens, HasRoles, LogsActivity, Notifiable, SoftDeletes, HasFactory;
 
     protected $fillable = [
         'name',
@@ -42,10 +42,9 @@ class User extends Authenticatable
      */
     public function setNameAttribute($value)
     {
-        $this->attributes['name'] = $value;
         $parts = explode(' ', $value);
         $this->attributes['first_name'] = array_shift($parts);
-        $this->attributes['last_name']  = array_pop($parts);
+        $this->attributes['last_name'] = array_pop($parts);
         $this->attributes['middle_name'] = implode(' ', $parts);
     }
 
@@ -70,25 +69,48 @@ class User extends Authenticatable
     public function getDashboardRouteName(): string
     {
         // 1. Spatie Roles (Primary - matching production DB)
-        if ($this->hasRole('Administrator') || $this->hasRole('Admin')) return 'admin.dashboard';
-        if ($this->hasRole('Human Resource Manager')) return 'hr.dashboard';
-        if ($this->hasRole('Inventory Manager')) return 'inventory.dashboard';
-        if ($this->hasRole('Financial Manager')) return 'finance.dashboard';
-        
+        if ($this->hasRole('Administrator') || $this->hasRole('Admin')) {
+            return 'admin.dashboard';
+        }
+        if ($this->hasRole('Human Resource Manager')) {
+            return 'hr.dashboard';
+        }
+        if ($this->hasRole('Inventory Manager')) {
+            return 'inventory.dashboard';
+        }
+        if ($this->hasRole('Financial Manager')) {
+            return 'finance.dashboard';
+        }
+
         // 2. Exact Model Trait names (Secondary fallback)
-        if ($this->hasRole('HumanResourceManager')) return 'hr.dashboard';
-        if ($this->hasRole('InventoryManager')) return 'inventory.dashboard';
-        if ($this->hasRole('FinancialManager')) return 'finance.dashboard';
+        if ($this->hasRole('HumanResourceManager')) {
+            return 'hr.dashboard';
+        }
+        if ($this->hasRole('InventoryManager')) {
+            return 'inventory.dashboard';
+        }
+        if ($this->hasRole('FinancialManager')) {
+            return 'finance.dashboard';
+        }
 
         // 3. Database Column Fallback (Insurance for mismatching production keys)
-        $columnRole = strtolower(trim((string)$this->role));
-        if (str_contains($columnRole, 'admin')) return 'admin.dashboard';
-        if (str_contains($columnRole, 'hr') || str_contains($columnRole, 'human')) return 'hr.dashboard';
-        if (str_contains($columnRole, 'inventory')) return 'inventory.dashboard';
-        if (str_contains($columnRole, 'finance')) return 'finance.dashboard';
+        $columnRole = strtolower(trim((string) $this->role));
+        if (str_contains($columnRole, 'admin')) {
+            return 'admin.dashboard';
+        }
+        if (str_contains($columnRole, 'hr') || str_contains($columnRole, 'human')) {
+            return 'hr.dashboard';
+        }
+        if (str_contains($columnRole, 'inventory')) {
+            return 'inventory.dashboard';
+        }
+        if (str_contains($columnRole, 'finance')) {
+            return 'finance.dashboard';
+        }
 
         // 4. Force Logout to break redirect loop
         Auth::logout();
+
         return 'home';
     }
 
@@ -105,13 +127,18 @@ class User extends Authenticatable
      */
     public function getProfileRouteName(string $action = 'show'): string
     {
-        $role = strtolower(trim((string)$this->role));
-        
+        $role = strtolower(trim((string) $this->role));
+
         $prefix = 'admin'; // Fallback
-        if (str_contains($role, 'admin')) $prefix = 'admin';
-        elseif (str_contains($role, 'human') || str_contains($role, 'hr')) $prefix = 'hr';
-        elseif (str_contains($role, 'inventory')) $prefix = 'inventory';
-        elseif (str_contains($role, 'finance') || str_contains($role, 'financial')) $prefix = 'finance';
+        if (str_contains($role, 'admin')) {
+            $prefix = 'admin';
+        } elseif (str_contains($role, 'human') || str_contains($role, 'hr')) {
+            $prefix = 'hr';
+        } elseif (str_contains($role, 'inventory')) {
+            $prefix = 'inventory';
+        } elseif (str_contains($role, 'finance') || str_contains($role, 'financial')) {
+            $prefix = 'finance';
+        }
 
         // Match the route names defined in web.php
         return "{$prefix}.profile.{$action}";
@@ -123,12 +150,14 @@ class User extends Authenticatable
     public function getUnreadCountByModule(string $module): int
     {
         $types = [
-            'hr'        => ['leave_request', 'leave_status', 'attendance_alert'],
+            'hr' => ['leave_request', 'leave_status', 'attendance_alert'],
             'inventory' => ['inventory_request', 'inventory_status', 'stock_alert'],
-            'finance'   => ['expense_request', 'expense_status', 'budget_alert'],
+            'finance' => ['expense_request', 'expense_status', 'budget_alert'],
         ];
 
-        if (!isset($types[$module])) return 0;
+        if (! isset($types[$module])) {
+            return 0;
+        }
 
         // POSTGRES COMPATIBLE FIX:
         // Use whereJsonContains which works seamlessly across MySQL and Postgres
@@ -138,10 +167,10 @@ class User extends Authenticatable
         // return $this->unreadNotifications()->whereRaw("data::jsonb->>'type' in (?,?,?)", ...)
         // However, Laravel's whereJsonContains is the safest abstraction usually.
         // BUT 'whereIn' on a JSON key is tricky.
-        
+
         // Simpler fallback: Filter in PHP collection if volume is low (usually unread count < 100).
         // Or use proper Json query.
-        
+
         // Attempting PHP-side filtering for robust cross-driver compatibility:
         return $this->unreadNotifications->filter(function ($notification) use ($types, $module) {
             return in_array($notification->data['type'] ?? '', $types[$module]);
@@ -164,6 +193,7 @@ class User extends Authenticatable
     {
         $rolePart = str_replace(' ', '-', strtolower($this->role ?? 'user'));
         $namePart = str_replace(' ', '-', strtolower($this->name));
+
         return "{$rolePart}-{$namePart}";
     }
 }

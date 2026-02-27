@@ -2,15 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
-use App\Traits\LogsActivity;
 
 class Employee extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity;
+    use HasFactory, LogsActivity, SoftDeletes;
 
     protected $fillable = [
         'user_id',
@@ -31,7 +30,7 @@ class Employee extends Model
 
     protected $casts = [
         'hire_date' => 'date',
-        'salary'    => 'decimal:2',
+        'salary' => 'decimal:2',
     ];
 
     public function user()
@@ -55,14 +54,14 @@ class Employee extends Model
     public function getNameAttribute()
     {
         // If the 'name' column exists and is not empty, return it.
-        if (!empty($this->attributes['name'])) {
+        if (! empty($this->attributes['name'])) {
             return $this->attributes['name'];
         }
 
         // Otherwise construct from first/last name
         $first = $this->attributes['first_name'] ?? '';
-        $last  = $this->attributes['last_name'] ?? '';
-        
+        $last = $this->attributes['last_name'] ?? '';
+
         return trim("{$first} {$last}") ?: 'N/A';
     }
 
@@ -80,10 +79,10 @@ class Employee extends Model
     public function getDepartmentAttribute()
     {
         // If the raw attribute exists (legacy string column), use it
-        if (!empty($this->attributes['department'])) {
+        if (! empty($this->attributes['department'])) {
             return $this->attributes['department'];
         }
-        
+
         // Use the relationship (Benefit: Supports Eager Loading)
         return $this->department_rel ? $this->department_rel->name : 'N/A';
     }
@@ -95,6 +94,7 @@ class Employee extends Model
     {
         if (empty($value)) {
             $this->attributes['department_id'] = null;
+
             return;
         }
 
@@ -108,10 +108,10 @@ class Employee extends Model
     public function getPositionAttribute()
     {
         // If the raw attribute exists (legacy string column), use it
-        if (!empty($this->attributes['position'])) {
+        if (! empty($this->attributes['position'])) {
             return $this->attributes['position'];
         }
-        
+
         // Use the relationship (Benefit: Supports Eager Loading)
         return $this->position_rel ? $this->position_rel->title : 'N/A';
     }
@@ -123,6 +123,7 @@ class Employee extends Model
     {
         if (empty($value)) {
             $this->attributes['position_id'] = null;
+
             return;
         }
 
@@ -144,16 +145,19 @@ class Employee extends Model
      */
     public function getProfilePictureUrlAttribute()
     {
-        $path = trim((string)$this->profile_picture, ' /\\');
-        if (!$path) return null;
+        $path = trim((string) $this->profile_picture, ' /\\');
+        if (! $path) {
+            return null;
+        }
 
         // Use standard Storage URL if path is valid
         // This leverages the /storage/ symlink which is more reliable in most browsers
         $url = \Illuminate\Support\Facades\Storage::disk('public')->url($path);
-        
+
         // Add cache-busting timestamp
         $timestamp = $this->updated_at ? $this->updated_at->timestamp : time();
-        return $url . '?v=' . $timestamp;
+
+        return $url.'?v='.$timestamp;
     }
 
     /**
@@ -161,6 +165,6 @@ class Employee extends Model
      */
     public function hasProfilePicture()
     {
-        return !empty($this->profile_picture) && $this->profile_picture_url !== null;
+        return ! empty($this->profile_picture) && $this->profile_picture_url !== null;
     }
 }

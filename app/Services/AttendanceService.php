@@ -11,67 +11,171 @@ use Illuminate\Support\Facades\DB;
 class AttendanceService
 {
     /**
-     * Get attendance statistics for a specific date.
+     * Get attendance statistics for a specific date (Session Aware).
      */
     public function getDailyStats(Carbon $date): array
     {
-        $presentCount = Attendance::whereDate('date', $date)
-            ->where('status', Attendance::STATUS_PRESENT)
-            ->distinct('employee_id')
+        $presentAM = Attendance::whereDate('date', $date)
+            ->where('morning_status', Attendance::SESSION_PRESENT)
             ->count();
 
-        $lateCount = Attendance::whereDate('date', $date)
-            ->where('status', Attendance::STATUS_LATE)
-            ->distinct('employee_id')
+        $presentPM = Attendance::whereDate('date', $date)
+            ->where('afternoon_status', Attendance::SESSION_PRESENT)
             ->count();
 
         $totalEmployees = Employee::count();
-        $absentCount = max($totalEmployees - ($presentCount + $lateCount), 0);
-
+        
         return [
-            'present' => $presentCount,
-            'late'    => $lateCount,
-            'absent'  => $absentCount,
+            'morning_present' => $presentAM,
+            'afternoon_present' => $presentPM,
+            'capacity' => $totalEmployees,
         ];
     }
 
     /**
-     * Determine attendance status based on shift start time.
+     * Mark or update attendance for a specific session.
+     * Calculated credit: 1.0 for both present/late, 0.5 for one, 0 for none.
      */
-    public function determineStatus(Carbon $now): string
+    public function markSessionAttendance(int $employeeId, Carbon $date, string $morning, string $afternoon, ?string $note = null): Attendance
     {
-        $shiftStartString = $this->getSetting('shift_start_time', '09:00');
-        $timezone         = config('attendance.timezone', config('app.timezone'));
-        
-        $shiftStartToday = Carbon::parse($shiftStartString, $timezone)
-            ->setDate($now->year, $now->month, $now->day);
+        $attendance = Attendance::firstOrNew([
+            'employee_id' => $employeeId,
+            'date' => $date->toDateString(),
+        ]);
 
-        // Optional: Grace period
-        $graceMinutes = (int) $this->getSetting('grace_period_minutes', 0);
-        if ($graceMinutes > 0) {
-            $shiftStartToday->addMinutes($graceMinutes);
+        $attendance->morning_status = $morning;
+        $attendance->afternoon_status = $afternoon;
+        $attendance->note = $note;
+        
+        // Auto-set clock times if missing for today's date
+        if ($date->isToday()) {
+            if (in_array($morning, [Attendance::SESSION_PRESENT, Attendance::SESSION_LATE]) && !$attendance->clock_in) {
+                $attendance->clock_in = Carbon::now();
+            }
+            if (in_array($afternoon, [Attendance::SESSION_PRESENT]) && !$attendance->clock_out) {
+                $attendance->clock_out = Carbon::now();
+            }
         }
 
-        return $now->greaterThan($shiftStartToday)
-            ? Attendance::STATUS_LATE
-            : Attendance::STATUS_PRESENT;
+        $attendance->total_credit = $attendance->calculateCredits();
+        $attendance->save();
+
+        return $attendance;
     }
 
     /**
-     * Helper to get setting from DB with fallback.
+     * Automatic check-in logic based on 8:30 AM threshold.
      */
-    public function getSetting(string $key, $default = null)
+    public function autoCheckIn(Employee $employee, ?Carbon $date = null): Attendance
     {
-        return \App\Models\AttendanceSetting::where('key', $key)->first()?->value ?? $default;
+        $now = $date ?? Carbon::now();
+        $attendance = Attendance::firstOrNew([
+            'employee_id' => $employee->id,
+            'date' => $now->toDateString(),
+        ]);
+
+        if ($attendance->exists && $attendance->clock_in) {
+            return $attendance;
+        }
+
+        $attendance->clock_in = $now;
+        
+        // Threshold: 08:30 AM
+        $threshold = (clone $now)->setTime(8, 30, 0);
+        
+        if ($now->lte($threshold)) {
+            $attendance->morning_status = Attendance::SESSION_PRESENT;
+        } else {
+            $attendance->morning_status = Attendance::SESSION_LATE;
+        }
+
+        $attendance->afternoon_status = Attendance::SESSION_ABSENT;
+        $attendance->total_credit = $attendance->calculateCredits();
+        $attendance->save();
+
+        return $attendance;
     }
 
     /**
-     * Build monthly summary data.
+     * Automatic check-out logic based on 5:30 PM threshold.
+     */
+    public function autoCheckOut(Attendance $attendance, ?Carbon $date = null): Attendance
+    {
+        $now = $date ?? Carbon::now();
+        $attendance->clock_out = $now;
+
+        // Threshold: 05:30 PM (17:30)
+        $threshold = (clone $now)->setTime(17, 30, 0);
+
+        if ($now->gte($threshold)) {
+            $attendance->afternoon_status = Attendance::SESSION_PRESENT;
+        } else {
+            $attendance->afternoon_status = Attendance::SESSION_ABSENT;
+        }
+
+        $attendance->total_credit = $attendance->calculateCredits();
+        $attendance->save();
+
+        return $attendance;
+    }
+
+    /**
+     * Specialized toggle for AJAX grid buttons.
+     */
+    public function toggleSessionStatus(int $employeeId, string $dateString, string $session, string $status): Attendance
+    {
+        $date = Carbon::parse($dateString);
+        $attendance = Attendance::firstOrNew([
+            'employee_id' => $employeeId,
+            'date' => $date->toDateString(),
+        ]);
+
+        if ($session === 'morning') {
+            $attendance->morning_status = $status;
+            if (in_array($status, [Attendance::SESSION_PRESENT, Attendance::SESSION_LATE])) {
+                // If it's today, we want the CURRENT time. 
+                // We overwrite if it's currently null or midnight (default from seeder).
+                if ($date->isToday()) {
+                    if (!$attendance->clock_in || $attendance->clock_in->format('H:i:s') === '00:00:00') {
+                        $attendance->clock_in = Carbon::now();
+                    }
+                } else {
+                    // Past/Future day: assign 8:00 AM as standard
+                    $attendance->clock_in = (clone $date)->setTime(8, 0, 0);
+                }
+            } else {
+                // Absent/Leave: clear the clock time
+                $attendance->clock_in = null;
+            }
+        } else {
+            $attendance->afternoon_status = $status;
+            if ($status === Attendance::SESSION_PRESENT) {
+                if ($date->isToday()) {
+                    if (!$attendance->clock_out || $attendance->clock_out->format('H:i:s') === '00:00:00') {
+                        $attendance->clock_out = Carbon::now();
+                    }
+                } else {
+                    // Standard 5:30 PM for past entries
+                    $attendance->clock_out = (clone $date)->setTime(17, 30, 0);
+                }
+            } else {
+                $attendance->clock_out = null;
+            }
+        }
+
+        $attendance->total_credit = $attendance->calculateCredits();
+        $attendance->save();
+
+        return $attendance;
+    }
+
+    /**
+     * Build monthly summary data with credit-based accounting.
      */
     public function buildMonthlySummaryData(int $year, int $month, ?string $departmentFilter = null): array
     {
         $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfDay();
-        $endOfMonth   = (clone $startOfMonth)->endOfMonth();
+        $endOfMonth = (clone $startOfMonth)->endOfMonth();
 
         $attendancesQuery = Attendance::with('employee')
             ->whereBetween('date', [
@@ -87,68 +191,68 @@ class AttendanceService
 
         $attendances = $attendancesQuery->get();
 
-        // Per employee summary
-        $perEmployee = $attendances
-            ->groupBy('employee_id')
-            ->map(function (Collection $rows) {
-                /** @var \App\Models\Attendance $first */
-                $first = $rows->first();
-                $employee = $first->employee;
+        $allEmployees = Employee::all();
+        if ($departmentFilter) {
+            $allEmployees = $allEmployees->where('department', $departmentFilter);
+        }
 
-                $presentDays = $rows->where('status', Attendance::STATUS_PRESENT)->count();
-                $lateDays    = $rows->where('status', Attendance::STATUS_LATE)->count();
-                $records     = $rows->count();
+        $attendancesGrouped = $attendances->groupBy('employee_id');
 
-                $totalHours  = $rows->sum('worked_hours');
+        $perEmployee = $allEmployees->map(function (Employee $employee) use ($attendancesGrouped) {
+                $rows = $attendancesGrouped->get($employee->id, collect());
+                
+                $totalCredits = $rows->sum('total_credit');
+                $records = $rows->count();
+
+                $monthlySalary = (float) ($employee->salary ?: 0);
+                $dailyRate = $monthlySalary / 22; 
+                $payableAmount = $totalCredits * $dailyRate;
 
                 return [
-                    'employee'      => $employee,
-                    'present_days'  => $presentDays,
-                    'late_days'     => $lateDays,
-                    'records'       => $records,
-                    'total_hours'   => $totalHours,
-                    'avg_hours'     => $records ? round($totalHours / $records, 2) : null,
+                    'employee' => $employee,
+                    'total_credits' => $totalCredits,
+                    'records' => $records,
+                    'payable_amount' => $payableAmount,
                 ];
             })
             ->sortBy(function ($row) {
                 return [
                     $row['employee']->department,
                     $row['employee']->first_name,
-                    $row['employee']->last_name,
                 ];
             });
 
-        // Per department summary
-        $perDepartment = $perEmployee
-            ->groupBy(function ($row) {
-                return $row['employee']->department ?? 'Unassigned';
-            })
-            ->map(function (Collection $rows, $deptName) {
-                return [
-                    'department'      => $deptName,
-                    'employees_count' => $rows->count(),
-                    'present_days'    => $rows->sum('present_days'),
-                    'late_days'       => $rows->sum('late_days'),
-                    'total_hours'     => $rows->sum('total_hours'),
-                ];
-            })
-            ->sortBy('department');
+        return [
+            'perEmployee' => $perEmployee,
+            'totalEmployeesInScope' => $perEmployee->count(),
+            'totalCreditsInScope' => $perEmployee->sum('total_credits'),
+            'startOfMonth' => $startOfMonth,
+            'endOfMonth' => $endOfMonth,
+        ];
+    }
 
-        // Global aggregates
-        $totalEmployeesInScope = $perEmployee->count();
-        $totalHoursInScope     = $perEmployee->sum('total_hours');
-        $totalPresentDays      = $perEmployee->sum('present_days');
-        $totalLateDays         = $perEmployee->sum('late_days');
+    /**
+     * Calculate weekly salary analysis.
+     */
+    public function calculateWeeklySalaryAnalysis(Employee $employee, Carbon $startDate): array
+    {
+        $endDate = (clone $startDate)->addDays(6);
+        $attendances = Attendance::where('employee_id', $employee->id)
+            ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->get();
+
+        $totalCredits = $attendances->sum('total_credit');
+        $baseSalary = (float) ($employee->salary ?: 0);
+        $dailyRate = $baseSalary / 22; 
+        $payableAmount = $totalCredits * $dailyRate;
 
         return [
-            'perEmployee'           => $perEmployee,
-            'perDepartment'         => $perDepartment,
-            'totalEmployeesInScope' => $totalEmployeesInScope,
-            'totalHoursInScope'     => $totalHoursInScope,
-            'totalPresentDays'      => $totalPresentDays,
-            'totalLateDays'         => $totalLateDays,
-            'startOfMonth'          => $startOfMonth,
-            'endOfMonth'            => $endOfMonth,
+            'credits' => $totalCredits,
+            'daily_rate' => $dailyRate,
+            'payable_amount' => $payableAmount,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'attendances' => $attendances
         ];
     }
 }

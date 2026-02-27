@@ -59,11 +59,11 @@ return new class extends Migration
             $t->id();
             $t->foreignId('item_id')->constrained()->cascadeOnDelete();
             $t->foreignId('location_id')->constrained()->cascadeOnDelete();
-            $t->enum('type', ['in','out']);
+            $t->enum('type', ['in', 'out']);
             $t->decimal('quantity', 14, 3);
             $t->text('note')->nullable();
             $t->timestamps();
-            $t->index(['item_id','location_id','type']);
+            $t->index(['item_id', 'location_id', 'type']);
         });
 
         Schema::create('purchase_orders', function (Blueprint $t) {
@@ -71,9 +71,9 @@ return new class extends Migration
             $t->string('po_number')->unique();
             $t->foreignId('vendor_id')->constrained()->cascadeOnDelete();
             $t->date('po_date');
-            $t->enum('status', ['draft','approved','received','cancelled'])->default('draft');
+            $t->enum('status', ['draft', 'approved', 'received', 'cancelled'])->default('draft');
             $t->timestamps();
-            $t->index(['po_number','status']);
+            $t->index(['po_number', 'status']);
         });
 
         Schema::create('purchase_order_lines', function (Blueprint $t) {
@@ -89,7 +89,7 @@ return new class extends Migration
         Schema::create('accounts', function (Blueprint $t) {
             $t->id();
             $t->string('name')->unique();
-            $t->enum('type', ['asset','liability','equity','income','expense']);
+            $t->enum('type', ['asset', 'liability', 'equity', 'income', 'expense']);
             $t->timestamps();
         });
 
@@ -98,7 +98,7 @@ return new class extends Migration
             $t->string('invoice_number')->unique();
             $t->date('invoice_date');
             $t->decimal('total', 14, 2)->default(0);
-            $t->enum('status', ['draft','sent','paid','void'])->default('draft');
+            $t->enum('status', ['draft', 'sent', 'paid', 'void'])->default('draft');
             $t->timestamps();
         });
 

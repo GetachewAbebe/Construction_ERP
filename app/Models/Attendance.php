@@ -2,33 +2,37 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class Attendance extends Model
 {
     use HasFactory;
 
-    // ---- STATUS CONSTANTS ----
-    public const STATUS_PRESENT = 'present';
-    public const STATUS_LATE    = 'late';
-    public const STATUS_ABSENT  = 'absent';
+    // ---- SESSION STATUS CONSTANTS ----
+    public const SESSION_PRESENT = 'present';
+    public const SESSION_ABSENT = 'absent';
+    public const SESSION_LEAVE = 'leave';
+    public const SESSION_LATE = 'late';
 
     protected $fillable = [
         'employee_id',
         'date',
+        'morning_status',
+        'afternoon_status',
+        'total_credit',
         'clock_in',
         'clock_out',
-        'status',
+        'status', // Legacy fallback
         'note',
         'ip_address',
         'location_name',
     ];
 
     protected $casts = [
-        'date'      => 'date',
-        'clock_in'  => 'datetime',
+        'date' => 'date',
+        'clock_in' => 'datetime',
         'clock_out' => 'datetime',
     ];
 
@@ -77,6 +81,12 @@ class Attendance extends Model
     public function scopeToday($query)
     {
         return $query->whereDate('date', Carbon::today());
+    }
+
+    public function scopeSessionStatus($query, string $session, string $status)
+    {
+        $column = $session === 'morning' ? 'morning_status' : 'afternoon_status';
+        return $query->where($column, $status);
     }
 
     /*
@@ -138,5 +148,18 @@ class Attendance extends Model
         }
 
         return round($this->worked_minutes / 60, 2);
+    }
+
+    /**
+     * Calculate session-based "Payable Weight" 
+     * e.g. AM Present + PM Absent = 0.5 Credits
+     */
+    public function calculateCredits(): float
+    {
+        $credit = 0.0;
+        if (in_array($this->morning_status, [self::SESSION_PRESENT, self::SESSION_LATE])) $credit += 0.5;
+        if ($this->afternoon_status === self::SESSION_PRESENT) $credit += 0.5;
+        
+        return $credit;
     }
 }

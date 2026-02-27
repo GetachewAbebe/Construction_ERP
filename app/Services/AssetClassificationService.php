@@ -14,7 +14,7 @@ class AssetClassificationService
     {
         $data['slug'] = Str::slug($data['name']);
         $data['code'] = strtoupper($data['code'] ?? $this->generateDefaultCode($data['name']));
-        
+
         return AssetClassification::create($data);
     }
 
@@ -48,6 +48,7 @@ class AssetClassificationService
     private function generateDefaultCode(string $name): string
     {
         $clean = preg_replace('/[^A-Za-z0-9]/', '', $name);
+
         return strtoupper(substr($clean, 0, 4));
     }
 

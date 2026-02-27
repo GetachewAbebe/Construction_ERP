@@ -19,6 +19,7 @@ class InventoryService
 
         if ($changeAmount === 0) {
             $item->update(['quantity' => $newQuantity]); // Still update in case other fields changed
+
             return;
         }
 
@@ -27,12 +28,12 @@ class InventoryService
 
             InventoryLog::create([
                 'inventory_item_id' => $item->id,
-                'user_id'           => Auth::id(),
-                'change_amount'     => $changeAmount,
+                'user_id' => Auth::id(),
+                'change_amount' => $changeAmount,
                 'previous_quantity' => $previousQuantity,
-                'new_quantity'      => $newQuantity,
-                'reason'            => $reason,
-                'remarks'           => $remarks,
+                'new_quantity' => $newQuantity,
+                'reason' => $reason,
+                'remarks' => $remarks,
             ]);
 
             $this->checkLowStock($item);
@@ -52,12 +53,12 @@ class InventoryService
 
             InventoryLog::create([
                 'inventory_item_id' => $item->id,
-                'user_id'           => Auth::id(),
-                'change_amount'     => $amount,
+                'user_id' => Auth::id(),
+                'change_amount' => $amount,
                 'previous_quantity' => $previousQuantity,
-                'new_quantity'      => $newQuantity,
-                'reason'            => $reason,
-                'remarks'           => $remarks,
+                'new_quantity' => $newQuantity,
+                'reason' => $reason,
+                'remarks' => $remarks,
             ]);
 
             $this->checkLowStock($item);
@@ -80,5 +81,4 @@ class InventoryService
             }
         }
     }
-
 }

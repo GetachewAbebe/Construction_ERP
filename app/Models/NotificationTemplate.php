@@ -33,8 +33,8 @@ class NotificationTemplate extends Model
             return 'No variables available';
         }
 
-        return implode(', ', array_map(function($var) {
-            return '{' . $var . '}';
+        return implode(', ', array_map(function ($var) {
+            return '{'.$var.'}';
         }, $this->variables));
     }
 
@@ -44,11 +44,11 @@ class NotificationTemplate extends Model
     public function render(array $data): string
     {
         $body = $this->body;
-        
+
         foreach ($data as $key => $value) {
-            $body = str_replace('{' . $key . '}', $value, $body);
+            $body = str_replace('{'.$key.'}', $value, $body);
         }
-        
+
         return $body;
     }
 }

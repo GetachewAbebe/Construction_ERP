@@ -17,14 +17,14 @@ class RoleMiddleware
     {
         $user = $request->user();
 
-        if (!$user) {
+        if (! $user) {
             abort(403, 'Unauthorized.');
         }
 
         // 1. Spatie Roles are the primary source of truth
         foreach ($roles as $role) {
-            $normalizedUserRole = str_replace(' ', '', strtolower((string)$user->role));
-            $normalizedRequiredRole = str_replace(' ', '', strtolower((string)$role));
+            $normalizedUserRole = str_replace(' ', '', strtolower((string) $user->role));
+            $normalizedRequiredRole = str_replace(' ', '', strtolower((string) $role));
 
             // Check Spatie hasRole()
             if ($user->hasRole($role)) {
@@ -47,7 +47,7 @@ class RoleMiddleware
         if (empty($user->role) && $user->roles->count() > 0) {
             $user->role = $user->roles->first()->name;
             $user->save();
-            
+
             // Re-check after sync
             foreach ($roles as $role) {
                 if (strtolower($user->role) === str_replace(' ', '', strtolower($role))) {
@@ -61,6 +61,6 @@ class RoleMiddleware
             abort(403, 'Only Administrators can access this page.');
         }
 
-        abort(403, "Access denied. Required roles: " . implode(', ', $roles));
+        abort(403, 'Access denied. Required roles: '.implode(', ', $roles));
     }
 }

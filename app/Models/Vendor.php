@@ -34,7 +34,7 @@ class Vendor extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
-        'rating'    => 'decimal:2',
+        'rating' => 'decimal:2',
     ];
 
     /**
@@ -60,17 +60,19 @@ class Vendor extends Model
     public function generateUniqueCode(string $name): string
     {
         $prefix = strtoupper(substr(preg_replace('/[^A-Z]/', '', strtoupper($name)), 0, 3));
-        if (strlen($prefix) < 3) $prefix = 'VEN';
-        
-        $count = static::where('code', 'LIKE', $prefix . '-%')->count() + 1;
-        $code = $prefix . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
-        
+        if (strlen($prefix) < 3) {
+            $prefix = 'VEN';
+        }
+
+        $count = static::where('code', 'LIKE', $prefix.'-%')->count() + 1;
+        $code = $prefix.'-'.str_pad($count, 3, '0', STR_PAD_LEFT);
+
         // Ensure real uniqueness
         while (static::where('code', $code)->exists()) {
             $count++;
-            $code = $prefix . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
+            $code = $prefix.'-'.str_pad($count, 3, '0', STR_PAD_LEFT);
         }
-        
+
         return $code;
     }
 

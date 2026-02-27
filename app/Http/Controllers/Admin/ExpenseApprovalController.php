@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ExpenseRequestStatusMail;
 use App\Models\Expense;
+use App\Notifications\ExpenseStatusNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
-use App\Notifications\ExpenseStatusNotification;
 
 class ExpenseApprovalController extends Controller
 {
@@ -38,8 +40,9 @@ class ExpenseApprovalController extends Controller
             // Notify Requester (wrapped in individual try-catch to not block approval if notification fails)
             try {
                 $expense->user->notify(new ExpenseStatusNotification($expense, 'status_change'));
+                Mail::to($expense->user->email)->send(new ExpenseRequestStatusMail($expense, $expense->user));
             } catch (\Exception $e) {
-                \Log::warning('Requester notification failed: ' . $e->getMessage());
+                \Log::warning('Requester notification failed: '.$e->getMessage());
             }
 
             // Notify Financial Managers
@@ -49,7 +52,7 @@ class ExpenseApprovalController extends Controller
                     Notification::send($financialManagers, new ExpenseStatusNotification($expense, 'status_update'));
                 }
             } catch (\Exception $e) {
-                \Log::warning('Financial Manager notification failed: ' . $e->getMessage());
+                \Log::warning('Financial Manager notification failed: '.$e->getMessage());
             }
 
             // Clear notification for admin
@@ -58,11 +61,12 @@ class ExpenseApprovalController extends Controller
                     ->where('data->expense_id', $expense->id)
                     ->get()
                     ->markAsRead();
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
 
             return back()->with('status', 'Requisition authorized successfully.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Approval failed. This is likely due to missing database columns. Please run "Sync Database Schema" in the Maintenance page. Error: ' . $e->getMessage());
+            return back()->with('error', 'Approval failed. This is likely due to missing database columns. Please run "Sync Database Schema" in the Maintenance page. Error: '.$e->getMessage());
         }
     }
 
@@ -84,7 +88,9 @@ class ExpenseApprovalController extends Controller
 
             try {
                 $expense->user->notify(new ExpenseStatusNotification($expense, 'status_change'));
-            } catch (\Exception $e) {}
+                Mail::to($expense->user->email)->send(new ExpenseRequestStatusMail($expense, $expense->user));
+            } catch (\Exception $e) {
+            }
 
             // Notify Financial Managers
             try {
@@ -92,7 +98,8 @@ class ExpenseApprovalController extends Controller
                 if ($financeManagers->isNotEmpty()) {
                     \Illuminate\Support\Facades\Notification::send($financeManagers, new ExpenseStatusNotification($expense, 'status_update'));
                 }
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
 
             // Clear notification for admin
             try {
@@ -100,11 +107,12 @@ class ExpenseApprovalController extends Controller
                     ->where('data->expense_id', $expense->id)
                     ->get()
                     ->markAsRead();
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
 
             return back()->with('status', 'Requisition declined.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Rejection failed: ' . $e->getMessage());
+            return back()->with('error', 'Rejection failed: '.$e->getMessage());
         }
     }
 }

@@ -18,7 +18,7 @@ return new class extends Migration
             'inventory_loans',
             'projects',
             'expenses',
-            'leave_requests'
+            'leave_requests',
         ];
 
         foreach ($tables as $table) {
@@ -40,7 +40,7 @@ return new class extends Migration
             'inventory_loans',
             'projects',
             'expenses',
-            'leave_requests'
+            'leave_requests',
         ];
 
         foreach ($tables as $table) {
