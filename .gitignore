@@ -1,15 +1,23 @@
 # Node.js
 node_modules/
 npm-debug.log
-/public/storage/*
+
 # Environment Variables
 .env
 .gemini
 
-/storage/framework/views
-/storage/framework/cache
-/storage/framework/sessions
-/storage/framework/testing
-/vendor/*
+# Laravel Storage & Cache
+/storage/*.key
+/storage/framework/cache/data/*
+/storage/framework/views/*.php
+/storage/framework/sessions/*
+/storage/framework/testing/*
+/public/storage
+/bootstrap/cache/*.php
+
+# Dependencies
+/vendor/
+
 # OS generated files
 Thumbs.db
+.DS_Store
