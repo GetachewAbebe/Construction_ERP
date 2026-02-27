@@ -85,7 +85,7 @@ trait FormatsMessages
         $inlineEntry = $this->getFromLocalArray($attribute, Str::snake($rule));
 
         return is_array($inlineEntry) && in_array($rule, $this->sizeRules)
-            ? $inlineEntry[$this->getAttributeType($attribute)]
+            ? ($inlineEntry[$this->getAttributeType($attribute)] ?? null)
             : $inlineEntry;
     }
 
@@ -102,6 +102,14 @@ trait FormatsMessages
         $source = $source ?: $this->customMessages;
 
         $keys = ["{$attribute}.{$lowerRule}", $lowerRule, $attribute];
+
+        if ($this->getAttributeType($attribute) !== 'file') {
+            $shortRule = "{$attribute}.".Str::snake(class_basename($lowerRule));
+
+            if (! in_array($shortRule, $keys)) {
+                $keys[] = $shortRule;
+            }
+        }
 
         // First we will check for a custom message for an attribute specific rule
         // message for the fields, then we will check for a general custom line
