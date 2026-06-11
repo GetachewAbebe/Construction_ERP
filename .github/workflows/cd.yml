@@ -7,13 +7,19 @@ on:
     types:
       - completed
 
-# Deployment is handled by a server-side cron job that polls GitHub
-# every 5 minutes. The cPanel API ports (2083/2096) are firewalled
-# from external networks including GitHub Actions runners.
 jobs:
-  notify:
+  deploy:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
     steps:
-      - name: CI passed - server cron will deploy within 5 minutes
-        run: echo "CI passed. The server cron job will detect and deploy this commit within 5 minutes."
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /home/natanewn/repositories/Construction_ERP
+            /bin/bash deploy.sh
