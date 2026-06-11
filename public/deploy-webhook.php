@@ -13,7 +13,7 @@ if (file_exists($envPath)) {
 }
 
 $body = file_get_contents('php://input');
-$signature = 'sha256=' . hash_hmac('sha256', $body, $secret);
+$signature = 'sha256='.hash_hmac('sha256', $body, $secret);
 
 if (! hash_equals($signature, $_SERVER['HTTP_X_HUB_SIGNATURE_256'] ?? '')) {
     http_response_code(401);
