@@ -4,27 +4,6 @@
  */
 
 document.addEventListener('DOMContentLoaded', function () {
-    // 1. Glass Card Mouse Tracking Effect
-    const glassCards = document.querySelectorAll('.hardened-glass');
-    glassCards.forEach(card => {
-        card.addEventListener('mousemove', function (e) {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            if (x > 0 && x < rect.width && y > 0 && y < rect.height) {
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateX = (y - centerY) / 10;
-                const rotateY = (centerX - x) / 10;
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px) scale(1.02)`;
-            } else {
-                card.style.transform = '';
-            }
-        });
-        card.addEventListener('mouseleave', () => card.style.transform = '');
-    });
-
     // 2. Stagger Entrance Initialization
     const staggerElements = document.querySelectorAll('.stagger-entrance');
     staggerElements.forEach((el, index) => {

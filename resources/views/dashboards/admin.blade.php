@@ -245,7 +245,8 @@
             chart: {
                 height: 300,
                 type: 'radialBar',
-                toolbar: { show: false }
+                toolbar: { show: false },
+                animations: { enabled: false }
             },
             plotOptions: {
                 radialBar: {

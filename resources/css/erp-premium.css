@@ -42,7 +42,7 @@ body {
     border-radius: 28px;
     padding: 2rem;
     box-shadow: 0 10px 32px 0 rgba(31, 38, 135, 0.07);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .btn-emerald {
@@ -84,8 +84,7 @@ body {
 
 .hardened-glass:hover,
 .glass-card-global:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.09);
     border-color: var(--erp-primary);
 }
 
@@ -168,22 +167,9 @@ body {
     background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Entrance Animations */
-@keyframes slideUpFade {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
+/* Entrance Animations — disabled for stability */
 .stagger-entrance {
-    opacity: 0;
-    animation: slideUpFade 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    opacity: 1;
 }
 
 /* Pulse Indicator */
