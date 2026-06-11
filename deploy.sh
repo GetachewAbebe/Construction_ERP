@@ -83,7 +83,11 @@ echo "⚡ Generating production caches..."
 php artisan optimize:clear
 php artisan optimize
 
-# 7. Exit Maintenance Mode
+# 7. Sync public assets to web root
+echo "📂 Syncing public assets to web root..."
+/bin/cp -rT /home/natanewn/repositories/Construction_ERP/public /home/natanewn/public_html/erp
+
+# 8. Exit Maintenance Mode
 echo "🌐 Bringing system back online..."
 php artisan up
 
