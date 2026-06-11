@@ -14,9 +14,11 @@ jobs:
 
     steps:
       - name: Trigger deployment webhook
+        env:
+          DEPLOY_WEBHOOK_SECRET: ${{ secrets.DEPLOY_WEBHOOK_SECRET }}
         run: |
           PAYLOAD='{"ref":"refs/heads/main"}'
-          SIGNATURE="sha256=$(echo -n "$PAYLOAD" | openssl dgst -sha256 -hmac "${{ secrets.DEPLOY_WEBHOOK_SECRET }}" | awk '{print $2}')"
+          SIGNATURE="sha256=$(printf '%s' "$PAYLOAD" | openssl dgst -sha256 -hmac "$DEPLOY_WEBHOOK_SECRET" | awk '{print $2}')"
 
           RESPONSE=$(curl -s -o /tmp/webhook_response.txt -w "%{http_code}" \
             -X POST \
