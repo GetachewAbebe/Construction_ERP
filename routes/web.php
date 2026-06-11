@@ -2,16 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Admin\InventoryLoanApprovalController;
-use App\Http\Controllers\Admin\LeaveApprovalController;
-use App\Http\Controllers\AdminUserController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\HR\ApprovedLeavesController;
-use App\Http\Controllers\HR\EmployeeController;
-use App\Http\Controllers\HR\LeaveRequestController;
-use App\Http\Controllers\Inventory\InventoryItemController;
-use App\Http\Controllers\Inventory\InventoryLoanController;
 use App\Http\Controllers\SimpleAuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -107,9 +98,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications/mark-all-as-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
 });
 
-require __DIR__ . '/admin.php';
-require __DIR__ . '/hr.php';
-require __DIR__ . '/inventory.php';
-require __DIR__ . '/finance.php';
-
-
+require __DIR__.'/admin.php';
+require __DIR__.'/hr.php';
+require __DIR__.'/inventory.php';
+require __DIR__.'/finance.php';

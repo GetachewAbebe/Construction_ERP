@@ -33,11 +33,7 @@ export COMPOSER_HOME=$HOME/.composer
 echo "🚧 Entering maintenance mode..."
 php artisan down || true
 
-# 2. Pull latest code
-echo "📥 Pulling latest code from GitHub..."
-git pull origin main
-
-# 3. Clean stale caches
+# 2. Clean stale caches
 echo "🧹 Clearing old bootstrap/cache..."
 rm -f bootstrap/cache/*.php
 
