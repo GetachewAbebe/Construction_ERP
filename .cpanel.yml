@@ -3,3 +3,5 @@ deployment:
   tasks:
     - git clean -fd
     - /bin/bash deploy.sh
+    - /bin/cp -rT /home/natanewn/repositories/Construction_ERP/public /home/natanewn/public_html/erp
+    - /bin/bash /home/natanewn/repositories/Construction_ERP/scripts/update-public-index.sh
