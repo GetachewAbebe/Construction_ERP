@@ -7,48 +7,13 @@ on:
     types:
       - completed
 
+# Deployment is handled by a server-side cron job that polls GitHub
+# every 5 minutes. The cPanel API ports (2083/2096) are firewalled
+# from external networks including GitHub Actions runners.
 jobs:
-  deploy:
+  notify:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-
-    env:
-      CPANEL_USERNAME: ${{ secrets.CPANEL_USERNAME }}
-      CPANEL_API_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
-      CPANEL_DOMAIN: ${{ secrets.CPANEL_DOMAIN }}
-      REPO_ROOT: /home/natanewn/repositories/Construction_ERP
-
     steps:
-      - name: Pull latest code via CPanel Git
-        run: |
-          RESPONSE=$(curl -s -o /tmp/pull_response.json -w "%{http_code}" \
-            -X POST \
-            -H "Authorization: cpanel ${CPANEL_USERNAME}:${CPANEL_API_TOKEN}" \
-            -d "repository_root=${REPO_ROOT}" \
-            "https://${CPANEL_DOMAIN}:2083/execute/VersionControl/update")
-
-          echo "Pull HTTP status: $RESPONSE"
-          cat /tmp/pull_response.json
-
-          if [ "$RESPONSE" != "200" ]; then
-            echo "Pull failed with HTTP $RESPONSE"
-            exit 1
-          fi
-
-      - name: Run deployment tasks (.cpanel.yml)
-        run: |
-          RESPONSE=$(curl -s -o /tmp/deploy_response.json -w "%{http_code}" \
-            -X POST \
-            -H "Authorization: cpanel ${CPANEL_USERNAME}:${CPANEL_API_TOKEN}" \
-            -d "repository_root=${REPO_ROOT}" \
-            "https://${CPANEL_DOMAIN}:2083/execute/VersionControlDeployment/create")
-
-          echo "Deploy HTTP status: $RESPONSE"
-          cat /tmp/deploy_response.json
-
-          if [ "$RESPONSE" != "200" ]; then
-            echo "Deployment failed with HTTP $RESPONSE"
-            exit 1
-          fi
-
-          echo "Deployment triggered successfully."
+      - name: CI passed - server cron will deploy within 5 minutes
+        run: echo "CI passed. The server cron job will detect and deploy this commit within 5 minutes."
