@@ -23,3 +23,9 @@ composer-setup.php
 # OS generated files
 Thumbs.db
 .DS_Store
+
+# Server-generated deployment artifacts
+public/_probe.txt
+public/deploy.php
+storage/.composer-home/
+storage/.deploy-composer.lock.hash
