@@ -19,28 +19,36 @@ jobs:
       REPO_ROOT: /home/natanewn/repositories/Construction_ERP
 
     steps:
-      - name: Trigger CPanel deployment
+      - name: Pull latest code via CPanel Git
         run: |
-          echo "Connecting to: https://${CPANEL_DOMAIN}:2083"
+          RESPONSE=$(curl -s -o /tmp/pull_response.json -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: cpanel ${CPANEL_USERNAME}:${CPANEL_API_TOKEN}" \
+            -d "repository_root=${REPO_ROOT}" \
+            "https://${CPANEL_DOMAIN}:2083/execute/VersionControl/update")
 
-          # Try port 2083 first, fall back to 2096
-          for PORT in 2083 2096 443; do
-            echo "Trying port ${PORT}..."
-            RESPONSE=$(curl -sk -o /tmp/deploy_response.json -w "%{http_code}" \
-              --connect-timeout 15 \
-              -X POST \
-              -H "Authorization: cpanel ${CPANEL_USERNAME}:${CPANEL_API_TOKEN}" \
-              -d "repository_root=${REPO_ROOT}" \
-              "https://${CPANEL_DOMAIN}:${PORT}/execute/VersionControlDeployment/create") || true
+          echo "Pull HTTP status: $RESPONSE"
+          cat /tmp/pull_response.json
 
-            echo "Port ${PORT} HTTP status: $RESPONSE"
-            cat /tmp/deploy_response.json || true
+          if [ "$RESPONSE" != "200" ]; then
+            echo "Pull failed with HTTP $RESPONSE"
+            exit 1
+          fi
 
-            if [ "$RESPONSE" = "200" ]; then
-              echo "Deployment triggered successfully on port ${PORT}."
-              exit 0
-            fi
-          done
+      - name: Run deployment tasks (.cpanel.yml)
+        run: |
+          RESPONSE=$(curl -s -o /tmp/deploy_response.json -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: cpanel ${CPANEL_USERNAME}:${CPANEL_API_TOKEN}" \
+            -d "repository_root=${REPO_ROOT}" \
+            "https://${CPANEL_DOMAIN}:2083/execute/VersionControlDeployment/create")
 
-          echo "All ports failed. Deployment could not be triggered."
-          exit 1
+          echo "Deploy HTTP status: $RESPONSE"
+          cat /tmp/deploy_response.json
+
+          if [ "$RESPONSE" != "200" ]; then
+            echo "Deployment failed with HTTP $RESPONSE"
+            exit 1
+          fi
+
+          echo "Deployment triggered successfully."
