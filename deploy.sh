@@ -33,7 +33,13 @@ export COMPOSER_HOME=$HOME/.composer
 echo "🚧 Entering maintenance mode..."
 php artisan down || true
 
-# 2. Clean stale caches
+# 2. Enforce production environment
+echo "🔧 Enforcing production environment..."
+sed -i 's/^APP_ENV=.*/APP_ENV=production/' .env
+sed -i 's/^APP_DEBUG=.*/APP_DEBUG=false/' .env
+sed -i 's|^APP_URL=.*|APP_URL=https://erp.natanemengineering.com|' .env
+
+# 3. Clean stale caches
 echo "🧹 Clearing old bootstrap/cache..."
 rm -f bootstrap/cache/*.php
 
