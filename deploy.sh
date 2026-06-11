@@ -51,17 +51,15 @@ rm -f bootstrap/cache/*.php
 # 4. Rebuild dependencies
 echo "📦 Updating dependencies..."
 
-# Ensure we have a composer binary
-if ! command -v composer &> /dev/null && [ ! -f "composer.phar" ]; then
-    echo "📥 Composer not found. Downloading composer.phar..."
-    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-    php composer-setup.php --quiet
-    php -r "unlink('composer-setup.php');"
-fi
-
-# Determine composer command
-if [ -f "composer.phar" ]; then
-    COMPOSER="php composer.phar"
+# Ensure we have a composer binary (always use /tmp to avoid polluting the repo)
+if ! command -v composer &> /dev/null; then
+    if [ ! -f "/tmp/composer.phar" ]; then
+        echo "📥 Composer not found. Downloading to /tmp..."
+        php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');"
+        php /tmp/composer-setup.php --install-dir=/tmp --filename=composer.phar --quiet
+        php -r "unlink('/tmp/composer-setup.php');"
+    fi
+    COMPOSER="php /tmp/composer.phar"
 else
     COMPOSER="composer"
 fi
