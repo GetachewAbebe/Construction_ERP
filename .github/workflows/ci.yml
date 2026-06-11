@@ -82,7 +82,7 @@ jobs:
         DB_PASSWORD: password
 
     - name: Linting (Pint)
-      run: ./vendor/bin/pint --test
+      run: ./vendor/bin/pint --test app config database resources routes tests public
 
     - name: Static Analysis (PHPStan)
       run: ./vendor/bin/phpstan analyse
