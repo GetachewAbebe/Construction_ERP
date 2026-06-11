@@ -19,23 +19,7 @@ jobs:
       REPO_ROOT: /home/natanewn/repositories/Construction_ERP
 
     steps:
-      - name: Pull latest code via CPanel Git
-        run: |
-          RESPONSE=$(curl -s -o /tmp/pull_response.json -w "%{http_code}" \
-            -X POST \
-            -H "Authorization: cpanel ${CPANEL_USERNAME}:${CPANEL_API_TOKEN}" \
-            -d "repository_root=${REPO_ROOT}" \
-            "https://${CPANEL_DOMAIN}:2083/execute/VersionControl/update")
-
-          echo "Pull HTTP status: $RESPONSE"
-          cat /tmp/pull_response.json
-
-          if [ "$RESPONSE" != "200" ]; then
-            echo "Pull failed with HTTP $RESPONSE"
-            exit 1
-          fi
-
-      - name: Run deployment tasks (.cpanel.yml)
+      - name: Trigger CPanel deployment
         run: |
           RESPONSE=$(curl -s -o /tmp/deploy_response.json -w "%{http_code}" \
             -X POST \

@@ -33,7 +33,12 @@ export COMPOSER_HOME=$HOME/.composer
 echo "🚧 Entering maintenance mode..."
 php artisan down || true
 
-# 2. Enforce production environment
+# 2. Pull latest code from GitHub
+echo "📥 Pulling latest code..."
+git fetch origin
+git reset --hard origin/main
+
+# 3. Enforce production environment
 echo "🔧 Enforcing production environment..."
 sed -i 's/^APP_ENV=.*/APP_ENV=production/' .env
 sed -i 's/^APP_DEBUG=.*/APP_DEBUG=false/' .env
