@@ -17,6 +17,8 @@ npm-debug.log
 
 # Dependencies
 /vendor/
+composer.phar
+composer-setup.php
 
 # OS generated files
 Thumbs.db

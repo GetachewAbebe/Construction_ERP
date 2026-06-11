@@ -1,4 +1,5 @@
 ---
 deployment:
   tasks:
+    - git clean -fd
     - /bin/bash deploy.sh
