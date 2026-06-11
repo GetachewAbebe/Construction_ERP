@@ -21,18 +21,26 @@ jobs:
     steps:
       - name: Trigger CPanel deployment
         run: |
-          RESPONSE=$(curl -s -o /tmp/deploy_response.json -w "%{http_code}" \
-            -X POST \
-            -H "Authorization: cpanel ${CPANEL_USERNAME}:${CPANEL_API_TOKEN}" \
-            -d "repository_root=${REPO_ROOT}" \
-            "https://${CPANEL_DOMAIN}:2083/execute/VersionControlDeployment/create")
+          echo "Connecting to: https://${CPANEL_DOMAIN}:2083"
 
-          echo "Deploy HTTP status: $RESPONSE"
-          cat /tmp/deploy_response.json
+          # Try port 2083 first, fall back to 2096
+          for PORT in 2083 2096 443; do
+            echo "Trying port ${PORT}..."
+            RESPONSE=$(curl -sk -o /tmp/deploy_response.json -w "%{http_code}" \
+              --connect-timeout 15 \
+              -X POST \
+              -H "Authorization: cpanel ${CPANEL_USERNAME}:${CPANEL_API_TOKEN}" \
+              -d "repository_root=${REPO_ROOT}" \
+              "https://${CPANEL_DOMAIN}:${PORT}/execute/VersionControlDeployment/create") || true
 
-          if [ "$RESPONSE" != "200" ]; then
-            echo "Deployment failed with HTTP $RESPONSE"
-            exit 1
-          fi
+            echo "Port ${PORT} HTTP status: $RESPONSE"
+            cat /tmp/deploy_response.json || true
 
-          echo "Deployment triggered successfully."
+            if [ "$RESPONSE" = "200" ]; then
+              echo "Deployment triggered successfully on port ${PORT}."
+              exit 0
+            fi
+          done
+
+          echo "All ports failed. Deployment could not be triggered."
+          exit 1
