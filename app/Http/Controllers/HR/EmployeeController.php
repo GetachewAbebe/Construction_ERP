@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\HR;
 
 use App\Http\Controllers\Controller;
@@ -83,9 +85,9 @@ class EmployeeController extends Controller
         return redirect()->route('hr.departments.index')->with('success', 'Department added to organizational structure.');
     }
 
-    public function destroyDepartment($id)
+    public function destroyDepartment(\App\Models\Department $department)
     {
-        \App\Models\Department::findOrFail($id)->delete();
+        $department->delete();
 
         return redirect()->route('hr.departments.index')->with('success', 'Department removed from structure.');
     }
@@ -109,9 +111,9 @@ class EmployeeController extends Controller
         return redirect()->route('hr.positions.index')->with('success', 'Position designation established.');
     }
 
-    public function destroyPosition($id)
+    public function destroyPosition(\App\Models\Position $position)
     {
-        \App\Models\Position::findOrFail($id)->delete();
+        $position->delete();
 
         return redirect()->route('hr.positions.index')->with('success', 'Position designation retired.');
     }

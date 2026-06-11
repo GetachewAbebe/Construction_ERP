@@ -9,8 +9,22 @@ set -e
 
 echo "🚀 Initiating Robust Deployment..."
 
+LOCK_FILE="/tmp/natanem_deploy.lock"
+
+if [ -f "$LOCK_FILE" ]; then
+    echo "❌ Deployment is already in progress. Lock file exists at $LOCK_FILE"
+    exit 1
+fi
+
+touch "$LOCK_FILE"
+
+# Ensure lock file is removed on script exit (success or failure)
+trap 'rm -f "$LOCK_FILE"; echo "🔓 Deployment lock released."' EXIT
+
 # Set HOME and COMPOSER_HOME for environments where it's missing (e.g. shell_exec)
-export HOME=/home/natanewn
+if [ -z "$HOME" ]; then
+    export HOME=$(getent passwd $(whoami) | cut -d: -f6)
+fi
 export COMPOSER_HOME=$HOME/.composer
 
 # 1. Enter Maintenance Mode

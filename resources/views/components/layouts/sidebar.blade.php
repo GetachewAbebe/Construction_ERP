@@ -256,8 +256,8 @@
 
     <div class="sidebar-footer">
         <div class="dropup w-100">
-            <button href="#" class="d-flex align-items-center gap-3 w-100 p-2 border-0 bg-transparent text-start user-profile-trigger" 
-                    data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 16px; transition: all 0.2s ease;">
+            <button class="d-flex align-items-center gap-3 w-100 p-2 border-0 bg-transparent text-start user-profile-trigger" 
+                    data-bs-toggle="dropdown" aria-expanded="false" aria-label="Open user profile menu" style="border-radius: 16px; transition: all 0.2s ease;">
                 
                 {{-- Avatar --}}
                 <div class="position-relative">

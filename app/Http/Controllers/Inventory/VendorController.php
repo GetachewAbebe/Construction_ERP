@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Inventory;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Inventory\StoreVendorRequest;
+use App\Http\Requests\Inventory\UpdateVendorRequest;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 
@@ -39,20 +43,9 @@ class VendorController extends Controller
     /**
      * Store the new vendor record.
      */
-    public function store(Request $request)
+    public function store(StoreVendorRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'contact_person' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:20',
-            'tax_id' => 'nullable|string|max:50',
-            'category' => 'nullable|string|max:100',
-            'address' => 'nullable|string',
-            'payment_terms' => 'nullable|string|max:100',
-        ]);
-
-        $vendor = Vendor::create($validated);
+        $vendor = Vendor::create($request->validated());
 
         return redirect()->route('inventory.vendors.index')
             ->with('success', "Vendor '{$vendor->name}' has been successfully onboarded.");
@@ -77,24 +70,9 @@ class VendorController extends Controller
     /**
      * Update vendor metadata.
      */
-    public function update(Request $request, Vendor $vendor)
+    public function update(UpdateVendorRequest $request, Vendor $vendor)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'contact_person' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:20',
-            'tax_id' => 'nullable|string|max:50',
-            'category' => 'nullable|string|max:100',
-            'address' => 'nullable|string',
-            'payment_terms' => 'nullable|string|max:100',
-            'is_active' => 'nullable|boolean',
-        ]);
-
-        // Fix for checkbox boolean if missing
-        $validated['is_active'] = $request->has('is_active');
-
-        $vendor->update($validated);
+        $vendor->update($request->validated());
 
         return redirect()->route('inventory.vendors.index')
             ->with('success', "Vendor '{$vendor->name}' metadata updated.");

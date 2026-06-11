@@ -3,6 +3,7 @@ includes:
     - vendor/phpstan/phpstan-deprecation-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
     - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - vendor/larastan/larastan/extension.neon
 
 parameters:
 
@@ -15,7 +16,7 @@ parameters:
     reportUnmatchedIgnoredErrors: false
 
     # Level 9 is the highest level
-    level: 5
+    level: 8
 
     excludePaths:
         - ./*/*/FileToBeExcluded.php

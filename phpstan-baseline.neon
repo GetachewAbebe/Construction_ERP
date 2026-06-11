@@ -7,112 +7,106 @@ parameters:
 			path: app/Console/Commands/AutoCheckOutCommand.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\Attendance::whereDate().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Console\Commands\AutoCheckOutCommand::handle() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Console/Commands/AutoCheckOutCommand.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\User::$department.
-			identifier: property.notFound
+			rawMessage: 'Method App\Console\Commands\SyncUsersToEmployees::handle() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Console/Commands/SyncUsersToEmployees.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\User::$email.
-			identifier: property.notFound
-			count: 4
-			path: app/Console/Commands/SyncUsersToEmployees.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$first_name.
-			identifier: property.notFound
+			rawMessage: 'Method App\Http\Controllers\Admin\ActivityLogController::index() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Console/Commands/SyncUsersToEmployees.php
+			path: app/Http/Controllers/Admin/ActivityLogController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\User::$id.
-			identifier: property.notFound
-			count: 4
-			path: app/Console/Commands/SyncUsersToEmployees.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$last_name.
-			identifier: property.notFound
+			rawMessage: 'Method App\Http\Controllers\Admin\ActivityLogController::show() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Console/Commands/SyncUsersToEmployees.php
+			path: app/Http/Controllers/Admin/ActivityLogController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\User::$name.
-			identifier: property.notFound
+			rawMessage: 'Parameter #1 $view of function view expects view-string|null, string given.'
+			identifier: argument.type
 			count: 1
-			path: app/Console/Commands/SyncUsersToEmployees.php
+			path: app/Http/Controllers/Admin/ActivityLogController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\User::$phone_number.
-			identifier: property.notFound
+			rawMessage: Relation 'user' is not found in App\Models\ActivityLog model.
+			identifier: larastan.relationExistence
 			count: 1
-			path: app/Console/Commands/SyncUsersToEmployees.php
+			path: app/Http/Controllers/Admin/ActivityLogController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\User::$position.
-			identifier: property.notFound
-			count: 1
-			path: app/Console/Commands/SyncUsersToEmployees.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::create().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Console/Commands/SyncUsersToEmployees.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::where().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Console/Commands/SyncUsersToEmployees.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\AssetClassification::$hierarchy_path.
-			identifier: property.notFound
+			rawMessage: 'Method App\Http\Controllers\Admin\AssetClassificationController::create() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Admin/AssetClassificationController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\AssetClassification::$id.
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/Admin/AssetClassificationController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\AssetClassification::$name.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Admin/AssetClassificationController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\AssetClassification::orderBy().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Http\Controllers\Admin\AssetClassificationController::destroy() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Admin/AssetClassificationController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\AssetClassification::where().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Http\Controllers\Admin\AssetClassificationController::edit() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Admin/AssetClassificationController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\AttendanceSetting::updateOrCreate().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Http\Controllers\Admin\AssetClassificationController::index() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/AssetClassificationController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\AssetClassificationController::store() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/AssetClassificationController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\AssetClassificationController::update() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/AssetClassificationController.php
+
+		-
+			rawMessage: Property App\Http\Controllers\Admin\AssetClassificationController::$service has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Http/Controllers/Admin/AssetClassificationController.php
+
+		-
+			rawMessage: Relation 'parent' is not found in App\Models\AssetClassification model.
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/AssetClassificationController.php
+
+		-
+			rawMessage: 'Called ''pluck'' on Laravel collection, but could have been retrieved as a query.'
+			identifier: larastan.noUnnecessaryCollectionCall
 			count: 1
 			path: app/Http/Controllers/Admin/AttendanceSettingsController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Expense::$id.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
+			rawMessage: 'Method App\Http\Controllers\Admin\AttendanceSettingsController::index() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/AttendanceSettingsController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\AttendanceSettingsController::update() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/AttendanceSettingsController.php
 
 		-
 			rawMessage: Access to an undefined property App\Models\Expense::$user.
@@ -121,49 +115,55 @@ parameters:
 			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$rejection_reason.
-			identifier: property.notFound
+			rawMessage: 'Cannot call method unreadNotifications() on App\Models\User|null.'
+			identifier: method.nonObject
+			count: 2
+			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\ExpenseApprovalController::approve() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
 
 		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Authenticatable::unreadNotifications().'
-			identifier: method.notFound
-			count: 2
+			rawMessage: 'Method App\Http\Controllers\Admin\ExpenseApprovalController::index() has no return type specified.'
+			identifier: missingType.return
+			count: 1
 			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\User::role().'
-			identifier: staticMethod.notFound
-			count: 2
+			rawMessage: 'Method App\Http\Controllers\Admin\ExpenseApprovalController::reject() has no return type specified.'
+			identifier: missingType.return
+			count: 1
 			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
 
 		-
-			rawMessage: 'Call to static method warning() on an unknown class Log.'
-			identifier: class.notFound
-			count: 2
+			rawMessage: Relation 'project' is not found in App\Models\Expense model.
+			identifier: larastan.relationExistence
+			count: 1
 			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\InventoryLoan::$approved_at.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
+			rawMessage: Relation 'user' is not found in App\Models\Expense model.
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\InventoryLoan::$approved_by.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
+			rawMessage: 'Method App\Http\Controllers\Admin\HrOverviewController::index() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/HrOverviewController.php
+
+		-
+			rawMessage: 'Parameter #1 $view of function view expects view-string|null, string given.'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Admin/HrOverviewController.php
 
 		-
 			rawMessage: Access to an undefined property App\Models\InventoryLoan::$employee.
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\InventoryLoan::$id.
 			identifier: property.notFound
 			count: 3
 			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
@@ -175,52 +175,28 @@ parameters:
 			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\InventoryLoan::$quantity.
-			identifier: property.notFound
+			rawMessage: 'Cannot call method unreadNotifications() on App\Models\User|null.'
+			identifier: method.nonObject
+			count: 2
+			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
+
+		-
+			rawMessage: 'Property App\Models\InventoryLoan::$approved_by (int<0, max>|null) does not accept int|string|null.'
+			identifier: assign.propertyType
+			count: 2
+			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
+
+		-
+			rawMessage: Relation 'employee' is not found in App\Models\InventoryLoan model.
+			identifier: larastan.relationExistence
 			count: 1
 			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\InventoryLoan::$status.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
-
-		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::id().'
-			identifier: method.notFound
-			count: 2
-			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
-
-		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::user().'
-			identifier: method.notFound
-			count: 2
-			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\User::role().'
-			identifier: staticMethod.notFound
-			count: 2
-			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
-
-		-
-			rawMessage: 'Call to static method error() on an unknown class Log.'
-			identifier: class.notFound
-			count: 2
-			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
-
-		-
-			rawMessage: 'Method App\Http\Controllers\Admin\InventoryLoanApprovalController::index() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
-			identifier: return.type
+			rawMessage: Relation 'item' is not found in App\Models\InventoryLoan model.
+			identifier: larastan.relationExistence
 			count: 1
 			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\ItemCategory::$id.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Admin/ItemCategoryController.php
 
 		-
 			rawMessage: Access to an undefined property App\Models\ItemCategory::$name.
@@ -229,116 +205,290 @@ parameters:
 			path: app/Http/Controllers/Admin/ItemCategoryController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\ItemCategory::create().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Http\Controllers\Admin\ItemCategoryController::create() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Admin/ItemCategoryController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\ItemCategory::whereNull().'
-			identifier: staticMethod.notFound
-			count: 2
+			rawMessage: 'Method App\Http\Controllers\Admin\ItemCategoryController::destroy() has no return type specified.'
+			identifier: missingType.return
+			count: 1
 			path: app/Http/Controllers/Admin/ItemCategoryController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\LeaveRequest::$employee.
+			rawMessage: 'Method App\Http\Controllers\Admin\ItemCategoryController::edit() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/ItemCategoryController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\ItemCategoryController::index() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/ItemCategoryController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\ItemCategoryController::store() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/ItemCategoryController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\ItemCategoryController::update() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/ItemCategoryController.php
+
+		-
+			rawMessage: Relation 'parent' is not found in App\Models\ItemCategory model.
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/ItemCategoryController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\ItemLoanApprovalController::index() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/ItemLoanApprovalController.php
+
+		-
+			rawMessage: Relation 'employee' is not found in App\Models\InventoryLoan model.
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/ItemLoanApprovalController.php
+
+		-
+			rawMessage: Relation 'item' is not found in App\Models\InventoryLoan model.
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/ItemLoanApprovalController.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Database\Eloquent\Model::$user.
 			identifier: property.notFound
 			count: 2
 			path: app/Http/Controllers/Admin/LeaveApprovalController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\LeaveRequest::$employee_id.
-			identifier: property.notFound
+			rawMessage: 'Cannot call method unreadNotifications() on App\Models\User|null.'
+			identifier: method.nonObject
+			count: 2
+			path: app/Http/Controllers/Admin/LeaveApprovalController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\LeaveApprovalController::approve() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Admin/LeaveApprovalController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\LeaveRequest::$end_date.
-			identifier: property.notFound
+			rawMessage: 'Method App\Http\Controllers\Admin\LeaveApprovalController::index() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Admin/LeaveApprovalController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\LeaveRequest::$id.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Admin/LeaveApprovalController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\LeaveRequest::$reason.
-			identifier: property.notFound
+			rawMessage: 'Method App\Http\Controllers\Admin\LeaveApprovalController::reject() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Admin/LeaveApprovalController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\LeaveRequest::$start_date.
-			identifier: property.notFound
+			rawMessage: 'Method App\Http\Controllers\Admin\MaintenanceController::clearCache() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Http/Controllers/Admin/LeaveApprovalController.php
+			path: app/Http/Controllers/Admin/MaintenanceController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\LeaveRequest::$status.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Admin/LeaveApprovalController.php
-
-		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::id().'
-			identifier: method.notFound
-			count: 3
-			path: app/Http/Controllers/Admin/LeaveApprovalController.php
-
-		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::user().'
-			identifier: method.notFound
-			count: 2
-			path: app/Http/Controllers/Admin/LeaveApprovalController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\EmployeeOnLeave::create().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Http\Controllers\Admin\MaintenanceController::clearLogs() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Http/Controllers/Admin/LeaveApprovalController.php
+			path: app/Http/Controllers/Admin/MaintenanceController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\User::role().'
-			identifier: staticMethod.notFound
-			count: 2
-			path: app/Http/Controllers/Admin/LeaveApprovalController.php
+			rawMessage: 'Method App\Http\Controllers\Admin\MaintenanceController::createBackup() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/MaintenanceController.php
 
 		-
-			rawMessage: 'Call to static method error() on an unknown class Log.'
-			identifier: class.notFound
-			count: 2
-			path: app/Http/Controllers/Admin/LeaveApprovalController.php
+			rawMessage: 'Method App\Http\Controllers\Admin\MaintenanceController::downloadBackup() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/MaintenanceController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\NotificationTemplate::$id.
-			identifier: property.notFound
+			rawMessage: 'Method App\Http\Controllers\Admin\MaintenanceController::downloadBackup() has parameter $filename with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Controllers/Admin/MaintenanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\MaintenanceController::formatBytes() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/MaintenanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\MaintenanceController::formatBytes() has parameter $bytes with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Controllers/Admin/MaintenanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\MaintenanceController::formatBytes() has parameter $precision with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Controllers/Admin/MaintenanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\MaintenanceController::getDirectorySize() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/MaintenanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\MaintenanceController::getDirectorySize() has parameter $path with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Controllers/Admin/MaintenanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\MaintenanceController::getPendingMigrations() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/MaintenanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\MaintenanceController::getRecentLogFiles() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/MaintenanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\MaintenanceController::getRecentLogFiles() has parameter $limit with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Controllers/Admin/MaintenanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\MaintenanceController::index() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/MaintenanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\MaintenanceController::listBackups() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/MaintenanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\MaintenanceController::optimizeSystem() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/MaintenanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\MaintenanceController::runMigrations() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/MaintenanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\NotificationTemplateController::create() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Admin/NotificationTemplateController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\NotificationTemplate::$name.
-			identifier: property.notFound
+			rawMessage: 'Method App\Http\Controllers\Admin\NotificationTemplateController::destroy() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Admin/NotificationTemplateController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\NotificationTemplate::create().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Http\Controllers\Admin\NotificationTemplateController::edit() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Admin/NotificationTemplateController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\NotificationTemplate::orderBy().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Http\Controllers\Admin\NotificationTemplateController::index() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Admin/NotificationTemplateController.php
 
 		-
-			rawMessage: Access to an undefined property Spatie\Permission\Models\Role::$permissions.
-			identifier: property.notFound
+			rawMessage: 'Method App\Http\Controllers\Admin\NotificationTemplateController::preview() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/NotificationTemplateController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\NotificationTemplateController::store() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/NotificationTemplateController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\NotificationTemplateController::update() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/NotificationTemplateController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\RolePermissionController::create() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/RolePermissionController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\RolePermissionController::destroy() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/RolePermissionController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\RolePermissionController::destroyPermission() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/RolePermissionController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\RolePermissionController::edit() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/RolePermissionController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\RolePermissionController::index() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/RolePermissionController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\RolePermissionController::permissions() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/RolePermissionController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\RolePermissionController::store() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/RolePermissionController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\RolePermissionController::storePermission() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/RolePermissionController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\RolePermissionController::update() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Admin/RolePermissionController.php
 
@@ -349,8 +499,20 @@ parameters:
 			path: app/Http/Controllers/Admin/RolePermissionController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\SystemSetting::updateOrCreate().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Called ''pluck'' on Laravel collection, but could have been retrieved as a query.'
+			identifier: larastan.noUnnecessaryCollectionCall
+			count: 1
+			path: app/Http/Controllers/Admin/SystemSettingsController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\SystemSettingsController::index() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Admin/SystemSettingsController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Admin\SystemSettingsController::update() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Admin/SystemSettingsController.php
 
@@ -361,64 +523,16 @@ parameters:
 			path: app/Http/Controllers/Admin/TrashController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Employee|App\Models\Expense|App\Models\InventoryItem|App\Models\LeaveRequest|App\Models\Project|App\Models\User::$id.
-			identifier: property.notFound
-			count: 2
+			rawMessage: 'Method App\Http\Controllers\Admin\TrashController::index() has no return type specified.'
+			identifier: missingType.return
+			count: 1
 			path: app/Http/Controllers/Admin/TrashController.php
 
 		-
-			rawMessage: Access to an undefined property App\Http\Requests\Admin\StoreUserRequest::$department.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: Access to an undefined property App\Http\Requests\Admin\StoreUserRequest::$hire_date.
-			identifier: property.notFound
+			rawMessage: 'Method App\Http\Controllers\Admin\TrashController::restore() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: Access to an undefined property App\Http\Requests\Admin\StoreUserRequest::$phone_number.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: Access to an undefined property App\Http\Requests\Admin\StoreUserRequest::$position.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: Access to an undefined property App\Http\Requests\Admin\UpdateUserRequest::$department.
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: Access to an undefined property App\Http\Requests\Admin\UpdateUserRequest::$phone_number.
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: Access to an undefined property App\Http\Requests\Admin\UpdateUserRequest::$position.
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$department.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$email.
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/AdminUserController.php
+			path: app/Http/Controllers/Admin/TrashController.php
 
 		-
 			rawMessage: Access to an undefined property App\Models\User::$employee.
@@ -427,122 +541,23 @@ parameters:
 			path: app/Http/Controllers/AdminUserController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\User::$first_name.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$id.
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$last_name.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$middle_name.
-			identifier: property.notFound
+			rawMessage: '''
+				Call to deprecated method get() of class Illuminate\Http\Request:
+				use ->input() instead
+			'''
+			identifier: method.deprecated
 			count: 1
 			path: app/Http/Controllers/AdminUserController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\User::$name.
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$password.
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$phone_number.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$position.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$role.
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$status.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$employee_id.
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: Access to an undefined property Illuminate\Support\Optional::$profile_picture.
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::create().'
-			identifier: staticMethod.notFound
-			count: 2
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::find().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::where().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\User::create().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: 'Call to an undefined static method Spatie\Permission\Models\Role::firstOrCreate().'
-			identifier: staticMethod.notFound
-			count: 2
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: 'Call to function method_exists() with App\Models\User and ''syncRoles'' will always evaluate to true.'
+			rawMessage: 'Call to function method_exists() with App\Models\User and ''assignRole'' will always evaluate to true.'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: app/Http/Controllers/AdminUserController.php
 
 		-
-			rawMessage: 'Method App\Http\Controllers\AdminUserController::create() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
-			identifier: return.type
-			count: 1
-			path: app/Http/Controllers/AdminUserController.php
-
-		-
-			rawMessage: 'Method App\Http\Controllers\AdminUserController::edit() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
-			identifier: return.type
+			rawMessage: 'Call to function method_exists() with App\Models\User and ''syncRoles'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: app/Http/Controllers/AdminUserController.php
 
@@ -553,190 +568,148 @@ parameters:
 			path: app/Http/Controllers/AdminUserController.php
 
 		-
-			rawMessage: 'Method App\Http\Controllers\AdminUserController::index() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
-			identifier: return.type
+			rawMessage: Property App\Http\Controllers\AdminUserController::$allowedRoles type has no value type specified in iterable type array.
+			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Controllers/AdminUserController.php
 
 		-
-			rawMessage: 'Method App\Http\Controllers\AdminUserController::show() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
-			identifier: return.type
+			rawMessage: Relation 'employee' is not found in App\Models\User model.
+			identifier: larastan.relationExistence
 			count: 1
 			path: app/Http/Controllers/AdminUserController.php
 
 		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Guard::logout().'
-			identifier: method.notFound
+			rawMessage: 'Parameter #1 $object_or_class of function method_exists expects object|string, App\Models\User|null given.'
+			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Auth/AuthenticatedSessionController.php
 
 		-
-			rawMessage: Cannot access property $email on class-string|object.
+			rawMessage: 'Parameter #1 $view of function view expects view-string|null, string given.'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Auth/AuthenticatedSessionController.php
+
+		-
+			rawMessage: Cannot access property $email on App\Models\User|null.
 			identifier: property.nonObject
 			count: 1
-			path: app/Http/Controllers/Auth/AuthenticatedSessionController.php
+			path: app/Http/Controllers/Auth/ConfirmablePasswordController.php
 
 		-
-			rawMessage: 'Method App\Http\Controllers\Auth\AuthenticatedSessionController::create() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
-			identifier: return.type
-			count: 1
-			path: app/Http/Controllers/Auth/AuthenticatedSessionController.php
-
-		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$password.
-			identifier: property.notFound
+			rawMessage: 'Parameter #1 $view of function view expects view-string|null, string given.'
+			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Auth/ConfirmablePasswordController.php
 
 		-
-			rawMessage: 'Method App\Http\Controllers\Auth\ConfirmablePasswordController::show() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
-			identifier: return.type
+			rawMessage: 'Cannot call method hasVerifiedEmail() on App\Models\User|null.'
+			identifier: method.nonObject
 			count: 1
-			path: app/Http/Controllers/Auth/ConfirmablePasswordController.php
+			path: app/Http/Controllers/Auth/EmailVerificationNotificationController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$password.
-			identifier: property.notFound
+			rawMessage: 'Cannot call method sendEmailVerificationNotification() on App\Models\User|null.'
+			identifier: method.nonObject
 			count: 1
-			path: app/Http/Controllers/Auth/NewPasswordController.php
+			path: app/Http/Controllers/Auth/EmailVerificationNotificationController.php
 
 		-
-			rawMessage: 'Method App\Http\Controllers\Auth\NewPasswordController::create() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
-			identifier: return.type
+			rawMessage: 'Cannot call method hasVerifiedEmail() on App\Models\User|null.'
+			identifier: method.nonObject
 			count: 1
-			path: app/Http/Controllers/Auth/NewPasswordController.php
+			path: app/Http/Controllers/Auth/EmailVerificationPromptController.php
 
 		-
-			rawMessage: 'Method App\Http\Controllers\Auth\PasswordResetLinkController::create() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
-			identifier: return.type
+			rawMessage: 'Parameter #1 $view of function view expects view-string|null, string given.'
+			identifier: argument.type
 			count: 1
-			path: app/Http/Controllers/Auth/PasswordResetLinkController.php
+			path: app/Http/Controllers/Auth/EmailVerificationPromptController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$email.
-			identifier: property.notFound
+			rawMessage: 'Cannot call method update() on App\Models\User|null.'
+			identifier: method.nonObject
 			count: 1
-			path: app/Http/Controllers/Auth/RegisteredUserController.php
+			path: app/Http/Controllers/Auth/PasswordController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$name.
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Auth/RegisteredUserController.php
-
-		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$password.
-			identifier: property.notFound
+			rawMessage: 'Parameter #1 $view of function view expects view-string|null, string given.'
+			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Auth/RegisteredUserController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\User::create().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Cannot call method hasVerifiedEmail() on App\Models\User|null.'
+			identifier: method.nonObject
 			count: 1
-			path: app/Http/Controllers/Auth/RegisteredUserController.php
+			path: app/Http/Controllers/Auth/VerifyEmailController.php
 
 		-
-			rawMessage: 'Method App\Http\Controllers\Auth\RegisteredUserController::create() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
-			identifier: return.type
+			rawMessage: 'Cannot call method markEmailAsVerified() on App\Models\User|null.'
+			identifier: method.nonObject
 			count: 1
-			path: app/Http/Controllers/Auth/RegisteredUserController.php
+			path: app/Http/Controllers/Auth/VerifyEmailController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\Attendance::selectRaw().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Parameter #1 $user of class Illuminate\Auth\Events\Verified constructor expects Illuminate\Contracts\Auth\MustVerifyEmail, App\Models\User|null given.'
+			identifier: argument.type
 			count: 1
-			path: app/Http/Controllers/DashboardController.php
+			path: app/Http/Controllers/Auth/VerifyEmailController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::count().'
-			identifier: staticMethod.notFound
-			count: 2
-			path: app/Http/Controllers/DashboardController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::where().'
-			identifier: staticMethod.notFound
-			count: 2
-			path: app/Http/Controllers/DashboardController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\EmployeeOnLeave::where().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/DashboardController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Expense::sum().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/DashboardController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Expense::where().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/DashboardController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\InventoryItem::where().'
-			identifier: staticMethod.notFound
-			count: 5
-			path: app/Http/Controllers/DashboardController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\InventoryLoan::where().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/DashboardController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\InventoryLoan::whereIn().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/DashboardController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\LeaveRequest::where().'
-			identifier: staticMethod.notFound
-			count: 3
-			path: app/Http/Controllers/DashboardController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Project::count().'
-			identifier: staticMethod.notFound
-			count: 2
-			path: app/Http/Controllers/DashboardController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Project::latest().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/DashboardController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Project::sum().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/DashboardController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Project::withSum().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/DashboardController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\User::count().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/DashboardController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\Expense::$id.
+			rawMessage: Access to an undefined property App\Models\Attendance::$count.
 			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Finance/ExpenseController.php
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: 'Call to function is_string() with Carbon\Carbon will always evaluate to false.'
+			identifier: function.impossibleType
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\DashboardController::admin() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\DashboardController::finance() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\DashboardController::hr() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\DashboardController::inventory() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: Relation 'department_rel' is not found in App\Models\Employee model.
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: Relation 'position_rel' is not found in App\Models\Employee model.
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			rawMessage: Relation 'user' is not found in App\Models\ActivityLog model.
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
 
 		-
 			rawMessage: Access to an undefined property App\Models\Expense::$user.
@@ -745,76 +718,118 @@ parameters:
 			path: app/Http/Controllers/Finance/ExpenseController.php
 
 		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::id().'
-			identifier: method.notFound
-			count: 3
-			path: app/Http/Controllers/Finance/ExpenseController.php
-
-		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::user().'
-			identifier: method.notFound
+			rawMessage: 'Method App\Http\Controllers\Finance\ExpenseController::approve() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Finance/ExpenseController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\Expense::create().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Http\Controllers\Finance\ExpenseController::create() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Finance/ExpenseController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\Project::orderBy().'
-			identifier: staticMethod.notFound
-			count: 3
-			path: app/Http/Controllers/Finance/ExpenseController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\User::role().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Http\Controllers\Finance\ExpenseController::destroy() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Finance/ExpenseController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Project::$name.
-			identifier: property.notFound
+			rawMessage: 'Method App\Http\Controllers\Finance\ExpenseController::edit() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Finance/ExpenseController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Finance\ExpenseController::index() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Finance/ExpenseController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Finance\ExpenseController::reject() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Finance/ExpenseController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Finance\ExpenseController::show() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Finance/ExpenseController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Finance\ExpenseController::store() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Finance/ExpenseController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Finance\ExpenseController::update() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Finance/ExpenseController.php
+
+		-
+			rawMessage: Relation 'project' is not found in App\Models\Expense model.
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Finance/ExpenseController.php
+
+		-
+			rawMessage: Relation 'user' is not found in App\Models\Expense model.
+			identifier: larastan.relationExistence
 			count: 2
+			path: app/Http/Controllers/Finance/ExpenseController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Finance\ProjectController::create() has no return type specified.'
+			identifier: missingType.return
+			count: 1
 			path: app/Http/Controllers/Finance/ProjectController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\Project::create().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Http\Controllers\Finance\ProjectController::destroy() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Finance/ProjectController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Attendance::$afternoon_status.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/HR/AttendanceController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\Attendance::$clock_in.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/HR/AttendanceController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\Attendance::$clock_out.
-			identifier: property.notFound
+			rawMessage: 'Method App\Http\Controllers\Finance\ProjectController::edit() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Http/Controllers/HR/AttendanceController.php
+			path: app/Http/Controllers/Finance/ProjectController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Attendance::$morning_status.
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/HR/AttendanceController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\Attendance::$total_credit.
-			identifier: property.notFound
+			rawMessage: 'Method App\Http\Controllers\Finance\ProjectController::index() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Http/Controllers/HR/AttendanceController.php
+			path: app/Http/Controllers/Finance/ProjectController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Finance\ProjectController::show() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Finance/ProjectController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Finance\ProjectController::store() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Finance/ProjectController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Finance\ProjectController::update() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Finance/ProjectController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\ApprovedLeavesController::__invoke() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/ApprovedLeavesController.php
 
 		-
 			rawMessage: 'Access to an undefined property App\Models\Attendance|Illuminate\Database\Eloquent\Collection<int, App\Models\Attendance>::$afternoon_status.'
@@ -835,97 +850,37 @@ parameters:
 			path: app/Http/Controllers/HR/AttendanceController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$employee_id.
+			rawMessage: 'Access to an undefined property App\Models\Employee|Illuminate\Database\Eloquent\Collection<int, App\Models\Employee>::$name.'
 			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: Access to an undefined property App\Models\User::$employee_id.
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: Cannot access property $employee_id on App\Models\User|null.
+			identifier: property.nonObject
 			count: 3
 			path: app/Http/Controllers/HR/AttendanceController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$action.
-			identifier: property.notFound
+			rawMessage: 'Cannot call method can() on App\Models\User|null.'
+			identifier: method.nonObject
 			count: 1
 			path: app/Http/Controllers/HR/AttendanceController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$attendance.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/HR/AttendanceController.php
-
-		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$date.
-			identifier: property.notFound
-			count: 4
-			path: app/Http/Controllers/HR/AttendanceController.php
-
-		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$employee_id.
-			identifier: property.notFound
+			rawMessage: 'Cannot call method format() on Carbon\Carbon|null.'
+			identifier: method.nonObject
 			count: 1
 			path: app/Http/Controllers/HR/AttendanceController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$week_start.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/HR/AttendanceController.php
-
-		-
-			rawMessage: Access to protected property Illuminate\Http\Request::$session.
-			identifier: property.protected
-			count: 1
-			path: app/Http/Controllers/HR/AttendanceController.php
-
-		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Authenticatable::can().'
-			identifier: method.notFound
-			count: 2
-			path: app/Http/Controllers/HR/AttendanceController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Attendance::where().'
-			identifier: staticMethod.notFound
-			count: 2
-			path: app/Http/Controllers/HR/AttendanceController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Attendance::whereBetween().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/HR/AttendanceController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Attendance::whereDate().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/HR/AttendanceController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::find().'
-			identifier: staticMethod.notFound
-			count: 2
-			path: app/Http/Controllers/HR/AttendanceController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::findOrFail().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/HR/AttendanceController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::orderBy().'
-			identifier: staticMethod.notFound
-			count: 4
-			path: app/Http/Controllers/HR/AttendanceController.php
-
-		-
-			rawMessage: 'Call to static method error() on an unknown class Log.'
-			identifier: class.notFound
-			count: 1
-			path: app/Http/Controllers/HR/AttendanceController.php
-
-		-
-			rawMessage: 'Cannot call method format() on array|float|int|string|false.'
+			rawMessage: 'Cannot call method format() on null.'
 			identifier: method.nonObject
 			count: 1
 			path: app/Http/Controllers/HR/AttendanceController.php
@@ -937,178 +892,313 @@ parameters:
 			path: app/Http/Controllers/HR/AttendanceController.php
 
 		-
-			rawMessage: 'Parameter #3 $session of method App\Services\AttendanceService::toggleSessionStatus() expects string, Closure|Symfony\Component\HttpFoundation\Session\SessionInterface|null given.'
+			rawMessage: 'Method App\Http\Controllers\HR\AttendanceController::checkIn() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\AttendanceController::checkOut() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\AttendanceController::checkOut() has parameter $id with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\AttendanceController::dailySheet() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\AttendanceController::exportMonthlySummaryCsv() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\AttendanceController::index() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\AttendanceController::monthlySummary() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\AttendanceController::storeDailySheet() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\AttendanceController::storeWeeklySheet() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\AttendanceController::toggleSession() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\AttendanceController::weeklySalary() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\AttendanceController::weeklySheet() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Parameter #1 $attendance of method App\Services\AttendanceService::autoCheckOut() expects App\Models\Attendance, App\Models\Attendance|Illuminate\Database\Eloquent\Collection<int, App\Models\Attendance> given.'
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/HR/AttendanceController.php
 
 		-
-			rawMessage: 'Strict comparison using === between Closure|Symfony\Component\HttpFoundation\Session\SessionInterface|null and ''morning'' will always evaluate to false.'
-			identifier: identical.alwaysFalse
-			count: 3
+			rawMessage: 'Parameter #1 $employee of method App\Services\AttendanceService::autoCheckIn() expects App\Models\Employee, App\Models\Employee|Illuminate\Database\Eloquent\Collection<int, App\Models\Employee> given.'
+			identifier: argument.type
+			count: 1
 			path: app/Http/Controllers/HR/AttendanceController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$name.
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/HR/EmployeeController.php
-
-		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$title.
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/HR/EmployeeController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Department::findOrFail().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/HR/EmployeeController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Department::orderBy().'
-			identifier: staticMethod.notFound
-			count: 3
-			path: app/Http/Controllers/HR/EmployeeController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Position::findOrFail().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/HR/EmployeeController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Position::orderBy().'
-			identifier: staticMethod.notFound
-			count: 3
-			path: app/Http/Controllers/HR/EmployeeController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\Employee::$id.
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/HR/LeaveRequestController.php
-
-		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$q.
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/HR/LeaveRequestController.php
-
-		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$status.
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/HR/LeaveRequestController.php
-
-		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::user().'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Controllers/HR/LeaveRequestController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::orderBy().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/HR/LeaveRequestController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\LeaveRequest::create().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/HR/LeaveRequestController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\LeaveRequest::where().'
-			identifier: staticMethod.notFound
-			count: 4
-			path: app/Http/Controllers/HR/LeaveRequestController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\User::role().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/HR/LeaveRequestController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\User::where().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/HR/LeaveRequestController.php
-
-		-
-			rawMessage: 'Call to static method error() on an unknown class Log.'
-			identifier: class.notFound
+			rawMessage: 'Parameter #1 $employee of method App\Services\AttendanceService::autoCheckIn() expects App\Models\Employee, App\Models\Employee|Illuminate\Database\Eloquent\Collection<int, App\Models\Employee>|null given.'
+			identifier: argument.type
 			count: 2
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Parameter #1 $stream of function fclose expects resource, resource|false given.'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Parameter #1 $stream of function fputcsv expects resource, resource|false given.'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: Relation 'employee' is not found in App\Models\Attendance model.
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/HR/AttendanceController.php
+
+		-
+			rawMessage: 'Call to an undefined method App\Models\Department|Illuminate\Database\Eloquent\Collection<int, App\Models\Department>::delete().'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Call to an undefined method App\Models\Position|Illuminate\Database\Eloquent\Collection<int, App\Models\Position>::delete().'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\EmployeeController::create() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\EmployeeController::destroy() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\EmployeeController::destroyDepartment() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\EmployeeController::destroyDepartment() has parameter $id with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\EmployeeController::destroyPosition() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\EmployeeController::destroyPosition() has parameter $id with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\EmployeeController::edit() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\EmployeeController::index() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\EmployeeController::indexDepartments() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\EmployeeController::indexPositions() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\EmployeeController::store() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\EmployeeController::storeDepartment() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\EmployeeController::storePosition() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\EmployeeController::update() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: 'Parameter #1 $view of function view expects view-string|null, string given.'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: Property App\Http\Controllers\HR\EmployeeController::$hrService has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Http/Controllers/HR/EmployeeController.php
+
+		-
+			rawMessage: '''
+				Call to deprecated method get() of class Illuminate\Http\Request:
+				use ->input() instead
+			'''
+			identifier: method.deprecated
+			count: 1
 			path: app/Http/Controllers/HR/LeaveRequestController.php
 
 		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Authenticatable::getDashboardRouteName().'
-			identifier: method.notFound
+			rawMessage: 'Method App\Http\Controllers\HR\LeaveRequestController::create() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/LeaveRequestController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\LeaveRequestController::getLeaveDates() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/LeaveRequestController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\LeaveRequestController::index() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/LeaveRequestController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\LeaveRequestController::show() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/LeaveRequestController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\HR\LeaveRequestController::store() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HR/LeaveRequestController.php
+
+		-
+			rawMessage: 'Cannot call method getDashboardRouteName() on App\Models\User|null.'
+			identifier: method.nonObject
 			count: 1
 			path: app/Http/Controllers/HomeController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\InventoryItem::$id.
+			rawMessage: 'Method App\Http\Controllers\HomeController::__invoke() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/HomeController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Inventory\InventoryItemController::create() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryItemController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Inventory\InventoryItemController::destroy() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryItemController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Inventory\InventoryItemController::edit() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryItemController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Inventory\InventoryItemController::index() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryItemController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Inventory\InventoryItemController::store() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryItemController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Inventory\InventoryItemController::update() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryItemController.php
+
+		-
+			rawMessage: 'Access to an undefined property App\Models\InventoryItem|Illuminate\Database\Eloquent\Collection<int, App\Models\InventoryItem>::$available_quantity.'
 			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Inventory/InventoryItemController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\InventoryItem::$quantity.
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Inventory/InventoryItemController.php
-
-		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::id().'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Controllers/Inventory/InventoryItemController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\AssetClassification::orderBy().'
-			identifier: staticMethod.notFound
-			count: 3
-			path: app/Http/Controllers/Inventory/InventoryItemController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\InventoryItem::count().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/Inventory/InventoryItemController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\InventoryItem::create().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/Inventory/InventoryItemController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\InventoryItem::where().'
-			identifier: staticMethod.notFound
 			count: 2
-			path: app/Http/Controllers/Inventory/InventoryItemController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\InventoryItem::whereNotNull().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/Inventory/InventoryItemController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\InventoryLog::create().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/Inventory/InventoryItemController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Vendor::active().'
-			identifier: staticMethod.notFound
-			count: 2
-			path: app/Http/Controllers/Inventory/InventoryItemController.php
+			path: app/Http/Controllers/Inventory/InventoryLoanController.php
 
 		-
 			rawMessage: Access to an undefined property App\Models\InventoryLoan::$employee.
@@ -1117,242 +1207,224 @@ parameters:
 			path: app/Http/Controllers/Inventory/InventoryLoanController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\InventoryLoan::$id.
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Inventory/InventoryLoanController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\InventoryLoan::$quantity.
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Inventory/InventoryLoanController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\InventoryLoan::$returned_at.
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Inventory/InventoryLoanController.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\InventoryLoan::$status.
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/Inventory/InventoryLoanController.php
-
-		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::id().'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Controllers/Inventory/InventoryLoanController.php
-
-		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::user().'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Controllers/Inventory/InventoryLoanController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::orderBy().'
-			identifier: staticMethod.notFound
+			rawMessage: Relation 'employee' is not found in App\Models\InventoryLoan model.
+			identifier: larastan.relationExistence
 			count: 2
 			path: app/Http/Controllers/Inventory/InventoryLoanController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\InventoryItem::findOrFail().'
-			identifier: staticMethod.notFound
-			count: 2
-			path: app/Http/Controllers/Inventory/InventoryLoanController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\InventoryItem::orderBy().'
-			identifier: staticMethod.notFound
-			count: 2
-			path: app/Http/Controllers/Inventory/InventoryLoanController.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\InventoryLoan::create().'
-			identifier: staticMethod.notFound
+			rawMessage: Relation 'item' is not found in App\Models\InventoryLoan model.
+			identifier: larastan.relationExistence
 			count: 1
 			path: app/Http/Controllers/Inventory/InventoryLoanController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\User::role().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/Inventory/InventoryLoanController.php
-
-		-
-			rawMessage: 'Call to static method error() on an unknown class Log.'
-			identifier: class.notFound
-			count: 2
-			path: app/Http/Controllers/Inventory/InventoryLoanController.php
-
-		-
-			rawMessage: 'Call to static method warning() on an unknown class Log.'
-			identifier: class.notFound
-			count: 1
-			path: app/Http/Controllers/Inventory/InventoryLoanController.php
-
-		-
-			rawMessage: 'Method App\Http\Controllers\Inventory\InventoryLoanController::create() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
-			identifier: return.type
-			count: 1
-			path: app/Http/Controllers/Inventory/InventoryLoanController.php
-
-		-
-			rawMessage: 'Method App\Http\Controllers\Inventory\InventoryLoanController::edit() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
-			identifier: return.type
-			count: 1
-			path: app/Http/Controllers/Inventory/InventoryLoanController.php
-
-		-
-			rawMessage: 'Method App\Http\Controllers\Inventory\InventoryLoanController::index() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
-			identifier: return.type
-			count: 1
-			path: app/Http/Controllers/Inventory/InventoryLoanController.php
-
-		-
-			rawMessage: 'Method App\Http\Controllers\Inventory\InventoryLoanController::show() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
-			identifier: return.type
-			count: 1
-			path: app/Http/Controllers/Inventory/InventoryLoanController.php
-
-		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$item_id.
-			identifier: property.notFound
+			rawMessage: 'Method App\Http\Controllers\Inventory\InventoryLogController::index() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Inventory/InventoryLogController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$user_id.
-			identifier: property.notFound
+			rawMessage: Relation 'item' is not found in App\Models\InventoryLog model.
+			identifier: larastan.relationExistence
 			count: 1
 			path: app/Http/Controllers/Inventory/InventoryLogController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Vendor::$name.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Inventory/VendorController.php
+			rawMessage: Relation 'user' is not found in App\Models\InventoryLog model.
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Inventory/InventoryLogController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\Vendor::create().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Http\Controllers\Inventory\VendorController::create() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/Inventory/VendorController.php
 
 		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::user().'
-			identifier: method.notFound
-			count: 3
+			rawMessage: 'Method App\Http\Controllers\Inventory\VendorController::destroy() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Inventory/VendorController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Inventory\VendorController::edit() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Inventory/VendorController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Inventory\VendorController::index() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Inventory/VendorController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Inventory\VendorController::show() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Inventory/VendorController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Inventory\VendorController::store() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Inventory/VendorController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\Inventory\VendorController::update() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Inventory/VendorController.php
+
+		-
+			rawMessage: 'Parameter #1 $view of function view expects view-string|null, string given.'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Inventory/VendorController.php
+
+		-
+			rawMessage: Cannot access property $unreadNotifications on App\Models\User|null.
+			identifier: property.nonObject
+			count: 1
 			path: app/Http/Controllers/NotificationController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$email.
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/ProfileController.php
+			rawMessage: 'Cannot call method notifications() on App\Models\User|null.'
+			identifier: method.nonObject
+			count: 2
+			path: app/Http/Controllers/NotificationController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$employee.
-			identifier: property.notFound
+			rawMessage: 'Method App\Http\Controllers\NotificationController::index() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Http/Controllers/ProfileController.php
+			path: app/Http/Controllers/NotificationController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$first_name.
-			identifier: property.notFound
+			rawMessage: 'Method App\Http\Controllers\NotificationController::markAllAsRead() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Http/Controllers/ProfileController.php
+			path: app/Http/Controllers/NotificationController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$id.
-			identifier: property.notFound
+			rawMessage: 'Method App\Http\Controllers\NotificationController::markAsRead() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/NotificationController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\NotificationController::markAsRead() has parameter $id with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Controllers/NotificationController.php
+
+		-
+			rawMessage: Cannot access property $email on App\Models\User|null.
+			identifier: property.nonObject
 			count: 2
 			path: app/Http/Controllers/ProfileController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$last_name.
-			identifier: property.notFound
+			rawMessage: Cannot access property $employee on App\Models\User|null.
+			identifier: property.nonObject
 			count: 1
 			path: app/Http/Controllers/ProfileController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$middle_name.
-			identifier: property.notFound
+			rawMessage: Cannot access property $first_name on App\Models\User|null.
+			identifier: property.nonObject
 			count: 1
 			path: app/Http/Controllers/ProfileController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$password.
-			identifier: property.notFound
+			rawMessage: Cannot access property $id on App\Models\User|null.
+			identifier: property.nonObject
+			count: 2
+			path: app/Http/Controllers/ProfileController.php
+
+		-
+			rawMessage: Cannot access property $last_name on App\Models\User|null.
+			identifier: property.nonObject
 			count: 1
 			path: app/Http/Controllers/ProfileController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$phone_number.
-			identifier: property.notFound
+			rawMessage: Cannot access property $middle_name on App\Models\User|null.
+			identifier: property.nonObject
 			count: 1
 			path: app/Http/Controllers/ProfileController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$email.
-			identifier: property.notFound
+			rawMessage: Cannot access property $password on App\Models\User|null.
+			identifier: property.nonObject
 			count: 1
 			path: app/Http/Controllers/ProfileController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$name.
-			identifier: property.notFound
+			rawMessage: Cannot access property $phone_number on App\Models\User|null.
+			identifier: property.nonObject
 			count: 1
 			path: app/Http/Controllers/ProfileController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$password.
-			identifier: property.notFound
+			rawMessage: 'Cannot call method getProfileRouteName() on App\Models\User|null.'
+			identifier: method.nonObject
 			count: 1
 			path: app/Http/Controllers/ProfileController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Http\Request::$phone_number.
-			identifier: property.notFound
+			rawMessage: 'Cannot call method save() on App\Models\User|null.'
+			identifier: method.nonObject
 			count: 1
 			path: app/Http/Controllers/ProfileController.php
 
 		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Authenticatable::getProfileRouteName().'
-			identifier: method.notFound
+			rawMessage: 'Method App\Http\Controllers\ProfileController::edit() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/ProfileController.php
 
 		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Authenticatable::save().'
-			identifier: method.notFound
+			rawMessage: 'Method App\Http\Controllers\ProfileController::show() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/ProfileController.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::where().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Http\Controllers\ProfileController::update() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/ProfileController.php
 
 		-
-			rawMessage: 'Call to static method warning() on an unknown class Log.'
-			identifier: class.notFound
+			rawMessage: 'Parameter #3 $subject of function str_replace expects array<string>|string, string|false given.'
+			identifier: argument.type
 			count: 1
-			path: app/Http/Controllers/ProfilePictureController.php
+			path: app/Http/Controllers/ProfileController.php
 
 		-
-			rawMessage: Access to an undefined property Illuminate\Contracts\Auth\Authenticatable::$role.
-			identifier: property.notFound
+			rawMessage: Cannot access property $role on App\Models\User|null.
+			identifier: property.nonObject
 			count: 1
 			path: app/Http/Controllers/SimpleAuthController.php
 
 		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Authenticatable::getDashboardRouteName().'
-			identifier: method.notFound
+			rawMessage: 'Cannot call method getDashboardRouteName() on App\Models\User|null.'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/SimpleAuthController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\SimpleAuthController::login() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/SimpleAuthController.php
+
+		-
+			rawMessage: 'Method App\Http\Controllers\SimpleAuthController::logout() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Http/Controllers/SimpleAuthController.php
 
@@ -1411,70 +1483,388 @@ parameters:
 			path: app/Http/Kernel.php
 
 		-
+			rawMessage: 'Call to function method_exists() with App\Models\User and ''hasAnyRole'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Http/Middleware/EnsureRole.php
+
+		-
+			rawMessage: 'Method App\Http\Middleware\EnsureRole::handle() has parameter $roles with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Middleware/EnsureRole.php
+
+		-
 			rawMessage: 'Call to an undefined method Symfony\Component\HttpFoundation\Response::header().'
 			identifier: method.notFound
 			count: 1
 			path: app/Http/Middleware/PreventBackHistory.php
 
 		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::check().'
-			identifier: method.notFound
+			rawMessage: 'Method App\Http\Middleware\RedirectIfAuthenticated::handle() has parameter $guards with no type specified.'
+			identifier: missingType.parameter
 			count: 1
 			path: app/Http/Middleware/RedirectIfAuthenticated.php
 
 		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::user().'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Middleware/RedirectIfAuthenticated.php
-
-		-
-			rawMessage: Cannot access property $id on object|string.
+			rawMessage: Cannot access property $name on Illuminate\Database\Eloquent\Model|null.
 			identifier: property.nonObject
+			count: 1
+			path: app/Http/Middleware/RoleMiddleware.php
+
+		-
+			rawMessage: 'Method App\Http\Middleware\RoleMiddleware::handle() has parameter $roles with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Middleware/RoleMiddleware.php
+
+		-
+			rawMessage: 'Parameter #1 $string of function strtolower expects string, string|null given.'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Middleware/RoleMiddleware.php
+
+		-
+			rawMessage: 'Cannot call method hasRole() on App\Models\User|null.'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Requests/Admin/StoreUserRequest.php
+
+		-
+			rawMessage: 'Method App\Http\Requests\Admin\StoreUserRequest::rules() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Admin/StoreUserRequest.php
+
+		-
+			rawMessage: 'Access to an undefined property (object|string|null)::$id.'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Requests/Admin/UpdateUserRequest.php
 
 		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Guard::attempt().'
-			identifier: method.notFound
+			rawMessage: 'Cannot call method hasRole() on App\Models\User|null.'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Requests/Admin/UpdateUserRequest.php
+
+		-
+			rawMessage: 'Method App\Http\Requests\Admin\UpdateUserRequest::rules() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Admin/UpdateUserRequest.php
+
+		-
+			rawMessage: 'Method App\Http\Requests\Auth\LoginRequest::rules() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Requests/Auth/LoginRequest.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\LeaveRequest::where().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Cannot call method hasAnyRole() on App\Models\User|null.'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Requests/Finance/StoreExpenseRequest.php
+
+		-
+			rawMessage: 'Method App\Http\Requests\Finance\StoreExpenseRequest::rules() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Finance/StoreExpenseRequest.php
+
+		-
+			rawMessage: 'Cannot call method hasAnyRole() on App\Models\User|null.'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Requests/Finance/UpdateExpenseRequest.php
+
+		-
+			rawMessage: 'Method App\Http\Requests\Finance\UpdateExpenseRequest::rules() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Finance/UpdateExpenseRequest.php
+
+		-
+			rawMessage: 'Method App\Http\Requests\HR\CheckInRequest::rules() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/HR/CheckInRequest.php
+
+		-
+			rawMessage: 'Cannot call method hasAnyRole() on App\Models\User|null.'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Requests/HR/StoreEmployeeRequest.php
+
+		-
+			rawMessage: 'Method App\Http\Requests\HR\StoreEmployeeRequest::rules() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/HR/StoreEmployeeRequest.php
+
+		-
+			rawMessage: Cannot access property $employee_id on App\Models\User|null.
+			identifier: property.nonObject
 			count: 1
 			path: app/Http/Requests/HR/StoreLeaveRequest.php
 
 		-
-			rawMessage: Access to an undefined property App\Http\Requests\HR\UpdateEmployeeRequest::$employee.
-			identifier: property.notFound
+			rawMessage: 'Cannot call method hasAnyRole() on App\Models\User|null.'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Requests/HR/StoreLeaveRequest.php
+
+		-
+			rawMessage: 'Method App\Http\Requests\HR\StoreLeaveRequest::rules() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/HR/StoreLeaveRequest.php
+
+		-
+			rawMessage: 'Cannot call method hasAnyRole() on App\Models\User|null.'
+			identifier: method.nonObject
 			count: 1
 			path: app/Http/Requests/HR/UpdateEmployeeRequest.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\AssetClassification::$depth.
-			identifier: property.notFound
-			count: 2
-			path: app/Models/AssetClassification.php
+			rawMessage: 'Method App\Http\Requests\HR\UpdateEmployeeRequest::rules() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/HR/UpdateEmployeeRequest.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\AssetClassification::$hierarchy_path.
-			identifier: property.notFound
-			count: 3
-			path: app/Models/AssetClassification.php
+			rawMessage: 'Cannot call method hasAnyRole() on App\Models\User|null.'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Requests/Inventory/StoreInventoryItemRequest.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\AssetClassification::$id.
-			identifier: property.notFound
-			count: 2
-			path: app/Models/AssetClassification.php
+			rawMessage: 'Method App\Http\Requests\Inventory\StoreInventoryItemRequest::rules() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Inventory/StoreInventoryItemRequest.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\AssetClassification::$name.
-			identifier: property.notFound
-			count: 2
-			path: app/Models/AssetClassification.php
+			rawMessage: 'Cannot call method hasAnyRole() on App\Models\User|null.'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Requests/Inventory/StoreInventoryLoanRequest.php
+
+		-
+			rawMessage: 'Method App\Http\Requests\Inventory\StoreInventoryLoanRequest::rules() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Inventory/StoreInventoryLoanRequest.php
+
+		-
+			rawMessage: 'Cannot call method hasAnyRole() on App\Models\User|null.'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Requests/Inventory/UpdateInventoryItemRequest.php
+
+		-
+			rawMessage: 'Method App\Http\Requests\Inventory\UpdateInventoryItemRequest::rules() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Inventory/UpdateInventoryItemRequest.php
+
+		-
+			rawMessage: 'Cannot call method hasAnyRole() on App\Models\User|null.'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Requests/Inventory/UpdateInventoryLoanRequest.php
+
+		-
+			rawMessage: 'Method App\Http\Requests\Inventory\UpdateInventoryLoanRequest::rules() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Inventory/UpdateInventoryLoanRequest.php
+
+		-
+			rawMessage: Cannot access property $id on App\Models\User|null.
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Requests/ProfileUpdateRequest.php
+
+		-
+			rawMessage: 'Cannot call method hasAnyRole() on App\Models\User|null.'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Requests/Projects/StoreProjectRequest.php
+
+		-
+			rawMessage: 'Method App\Http\Requests\Projects\StoreProjectRequest::rules() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Projects/StoreProjectRequest.php
+
+		-
+			rawMessage: 'Cannot call method hasAnyRole() on App\Models\User|null.'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Requests/Projects/UpdateProjectRequest.php
+
+		-
+			rawMessage: 'Method App\Http\Requests\Projects\UpdateProjectRequest::rules() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Projects/UpdateProjectRequest.php
+
+		-
+			rawMessage: 'Method App\Mail\ExpenseRequestStatusMail::__construct() has parameter $expense with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Mail/ExpenseRequestStatusMail.php
+
+		-
+			rawMessage: 'Method App\Mail\ExpenseRequestStatusMail::__construct() has parameter $user with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Mail/ExpenseRequestStatusMail.php
+
+		-
+			rawMessage: Property App\Mail\ExpenseRequestStatusMail::$expense has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Mail/ExpenseRequestStatusMail.php
+
+		-
+			rawMessage: Property App\Mail\ExpenseRequestStatusMail::$user has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Mail/ExpenseRequestStatusMail.php
+
+		-
+			rawMessage: 'Method App\Mail\InventoryLoanStatusMail::__construct() has parameter $loan with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Mail/InventoryLoanStatusMail.php
+
+		-
+			rawMessage: 'Method App\Mail\InventoryLoanStatusMail::__construct() has parameter $user with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Mail/InventoryLoanStatusMail.php
+
+		-
+			rawMessage: Property App\Mail\InventoryLoanStatusMail::$loan has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Mail/InventoryLoanStatusMail.php
+
+		-
+			rawMessage: Property App\Mail\InventoryLoanStatusMail::$user has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Mail/InventoryLoanStatusMail.php
+
+		-
+			rawMessage: 'Method App\Mail\LeaveRequestStatusMail::__construct() has parameter $leave with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Mail/LeaveRequestStatusMail.php
+
+		-
+			rawMessage: 'Method App\Mail\LeaveRequestStatusMail::__construct() has parameter $user with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Mail/LeaveRequestStatusMail.php
+
+		-
+			rawMessage: Property App\Mail\LeaveRequestStatusMail::$leave has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Mail/LeaveRequestStatusMail.php
+
+		-
+			rawMessage: Property App\Mail\LeaveRequestStatusMail::$user has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Mail/LeaveRequestStatusMail.php
+
+		-
+			rawMessage: 'Method App\Mail\NewExpenseRequestMail::__construct() has parameter $expense with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Mail/NewExpenseRequestMail.php
+
+		-
+			rawMessage: 'Method App\Mail\NewExpenseRequestMail::__construct() has parameter $user with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Mail/NewExpenseRequestMail.php
+
+		-
+			rawMessage: Property App\Mail\NewExpenseRequestMail::$expense has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Mail/NewExpenseRequestMail.php
+
+		-
+			rawMessage: Property App\Mail\NewExpenseRequestMail::$user has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Mail/NewExpenseRequestMail.php
+
+		-
+			rawMessage: 'Method App\Mail\NewInventoryLoanRequestMail::__construct() has parameter $loan with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Mail/NewInventoryLoanRequestMail.php
+
+		-
+			rawMessage: 'Method App\Mail\NewInventoryLoanRequestMail::__construct() has parameter $user with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Mail/NewInventoryLoanRequestMail.php
+
+		-
+			rawMessage: Property App\Mail\NewInventoryLoanRequestMail::$loan has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Mail/NewInventoryLoanRequestMail.php
+
+		-
+			rawMessage: Property App\Mail\NewInventoryLoanRequestMail::$user has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Mail/NewInventoryLoanRequestMail.php
+
+		-
+			rawMessage: 'Method App\Mail\NewLeaveRequestMail::__construct() has parameter $leave with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Mail/NewLeaveRequestMail.php
+
+		-
+			rawMessage: 'Method App\Mail\NewLeaveRequestMail::__construct() has parameter $user with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Mail/NewLeaveRequestMail.php
+
+		-
+			rawMessage: Property App\Mail\NewLeaveRequestMail::$leave has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Mail/NewLeaveRequestMail.php
+
+		-
+			rawMessage: Property App\Mail\NewLeaveRequestMail::$user has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Mail/NewLeaveRequestMail.php
+
+		-
+			rawMessage: 'Method App\Models\ActivityLog::subject() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/ActivityLog.php
+
+		-
+			rawMessage: 'Method App\Models\ActivityLog::user() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/ActivityLog.php
 
 		-
 			rawMessage: Access to an undefined property App\Models\AssetClassification::$parent.
@@ -1483,52 +1873,58 @@ parameters:
 			path: app/Models/AssetClassification.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\AssetClassification::$parent_id.
-			identifier: property.notFound
-			count: 2
-			path: app/Models/AssetClassification.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\InventoryItem::whereHas().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Class App\Models\AssetClassification uses generic trait Illuminate\Database\Eloquent\Factories\HasFactory but does not specify its types: TFactory'
+			identifier: missingType.generics
 			count: 1
 			path: app/Models/AssetClassification.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Attendance::$afternoon_status.
-			identifier: property.notFound
+			rawMessage: 'Method App\Models\AssetClassification::assets() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Models/Attendance.php
+			path: app/Models/AssetClassification.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Attendance::$clock_in.
-			identifier: property.notFound
+			rawMessage: 'Method App\Models\AssetClassification::children() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Models/Attendance.php
+			path: app/Models/AssetClassification.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Attendance::$clock_out.
-			identifier: property.notFound
-			count: 3
-			path: app/Models/Attendance.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\Attendance::$morning_status.
-			identifier: property.notFound
+			rawMessage: 'Method App\Models\AssetClassification::getFullNomenclatureAttribute() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Models/Attendance.php
+			path: app/Models/AssetClassification.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Attendance::$status.
-			identifier: property.notFound
-			count: 3
-			path: app/Models/Attendance.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\Attendance::$worked_minutes.
-			identifier: property.notFound
+			rawMessage: 'Method App\Models\AssetClassification::getRecursiveAssetCountAttribute() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Models/Attendance.php
+			path: app/Models/AssetClassification.php
+
+		-
+			rawMessage: 'Method App\Models\AssetClassification::parent() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/AssetClassification.php
+
+		-
+			rawMessage: 'Method App\Models\AssetClassification::updateHierarchyInfo() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/AssetClassification.php
+
+		-
+			rawMessage: 'Parameter #1 $value of static method Illuminate\Support\Str::limit() expects string, string|null given.'
+			identifier: argument.type
+			count: 1
+			path: app/Models/AssetClassification.php
+
+		-
+			rawMessage: Relation 'classification' is not found in App\Models\InventoryItem model.
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Models/AssetClassification.php
 
 		-
 			rawMessage: Access to undefined constant App\Models\Attendance::STATUS_ABSENT.
@@ -1549,25 +1945,133 @@ parameters:
 			path: app/Models/Attendance.php
 
 		-
-			rawMessage: 'Access to an undefined property $this(App\Models\Employee)::$profile_picture_url.'
-			identifier: property.notFound
+			rawMessage: 'Class App\Models\Attendance uses generic trait Illuminate\Database\Eloquent\Factories\HasFactory but does not specify its types: TFactory'
+			identifier: missingType.generics
 			count: 1
-			path: app/Models/Employee.php
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Method App\Models\Attendance::employee() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Method App\Models\Attendance::getWorkedMinutesAttribute() should return int|null but returns float.'
+			identifier: return.type
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Method App\Models\Attendance::scopeClosed() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Method App\Models\Attendance::scopeClosed() has parameter $query with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Method App\Models\Attendance::scopeForDate() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Method App\Models\Attendance::scopeForDate() has parameter $date with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Method App\Models\Attendance::scopeForDate() has parameter $query with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Method App\Models\Attendance::scopeForEmployee() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Method App\Models\Attendance::scopeForEmployee() has parameter $employeeId with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Method App\Models\Attendance::scopeForEmployee() has parameter $query with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Method App\Models\Attendance::scopeOpen() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Method App\Models\Attendance::scopeOpen() has parameter $query with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Method App\Models\Attendance::scopeSessionStatus() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Method App\Models\Attendance::scopeSessionStatus() has parameter $query with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Method App\Models\Attendance::scopeToday() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Method App\Models\Attendance::scopeToday() has parameter $query with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Method App\Models\Attendance::scopeWithStatus() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Method App\Models\Attendance::scopeWithStatus() has parameter $query with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			rawMessage: 'Class App\Models\Department uses generic trait Illuminate\Database\Eloquent\Factories\HasFactory but does not specify its types: TFactory'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Department.php
+
+		-
+			rawMessage: 'Method App\Models\Department::employees() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Department.php
 
 		-
 			rawMessage: Access to an undefined property App\Models\Employee::$department_rel.
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Employee.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\Employee::$id.
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Employee.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\Employee::$name.
 			identifier: property.notFound
 			count: 1
 			path: app/Models/Employee.php
@@ -1579,58 +2083,136 @@ parameters:
 			path: app/Models/Employee.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Employee::$profile_picture.
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Employee.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\Employee::$updated_at.
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Employee.php
-
-		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Filesystem\Filesystem::url().'
-			identifier: method.notFound
-			count: 1
-			path: app/Models/Employee.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\ActivityLog::create().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Models/Employee.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Department::firstOrCreate().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Models/Employee.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Position::firstOrCreate().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Models/Employee.php
-
-		-
 			rawMessage: 'Call to function method_exists() with class-string<static(App\Models\Employee)> and ''restored'' will always evaluate to true.'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: app/Models/Employee.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Expense::$id.
-			identifier: property.notFound
+			rawMessage: 'Class App\Models\Employee uses generic trait Illuminate\Database\Eloquent\Factories\HasFactory but does not specify its types: TFactory'
+			identifier: missingType.generics
 			count: 1
-			path: app/Models/Expense.php
+			path: app/Models/Employee.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\ActivityLog::create().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Models\Employee::attendances() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Models/Expense.php
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Method App\Models\Employee::bootLogsActivity() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Method App\Models\Employee::department_rel() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Method App\Models\Employee::getDepartmentAttribute() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Method App\Models\Employee::getFullNameAttribute() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Method App\Models\Employee::getNameAttribute() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Method App\Models\Employee::getPositionAttribute() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Method App\Models\Employee::getProfilePictureUrlAttribute() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Method App\Models\Employee::hasProfilePicture() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Method App\Models\Employee::logActivity() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Method App\Models\Employee::logActivity() has parameter $action with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Method App\Models\Employee::logActivity() has parameter $changes with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Method App\Models\Employee::position_rel() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Method App\Models\Employee::setDepartmentAttribute() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Method App\Models\Employee::setDepartmentAttribute() has parameter $value with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Method App\Models\Employee::setPositionAttribute() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Method App\Models\Employee::setPositionAttribute() has parameter $value with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Method App\Models\Employee::user() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Employee.php
+
+		-
+			rawMessage: 'Method App\Models\EmployeeOnLeave::approver() return type with generic class Illuminate\Database\Eloquent\Relations\BelongsTo does not specify its types: TRelatedModel, TDeclaringModel'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/EmployeeOnLeave.php
+
+		-
+			rawMessage: 'Method App\Models\EmployeeOnLeave::employee() return type with generic class Illuminate\Database\Eloquent\Relations\BelongsTo does not specify its types: TRelatedModel, TDeclaringModel'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/EmployeeOnLeave.php
 
 		-
 			rawMessage: 'Call to function method_exists() with class-string<static(App\Models\Expense)> and ''restored'' will always evaluate to true.'
@@ -1639,28 +2221,58 @@ parameters:
 			path: app/Models/Expense.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\InventoryItem::$id.
-			identifier: property.notFound
+			rawMessage: 'Class App\Models\Expense uses generic trait Illuminate\Database\Eloquent\Factories\HasFactory but does not specify its types: TFactory'
+			identifier: missingType.generics
 			count: 1
-			path: app/Models/InventoryItem.php
+			path: app/Models/Expense.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\InventoryItem::$on_loan_quantity.
-			identifier: property.notFound
+			rawMessage: 'Method App\Models\Expense::approvedBy() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Models/InventoryItem.php
+			path: app/Models/Expense.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\InventoryItem::$quantity.
-			identifier: property.notFound
+			rawMessage: 'Method App\Models\Expense::bootLogsActivity() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Models/InventoryItem.php
+			path: app/Models/Expense.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\ActivityLog::create().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Models\Expense::logActivity() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Models/InventoryItem.php
+			path: app/Models/Expense.php
+
+		-
+			rawMessage: 'Method App\Models\Expense::logActivity() has parameter $action with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Expense.php
+
+		-
+			rawMessage: 'Method App\Models\Expense::logActivity() has parameter $changes with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Expense.php
+
+		-
+			rawMessage: 'Method App\Models\Expense::project() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Expense.php
+
+		-
+			rawMessage: 'Method App\Models\Expense::rejectedBy() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Expense.php
+
+		-
+			rawMessage: 'Method App\Models\Expense::user() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Expense.php
 
 		-
 			rawMessage: 'Call to function method_exists() with class-string<static(App\Models\InventoryItem)> and ''restored'' will always evaluate to true.'
@@ -1669,16 +2281,52 @@ parameters:
 			path: app/Models/InventoryItem.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\InventoryLoan::$id.
-			identifier: property.notFound
+			rawMessage: 'Class App\Models\InventoryItem uses generic trait Illuminate\Database\Eloquent\Factories\HasFactory but does not specify its types: TFactory'
+			identifier: missingType.generics
 			count: 1
-			path: app/Models/InventoryLoan.php
+			path: app/Models/InventoryItem.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\ActivityLog::create().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Models\InventoryItem::bootLogsActivity() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Models/InventoryLoan.php
+			path: app/Models/InventoryItem.php
+
+		-
+			rawMessage: 'Method App\Models\InventoryItem::classification() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/InventoryItem.php
+
+		-
+			rawMessage: 'Method App\Models\InventoryItem::loans() return type with generic class Illuminate\Database\Eloquent\Relations\HasMany does not specify its types: TRelatedModel, TDeclaringModel'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/InventoryItem.php
+
+		-
+			rawMessage: 'Method App\Models\InventoryItem::logActivity() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/InventoryItem.php
+
+		-
+			rawMessage: 'Method App\Models\InventoryItem::logActivity() has parameter $action with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/InventoryItem.php
+
+		-
+			rawMessage: 'Method App\Models\InventoryItem::logActivity() has parameter $changes with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/InventoryItem.php
+
+		-
+			rawMessage: 'Method App\Models\InventoryItem::vendor() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/InventoryItem.php
 
 		-
 			rawMessage: 'Call to function method_exists() with class-string<static(App\Models\InventoryLoan)> and ''restored'' will always evaluate to true.'
@@ -1687,16 +2335,106 @@ parameters:
 			path: app/Models/InventoryLoan.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\LeaveRequest::$id.
-			identifier: property.notFound
+			rawMessage: 'Class App\Models\InventoryLoan uses generic trait Illuminate\Database\Eloquent\Factories\HasFactory but does not specify its types: TFactory'
+			identifier: missingType.generics
 			count: 1
-			path: app/Models/LeaveRequest.php
+			path: app/Models/InventoryLoan.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\ActivityLog::create().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Models\InventoryLoan::approvedBy() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Models/LeaveRequest.php
+			path: app/Models/InventoryLoan.php
+
+		-
+			rawMessage: 'Method App\Models\InventoryLoan::bootLogsActivity() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/InventoryLoan.php
+
+		-
+			rawMessage: 'Method App\Models\InventoryLoan::employee() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/InventoryLoan.php
+
+		-
+			rawMessage: 'Method App\Models\InventoryLoan::item() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/InventoryLoan.php
+
+		-
+			rawMessage: 'Method App\Models\InventoryLoan::logActivity() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/InventoryLoan.php
+
+		-
+			rawMessage: 'Method App\Models\InventoryLoan::logActivity() has parameter $action with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/InventoryLoan.php
+
+		-
+			rawMessage: 'Method App\Models\InventoryLoan::logActivity() has parameter $changes with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/InventoryLoan.php
+
+		-
+			rawMessage: 'Method App\Models\InventoryLoan::rejectedBy() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/InventoryLoan.php
+
+		-
+			rawMessage: 'Class App\Models\InventoryLog uses generic trait Illuminate\Database\Eloquent\Factories\HasFactory but does not specify its types: TFactory'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/InventoryLog.php
+
+		-
+			rawMessage: 'Method App\Models\InventoryLog::item() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/InventoryLog.php
+
+		-
+			rawMessage: 'Method App\Models\InventoryLog::user() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/InventoryLog.php
+
+		-
+			rawMessage: 'Class App\Models\ItemCategory uses generic trait Illuminate\Database\Eloquent\Factories\HasFactory but does not specify its types: TFactory'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/ItemCategory.php
+
+		-
+			rawMessage: 'Method App\Models\ItemCategory::children() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/ItemCategory.php
+
+		-
+			rawMessage: 'Method App\Models\ItemCategory::getItemsCountAttribute() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/ItemCategory.php
+
+		-
+			rawMessage: 'Method App\Models\ItemCategory::items() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/ItemCategory.php
+
+		-
+			rawMessage: 'Method App\Models\ItemCategory::parent() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/ItemCategory.php
 
 		-
 			rawMessage: 'Call to function method_exists() with class-string<static(App\Models\LeaveRequest)> and ''restored'' will always evaluate to true.'
@@ -1705,34 +2443,76 @@ parameters:
 			path: app/Models/LeaveRequest.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\NotificationTemplate::$body.
-			identifier: property.notFound
+			rawMessage: 'Class App\Models\LeaveRequest uses generic trait Illuminate\Database\Eloquent\Factories\HasFactory but does not specify its types: TFactory'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/LeaveRequest.php
+
+		-
+			rawMessage: 'Method App\Models\LeaveRequest::approver() return type with generic class Illuminate\Database\Eloquent\Relations\BelongsTo does not specify its types: TRelatedModel, TDeclaringModel'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/LeaveRequest.php
+
+		-
+			rawMessage: 'Method App\Models\LeaveRequest::bootLogsActivity() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/LeaveRequest.php
+
+		-
+			rawMessage: 'Method App\Models\LeaveRequest::employee() return type with generic class Illuminate\Database\Eloquent\Relations\BelongsTo does not specify its types: TRelatedModel, TDeclaringModel'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/LeaveRequest.php
+
+		-
+			rawMessage: 'Method App\Models\LeaveRequest::logActivity() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/LeaveRequest.php
+
+		-
+			rawMessage: 'Method App\Models\LeaveRequest::logActivity() has parameter $action with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/LeaveRequest.php
+
+		-
+			rawMessage: 'Method App\Models\LeaveRequest::logActivity() has parameter $changes with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/LeaveRequest.php
+
+		-
+			rawMessage: 'Class App\Models\NotificationTemplate uses generic trait Illuminate\Database\Eloquent\Factories\HasFactory but does not specify its types: TFactory'
+			identifier: missingType.generics
 			count: 1
 			path: app/Models/NotificationTemplate.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Project::$budget.
-			identifier: property.notFound
+			rawMessage: 'Method App\Models\NotificationTemplate::getAvailableVariablesAttribute() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Models/Project.php
+			path: app/Models/NotificationTemplate.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Project::$id.
-			identifier: property.notFound
+			rawMessage: 'Method App\Models\NotificationTemplate::render() has parameter $data with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
 			count: 1
-			path: app/Models/Project.php
+			path: app/Models/NotificationTemplate.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Project::$total_expenses.
-			identifier: property.notFound
+			rawMessage: 'Class App\Models\Position uses generic trait Illuminate\Database\Eloquent\Factories\HasFactory but does not specify its types: TFactory'
+			identifier: missingType.generics
 			count: 1
-			path: app/Models/Project.php
+			path: app/Models/Position.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\ActivityLog::create().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Models\Position::employees() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Models/Project.php
+			path: app/Models/Position.php
 
 		-
 			rawMessage: 'Call to function method_exists() with class-string<static(App\Models\Project)> and ''restored'' will always evaluate to true.'
@@ -1741,56 +2521,62 @@ parameters:
 			path: app/Models/Project.php
 
 		-
+			rawMessage: 'Class App\Models\Project uses generic trait Illuminate\Database\Eloquent\Factories\HasFactory but does not specify its types: TFactory'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Project.php
+
+		-
+			rawMessage: 'Method App\Models\Project::bootLogsActivity() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Project.php
+
+		-
+			rawMessage: 'Method App\Models\Project::expenses() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Project.php
+
+		-
+			rawMessage: 'Method App\Models\Project::getBudgetUsagePercentageAttribute() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Project.php
+
+		-
+			rawMessage: 'Method App\Models\Project::getTotalExpensesAttribute() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Project.php
+
+		-
+			rawMessage: 'Method App\Models\Project::logActivity() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Project.php
+
+		-
+			rawMessage: 'Method App\Models\Project::logActivity() has parameter $action with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Project.php
+
+		-
+			rawMessage: 'Method App\Models\Project::logActivity() has parameter $changes with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Project.php
+
+		-
+			rawMessage: 'Class App\Models\SystemSetting uses generic trait Illuminate\Database\Eloquent\Factories\HasFactory but does not specify its types: TFactory'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SystemSetting.php
+
+		-
 			rawMessage: Access to an undefined property App\Models\User::$employee.
 			identifier: property.notFound
-			count: 1
-			path: app/Models/User.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$first_name.
-			identifier: property.notFound
-			count: 1
-			path: app/Models/User.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$id.
-			identifier: property.notFound
-			count: 1
-			path: app/Models/User.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$last_name.
-			identifier: property.notFound
-			count: 1
-			path: app/Models/User.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$middle_name.
-			identifier: property.notFound
-			count: 1
-			path: app/Models/User.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$name.
-			identifier: property.notFound
-			count: 1
-			path: app/Models/User.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$role.
-			identifier: property.notFound
-			count: 2
-			path: app/Models/User.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$unreadNotifications.
-			identifier: property.notFound
-			count: 1
-			path: app/Models/User.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\ActivityLog::create().'
-			identifier: staticMethod.notFound
 			count: 1
 			path: app/Models/User.php
 
@@ -1801,21 +2587,189 @@ parameters:
 			path: app/Models/User.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\Vendor::where().'
-			identifier: staticMethod.notFound
-			count: 2
+			rawMessage: 'Class App\Models\User uses generic trait Illuminate\Database\Eloquent\Factories\HasFactory but does not specify its types: TFactory'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/User.php
+
+		-
+			rawMessage: 'Method App\Models\User::bootLogsActivity() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/User.php
+
+		-
+			rawMessage: 'Method App\Models\User::employee() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/User.php
+
+		-
+			rawMessage: 'Method App\Models\User::getNameAttribute() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/User.php
+
+		-
+			rawMessage: 'Method App\Models\User::logActivity() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/User.php
+
+		-
+			rawMessage: 'Method App\Models\User::logActivity() has parameter $action with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/User.php
+
+		-
+			rawMessage: 'Method App\Models\User::logActivity() has parameter $changes with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/User.php
+
+		-
+			rawMessage: 'Method App\Models\User::setNameAttribute() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/User.php
+
+		-
+			rawMessage: 'Method App\Models\User::setNameAttribute() has parameter $value with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/User.php
+
+		-
+			rawMessage: 'Class App\Models\Vendor uses generic trait Illuminate\Database\Eloquent\Factories\HasFactory but does not specify its types: TFactory'
+			identifier: missingType.generics
+			count: 1
 			path: app/Models/Vendor.php
 
 		-
-			rawMessage: 'Parameter #1 $string of function str_pad expects string, (float|int) given.'
-			identifier: argument.type
-			count: 2
+			rawMessage: 'Method App\Models\Vendor::scopeActive() has no return type specified.'
+			identifier: missingType.return
+			count: 1
 			path: app/Models/Vendor.php
+
+		-
+			rawMessage: 'Method App\Models\Vendor::scopeActive() has parameter $query with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Vendor.php
+
+		-
+			rawMessage: 'Parameter #1 $string of function str_pad expects string, int<1, max> given.'
+			identifier: argument.type
+			count: 1
+			path: app/Models/Vendor.php
+
+		-
+			rawMessage: 'Parameter #1 $string of function str_pad expects string, int<2, max> given.'
+			identifier: argument.type
+			count: 1
+			path: app/Models/Vendor.php
+
+		-
+			rawMessage: 'Parameter #1 $string of function substr expects string, string|null given.'
+			identifier: argument.type
+			count: 1
+			path: app/Models/Vendor.php
+
+		-
+			rawMessage: 'Method App\Notifications\ExpenseStatusNotification::__construct() has parameter $type with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Notifications/ExpenseStatusNotification.php
+
+		-
+			rawMessage: 'Method App\Notifications\ExpenseStatusNotification::toArray() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Notifications/ExpenseStatusNotification.php
+
+		-
+			rawMessage: 'Method App\Notifications\ExpenseStatusNotification::via() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Notifications/ExpenseStatusNotification.php
+
+		-
+			rawMessage: Property App\Notifications\ExpenseStatusNotification::$expense has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Notifications/ExpenseStatusNotification.php
+
+		-
+			rawMessage: Property App\Notifications\ExpenseStatusNotification::$type has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Notifications/ExpenseStatusNotification.php
+
+		-
+			rawMessage: 'Method App\Notifications\InventoryLoanStatusNotification::__construct() has parameter $type with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Notifications/InventoryLoanStatusNotification.php
+
+		-
+			rawMessage: 'Method App\Notifications\InventoryLoanStatusNotification::toArray() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Notifications/InventoryLoanStatusNotification.php
+
+		-
+			rawMessage: 'Method App\Notifications\InventoryLoanStatusNotification::via() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Notifications/InventoryLoanStatusNotification.php
+
+		-
+			rawMessage: Property App\Notifications\InventoryLoanStatusNotification::$loan has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Notifications/InventoryLoanStatusNotification.php
+
+		-
+			rawMessage: Property App\Notifications\InventoryLoanStatusNotification::$type has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Notifications/InventoryLoanStatusNotification.php
 
 		-
 			rawMessage: Expression on left side of ?? is not nullable.
 			identifier: nullCoalesce.expr
 			count: 2
+			path: app/Notifications/LeaveRequestStatusNotification.php
+
+		-
+			rawMessage: 'Method App\Notifications\LeaveRequestStatusNotification::__construct() has parameter $type with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Notifications/LeaveRequestStatusNotification.php
+
+		-
+			rawMessage: 'Method App\Notifications\LeaveRequestStatusNotification::toArray() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Notifications/LeaveRequestStatusNotification.php
+
+		-
+			rawMessage: 'Method App\Notifications\LeaveRequestStatusNotification::via() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Notifications/LeaveRequestStatusNotification.php
+
+		-
+			rawMessage: Property App\Notifications\LeaveRequestStatusNotification::$leaveRequest has no type specified.
+			identifier: missingType.property
+			count: 1
+			path: app/Notifications/LeaveRequestStatusNotification.php
+
+		-
+			rawMessage: Property App\Notifications\LeaveRequestStatusNotification::$type has no type specified.
+			identifier: missingType.property
+			count: 1
 			path: app/Notifications/LeaveRequestStatusNotification.php
 
 		-
@@ -1825,70 +2779,46 @@ parameters:
 			path: app/Notifications/LeaveRequestStatusNotification.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\InventoryItem::$id.
-			identifier: property.notFound
-			count: 2
-			path: app/Notifications/LowStockNotification.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\InventoryItem::$item_no.
-			identifier: property.notFound
-			count: 1
-			path: app/Notifications/LowStockNotification.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\InventoryItem::$name.
-			identifier: property.notFound
-			count: 4
-			path: app/Notifications/LowStockNotification.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\InventoryItem::$quantity.
-			identifier: property.notFound
-			count: 3
-			path: app/Notifications/LowStockNotification.php
-
-		-
 			rawMessage: Access to an undefined property App\Models\AssetClassification::$children.
 			identifier: property.notFound
 			count: 1
 			path: app/Services/AssetClassificationService.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\AssetClassification::$name.
-			identifier: property.notFound
+			rawMessage: 'Method App\Services\AssetClassificationService::create() has no return type specified.'
+			identifier: missingType.return
 			count: 1
 			path: app/Services/AssetClassificationService.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\AssetClassification::create().'
-			identifier: staticMethod.notFound
+			rawMessage: 'Method App\Services\AssetClassificationService::create() has parameter $data with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
 			count: 1
 			path: app/Services/AssetClassificationService.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Attendance::$afternoon_status.
-			identifier: property.notFound
-			count: 2
-			path: app/Services/AttendanceService.php
+			rawMessage: 'Method App\Services\AssetClassificationService::rebuildChildPaths() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: app/Services/AssetClassificationService.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Attendance::$clock_out.
-			identifier: property.notFound
+			rawMessage: 'Method App\Services\AssetClassificationService::update() has no return type specified.'
+			identifier: missingType.return
 			count: 1
-			path: app/Services/AttendanceService.php
+			path: app/Services/AssetClassificationService.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Attendance::$total_credit.
-			identifier: property.notFound
+			rawMessage: 'Method App\Services\AssetClassificationService::update() has parameter $data with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
 			count: 1
-			path: app/Services/AttendanceService.php
+			path: app/Services/AssetClassificationService.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Employee::$department.
-			identifier: property.notFound
+			rawMessage: 'Parameter #1 $string of function substr expects string, string|null given.'
+			identifier: argument.type
 			count: 1
-			path: app/Services/AttendanceService.php
+			path: app/Services/AssetClassificationService.php
 
 		-
 			rawMessage: Access to an undefined property App\Models\Employee::$first_name.
@@ -1897,130 +2827,94 @@ parameters:
 			path: app/Services/AttendanceService.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Employee::$id.
-			identifier: property.notFound
-			count: 3
+			rawMessage: 'Method App\Services\AttendanceService::buildMonthlySummaryData() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
 			path: app/Services/AttendanceService.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Employee::$salary.
-			identifier: property.notFound
+			rawMessage: 'Method App\Services\AttendanceService::calculateWeeklySalaryAnalysis() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Services/AttendanceService.php
+
+		-
+			rawMessage: 'Method App\Services\AttendanceService::getDailyStats() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Services/AttendanceService.php
+
+		-
+			rawMessage: Relation 'employee' is not found in App\Models\Attendance model.
+			identifier: larastan.relationExistence
 			count: 2
 			path: app/Services/AttendanceService.php
 
 		-
-			rawMessage: 'Call to an undefined method Illuminate\Database\Query\Builder::whereHas().'
+			rawMessage: 'Call to an undefined method object::store().'
 			identifier: method.notFound
-			count: 1
-			path: app/Services/AttendanceService.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Attendance::firstOrNew().'
-			identifier: staticMethod.notFound
-			count: 3
-			path: app/Services/AttendanceService.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Attendance::where().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Services/AttendanceService.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Attendance::whereDate().'
-			identifier: staticMethod.notFound
-			count: 2
-			path: app/Services/AttendanceService.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::count().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Services/AttendanceService.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\Department::$id.
-			identifier: property.notFound
 			count: 2
 			path: app/Services/HumanResourceService.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Employee::$profile_picture.
-			identifier: property.notFound
-			count: 1
-			path: app/Services/HumanResourceService.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\Position::$id.
-			identifier: property.notFound
-			count: 2
-			path: app/Services/HumanResourceService.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Department::firstOrCreate().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Services/HumanResourceService.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::create().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Services/HumanResourceService.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Position::firstOrCreate().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Services/HumanResourceService.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\InventoryItem::$id.
-			identifier: property.notFound
-			count: 2
-			path: app/Services/InventoryService.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\InventoryItem::$quantity.
-			identifier: property.notFound
-			count: 3
-			path: app/Services/InventoryService.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\InventoryLog::create().'
-			identifier: staticMethod.notFound
-			count: 2
-			path: app/Services/InventoryService.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\User::role().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Services/InventoryService.php
-
-		-
-			rawMessage: 'Method App\View\Components\AppLayout::render() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
+			rawMessage: 'Method App\Services\HumanResourceService::deleteEmployee() should return bool but returns bool|null.'
 			identifier: return.type
 			count: 1
-			path: app/View/Components/AppLayout.php
+			path: app/Services/HumanResourceService.php
 
 		-
-			rawMessage: 'Method App\View\Components\GuestLayout::render() should return Illuminate\View\View but returns Illuminate\Contracts\View\View.'
-			identifier: return.type
+			rawMessage: 'Method App\Services\HumanResourceService::getEmployees() has parameter $filters with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Services/HumanResourceService.php
+
+		-
+			rawMessage: 'Method App\Services\HumanResourceService::getEmployees() return type with generic class Illuminate\Pagination\LengthAwarePaginator does not specify its types: TKey, TValue'
+			identifier: missingType.generics
+			count: 1
+			path: app/Services/HumanResourceService.php
+
+		-
+			rawMessage: 'Method App\Services\HumanResourceService::processEmployeeData() has parameter $data with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Services/HumanResourceService.php
+
+		-
+			rawMessage: 'Method App\Services\HumanResourceService::processEmployeeData() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Services/HumanResourceService.php
+
+		-
+			rawMessage: 'Method App\Services\HumanResourceService::storeEmployee() has parameter $data with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Services/HumanResourceService.php
+
+		-
+			rawMessage: 'Method App\Services\HumanResourceService::updateEmployee() has parameter $data with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Services/HumanResourceService.php
+
+		-
+			rawMessage: Relation 'department_rel' is not found in App\Models\Employee model.
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Services/HumanResourceService.php
+
+		-
+			rawMessage: Relation 'position_rel' is not found in App\Models\Employee model.
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Services/HumanResourceService.php
+
+		-
+			rawMessage: 'Parameter #1 $view of function view expects view-string|null, string given.'
+			identifier: argument.type
 			count: 1
 			path: app/View/Components/GuestLayout.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::create().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: database/migrations/2026_01_15_000000_sync_users_to_employees.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::where().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: database/migrations/2026_01_15_000000_sync_users_to_employees.php
 
 		-
 			rawMessage: 'Call to an undefined method Illuminate\Database\Schema\ForeignKeyDefinition::after().'
@@ -2029,196 +2923,40 @@ parameters:
 			path: database/migrations/2026_01_15_105136_add_status_and_approvals_to_expenses_table.php
 
 		-
-			rawMessage: 'Call to static method statement() on an unknown class DB.'
-			identifier: class.notFound
-			count: 5
-			path: database/migrations/2026_02_26_224935_fix_attendance_defaults_to_absent.php
-
-		-
-			rawMessage: Access to an undefined property Illuminate\Database\Eloquent\Model::$email.
-			identifier: property.notFound
-			count: 1
-			path: database/seeders/ComprehensiveSeeder.php
-
-		-
-			rawMessage: Access to an undefined property Illuminate\Database\Eloquent\Model::$first_name.
-			identifier: property.notFound
-			count: 1
-			path: database/seeders/ComprehensiveSeeder.php
-
-		-
-			rawMessage: Access to an undefined property Illuminate\Database\Eloquent\Model::$id.
-			identifier: property.notFound
-			count: 1
-			path: database/seeders/ComprehensiveSeeder.php
-
-		-
-			rawMessage: Access to an undefined property Illuminate\Database\Eloquent\Model::$last_name.
-			identifier: property.notFound
-			count: 1
-			path: database/seeders/ComprehensiveSeeder.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::create().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: database/seeders/ComprehensiveSeeder.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Employee::updateOrCreate().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: database/seeders/ComprehensiveSeeder.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Expense::create().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: database/seeders/ComprehensiveSeeder.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\InventoryItem::firstOrCreate().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: database/seeders/ComprehensiveSeeder.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Project::firstOrCreate().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: database/seeders/ComprehensiveSeeder.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\Project::pluck().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: database/seeders/ComprehensiveSeeder.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\User::pluck().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: database/seeders/ComprehensiveSeeder.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\User::updateOrCreate().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: database/seeders/ComprehensiveSeeder.php
-
-		-
-			rawMessage: 'Call to an undefined static method App\Models\User::firstOrCreate().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: database/seeders/RolesAndAdminSeeder.php
-
-		-
-			rawMessage: 'Call to an undefined static method Spatie\Permission\Models\Role::firstOrCreate().'
-			identifier: staticMethod.notFound
-			count: 1
-			path: database/seeders/RolesAndAdminSeeder.php
-
-		-
-			rawMessage: Access to an undefined property App\Models\User::$email.
-			identifier: property.notFound
+			rawMessage: Cannot access property $email on App\Models\User|null.
+			identifier: property.nonObject
 			count: 1
 			path: routes/api.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\User::$id.
-			identifier: property.notFound
+			rawMessage: Cannot access property $id on App\Models\User|null.
+			identifier: property.nonObject
 			count: 1
 			path: routes/api.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\User::$name.
-			identifier: property.notFound
+			rawMessage: Cannot access property $name on App\Models\User|null.
+			identifier: property.nonObject
 			count: 1
 			path: routes/api.php
 
 		-
-			rawMessage: 'Call to static method middleware() on an unknown class Route.'
-			identifier: class.notFound
-			count: 2
-			path: routes/api.php
-
-		-
-			rawMessage: 'Call to static method post() on an unknown class Route.'
-			identifier: class.notFound
+			rawMessage: 'Cannot call method getRoleNames() on App\Models\User|null.'
+			identifier: method.nonObject
 			count: 1
 			path: routes/api.php
 
 		-
-			rawMessage: 'Undefined variable: $this'
-			identifier: variable.undefined
-			count: 1
-			path: routes/console.php
-
-		-
-			rawMessage: 'Call to an undefined method Illuminate\Contracts\Auth\Factory::user().'
-			identifier: method.notFound
+			rawMessage: 'Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''.'
+			identifier: larastan.noEnvCallsOutsideOfConfig
 			count: 1
 			path: routes/web.php
 
 		-
-			rawMessage: 'Call to an undefined static method App\Models\User::where().'
-			identifier: staticMethod.notFound
-			count: 1
+			rawMessage: 'Cannot call method hasRole() on App\Models\User|null.'
+			identifier: method.nonObject
+			count: 4
 			path: routes/web.php
-
-		-
-			rawMessage: 'Access to an undefined property Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Model>|Illuminate\Database\Eloquent\Model::$email.'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/Auth/AuthenticationTest.php
-
-		-
-			rawMessage: 'Call to an undefined method Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Model>|Illuminate\Database\Eloquent\Model::assignRole().'
-			identifier: method.notFound
-			count: 2
-			path: tests/Feature/Auth/AuthenticationTest.php
-
-		-
-			rawMessage: 'Parameter #1 $user of method Illuminate\Foundation\Testing\TestCase::actingAs() expects Illuminate\Contracts\Auth\Authenticatable, Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Model>|Illuminate\Database\Eloquent\Model given.'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Auth/AuthenticationTest.php
-
-		-
-			rawMessage: 'Access to an undefined property Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Model>|Illuminate\Database\Eloquent\Model::$email.'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/Auth/PasswordResetTest.php
-
-		-
-			rawMessage: 'Access to an undefined property Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Model>|Illuminate\Database\Eloquent\Model::$email.'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/ProfileTest.php
-
-		-
-			rawMessage: 'Access to an undefined property Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Model>|Illuminate\Database\Eloquent\Model::$first_name.'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/ProfileTest.php
-
-		-
-			rawMessage: 'Access to an undefined property Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Model>|Illuminate\Database\Eloquent\Model::$last_name.'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/ProfileTest.php
-
-		-
-			rawMessage: 'Call to an undefined method Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Model>|Illuminate\Database\Eloquent\Model::assignRole().'
-			identifier: method.notFound
-			count: 2
-			path: tests/Feature/ProfileTest.php
-
-		-
-			rawMessage: 'Parameter #1 $user of method Illuminate\Foundation\Testing\TestCase::actingAs() expects Illuminate\Contracts\Auth\Authenticatable, Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Model>|Illuminate\Database\Eloquent\Model given.'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/ProfileTest.php
 
 		-
 			rawMessage: 'Call to method PHPUnit\Framework\Assert::assertTrue() with true will always evaluate to true.'

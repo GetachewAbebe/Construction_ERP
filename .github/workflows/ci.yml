@@ -84,6 +84,9 @@ jobs:
     - name: Linting (Pint)
       run: ./vendor/bin/pint --test
 
+    - name: Static Analysis (PHPStan)
+      run: ./vendor/bin/phpstan analyse
+
 
 
     - name: Execute tests (Unit and Feature tests) via PHPUnit
