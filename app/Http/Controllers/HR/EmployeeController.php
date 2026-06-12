@@ -7,17 +7,17 @@ namespace App\Http\Controllers\HR;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\HR\StoreEmployeeRequest;
 use App\Http\Requests\HR\UpdateEmployeeRequest;
+use App\Models\Department;
 use App\Models\Employee;
+use App\Models\Position;
+use App\Services\HumanResourceService;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
-    protected $hrService;
-
-    public function __construct(\App\Services\HumanResourceService $hrService)
-    {
-        $this->hrService = $hrService;
-    }
+    public function __construct(
+        private readonly HumanResourceService $hrService,
+    ) {}
 
     public function index(Request $request)
     {
@@ -28,8 +28,8 @@ class EmployeeController extends Controller
 
     public function create()
     {
-        $departments = \App\Models\Department::orderBy('name')->get();
-        $positions = \App\Models\Position::orderBy('title')->get();
+        $departments = Department::orderBy('name')->get();
+        $positions = Position::orderBy('title')->get();
 
         return view('hr.employees.create', compact('departments', 'positions'));
     }
@@ -44,8 +44,8 @@ class EmployeeController extends Controller
 
     public function edit(Employee $employee)
     {
-        $departments = \App\Models\Department::orderBy('name')->get();
-        $positions = \App\Models\Position::orderBy('title')->get();
+        $departments = Department::orderBy('name')->get();
+        $positions = Position::orderBy('title')->get();
 
         return view('hr.employees.edit', compact('employee', 'departments', 'positions'));
     }
@@ -69,9 +69,10 @@ class EmployeeController extends Controller
     // ==========================================
     // DEPARTMENT MANAGEMENT
     // ==========================================
+
     public function indexDepartments()
     {
-        $departments = \App\Models\Department::orderBy('name')->paginate(20);
+        $departments = Department::orderBy('name')->paginate(20);
 
         return view('hr.departments.create', compact('departments'));
     }
@@ -85,7 +86,7 @@ class EmployeeController extends Controller
         return redirect()->route('hr.departments.index')->with('success', 'Department added to organizational structure.');
     }
 
-    public function destroyDepartment(\App\Models\Department $department)
+    public function destroyDepartment(Department $department)
     {
         $department->delete();
 
@@ -95,9 +96,10 @@ class EmployeeController extends Controller
     // ==========================================
     // POSITION MANAGEMENT
     // ==========================================
+
     public function indexPositions()
     {
-        $positions = \App\Models\Position::orderBy('title')->paginate(20);
+        $positions = Position::orderBy('title')->paginate(20);
 
         return view('hr.positions.create', compact('positions'));
     }
@@ -111,7 +113,7 @@ class EmployeeController extends Controller
         return redirect()->route('hr.positions.index')->with('success', 'Position designation established.');
     }
 
-    public function destroyPosition(\App\Models\Position $position)
+    public function destroyPosition(Position $position)
     {
         $position->delete();
 
