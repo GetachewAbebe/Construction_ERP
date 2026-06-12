@@ -85,7 +85,9 @@ php artisan optimize
 
 # 7. Sync public assets to web root
 echo "📂 Syncing public assets to web root..."
+rm -f public/hot
 /bin/cp -rT /home/natanewn/repositories/Construction_ERP/public /home/natanewn/public_html/erp
+rm -f /home/natanewn/public_html/erp/hot
 
 # 8. Exit Maintenance Mode
 echo "🌐 Bringing system back online..."
