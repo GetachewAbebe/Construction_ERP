@@ -29,6 +29,7 @@ jobs:
 
           RESPONSE=$(curl -s -o /tmp/webhook_response.txt -w "%{http_code}" \
             --resolve "erp.natanemengineering.com:443:91.204.209.46" \
+            --max-time 30 \
             -X POST \
             -H "Content-Type: application/json" \
             -H "X-Hub-Signature-256: ${SIGNATURE}" \

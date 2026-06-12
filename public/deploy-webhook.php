@@ -27,7 +27,18 @@ if (($payload['ref'] ?? '') !== 'refs/heads/main') {
     exit('Not main branch, skipping.');
 }
 
-exec('cd /home/natanewn/repositories/Construction_ERP && /bin/bash deploy.sh >> /tmp/deploy.log 2>&1 &');
-
+// Respond immediately so the caller is not blocked waiting for deploy to finish
 http_response_code(200);
 echo 'Deployment triggered.';
+
+if (ob_get_level()) {
+    ob_end_flush();
+}
+flush();
+
+if (function_exists('fastcgi_finish_request')) {
+    fastcgi_finish_request();
+}
+
+// Run deploy fully detached from this PHP process
+exec('nohup /bin/bash -c "cd /home/natanewn/repositories/Construction_ERP && /bin/bash deploy.sh >> /tmp/deploy.log 2>&1" > /dev/null 2>&1 &');
