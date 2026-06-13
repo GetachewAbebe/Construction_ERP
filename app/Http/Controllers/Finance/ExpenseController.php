@@ -12,6 +12,7 @@ use App\Models\Project;
 use App\Models\User;
 use App\Notifications\ExpenseStatusNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
@@ -30,23 +31,29 @@ class ExpenseController extends Controller
             ->when($projectId, fn ($q) => $q->where('project_id', $projectId))
             ->when($status, fn ($q) => $q->where('status', $status))
             ->when($search, function ($q) use ($search) {
-                $q->where('description', 'like', "%{$search}%")
-                    ->orWhere('reference_no', 'like', "%{$search}%")
-                    ->orWhereHas('user', fn ($sq) => $sq->where('first_name', 'like', "%{$search}%")->orWhere('last_name', 'like', "%{$search}%"));
+                // High-performance search optimized by joining instead of running slow subqueries
+                $q->leftJoin('users', 'expenses.user_id', '=', 'users.id')
+                  ->select('expenses.*') 
+                  ->where(function ($sub) use ($search) {
+                      $sub->where('expenses.description', 'like', "%{$search}%")
+                          ->orWhere('expenses.reference_no', 'like', "%{$search}%")
+                          ->orWhere('users.first_name', 'like', "%{$search}%")
+                          ->orWhere('users.last_name', 'like', "%{$search}%");
+                  });
             })
             ->with(['project', 'user'])
             ->latest('expense_date')
             ->paginate(15);
 
-        $projects = Project::orderBy('name')->get();
+        // Optimization: Select only 'id' and 'name' to keep memory footprint incredibly light
+        $projects = Project::orderBy('name')->get(['id', 'name']);
 
         return view('finance.expenses.index', compact('expenses', 'projects'));
     }
 
     public function create()
     {
-        $projects = Project::orderBy('name')->get();
-
+        $projects = Project::orderBy('name')->get(['id', 'name']);
         return view('finance.expenses.create', compact('projects'));
     }
 
@@ -54,12 +61,19 @@ class ExpenseController extends Controller
     {
         $data = $request->validated();
         $data['user_id'] = auth()->id();
-        $data['status'] = 'pending'; // Default status on creation
+        $data['status'] = 'pending';
 
         try {
+            // Enterprise Budget Guard on Creation
+            $project = Project::findOrFail($data['project_id']);
+            $approvedSpending = $project->expenses()->where('status', 'approved')->sum('amount');
+            
+            if (($approvedSpending + $data['amount']) > $project->budget) {
+                return back()->withInput()->with('error', 'Requisition Rejected: The requested amount exceeds Natanem Engineering’s remaining budget limits for this project.');
+            }
+
             $expense = Expense::create($data);
 
-            // Notify Administrators (Support both naming variants)
             $admins = User::role(['Administrator', 'Admin'])->get();
             try {
                 Notification::send($admins, new ExpenseStatusNotification($expense, 'request'));
@@ -75,7 +89,6 @@ class ExpenseController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Expense recording failed: '.$e->getMessage());
-
             return back()->withInput()->with('error', 'Critical Error: Failed to record expense transaction.');
         }
     }
@@ -87,8 +100,7 @@ class ExpenseController extends Controller
 
     public function edit(Expense $expense)
     {
-        $projects = Project::orderBy('name')->get();
-
+        $projects = Project::orderBy('name')->get(['id', 'name']);
         return view('finance.expenses.edit', compact('expense', 'projects'));
     }
 
@@ -97,13 +109,24 @@ class ExpenseController extends Controller
         $data = $request->validated();
 
         try {
-            $expense->update($data);
+            // Guard budget if amount is altered during an edit
+            if (isset($data['amount']) || isset($data['project_id'])) {
+                $pid = $data['project_id'] ?? $expense->project_id;
+                $amt = $data['amount'] ?? $expense->amount;
+                
+                $project = Project::findOrFail($pid);
+                $approvedSpending = $project->expenses()->where('status', 'approved')->where('id', '!=', $expense->id)->sum('amount');
 
+                if (($approvedSpending + $amt) > $project->budget) {
+                    return back()->withInput()->with('error', 'Modification Blocked: Adjusted amount breaks project budget constraints.');
+                }
+            }
+
+            $expense->update($data);
             return redirect()->route('finance.expenses.index')
                 ->with('success', 'Requisition details have been successfully updated.');
         } catch (\Exception $e) {
             Log::error('Expense update failed: '.$e->getMessage());
-
             return back()->withInput()->with('error', 'Critical Error: Failed to update expense record.');
         }
     }
@@ -111,24 +134,33 @@ class ExpenseController extends Controller
     public function approve(Expense $expense)
     {
         try {
-            $expense->update([
-                'status' => 'approved',
-                'approved_by' => auth()->id(),
-                'rejected_by' => null, // Reset if previously rejected
-                'rejection_reason' => null,
-            ]);
+            return DB::transaction(function () use ($expense) {
+                // Strict Approval Lockout Check
+                $project = $expense->project;
+                $approvedSpending = $project->expenses()->where('status', 'approved')->sum('amount');
 
-            // Notify Requester
-            if ($expense->user) {
-                try {
-                    $expense->user->notify(new ExpenseStatusNotification($expense, 'approved'));
-                    Mail::to($expense->user->email)->send(new ExpenseRequestStatusMail($expense, $expense->user));
-                } catch (\Exception $e) {
-                    Log::warning('Notification failed: '.$e->getMessage());
+                if (($approvedSpending + $expense->amount) > $project->budget) {
+                    return back()->with('error', 'Authorization Blocked: Requisition cannot be approved because the project budget limit has been reached.');
                 }
-            }
 
-            return back()->with('success', "Requisition #{$expense->id} has been authorized.");
+                $expense->update([
+                    'status' => 'approved',
+                    'approved_by' => auth()->id(),
+                    'rejected_by' => null,
+                    'rejection_reason' => null,
+                ]);
+
+                if ($expense->user) {
+                    try {
+                        $expense->user->notify(new ExpenseStatusNotification($expense, 'approved'));
+                        Mail::to($expense->user->email)->send(new ExpenseRequestStatusMail($expense, $expense->user));
+                    } catch (\Exception $e) {
+                        Log::warning('Notification failed: '.$e->getMessage());
+                    }
+                }
+
+                return back()->with('success', "Requisition #{$expense->id} has been authorized.");
+            });
         } catch (\Exception $e) {
             return back()->with('error', 'Authorization failed: '.$e->getMessage());
         }
@@ -141,10 +173,9 @@ class ExpenseController extends Controller
                 'status' => 'rejected',
                 'rejected_by' => auth()->id(),
                 'approved_by' => null,
-                'rejection_reason' => request('reason'), // Optional, if I add a modal later
+                'rejection_reason' => request('reason'),
             ]);
 
-            // Notify Requester
             if ($expense->user) {
                 try {
                     $expense->user->notify(new ExpenseStatusNotification($expense, 'rejected'));
@@ -164,12 +195,10 @@ class ExpenseController extends Controller
     {
         try {
             $expense->delete();
-
             return redirect()->route('finance.expenses.index')
                 ->with('success', 'Requisition record has been removed.');
         } catch (\Exception $e) {
             Log::error('Expense deletion failed: '.$e->getMessage());
-
             return back()->with('error', 'Critical Error: Failed to delete expense record.');
         }
     }
