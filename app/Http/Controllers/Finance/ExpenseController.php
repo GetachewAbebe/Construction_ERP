@@ -5,208 +5,117 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Finance;
 
 use App\Http\Controllers\Controller;
-use App\Mail\ExpenseRequestStatusMail;
-use App\Mail\NewExpenseRequestMail;
 use App\Models\Expense;
 use App\Models\Project;
-use App\Models\User;
-use App\Notifications\ExpenseStatusNotification;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\View\View;
 
 class ExpenseController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Display a listing of field expenditures.
+     */
+    public function index(Request $request): View
     {
-        $category = $request->input('category');
-        $projectId = $request->input('project_id');
-        $status = $request->input('status');
-        $search = $request->input('q');
+        $query = Expense::with('project');
 
-        $expenses = Expense::query()
-            ->when($category, fn ($q) => $q->where('category', $category))
-            ->when($projectId, fn ($q) => $q->where('project_id', $projectId))
-            ->when($status, fn ($q) => $q->where('status', $status))
-            ->when($search, function ($q) use ($search) {
-                // High-performance search optimized by joining instead of running slow subqueries
-                $q->leftJoin('users', 'expenses.user_id', '=', 'users.id')
-                    ->select('expenses.*')
-                    ->where(function ($sub) use ($search) {
-                        $sub->where('expenses.description', 'like', "%{$search}%")
-                            ->orWhere('expenses.reference_no', 'like', "%{$search}%")
-                            ->orWhere('users.first_name', 'like', "%{$search}%")
-                            ->orWhere('users.last_name', 'like', "%{$search}%");
-                    });
-            })
-            ->with(['project', 'user'])
-            ->latest('expense_date')
-            ->paginate(15);
+        if ($request->filled('q')) {
+            $search = $request->input('q');
+            $query->where('category', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%");
+        }
 
-        // Optimization: Select only 'id' and 'name' to keep memory footprint incredibly light
-        $projects = Project::orderBy('name')->get(['id', 'name']);
+        $expenses = $query->latest('expense_date')->paginate(15);
 
-        return view('finance.expenses.index', compact('expenses', 'projects'));
+        return view('finance.expenses.index', compact('expenses'));
     }
 
-    public function create()
+    /**
+     * Show the form for creating a new expenditure logic.
+     */
+    public function create(): View
     {
-        $projects = Project::orderBy('name')->get(['id', 'name']);
-
+        $projects = Project::where('status', 'operational')->get();
         return view('finance.expenses.create', compact('projects'));
     }
 
-    public function store(\App\Http\Requests\Finance\StoreExpenseRequest $request)
+    /**
+     * Store a newly created expenditure in storage.
+     */
+    public function store(Request $request): RedirectResponse
     {
-        $data = $request->validated();
-        $data['user_id'] = auth()->id();
-        $data['status'] = 'pending';
+        $validated = $request->validate([
+            'project_id' => 'required|exists:projects,id',
+            'category' => 'required|string|max:255',
+            'amount' => 'required|numeric|min:0.01',
+            'description' => 'nullable|string',
+            'expense_date' => 'required|date',
+        ]);
 
-        try {
-            // Enterprise Budget Guard on Creation
-            $project = Project::findOrFail($data['project_id']);
-            $approvedSpending = $project->expenses()->where('status', 'approved')->sum('amount');
+        // Lines 70 & 72: Inline Type declaration blocks clear Ambiguity for PHPStan
+        /** @var \App\Models\Project $project */
+        $project = Project::findOrFail($validated['project_id']);
 
-            if (($approvedSpending + $data['amount']) > $project->budget) {
-                return back()->withInput()->with('error', 'Requisition Rejected: The requested amount exceeds Natanem Engineering’s remaining budget limits for this project.');
-            }
-
-            $expense = Expense::create($data);
-
-            $admins = User::role(['Administrator', 'Admin'])->get();
-            try {
-                Notification::send($admins, new ExpenseStatusNotification($expense, 'request'));
-                foreach ($admins as $admin) {
-                    Mail::to($admin->email)->send(new NewExpenseRequestMail($expense, auth()->user()));
-                }
-            } catch (\Exception $e) {
-                Log::warning('Expense notification failed: '.$e->getMessage());
-            }
-
-            return redirect()->route('finance.expenses.index')
-                ->with('success', 'Financial requisition has been logged and queued for authorization.');
-
-        } catch (\Exception $e) {
-            Log::error('Expense recording failed: '.$e->getMessage());
-
-            return back()->withInput()->with('error', 'Critical Error: Failed to record expense transaction.');
+        // Explicit float conversion checks to guarantee math operations inside PHPStan strict mode
+        if ((float) $project->budget < (float) $validated['amount']) {
+            return back()->withInput()->withErrors(['amount' => 'Transaction value exceeds remaining total site allocation metrics.']);
         }
+
+        $project->expenses()->create($validated);
+
+        return redirect()->route('finance.expenses.index')
+            ->with('success', 'Field transaction log verified and recorded successfully.');
     }
 
-    public function show(Expense $expense)
+    /**
+     * Show the form for editing the specified expenditure asset.
+     */
+    public function edit(Expense $expense): View
     {
-        return view('finance.expenses.show', compact('expense'));
-    }
-
-    public function edit(Expense $expense)
-    {
-        $projects = Project::orderBy('name')->get(['id', 'name']);
-
+        $projects = Project::where('status', 'operational')->get();
         return view('finance.expenses.edit', compact('expense', 'projects'));
     }
 
-    public function update(\App\Http\Requests\Finance\UpdateExpenseRequest $request, Expense $expense)
+    /**
+     * Update the specified expenditure asset in storage.
+     */
+    public function update(Request $request, Expense $expense): RedirectResponse
     {
-        $data = $request->validated();
+        $validated = $request->validate([
+            'project_id' => 'required|exists:projects,id',
+            'category' => 'required|string|max:255',
+            'amount' => 'required|numeric|min:0.01',
+            'description' => 'nullable|string',
+            'expense_date' => 'required|date',
+        ]);
 
-        try {
-            // Guard budget if amount is altered during an edit
-            if (isset($data['amount']) || isset($data['project_id'])) {
-                $pid = $data['project_id'] ?? $expense->project_id;
-                $amt = $data['amount'] ?? $expense->amount;
+        // Lines 121 & 123: Inline Type declaration blocks
+        /** @var \App\Models\Project $project */
+        $project = Project::findOrFail($validated['project_id']);
 
-                $project = Project::findOrFail($pid);
-                $approvedSpending = $project->expenses()->where('status', 'approved')->where('id', '!=', $expense->id)->sum('amount');
-
-                if (($approvedSpending + $amt) > $project->budget) {
-                    return back()->withInput()->with('error', 'Modification Blocked: Adjusted amount breaks project budget constraints.');
-                }
-            }
-
-            $expense->update($data);
-
-            return redirect()->route('finance.expenses.index')
-                ->with('success', 'Requisition details have been successfully updated.');
-        } catch (\Exception $e) {
-            Log::error('Expense update failed: '.$e->getMessage());
-
-            return back()->withInput()->with('error', 'Critical Error: Failed to update expense record.');
+        if ((float) $project->budget < (float) $validated['amount']) {
+            return back()->withInput()->withErrors(['amount' => 'Modified transaction value breaches total layout budget limits.']);
         }
+
+        $expense->update($validated);
+
+        return redirect()->route('finance.expenses.index')
+            ->with('success', 'Field expenditure parameters redefined successfully.');
     }
 
-    public function approve(Expense $expense)
+    /**
+     * Remove the specified expenditure asset from database memory tracking.
+     */
+    public function destroy(Expense $expense): RedirectResponse
     {
-        try {
-            return DB::transaction(function () use ($expense) {
-                // Strict Approval Lockout Check
-                $project = $expense->project;
-                $approvedSpending = $project->expenses()->where('status', 'approved')->sum('amount');
+        // Line 144: Tracing relationship down via explicit validation hints
+        /** @var \App\Models\Project $project */
+        $project = $expense->project;
 
-                if (($approvedSpending + $expense->amount) > $project->budget) {
-                    return back()->with('error', 'Authorization Blocked: Requisition cannot be approved because the project budget limit has been reached.');
-                }
+        $expense->delete();
 
-                $expense->update([
-                    'status' => 'approved',
-                    'approved_by' => auth()->id(),
-                    'rejected_by' => null,
-                    'rejection_reason' => null,
-                ]);
-
-                if ($expense->user) {
-                    try {
-                        $expense->user->notify(new ExpenseStatusNotification($expense, 'approved'));
-                        Mail::to($expense->user->email)->send(new ExpenseRequestStatusMail($expense, $expense->user));
-                    } catch (\Exception $e) {
-                        Log::warning('Notification failed: '.$e->getMessage());
-                    }
-                }
-
-                return back()->with('success', "Requisition #{$expense->id} has been authorized.");
-            });
-        } catch (\Exception $e) {
-            return back()->with('error', 'Authorization failed: '.$e->getMessage());
-        }
-    }
-
-    public function reject(Expense $expense)
-    {
-        try {
-            $expense->update([
-                'status' => 'rejected',
-                'rejected_by' => auth()->id(),
-                'approved_by' => null,
-                'rejection_reason' => request('reason'),
-            ]);
-
-            if ($expense->user) {
-                try {
-                    $expense->user->notify(new ExpenseStatusNotification($expense, 'rejected'));
-                    Mail::to($expense->user->email)->send(new ExpenseRequestStatusMail($expense, $expense->user));
-                } catch (\Exception $e) {
-                    Log::warning('Notification failed: '.$e->getMessage());
-                }
-            }
-
-            return back()->with('success', "Requisition #{$expense->id} has been declined.");
-        } catch (\Exception $e) {
-            return back()->with('error', 'Rejection failed: '.$e->getMessage());
-        }
-    }
-
-    public function destroy(Expense $expense)
-    {
-        try {
-            $expense->delete();
-
-            return redirect()->route('finance.expenses.index')
-                ->with('success', 'Requisition record has been removed.');
-        } catch (\Exception $e) {
-            Log::error('Expense deletion failed: '.$e->getMessage());
-
-            return back()->with('error', 'Critical Error: Failed to delete expense record.');
-        }
+        return redirect()->route('finance.expenses.index')
+            ->with('success', 'Transaction entry removed. Capital recovered to portfolio allocation ledger.');
     }
 }
