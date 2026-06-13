@@ -6,6 +6,9 @@ npm-debug.log
 .env
 .gemini
 
+
+public/hot
+/public/build
 # Laravel Storage & Cache
 /storage/*.key
 /storage/framework/cache/data/*
