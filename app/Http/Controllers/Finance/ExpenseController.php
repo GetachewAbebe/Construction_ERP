@@ -33,13 +33,13 @@ class ExpenseController extends Controller
             ->when($search, function ($q) use ($search) {
                 // High-performance search optimized by joining instead of running slow subqueries
                 $q->leftJoin('users', 'expenses.user_id', '=', 'users.id')
-                  ->select('expenses.*') 
-                  ->where(function ($sub) use ($search) {
-                      $sub->where('expenses.description', 'like', "%{$search}%")
-                          ->orWhere('expenses.reference_no', 'like', "%{$search}%")
-                          ->orWhere('users.first_name', 'like', "%{$search}%")
-                          ->orWhere('users.last_name', 'like', "%{$search}%");
-                  });
+                    ->select('expenses.*')
+                    ->where(function ($sub) use ($search) {
+                        $sub->where('expenses.description', 'like', "%{$search}%")
+                            ->orWhere('expenses.reference_no', 'like', "%{$search}%")
+                            ->orWhere('users.first_name', 'like', "%{$search}%")
+                            ->orWhere('users.last_name', 'like', "%{$search}%");
+                    });
             })
             ->with(['project', 'user'])
             ->latest('expense_date')
@@ -54,6 +54,7 @@ class ExpenseController extends Controller
     public function create()
     {
         $projects = Project::orderBy('name')->get(['id', 'name']);
+
         return view('finance.expenses.create', compact('projects'));
     }
 
@@ -67,7 +68,7 @@ class ExpenseController extends Controller
             // Enterprise Budget Guard on Creation
             $project = Project::findOrFail($data['project_id']);
             $approvedSpending = $project->expenses()->where('status', 'approved')->sum('amount');
-            
+
             if (($approvedSpending + $data['amount']) > $project->budget) {
                 return back()->withInput()->with('error', 'Requisition Rejected: The requested amount exceeds Natanem Engineering’s remaining budget limits for this project.');
             }
@@ -89,6 +90,7 @@ class ExpenseController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Expense recording failed: '.$e->getMessage());
+
             return back()->withInput()->with('error', 'Critical Error: Failed to record expense transaction.');
         }
     }
@@ -101,6 +103,7 @@ class ExpenseController extends Controller
     public function edit(Expense $expense)
     {
         $projects = Project::orderBy('name')->get(['id', 'name']);
+
         return view('finance.expenses.edit', compact('expense', 'projects'));
     }
 
@@ -113,7 +116,7 @@ class ExpenseController extends Controller
             if (isset($data['amount']) || isset($data['project_id'])) {
                 $pid = $data['project_id'] ?? $expense->project_id;
                 $amt = $data['amount'] ?? $expense->amount;
-                
+
                 $project = Project::findOrFail($pid);
                 $approvedSpending = $project->expenses()->where('status', 'approved')->where('id', '!=', $expense->id)->sum('amount');
 
@@ -123,10 +126,12 @@ class ExpenseController extends Controller
             }
 
             $expense->update($data);
+
             return redirect()->route('finance.expenses.index')
                 ->with('success', 'Requisition details have been successfully updated.');
         } catch (\Exception $e) {
             Log::error('Expense update failed: '.$e->getMessage());
+
             return back()->withInput()->with('error', 'Critical Error: Failed to update expense record.');
         }
     }
@@ -195,10 +200,12 @@ class ExpenseController extends Controller
     {
         try {
             $expense->delete();
+
             return redirect()->route('finance.expenses.index')
                 ->with('success', 'Requisition record has been removed.');
         } catch (\Exception $e) {
             Log::error('Expense deletion failed: '.$e->getMessage());
+
             return back()->with('error', 'Critical Error: Failed to delete expense record.');
         }
     }

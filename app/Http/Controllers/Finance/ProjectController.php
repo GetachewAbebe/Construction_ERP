@@ -21,7 +21,7 @@ class ProjectController extends Controller
             ->when($search, function ($q) use ($search) {
                 $q->where(function ($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%")
-                          ->orWhere('location', 'like', "%{$search}%");
+                        ->orWhere('location', 'like', "%{$search}%");
                 });
             })
             ->withCount('expenses')
@@ -46,10 +46,12 @@ class ProjectController extends Controller
 
         try {
             $project = Project::create($data);
+
             return redirect()->route('finance.projects.index')
                 ->with('success', "Project site '{$project->name}' has been successfully added to registry.");
         } catch (\Exception $e) {
             Log::error('Project creation failed: '.$e->getMessage());
+
             return back()->withInput()->with('error', 'Error: Failed to initialize project site. Please check input values.');
         }
     }
@@ -58,6 +60,7 @@ class ProjectController extends Controller
     {
         // Chunk-load relations cleanly for detailed reporting views
         $project->load(['expenses.user']);
+
         return view('finance.projects.show', compact('project'));
     }
 
@@ -72,10 +75,12 @@ class ProjectController extends Controller
 
         try {
             $project->update($data);
+
             return redirect()->route('finance.projects.index')
                 ->with('success', "Project details for '{$project->name}' have been successfully updated.");
         } catch (\Exception $e) {
             Log::error('Project update failed: '.$e->getMessage());
+
             return back()->withInput()->with('error', 'Critical Error: Failed to update project configuration.');
         }
     }
@@ -90,6 +95,7 @@ class ProjectController extends Controller
                 ->with('success', "Project '{$name}' has been removed from registry.");
         } catch (\Exception $e) {
             Log::error('Project deletion failed: '.$e->getMessage());
+
             return back()->with('error', 'Critical Error: Failed to execute project archival sequence.');
         }
     }
