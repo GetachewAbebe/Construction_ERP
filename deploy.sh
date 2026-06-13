@@ -83,14 +83,30 @@ echo "⚡ Generating production caches..."
 php artisan optimize:clear
 php artisan optimize
 
-# 7. Sync public assets to web root
-echo "📂 Syncing public assets to web root..."
-rm -f public/hot
-/bin/cp -rT /home/natanewn/repositories/Construction_ERP/public /home/natanewn/public_html/erp
-rm -f /home/natanewn/public_html/erp/hot
-
+# ==========================================
+# 7. Final Optimization & Warmup
+# ==========================================
+echo "⚡ Updating production caches atomically..."
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 # 8. Exit Maintenance Mode
 echo "🌐 Bringing system back online..."
 php artisan up
 
 echo "✅ Deployment Successful! Natanem ERP is stable and live."
+
+
+# ==========================================
+# 9. Sync public assets to web root
+# ==========================================
+echo "📂 Syncing public assets to web root..."
+
+# 1. Kill any lingering dev-server indicator in the repository folder
+rm -f public/hot
+
+# 2. Sync the fresh, compiled public assets to your live web root
+/bin/cp -rT /home/natanewn/repositories/Construction_ERP/public /home/natanewn/public_html/erp
+
+# 3. Final safety sweep: make sure no dev indicator survived the copy into public_html
+rm -f /home/natanewn/public_html/erp/hot
