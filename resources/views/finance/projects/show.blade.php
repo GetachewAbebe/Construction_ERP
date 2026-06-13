@@ -43,7 +43,12 @@
     .official-table th { text-align: left; font-size: 0.75rem; font-weight: 800; color: var(--slate-600); text-transform: uppercase; padding: 15px; border-bottom: 2px solid var(--slate-900); background: var(--bg-soft); }
     .official-table td { padding: 18px 15px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
 
+    /* Refined Status Pill Architectures */
     .status-badge { font-size: 0.7rem; font-weight: 900; padding: 6px 16px; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .status-badge-operational { background-color: #10b981; color: #ffffff; }
+    .status-badge-hold { background-color: #f59e0b; color: #ffffff; }
+    .status-badge-terminated { background-color: #ef4444; color: #ffffff; }
+    .status-badge-fallback { background-color: #64748b; color: #ffffff; }
 
     .stat-card-premium {
         background: var(--bg-soft);
@@ -52,6 +57,14 @@
         border: 1px solid #eff6ff;
         transition: all 0.3s ease;
     }
+
+    /* Decoupled Layout Classes replacing Inline Styles */
+    .header-control-bar { max-width: 210mm; margin: 0 auto; }
+    .section-counter-icon { width: 32px; height: 32px; font-size: 0.8rem; }
+    .description-box-premium { font-size: 1.05rem; }
+    .expense-description-truncate { max-width: 300px; }
+    .signature-line-rule { width: 140px; border-width: 2px !important; }
+    .auth-badge-rotated { top: -25px; left: 50%; transform: translateX(-50%) rotate(-4deg); font-weight: 900; font-size: 0.65rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 2px solid white; }
 
     @media print {
         @page { size: A4; margin: 0; }
@@ -63,20 +76,24 @@
 @endpush
 
 <div class="document-wrapper">
+    <!-- Action Controls (Excluded from Prints) -->
     <div class="container-fluid no-print mb-5">
-        <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded-pill shadow-lg border" style="max-width: 210mm; margin: 0 auto;">
-            <a href="{{ route('finance.projects.index') }}" class="btn btn-white rounded-pill px-4 fw-800 shadow-sm">
+        <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded-pill shadow-lg border header-control-bar">
+            <a href="{{ route('finance.projects.index') }}" class="btn btn-white rounded-pill px-4 fw-800 shadow-sm border border-slate-200 text-secondary">
                 <i class="bi bi-arrow-left me-2"></i> Registry
             </a>
             <div class="d-flex gap-2">
-                <a href="{{ route('finance.projects.edit', $project) }}" class="btn btn-white rounded-pill px-4 fw-800 shadow-sm border">Refine Variables</a>
-                <button onclick="window.print()" class="btn btn-erp-deep rounded-pill px-4 fw-800 shadow-sm">
+                <a href="{{ route('finance.projects.edit', $project) }}" class="btn btn-white rounded-pill px-4 fw-800 shadow-sm border border-slate-200 text-secondary">
+                    Refine Variables
+                </a>
+                <button onclick="window.print()" class="btn bg-gradient-premium text-white rounded-pill px-4 fw-800 shadow-sm border-0 transform-hover-premium">
                     <i class="bi bi-printer-fill me-2"></i>Generate Report
                 </button>
             </div>
         </div>
     </div>
 
+    <!-- Main Ledger Document Sheet -->
     <div class="premium-document">
         <div class="d-flex justify-content-between align-items-start mb-5">
             <div>
@@ -85,8 +102,12 @@
             </div>
             <div class="text-end">
                 <div class="voucher-header-title mb-2">SITE INTELLIGENCE</div>
-                <span class="status-badge {{ $project->status === 'active' ? 'bg-success text-white' : 'bg-dark text-white' }}">
-                    STATUS: {{ strtoupper($project->status) }}
+                <span class="status-badge 
+                    @if($project->status === 'operational' || $project->status === 'active') status-badge-operational
+                    @elseif($project->status === 'on_hold') status-badge-hold
+                    @elseif($project->status === 'cancelled') status-badge-terminated
+                    @else status-badge-fallback @endif">
+                    STATUS: {{ ($project->status === 'active') ? 'OPERATIONAL' : strtoupper($project->status) }}
                 </span>
             </div>
         </div>
@@ -95,21 +116,22 @@
             <div class="row g-4">
                 <div class="col-4">
                     <div class="info-item-label">Construction Site</div>
-                    <div class="info-item-value fs-5 fw-900">{{ $project->name }}</div>
+                    <div class="info-item-value fs-5 fw-900 text-erp-deep">{{ $project->name }}</div>
                 </div>
                 <div class="col-4 text-center">
                     <div class="info-item-label">Operational Area</div>
-                    <div class="info-item-value fs-5 fw-900 text-truncate px-2">{{ $project->location ?? 'Global / Default' }}</div>
+                    <div class="info-item-value fs-5 fw-900 text-truncate px-2 text-erp-deep">{{ $project->location ?? 'Global / Default' }}</div>
                 </div>
                 <div class="col-4 text-end">
                     <div class="info-item-label">Timeline Envelope</div>
-                    <div class="info-item-value fw-900">
+                    <div class="info-item-value fw-900 text-erp-deep">
                         {{ optional($project->start_date)->format('M d, Y') ?? 'PENDING' }} <span class="mx-1 text-slate-400">→</span> {{ optional($project->end_date)->format('M d, Y') ?? 'TBA' }}
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Balanced Financial Aggregations -->
         <div class="row g-4 mb-5">
             <div class="col-md-4">
                 <div class="stat-card-premium border-start border-5 border-dark">
@@ -137,19 +159,21 @@
             </div>
         </div>
 
+        <!-- Segment 01: Scope Metadata -->
         <div class="mb-5">
             <h5 class="fw-900 text-slate-900 mb-4 d-flex align-items-center gap-3">
-                <span class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 0.8rem;">01</span>
+                <span class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center section-counter-icon">01</span>
                 Operational Scope & Narration
             </h5>
-            <div class="p-4 bg-light border rounded-4 text-slate-600 fw-500 lh-lg shadow-sm" style="font-size: 1.05rem;">
+            <div class="p-4 bg-light border rounded-4 text-slate-600 fw-500 lh-lg shadow-sm description-box-premium">
                 {{ $project->description ?: 'Operational scope parameters have not been defined for this site. This unit operates under standard infrastructure guidelines.' }}
             </div>
         </div>
 
+        <!-- Segment 02: Recent Transactional Assertions -->
         <div class="mb-5">
             <h5 class="fw-900 text-slate-900 mb-4 d-flex align-items-center gap-3">
-                <span class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 0.8rem;">02</span>
+                <span class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center section-counter-icon">02</span>
                 Recent Field Expenditures
             </h5>
             <div class="table-outer border rounded-4 overflow-hidden shadow-sm">
@@ -170,7 +194,7 @@
                                 </td>
                                 <td>
                                     <div class="fw-900 text-erp-deep small">{{ strtoupper($expense->category) }}</div>
-                                    <div class="x-small text-muted text-truncate mt-1" style="max-width: 300px;">{{ $expense->description }}</div>
+                                    <div class="x-small text-muted text-truncate mt-1 expense-description-truncate">{{ $expense->description }}</div>
                                 </td>
                                 <td class="small fw-800 text-slate-600">{{ $expense->expense_date->format('M d, Y') }}</td>
                                 <td class="text-end pe-4">
@@ -187,25 +211,26 @@
             </div>
         </div>
 
-        {{-- Validation Tokens --}}
+        <!-- System Validation Matrix & Signatures -->
         <div class="row items-center mt-5 pt-5 border-top border-3 border-dark">
             <div class="col-4 text-center">
-                <div class="border-top border-dark mx-auto mb-3" style="width: 140px; border-width: 2px !important;"></div>
+                <div class="border-top border-dark mx-auto mb-3 signature-line-rule"></div>
                 <div class="x-small fw-900 text-slate-400 uppercase tracking-widest">Project Lead Authority</div>
             </div>
             <div class="col-4 text-center">
-                <div class="border-top border-dark mx-auto mb-3" style="width: 140px; border-width: 2px !important;"></div>
+                <div class="border-top border-dark mx-auto mb-3 signature-line-rule"></div>
                 <div class="x-small fw-900 text-slate-400 uppercase tracking-widest">Site Supervisor Oversight</div>
             </div>
             <div class="col-4 text-center">
                 <div class="auth-stamp-box position-relative" style="height: 40px;">
-                    <div class="badge bg-success text-white px-3 py-2 position-absolute" style="top: -25px; left: 50%; transform: translateX(-50%) rotate(-4deg); font-weight: 900; font-size: 0.65rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 2px solid white;">VERIFIED & AUTHENTICATED</div>
+                    <div class="badge bg-success text-white px-3 py-2 position-absolute auth-badge-rotated">VERIFIED & AUTHENTICATED</div>
                 </div>
-                <div class="border-top border-dark mx-auto mb-3" style="width: 140px; border-width: 2px !important;"></div>
+                <div class="border-top border-dark mx-auto mb-3 signature-line-rule"></div>
                 <div class="x-small fw-900 text-slate-400 uppercase tracking-widest">Global Finance Controller</div>
             </div>
         </div>
 
+        <!-- Corporate Branding Footer Banner -->
         <div class="text-center mt-5 pt-5 opacity-50">
             <div class="fw-900 fs-4 text-slate-900" style="letter-spacing: -1px;">NATANEM ENGINEERING GROUP</div>
             <div class="x-small fw-800 uppercase tracking-widest mt-2">© {{ date('Y') }} Enterprise Site Intelligence • Official Property</div>
