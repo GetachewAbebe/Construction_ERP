@@ -80,7 +80,8 @@
             @forelse($expenses as $expense)
                 <tr>
                     <td class="ps-4">
-                        <div class="fw-800 text-erp-deep fs-6">{{ $expense->expense_date->format('d M, Y') }}</div>
+                        {{-- Fixed explicit compilation path to bypass runtime layout string mutations --}}
+                        <div class="fw-800 text-erp-deep fs-6">{{ \Carbon\Carbon::parse($expense->expense_date)->format('d M, Y') }}</div>
                         <small class="text-muted fw-bold">
                             <i class="bi bi-person-fill opacity-50 me-1"></i>{{ optional($expense->user)->name ?? 'Site Staff' }}
                         </small>
@@ -165,5 +166,3 @@
     {{ $expenses->withQueryString()->links() }}
 </div>
 @endsection
-
-
