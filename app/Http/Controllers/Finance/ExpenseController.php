@@ -37,6 +37,7 @@ class ExpenseController extends Controller
     public function create(): View
     {
         $projects = Project::where('status', 'operational')->get();
+
         return view('finance.expenses.create', compact('projects'));
     }
 
@@ -74,6 +75,7 @@ class ExpenseController extends Controller
     public function edit(Expense $expense): View
     {
         $projects = Project::where('status', 'operational')->get();
+
         return view('finance.expenses.edit', compact('expense', 'projects'));
     }
 
