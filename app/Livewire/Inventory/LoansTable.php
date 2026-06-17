@@ -60,23 +60,23 @@ class LoansTable extends Component
 
     public function approve(int $id, InventoryService $service): void
     {
-        $loan = InventoryLoan::with(['item', 'employee'])->findOrFail($id);
+        $result = DB::transaction(function () use ($id, $service) {
+            // Lock the loan row and re-check status inside the transaction so two
+            // concurrent approvals can't both deduct stock for the same request.
+            $loan = InventoryLoan::with('employee')->whereKey($id)->lockForUpdate()->first();
 
-        if ($loan->status !== 'pending') {
-            $this->warning('This request has already been processed.');
+            if (! $loan || $loan->status !== 'pending') {
+                return 'already';
+            }
 
-            return;
-        }
+            // Lock the item so two loans on the same item can't both pass the
+            // stock check against a stale quantity.
+            $item = $loan->item()->lockForUpdate()->first();
 
-        $item = $loan->item;
+            if (! $item || $item->quantity < $loan->quantity) {
+                return 'no_stock';
+            }
 
-        if (! $item || $item->quantity < $loan->quantity) {
-            $this->error('Not enough stock to approve this request.');
-
-            return;
-        }
-
-        DB::transaction(function () use ($loan, $item, $service) {
             $service->logLoanChange(
                 $item,
                 -$loan->quantity,
@@ -89,41 +89,53 @@ class LoansTable extends Component
                 'approved_by' => auth()->id(),
                 'approved_at' => now(),
             ]);
+
+            return 'ok';
         });
 
-        $this->success('Loan approved and stock updated.');
+        match ($result) {
+            'ok' => $this->success('Loan approved and stock updated.'),
+            'no_stock' => $this->error('Not enough stock to approve this request.'),
+            default => $this->warning('This request has already been processed.'),
+        };
     }
 
     public function reject(int $id): void
     {
-        $loan = InventoryLoan::findOrFail($id);
+        $result = DB::transaction(function () use ($id) {
+            // Lock the loan row and re-check so a concurrent approve can't deduct
+            // stock for a request that we are rejecting (and vice versa).
+            $loan = InventoryLoan::whereKey($id)->lockForUpdate()->first();
 
-        if ($loan->status !== 'pending') {
-            $this->warning('This request has already been processed.');
+            if (! $loan || $loan->status !== 'pending') {
+                return 'already';
+            }
 
-            return;
-        }
+            $loan->update([
+                'status' => 'rejected',
+                'approved_by' => auth()->id(),
+                'approved_at' => now(),
+            ]);
 
-        $loan->update([
-            'status' => 'rejected',
-            'approved_by' => auth()->id(),
-            'approved_at' => now(),
-        ]);
+            return 'ok';
+        });
 
-        $this->warning('Loan request rejected.');
+        $result === 'ok'
+            ? $this->warning('Loan request rejected.')
+            : $this->warning('This request has already been processed.');
     }
 
     public function markReturned(int $id, InventoryService $service): void
     {
-        $loan = InventoryLoan::with(['item', 'employee'])->findOrFail($id);
+        $result = DB::transaction(function () use ($id, $service) {
+            // Lock the loan row and re-check inside the transaction so a double
+            // "mark returned" can't credit the stock back twice.
+            $loan = InventoryLoan::with('employee')->whereKey($id)->lockForUpdate()->first();
 
-        if ($loan->status !== 'approved') {
-            $this->warning('Only approved loans can be marked as returned.');
+            if (! $loan || $loan->status !== 'approved') {
+                return 'already';
+            }
 
-            return;
-        }
-
-        DB::transaction(function () use ($loan, $service) {
             $item = $loan->item()->lockForUpdate()->first();
 
             if ($item) {
@@ -139,9 +151,13 @@ class LoansTable extends Component
                 'status' => 'returned',
                 'returned_at' => now(),
             ]);
+
+            return 'ok';
         });
 
-        $this->success('Loan marked as returned.');
+        $result === 'ok'
+            ? $this->success('Loan marked as returned.')
+            : $this->warning('Only approved loans can be marked as returned.');
     }
 
     public function render(): View

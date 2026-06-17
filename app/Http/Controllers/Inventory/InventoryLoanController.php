@@ -188,6 +188,14 @@ class InventoryLoanController extends Controller
         }
 
         DB::transaction(function () use ($loan) {
+            // Lock the loan row and re-check inside the transaction so a double
+            // "mark returned" can't credit the stock back twice.
+            $loan = InventoryLoan::whereKey($loan->id)->lockForUpdate()->first();
+
+            if (! $loan || $loan->status !== 'approved') {
+                return;
+            }
+
             $item = $loan->item()->lockForUpdate()->first();
 
             if ($item) {

@@ -109,15 +109,9 @@ parameters:
 			path: app/Http/Controllers/Admin/AttendanceSettingsController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Expense::$user.
-			identifier: property.notFound
-			count: 6
-			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
-
-		-
 			rawMessage: 'Cannot call method unreadNotifications() on App\Models\User|null.'
 			identifier: method.nonObject
-			count: 2
+			count: 1
 			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
 
 		-
@@ -139,18 +133,6 @@ parameters:
 			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
 
 		-
-			rawMessage: Relation 'project' is not found in App\Models\Expense model.
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
-
-		-
-			rawMessage: Relation 'user' is not found in App\Models\Expense model.
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Http/Controllers/Admin/ExpenseApprovalController.php
-
-		-
 			rawMessage: 'Method App\Http\Controllers\Admin\HrOverviewController::index() has no return type specified.'
 			identifier: missingType.return
 			count: 1
@@ -163,39 +145,39 @@ parameters:
 			path: app/Http/Controllers/Admin/HrOverviewController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\InventoryLoan::$employee.
+			rawMessage: Access to an undefined property Illuminate\Database\Eloquent\Model::$quantity.
 			identifier: property.notFound
-			count: 3
+			count: 1
 			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\InventoryLoan::$item.
+			rawMessage: Access to an undefined property Illuminate\Database\Eloquent\Model::$user.
 			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
+
+		-
+			rawMessage: Cannot access property $name on Illuminate\Database\Eloquent\Model|null.
+			identifier: property.nonObject
 			count: 1
 			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
 
 		-
 			rawMessage: 'Cannot call method unreadNotifications() on App\Models\User|null.'
 			identifier: method.nonObject
-			count: 2
+			count: 1
+			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
+
+		-
+			rawMessage: 'Parameter #1 $item of method App\Services\InventoryService::logLoanChange() expects App\Models\InventoryItem, Illuminate\Database\Eloquent\Model given.'
+			identifier: argument.type
+			count: 1
 			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
 
 		-
 			rawMessage: 'Property App\Models\InventoryLoan::$approved_by (int<0, max>|null) does not accept int|string|null.'
 			identifier: assign.propertyType
 			count: 2
-			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
-
-		-
-			rawMessage: Relation 'employee' is not found in App\Models\InventoryLoan model.
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
-
-		-
-			rawMessage: Relation 'item' is not found in App\Models\InventoryLoan model.
-			identifier: larastan.relationExistence
-			count: 1
 			path: app/Http/Controllers/Admin/InventoryLoanApprovalController.php
 
 		-
@@ -241,6 +223,12 @@ parameters:
 			path: app/Http/Controllers/Admin/ItemCategoryController.php
 
 		-
+			rawMessage: 'Parameter #1 $view of function view expects view-string|null, string given.'
+			identifier: argument.type
+			count: 3
+			path: app/Http/Controllers/Admin/ItemCategoryController.php
+
+		-
 			rawMessage: Relation 'parent' is not found in App\Models\ItemCategory model.
 			identifier: larastan.relationExistence
 			count: 1
@@ -253,27 +241,15 @@ parameters:
 			path: app/Http/Controllers/Admin/ItemLoanApprovalController.php
 
 		-
-			rawMessage: Relation 'employee' is not found in App\Models\InventoryLoan model.
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Http/Controllers/Admin/ItemLoanApprovalController.php
-
-		-
-			rawMessage: Relation 'item' is not found in App\Models\InventoryLoan model.
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Http/Controllers/Admin/ItemLoanApprovalController.php
-
-		-
 			rawMessage: Access to an undefined property Illuminate\Database\Eloquent\Model::$user.
 			identifier: property.notFound
-			count: 2
+			count: 1
 			path: app/Http/Controllers/Admin/LeaveApprovalController.php
 
 		-
 			rawMessage: 'Cannot call method unreadNotifications() on App\Models\User|null.'
 			identifier: method.nonObject
-			count: 2
+			count: 1
 			path: app/Http/Controllers/Admin/LeaveApprovalController.php
 
 		-
@@ -712,78 +688,6 @@ parameters:
 			path: app/Http/Controllers/DashboardController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\Expense::$user.
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Finance/ExpenseController.php
-
-		-
-			rawMessage: 'Method App\Http\Controllers\Finance\ExpenseController::approve() has no return type specified.'
-			identifier: missingType.return
-			count: 1
-			path: app/Http/Controllers/Finance/ExpenseController.php
-
-		-
-			rawMessage: 'Method App\Http\Controllers\Finance\ExpenseController::create() has no return type specified.'
-			identifier: missingType.return
-			count: 1
-			path: app/Http/Controllers/Finance/ExpenseController.php
-
-		-
-			rawMessage: 'Method App\Http\Controllers\Finance\ExpenseController::destroy() has no return type specified.'
-			identifier: missingType.return
-			count: 1
-			path: app/Http/Controllers/Finance/ExpenseController.php
-
-		-
-			rawMessage: 'Method App\Http\Controllers\Finance\ExpenseController::edit() has no return type specified.'
-			identifier: missingType.return
-			count: 1
-			path: app/Http/Controllers/Finance/ExpenseController.php
-
-		-
-			rawMessage: 'Method App\Http\Controllers\Finance\ExpenseController::index() has no return type specified.'
-			identifier: missingType.return
-			count: 1
-			path: app/Http/Controllers/Finance/ExpenseController.php
-
-		-
-			rawMessage: 'Method App\Http\Controllers\Finance\ExpenseController::reject() has no return type specified.'
-			identifier: missingType.return
-			count: 1
-			path: app/Http/Controllers/Finance/ExpenseController.php
-
-		-
-			rawMessage: 'Method App\Http\Controllers\Finance\ExpenseController::show() has no return type specified.'
-			identifier: missingType.return
-			count: 1
-			path: app/Http/Controllers/Finance/ExpenseController.php
-
-		-
-			rawMessage: 'Method App\Http\Controllers\Finance\ExpenseController::store() has no return type specified.'
-			identifier: missingType.return
-			count: 1
-			path: app/Http/Controllers/Finance/ExpenseController.php
-
-		-
-			rawMessage: 'Method App\Http\Controllers\Finance\ExpenseController::update() has no return type specified.'
-			identifier: missingType.return
-			count: 1
-			path: app/Http/Controllers/Finance/ExpenseController.php
-
-		-
-			rawMessage: Relation 'project' is not found in App\Models\Expense model.
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Http/Controllers/Finance/ExpenseController.php
-
-		-
-			rawMessage: Relation 'user' is not found in App\Models\Expense model.
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Http/Controllers/Finance/ExpenseController.php
-
-		-
 			rawMessage: 'Method App\Http\Controllers\Finance\ProjectController::create() has no return type specified.'
 			identifier: missingType.return
 			count: 1
@@ -1000,18 +904,6 @@ parameters:
 			path: app/Http/Controllers/HR/AttendanceController.php
 
 		-
-			rawMessage: 'Call to an undefined method App\Models\Department|Illuminate\Database\Eloquent\Collection<int, App\Models\Department>::delete().'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Controllers/HR/EmployeeController.php
-
-		-
-			rawMessage: 'Call to an undefined method App\Models\Position|Illuminate\Database\Eloquent\Collection<int, App\Models\Position>::delete().'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Controllers/HR/EmployeeController.php
-
-		-
 			rawMessage: 'Method App\Http\Controllers\HR\EmployeeController::create() has no return type specified.'
 			identifier: missingType.return
 			count: 1
@@ -1030,20 +922,8 @@ parameters:
 			path: app/Http/Controllers/HR/EmployeeController.php
 
 		-
-			rawMessage: 'Method App\Http\Controllers\HR\EmployeeController::destroyDepartment() has parameter $id with no type specified.'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Http/Controllers/HR/EmployeeController.php
-
-		-
 			rawMessage: 'Method App\Http\Controllers\HR\EmployeeController::destroyPosition() has no return type specified.'
 			identifier: missingType.return
-			count: 1
-			path: app/Http/Controllers/HR/EmployeeController.php
-
-		-
-			rawMessage: 'Method App\Http\Controllers\HR\EmployeeController::destroyPosition() has parameter $id with no type specified.'
-			identifier: missingType.parameter
 			count: 1
 			path: app/Http/Controllers/HR/EmployeeController.php
 
@@ -1099,12 +979,6 @@ parameters:
 			rawMessage: 'Parameter #1 $view of function view expects view-string|null, string given.'
 			identifier: argument.type
 			count: 2
-			path: app/Http/Controllers/HR/EmployeeController.php
-
-		-
-			rawMessage: Property App\Http\Controllers\HR\EmployeeController::$hrService has no type specified.
-			identifier: missingType.property
-			count: 1
 			path: app/Http/Controllers/HR/EmployeeController.php
 
 		-
@@ -1201,20 +1075,14 @@ parameters:
 			path: app/Http/Controllers/Inventory/InventoryLoanController.php
 
 		-
-			rawMessage: Access to an undefined property App\Models\InventoryLoan::$employee.
-			identifier: property.notFound
+			rawMessage: Cannot access property $name on Illuminate\Database\Eloquent\Model|null.
+			identifier: property.nonObject
 			count: 1
 			path: app/Http/Controllers/Inventory/InventoryLoanController.php
 
 		-
-			rawMessage: Relation 'employee' is not found in App\Models\InventoryLoan model.
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Http/Controllers/Inventory/InventoryLoanController.php
-
-		-
-			rawMessage: Relation 'item' is not found in App\Models\InventoryLoan model.
-			identifier: larastan.relationExistence
+			rawMessage: 'Parameter #1 $item of method App\Services\InventoryService::logLoanChange() expects App\Models\InventoryItem, Illuminate\Database\Eloquent\Model given.'
+			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Inventory/InventoryLoanController.php
 
@@ -1711,6 +1579,30 @@ parameters:
 			path: app/Http/Requests/Projects/UpdateProjectRequest.php
 
 		-
+			rawMessage: 'Method App\Livewire\Inventory\ItemsTable::rules() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Livewire/Inventory/ItemsTable.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Database\Eloquent\Model::$name.
+			identifier: property.notFound
+			count: 2
+			path: app/Livewire/Inventory/LoansTable.php
+
+		-
+			rawMessage: Access to an undefined property Illuminate\Database\Eloquent\Model::$quantity.
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Inventory/LoansTable.php
+
+		-
+			rawMessage: 'Parameter #1 $item of method App\Services\InventoryService::logLoanChange() expects App\Models\InventoryItem, Illuminate\Database\Eloquent\Model given.'
+			identifier: argument.type
+			count: 2
+			path: app/Livewire/Inventory/LoansTable.php
+
+		-
 			rawMessage: 'Method App\Mail\ExpenseRequestStatusMail::__construct() has parameter $expense with no type specified.'
 			identifier: missingType.parameter
 			count: 1
@@ -1917,12 +1809,6 @@ parameters:
 		-
 			rawMessage: 'Parameter #1 $value of static method Illuminate\Support\Str::limit() expects string, string|null given.'
 			identifier: argument.type
-			count: 1
-			path: app/Models/AssetClassification.php
-
-		-
-			rawMessage: Relation 'classification' is not found in App\Models\InventoryItem model.
-			identifier: larastan.relationExistence
 			count: 1
 			path: app/Models/AssetClassification.php
 
@@ -2227,12 +2113,6 @@ parameters:
 			path: app/Models/Expense.php
 
 		-
-			rawMessage: 'Method App\Models\Expense::approvedBy() has no return type specified.'
-			identifier: missingType.return
-			count: 1
-			path: app/Models/Expense.php
-
-		-
 			rawMessage: 'Method App\Models\Expense::bootLogsActivity() has no return type specified.'
 			identifier: missingType.return
 			count: 1
@@ -2257,24 +2137,6 @@ parameters:
 			path: app/Models/Expense.php
 
 		-
-			rawMessage: 'Method App\Models\Expense::project() has no return type specified.'
-			identifier: missingType.return
-			count: 1
-			path: app/Models/Expense.php
-
-		-
-			rawMessage: 'Method App\Models\Expense::rejectedBy() has no return type specified.'
-			identifier: missingType.return
-			count: 1
-			path: app/Models/Expense.php
-
-		-
-			rawMessage: 'Method App\Models\Expense::user() has no return type specified.'
-			identifier: missingType.return
-			count: 1
-			path: app/Models/Expense.php
-
-		-
 			rawMessage: 'Call to function method_exists() with class-string<static(App\Models\InventoryItem)> and ''restored'' will always evaluate to true.'
 			identifier: function.alreadyNarrowedType
 			count: 1
@@ -2293,8 +2155,8 @@ parameters:
 			path: app/Models/InventoryItem.php
 
 		-
-			rawMessage: 'Method App\Models\InventoryItem::classification() has no return type specified.'
-			identifier: missingType.return
+			rawMessage: 'Method App\Models\InventoryItem::classification() return type with generic class Illuminate\Database\Eloquent\Relations\BelongsTo does not specify its types: TRelatedModel, TDeclaringModel'
+			identifier: missingType.generics
 			count: 1
 			path: app/Models/InventoryItem.php
 
@@ -2323,8 +2185,8 @@ parameters:
 			path: app/Models/InventoryItem.php
 
 		-
-			rawMessage: 'Method App\Models\InventoryItem::vendor() has no return type specified.'
-			identifier: missingType.return
+			rawMessage: 'Method App\Models\InventoryItem::vendor() return type with generic class Illuminate\Database\Eloquent\Relations\BelongsTo does not specify its types: TRelatedModel, TDeclaringModel'
+			identifier: missingType.generics
 			count: 1
 			path: app/Models/InventoryItem.php
 
@@ -2341,8 +2203,8 @@ parameters:
 			path: app/Models/InventoryLoan.php
 
 		-
-			rawMessage: 'Method App\Models\InventoryLoan::approvedBy() has no return type specified.'
-			identifier: missingType.return
+			rawMessage: 'Method App\Models\InventoryLoan::approvedBy() return type with generic class Illuminate\Database\Eloquent\Relations\BelongsTo does not specify its types: TRelatedModel, TDeclaringModel'
+			identifier: missingType.generics
 			count: 1
 			path: app/Models/InventoryLoan.php
 
@@ -2353,14 +2215,14 @@ parameters:
 			path: app/Models/InventoryLoan.php
 
 		-
-			rawMessage: 'Method App\Models\InventoryLoan::employee() has no return type specified.'
-			identifier: missingType.return
+			rawMessage: 'Method App\Models\InventoryLoan::employee() return type with generic class Illuminate\Database\Eloquent\Relations\BelongsTo does not specify its types: TRelatedModel, TDeclaringModel'
+			identifier: missingType.generics
 			count: 1
 			path: app/Models/InventoryLoan.php
 
 		-
-			rawMessage: 'Method App\Models\InventoryLoan::item() has no return type specified.'
-			identifier: missingType.return
+			rawMessage: 'Method App\Models\InventoryLoan::item() return type with generic class Illuminate\Database\Eloquent\Relations\BelongsTo does not specify its types: TRelatedModel, TDeclaringModel'
+			identifier: missingType.generics
 			count: 1
 			path: app/Models/InventoryLoan.php
 
@@ -2383,8 +2245,8 @@ parameters:
 			path: app/Models/InventoryLoan.php
 
 		-
-			rawMessage: 'Method App\Models\InventoryLoan::rejectedBy() has no return type specified.'
-			identifier: missingType.return
+			rawMessage: 'Method App\Models\InventoryLoan::rejectedBy() return type with generic class Illuminate\Database\Eloquent\Relations\BelongsTo does not specify its types: TRelatedModel, TDeclaringModel'
+			identifier: missingType.generics
 			count: 1
 			path: app/Models/InventoryLoan.php
 
@@ -2914,6 +2776,12 @@ parameters:
 			rawMessage: 'Parameter #1 $view of function view expects view-string|null, string given.'
 			identifier: argument.type
 			count: 1
+			path: app/View/Components/AppLayout.php
+
+		-
+			rawMessage: 'Parameter #1 $view of function view expects view-string|null, string given.'
+			identifier: argument.type
+			count: 1
 			path: app/View/Components/GuestLayout.php
 
 		-
@@ -2947,16 +2815,40 @@ parameters:
 			path: routes/api.php
 
 		-
-			rawMessage: 'Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''.'
-			identifier: larastan.noEnvCallsOutsideOfConfig
-			count: 1
-			path: routes/web.php
-
-		-
 			rawMessage: 'Cannot call method hasRole() on App\Models\User|null.'
 			identifier: method.nonObject
 			count: 4
 			path: routes/web.php
+
+		-
+			rawMessage: Cannot access property $quantity on App\Models\InventoryItem|null.
+			identifier: property.nonObject
+			count: 1
+			path: tests/Feature/Livewire/InventoryItemsTableTest.php
+
+		-
+			rawMessage: 'Unable to resolve the template type TComponent in call to method Livewire\LivewireManager::test()'
+			identifier: argument.templateType
+			count: 2
+			path: tests/Feature/Livewire/InventoryItemsTableTest.php
+
+		-
+			rawMessage: Cannot access property $quantity on App\Models\InventoryItem|null.
+			identifier: property.nonObject
+			count: 2
+			path: tests/Feature/Livewire/InventoryLoansActionTest.php
+
+		-
+			rawMessage: Cannot access property $status on App\Models\InventoryLoan|null.
+			identifier: property.nonObject
+			count: 2
+			path: tests/Feature/Livewire/InventoryLoansActionTest.php
+
+		-
+			rawMessage: 'Unable to resolve the template type TComponent in call to method Livewire\LivewireManager::test()'
+			identifier: argument.templateType
+			count: 2
+			path: tests/Feature/Livewire/InventoryLoansActionTest.php
 
 		-
 			rawMessage: 'Call to method PHPUnit\Framework\Assert::assertTrue() with true will always evaluate to true.'

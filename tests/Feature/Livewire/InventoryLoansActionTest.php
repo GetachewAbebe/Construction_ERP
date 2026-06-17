@@ -40,4 +40,30 @@ class InventoryLoansActionTest extends TestCase
         $this->assertSame('approved', $loan->fresh()->status);
         $this->assertSame(7, $item->fresh()->quantity); // 10 - 3
     }
+
+    public function test_approving_an_already_processed_loan_does_not_deduct_stock_again(): void
+    {
+        $user = User::factory()->create();
+        $item = InventoryItem::create([
+            'item_no' => 'TST-002', 'name' => 'Test Saw', 'quantity' => 10, 'status' => 'available',
+        ]);
+        $emp = Employee::create([
+            'first_name' => 'John', 'last_name' => 'Roe', 'email' => 'john.roe@example.test', 'status' => 'active',
+        ]);
+        // Loan is already approved (simulates a second approval racing in after the first committed).
+        $loan = InventoryLoan::create([
+            'inventory_item_id' => $item->id, 'employee_id' => $emp->id,
+            'requested_by_user_id' => $user->id, 'quantity' => 3, 'status' => 'approved',
+            'requested_at' => now(),
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(LoansTable::class)
+            ->call('approve', $loan->id)
+            ->assertHasNoErrors();
+
+        // Status unchanged and stock untouched — the re-check inside the lock rejected it.
+        $this->assertSame('approved', $loan->fresh()->status);
+        $this->assertSame(10, $item->fresh()->quantity);
+    }
 }

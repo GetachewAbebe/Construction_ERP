@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -45,7 +46,7 @@ class InventoryItem extends Model
     /**
      * Relationship: The strategic classification this asset belongs to.
      */
-    public function classification()
+    public function classification(): BelongsTo
     {
         return $this->belongsTo(AssetClassification::class, 'classification_id');
     }
@@ -53,7 +54,7 @@ class InventoryItem extends Model
     /**
      * Relationship: The vendor / supplier of this item.
      */
-    public function vendor()
+    public function vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class);
     }

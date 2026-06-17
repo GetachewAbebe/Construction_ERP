@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class InventoryLoan extends Model
@@ -42,22 +43,22 @@ class InventoryLoan extends Model
     ];
 
     // Relationships
-    public function item()
+    public function item(): BelongsTo
     {
         return $this->belongsTo(InventoryItem::class, 'inventory_item_id');
     }
 
-    public function employee()
+    public function employee(): BelongsTo
     {
         return $this->belongsTo(\App\Models\Employee::class, 'employee_id');
     }
 
-    public function approvedBy()
+    public function approvedBy(): BelongsTo
     {
         return $this->belongsTo(\App\Models\User::class, 'approved_by');
     }
 
-    public function rejectedBy()
+    public function rejectedBy(): BelongsTo
     {
         return $this->belongsTo(\App\Models\User::class, 'rejected_by');
     }
