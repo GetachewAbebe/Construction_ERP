@@ -20,7 +20,7 @@ class SimpleAuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (! Auth::attempt($credentials)) {
+        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             return back()
                 ->withErrors(['email' => 'The provided credentials do not match our records.'])
                 ->onlyInput('email');

@@ -98,6 +98,21 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications/mark-all-as-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
 });
 
+/**
+ * --------------------------------------------------------------------------
+ * LIVEWIRE + MARY UI — PROOF OF CONCEPT (isolated, safe to remove)
+ * --------------------------------------------------------------------------
+ * Reactive Inventory Loans table on a standalone Tailwind/daisyUI layout.
+ * Does not affect any existing Bootstrap screens.
+ */
+Route::get('/poc/inventory-loans', \App\Livewire\Inventory\LoansTable::class)
+    ->middleware('auth')
+    ->name('poc.inventory-loans');
+
+Route::get('/poc/inventory-items', \App\Livewire\Inventory\ItemsTable::class)
+    ->middleware('auth')
+    ->name('poc.inventory-items');
+
 require __DIR__.'/admin.php';
 require __DIR__.'/hr.php';
 require __DIR__.'/inventory.php';

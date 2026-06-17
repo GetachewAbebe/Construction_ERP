@@ -1,235 +1,150 @@
-@extends('layouts.app')
-@section('title', 'Provision Operational Identity')
-
-@section('content')
-<div class="page-header-premium">
-    <div class="row align-items-center">
-        <div class="col">
-            <h1>Provision Operational Identity</h1>
-            <p>Establish new administrative credentials and professional anchoring for workforce associates.</p>
-        </div>
-        <div class="col-auto">
-            <a href="{{ route('admin.users.index') }}" class="btn btn-white rounded-pill px-4 shadow-sm border-0">
-                <i class="bi bi-arrow-left me-2"></i>Abort Provisioning
+<x-layouts.app-shell title="Add User">
+    <div class="mx-auto max-w-3xl space-y-5">
+        {{-- Heading --}}
+        <div class="flex items-center justify-between gap-3">
+            <div>
+                <h2 class="text-xl font-semibold">Add New User</h2>
+                <p class="text-sm text-base-content/60">Create administrative credentials and professional details.</p>
+            </div>
+            <a href="{{ route('admin.users.index') }}" class="btn btn-ghost btn-sm">
+                <x-mary-icon name="o-arrow-left" class="h-4 w-4" /> Back
             </a>
         </div>
-    </div>
-</div>
 
-<div class="stagger-entrance">
-    <div class="erp-card">
-        <form method="POST" action="{{ route('admin.users.store') }}" enctype="multipart/form-data">
+        @if ($errors->any())
+            <div role="alert" class="alert alert-error py-2 text-sm"><span>{{ $errors->first() }}</span></div>
+        @endif
+
+        <form method="POST" action="{{ route('admin.users.store') }}" enctype="multipart/form-data"
+              class="rounded-xl border border-base-300 bg-base-100 p-6 shadow-sm sm:p-8">
             @csrf
 
-            <div class="row g-4 mb-5">
-                <div class="col-12 text-center mb-4">
-                    <div class="position-relative d-inline-block">
-                        <label for="profile_picture" class="cursor-pointer">
-                            <div class="avatar-preview-box rounded-circle bg-light border border-2 d-flex align-items-center justify-content-center overflow-hidden position-relative shadow-sm" style="width: 140px; height: 140px;">
-                                <i class="bi bi-camera-fill fs-1 text-muted opacity-25" id="avatar_placeholder"></i>
-                                <img id="avatar_preview" src="#" alt="Preview" class="w-100 h-100 object-fit-cover d-none">
-                            </div>
-                            <div class="badge bg-erp-deep rounded-pill position-absolute bottom-0 end-0 p-3 border border-3 border-white shadow-lg">
-                                <i class="bi bi-plus-lg text-white"></i>
-                            </div>
-                        </label>
-                        <input type="file" name="profile_picture" id="profile_picture" class="d-none" accept="image/*" onchange="previewAvatar(this)">
+            {{-- Avatar --}}
+            <div class="mb-8 flex flex-col items-center gap-2">
+                <label for="profile_picture" class="cursor-pointer">
+                    <div class="relative grid h-28 w-28 place-items-center overflow-hidden rounded-full border-2 border-base-300 bg-base-200">
+                        <x-mary-icon name="o-camera" id="avatar_placeholder" class="h-8 w-8 text-base-content/30" />
+                        <img id="avatar_preview" src="#" alt="" class="hidden h-full w-full object-cover">
+                        <span class="absolute bottom-0 right-0 grid h-7 w-7 place-items-center rounded-full bg-primary text-primary-content ring-2 ring-base-100">
+                            <x-mary-icon name="o-plus" class="h-4 w-4" />
+                        </span>
                     </div>
-                    <div class="mt-3 fw-bold text-erp-deep text-uppercase small tracking-wide">Profile Picture</div>
-                    @error('profile_picture') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="col-12">
-                    <h5 class="fw-bold text-erp-deep mb-4 d-flex align-items-center gap-2">
-                        <i class="bi bi-shield-lock text-primary"></i>
-                        Account & Security
-                    </h5>
-                </div>
-
-                <div class="col-md-6">
-                    <label class="erp-label">Full Name</label>
-                    <input name="name" value="{{ old('name', $employee ? $employee->first_name . ' ' . $employee->last_name : '') }}" required placeholder="e.g. Getachew Abebe"
-                           class="erp-input @error('name') is-invalid @enderror"/>
-                    @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label class="erp-label">Email Address</label>
-                    <input type="email" name="email" value="{{ old('email', $employee ? $employee->email : '') }}" required placeholder="corporate@natanem.com"
-                           class="erp-input @error('email') is-invalid @enderror"/>
-                    @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label class="erp-label">Password</label>
-                    <div class="input-group">
-                        <input type="password" name="password" id="password" required placeholder="Min. 8 characters" onkeyup="checkStrength(this.value)"
-                            class="erp-input form-control border-end-0 rounded-end-0 @error('password') is-invalid @enderror"/>
-                        <button class="btn btn-secondary border-start-0" type="button" onclick="togglePasswordVis('password', 'admin-eye-text')" style="min-width: 80px;">
-                            <span id="admin-eye-text">Show</span> <i class="bi bi-eye ms-1"></i>
-                        </button>
-                    </div>
-                    {{-- Strength Meter --}}
-                    <div class="mt-2 d-none" id="strength-container">
-                        <div class="progress" style="height: 4px;">
-                            <div class="progress-bar transition-all" role="progressbar" id="strength-bar" style="width: 0%"></div>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mt-1">
-                            <small class="text-muted" style="font-size: 0.75rem;">Strength</small>
-                            <small class="fw-bold" id="strength-text" style="font-size: 0.75rem;">Weak</small>
-                        </div>
-                    </div>
-                    @error('password') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label class="erp-label">System Role</label>
-                    <select name="role" required class="erp-input @error('role') is-invalid @enderror" style="appearance: auto;">
-                        <option value="">Select Role...</option>
-                        @foreach($roles as $role)
-                            <option value="{{ $role }}" @selected(old('role')===$role)>{{ $role }}</option>
-                        @endforeach
-                    </select>
-                    @error('role') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="col-12 mt-4">
-                    <h5 class="fw-bold text-erp-deep mb-4 d-flex align-items-center gap-2">
-                        <i class="bi bi-person-badge text-success"></i>
-                        Professional Details
-                    </h5>
-                </div>
-
-                <div class="col-md-6">
-                    <label class="erp-label">Phone Number</label>
-                    <input name="phone_number" value="{{ old('phone_number', $employee ? $employee->phone : '') }}" placeholder="+251 ..."
-                           class="erp-input @error('phone_number') is-invalid @enderror"/>
-                    @error('phone_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label class="erp-label">Status</label>
-                    <select name="status" class="erp-input @error('status') is-invalid @enderror" style="appearance: auto;">
-                        <option value="Active" @selected(old('status') == 'Active')>Active</option>
-                        <option value="Inactive" @selected(old('status') == 'Inactive')>Inactive</option>
-                        <option value="Suspended" @selected(old('status') == 'Suspended')>Suspended</option>
-                    </select>
-                    @error('status') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label class="erp-label">Job Title / Position</label>
-                    <input name="position" value="{{ old('position', $employee ? $employee->position : '') }}" placeholder="e.g. Civil Engineer"
-                           class="erp-input @error('position') is-invalid @enderror"/>
-                    @error('position') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label class="erp-label">Department</label>
-                    <input name="department" value="{{ old('department', $employee ? $employee->department : '') }}" placeholder="e.g. Engineering"
-                           class="erp-input @error('department') is-invalid @enderror"/>
-                    @error('department') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label class="erp-label">Hire Date</label>
-                    <input type="date" name="hire_date" value="{{ old('hire_date', $employee ? ($employee->hire_date ? $employee->hire_date->format('Y-m-d') : '') : date('Y-m-d')) }}"
-                           class="erp-input @error('hire_date') is-invalid @enderror"/>
-                    @error('hire_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label class="erp-label">Initial Salary (ETB)</label>
-                    <input type="number" step="0.01" name="salary" value="{{ old('salary', $employee ? $employee->salary : '') }}" placeholder="0.00"
-                           class="erp-input @error('salary') is-invalid @enderror"/>
-                    @error('salary') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-
+                </label>
+                <input type="file" name="profile_picture" id="profile_picture" class="hidden" accept="image/*" onchange="previewAvatar(this)">
+                <span class="text-xs uppercase tracking-wide text-base-content/50">Profile picture</span>
+                @error('profile_picture') <span class="text-xs text-error">{{ $message }}</span> @enderror
             </div>
 
-            <div class="text-end mt-5">
-                <button type="submit" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-bold shadow-lg border-0">
-                    Create Operational Identity
-                </button>
+            {{-- Account & Security --}}
+            <h3 class="mb-4 flex items-center gap-2 font-semibold">
+                <x-mary-icon name="o-shield-check" class="h-5 w-5 text-primary" /> Account &amp; Security
+            </h3>
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Full name</label>
+                    <input name="name" value="{{ old('name', $employee ? $employee->first_name.' '.$employee->last_name : '') }}" required
+                           placeholder="e.g. Getachew Abebe" class="input input-bordered w-full {{ $errors->has('name') ? 'input-error' : '' }}" />
+                    @error('name') <span class="mt-1 block text-xs text-error">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Email address</label>
+                    <input type="email" name="email" value="{{ old('email', $employee->email ?? '') }}" required
+                           placeholder="user@natanem.com" class="input input-bordered w-full {{ $errors->has('email') ? 'input-error' : '' }}" />
+                    @error('email') <span class="mt-1 block text-xs text-error">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Password</label>
+                    <label class="input input-bordered flex w-full items-center gap-2 {{ $errors->has('password') ? 'input-error' : '' }}">
+                        <input id="password" type="password" name="password" required placeholder="Min. 8 characters" class="grow" oninput="checkStrength(this.value)" />
+                        <button type="button" onclick="togglePw()" class="text-xs font-medium text-base-content/50 hover:text-base-content"><span id="pw-lbl">Show</span></button>
+                    </label>
+                    <div id="strength-wrap" class="mt-2 hidden">
+                        <div class="h-1.5 w-full overflow-hidden rounded-full bg-base-300"><div id="strength-bar" class="h-full w-0 rounded-full transition-all"></div></div>
+                        <div class="mt-1 flex justify-between text-[11px]"><span class="text-base-content/50">Strength</span><span id="strength-text" class="font-semibold"></span></div>
+                    </div>
+                    @error('password') <span class="mt-1 block text-xs text-error">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">System role</label>
+                    <select name="role" required class="select select-bordered w-full {{ $errors->has('role') ? 'select-error' : '' }}">
+                        <option value="">Select role…</option>
+                        @foreach ($roles as $role)
+                            <option value="{{ $role }}" @selected(old('role') === $role)>{{ $role }}</option>
+                        @endforeach
+                    </select>
+                    @error('role') <span class="mt-1 block text-xs text-error">{{ $message }}</span> @enderror
+                </div>
+            </div>
+
+            {{-- Professional details --}}
+            <h3 class="mb-4 mt-8 flex items-center gap-2 font-semibold">
+                <x-mary-icon name="o-identification" class="h-5 w-5 text-success" /> Professional Details
+            </h3>
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Phone number</label>
+                    <input name="phone_number" value="{{ old('phone_number', $employee->phone ?? '') }}" placeholder="+251 …" class="input input-bordered w-full" />
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Status</label>
+                    <select name="status" class="select select-bordered w-full">
+                        @foreach (['Active', 'Inactive', 'Suspended'] as $s)
+                            <option value="{{ $s }}" @selected(old('status') === $s)>{{ $s }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Job title / position</label>
+                    <input name="position" value="{{ old('position', $employee->position ?? '') }}" placeholder="e.g. Civil Engineer" class="input input-bordered w-full" />
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Department</label>
+                    <input name="department" value="{{ old('department', $employee->department ?? '') }}" placeholder="e.g. Engineering" class="input input-bordered w-full" />
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Hire date</label>
+                    <input type="date" name="hire_date" value="{{ old('hire_date', optional($employee->hire_date ?? null)->format('Y-m-d') ?? date('Y-m-d')) }}" class="input input-bordered w-full" />
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Initial salary (ETB)</label>
+                    <input type="number" step="0.01" name="salary" value="{{ old('salary', $employee->salary ?? '') }}" placeholder="0.00" class="input input-bordered w-full" />
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-end gap-2">
+                <a href="{{ route('admin.users.index') }}" class="btn btn-ghost">Cancel</a>
+                <button type="submit" class="btn btn-primary">Create user</button>
             </div>
         </form>
     </div>
-</div>
 
-
-<script>
-    function previewAvatar(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var img = document.getElementById('avatar_preview');
-                var placeholder = document.getElementById('avatar_placeholder');
-                img.src = e.target.result;
-                img.classList.remove('d-none');
-                placeholder.classList.add('d-none');
+    @push('scripts')
+    <script>
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = document.getElementById('avatar_preview');
+                    img.src = e.target.result; img.classList.remove('hidden');
+                    document.getElementById('avatar_placeholder').classList.add('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
             }
-            reader.readAsDataURL(input.files[0]);
         }
-    }
-
-    function togglePasswordVis(inputId, iconId) {
-        const input = document.getElementById(inputId);
-        const icon = document.getElementById(iconId);
-        if (input.type === "password") {
-            input.type = "text";
-            icon.classList.remove('bi-eye-slash');
-            icon.classList.add('bi-eye');
-        } else {
-            input.type = "password";
-            icon.classList.remove('bi-eye');
-            icon.classList.add('bi-eye-slash');
+        function togglePw() {
+            const i = document.getElementById('password'), l = document.getElementById('pw-lbl');
+            const show = i.type === 'password'; i.type = show ? 'text' : 'password'; l.textContent = show ? 'Hide' : 'Show';
         }
-    }
-
-    function checkStrength(password) {
-        const container = document.getElementById('strength-container');
-        const bar = document.getElementById('strength-bar');
-        const text = document.getElementById('strength-text');
-        
-        if (password.length > 0) {
-            container.classList.remove('d-none');
-        } else {
-            container.classList.add('d-none');
-            return;
+        function checkStrength(pw) {
+            const wrap = document.getElementById('strength-wrap'), bar = document.getElementById('strength-bar'), text = document.getElementById('strength-text');
+            if (!pw.length) { wrap.classList.add('hidden'); return; }
+            wrap.classList.remove('hidden');
+            let s = 0; if (pw.length >= 8) s++; if (/[A-Z]/.test(pw)) s++; if (/[0-9]/.test(pw)) s++; if (/[^a-zA-Z0-9]/.test(pw)) s++;
+            if (pw.length < 8) s = Math.min(s, 1);
+            const lv = s <= 1 ? ['33%','bg-error','Weak','text-error'] : (s <= 3 ? ['66%','bg-warning','Medium','text-warning'] : ['100%','bg-success','Strong','text-success']);
+            bar.style.width = lv[0]; bar.className = 'h-full rounded-full transition-all ' + lv[1];
+            text.textContent = lv[2]; text.className = 'font-semibold ' + lv[3];
         }
-
-        let strength = 0;
-        if (password.length >= 8) strength += 1;
-        if (password.match(/[A-Z]/)) strength += 1;
-        if (password.match(/[0-9]/)) strength += 1;
-        if (password.match(/[^a-zA-Z0-9]/)) strength += 1;
-
-        if (password.length < 8) {
-            strength = 0; 
-        }
-
-        switch(strength) {
-            case 0:
-            case 1:
-                bar.style.width = "33%";
-                bar.className = "progress-bar bg-danger";
-                text.innerHTML = "Weak";
-                text.className = "fw-bold text-danger";
-                break;
-            case 2:
-            case 3:
-                bar.style.width = "66%";
-                bar.className = "progress-bar bg-warning";
-                text.innerHTML = "Medium";
-                text.className = "fw-bold text-warning";
-                break;
-            case 4:
-                bar.style.width = "100%";
-                bar.className = "progress-bar bg-success";
-                text.innerHTML = "Strong";
-                text.className = "fw-bold text-success";
-                break;
-        }
-    }
-</script>
-@endsection
+    </script>
+    @endpush
+</x-layouts.app-shell>

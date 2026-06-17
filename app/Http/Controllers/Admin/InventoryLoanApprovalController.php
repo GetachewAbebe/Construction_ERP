@@ -41,7 +41,17 @@ class InventoryLoanApprovalController extends Controller
         }
 
         return DB::transaction(function () use ($loan) {
-            $item = $loan->item;
+            // Lock the loan row and re-check status inside the transaction so two
+            // concurrent approvals can't both deduct stock for the same request.
+            $loan = InventoryLoan::whereKey($loan->id)->lockForUpdate()->first();
+
+            if (! $loan || $loan->status !== 'pending') {
+                return back()->with('status', 'This request has already been processed.');
+            }
+
+            // Lock the item row so two loans on the same item can't both pass the
+            // stock check against a stale quantity.
+            $item = $loan->item()->lockForUpdate()->first();
 
             if (! $item) {
                 return back()->with('error', 'Linked item not found for this request.');
@@ -75,14 +85,24 @@ class InventoryLoanApprovalController extends Controller
             return back()->with('status', 'This request has already been processed.');
         }
 
-        $loan->status = 'rejected';
-        $loan->approved_by = auth()->id();
-        $loan->approved_at = now();
-        $loan->save();
+        return DB::transaction(function () use ($loan) {
+            // Lock the loan row and re-check so a concurrent approve can't deduct
+            // stock for a request that we are rejecting (and vice versa).
+            $loan = InventoryLoan::whereKey($loan->id)->lockForUpdate()->first();
 
-        $this->notifyParties($loan);
+            if (! $loan || $loan->status !== 'pending') {
+                return back()->with('status', 'This request has already been processed.');
+            }
 
-        return back()->with('status', 'Loan request rejected.');
+            $loan->status = 'rejected';
+            $loan->approved_by = auth()->id();
+            $loan->approved_at = now();
+            $loan->save();
+
+            $this->notifyParties($loan);
+
+            return back()->with('status', 'Loan request rejected.');
+        });
     }
 
     private function notifyParties(InventoryLoan $loan): void

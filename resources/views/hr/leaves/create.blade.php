@@ -1,215 +1,91 @@
-@extends('layouts.app')
-@section('title', 'New Leave Request | Natanem Engineering')
-
-@push('head')
-{{-- Flatpickr for better date picking and disabling dates --}}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<style>
-    .flatpickr-input[readonly] { 
-        background-color: #f8fafc !important; 
-        cursor: pointer; 
-        font-weight: 600;
-    }
-    .leave-form-section {
-        background: linear-gradient(135deg, rgba(5, 150, 105, 0.03) 0%, rgba(59, 130, 246, 0.03) 100%);
-        border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-    }
-</style>
-@endpush
-
-@section('content')
-<div class="page-header-premium mb-5">
-    <div class="row align-items-center">
-        <div class="col">
-            <h1 class="display-3 fw-900 text-erp-deep mb-0 tracking-tight">New Leave Request</h1>
-        </div>
-        <div class="col-auto">
-            <a href="{{ route('hr.leaves.index') }}" class="btn btn-white rounded-pill px-4 py-3 fw-700 shadow-sm border-0">
-                <i class="bi bi-arrow-left me-2"></i>Back to Leave Portfolio
+<x-layouts.app-shell title="New Leave Request">
+    <div class="mx-auto max-w-2xl space-y-5">
+        <div class="flex items-center justify-between gap-3">
+            <div>
+                <h2 class="text-xl font-semibold">New Leave Request</h2>
+                <p class="text-sm text-base-content/60">File a leave request for an employee.</p>
+            </div>
+            <a href="{{ route('hr.leaves.index') }}" class="btn btn-ghost btn-sm">
+                <x-mary-icon name="o-arrow-left" class="h-4 w-4" /> Back
             </a>
         </div>
-    </div>
-</div>
 
-<div class="row justify-content-center">
-    <div class="col-lg-9">
-        <form action="{{ route('hr.leaves.store') }}" method="POST" id="leaveForm">
+        @if ($errors->any())
+            <div role="alert" class="alert alert-error py-2 text-sm"><span>{{ $errors->first() }}</span></div>
+        @endif
+
+        <form action="{{ route('hr.leaves.store') }}" method="POST"
+              class="space-y-6 rounded-xl border border-base-300 bg-base-100 p-6 shadow-sm sm:p-8">
             @csrf
-            
-            {{-- Employee Selection Section --}}
-            <div class="erp-card mb-4">
-                <h5 class="fw-800 text-erp-deep mb-4 pb-3 border-bottom">
-                    <i class="bi bi-person-badge text-primary me-2"></i>
-                    Employee Information
-                </h5>
-                
-                <div class="row">
-                    <div class="col-md-12">
-                        <label class="erp-label">Employee Name</label>
-                        <select name="employee_id" id="employeeSelect" class="erp-input @error('employee_id') is-invalid @enderror" required>
-                            <option value="" disabled {{ old('employee_id') ? '' : 'selected' }}>Select employee...</option>
-                            @foreach($employees as $e)
-                                <option value="{{ $e->id }}" {{ old('employee_id') == $e->id ? 'selected' : '' }}>
-                                    {{ $e->first_name }} {{ $e->last_name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('employee_id') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
-                        
-                        {{-- Availability Hint --}}
-                        <div id="availabilityHint" class="mt-3 p-3 rounded-4 bg-info-soft text-info small fw-600" style="display: none;">
-                            <i class="bi bi-info-circle me-2"></i>
-                            <span id="availabilityText">Fetching employee schedule...</span>
-                        </div>
-                    </div>
+
+            <div>
+                <label class="mb-1.5 block text-sm font-medium">Employee</label>
+                <select name="employee_id" id="employeeSelect" required class="select select-bordered w-full {{ $errors->has('employee_id') ? 'select-error' : '' }}">
+                    <option value="" disabled @selected(!old('employee_id'))>Select employee…</option>
+                    @foreach ($employees as $e)
+                        <option value="{{ $e->id }}" @selected(old('employee_id') == $e->id)>{{ $e->first_name }} {{ $e->last_name }}</option>
+                    @endforeach
+                </select>
+                @error('employee_id') <span class="mt-1 block text-xs text-error">{{ $message }}</span> @enderror
+                <p id="availabilityHint" class="mt-2 hidden rounded-lg bg-base-200/60 px-3 py-2 text-xs"></p>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Start date</label>
+                    <input type="date" name="start_date" id="startDate" value="{{ old('start_date') }}" required class="input input-bordered w-full {{ $errors->has('start_date') ? 'input-error' : '' }}" />
+                    @error('start_date') <span class="mt-1 block text-xs text-error">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">End date</label>
+                    <input type="date" name="end_date" id="endDate" value="{{ old('end_date') }}" required class="input input-bordered w-full {{ $errors->has('end_date') ? 'input-error' : '' }}" />
+                    @error('end_date') <span class="mt-1 block text-xs text-error">{{ $message }}</span> @enderror
                 </div>
             </div>
 
-            {{-- Leave Dates Section --}}
-            <div class="erp-card mb-4">
-                <h5 class="fw-800 text-erp-deep mb-4 pb-3 border-bottom">
-                    <i class="bi bi-calendar2-range text-primary me-2"></i>
-                    Leave Period
-                </h5>
-                
-                <div class="row g-4">
-                    {{-- Start Date --}}
-                    <div class="col-md-6">
-                        <label class="erp-label">Start Date</label>
-                        <input type="text" name="start_date" id="startDate"
-                               class="erp-input @error('start_date') is-invalid @enderror" 
-                               value="{{ old('start_date') }}" placeholder="Select start date" required>
-                        @error('start_date') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
-                    </div>
-
-                    {{-- End Date --}}
-                    <div class="col-md-6">
-                        <label class="erp-label">End Date</label>
-                        <input type="text" name="end_date" id="endDate"
-                               class="erp-input @error('end_date') is-invalid @enderror" 
-                               value="{{ old('end_date') }}" placeholder="Select end date" required>
-                        @error('end_date') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
-                    </div>
-                </div>
+            <div>
+                <label class="mb-1.5 block text-sm font-medium">Reason</label>
+                <textarea name="reason" rows="4" placeholder="Brief explanation…" class="textarea textarea-bordered w-full">{{ old('reason') }}</textarea>
             </div>
 
-            {{-- Reason Section --}}
-            <div class="erp-card mb-4">
-                <h5 class="fw-800 text-erp-deep mb-4 pb-3 border-bottom">
-                    <i class="bi bi-chat-left-text text-primary me-2"></i>
-                    Leave Details
-                </h5>
-                
-                <div class="row">
-                    <div class="col-12">
-                        <label class="erp-label">Reason for Leave</label>
-                        <textarea name="reason" rows="5" 
-                                  class="erp-input @error('reason') is-invalid @enderror" 
-                                  placeholder="Provide a brief explanation for this leave request..." style="resize: vertical; min-height: 120px;">{{ old('reason') }}</textarea>
-                        @error('reason') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
-                    </div>
-                </div>
+            <div class="flex items-start gap-2 rounded-lg border border-info/30 bg-info/5 p-3 text-xs text-base-content/70">
+                <x-mary-icon name="o-information-circle" class="h-5 w-5 shrink-0 text-info" />
+                <span>Requests need HR/admin approval. Dates overlapping existing approved or pending leaves are rejected on submit.</span>
             </div>
 
-            {{-- Info Alert --}}
-            <div class="alert bg-gradient-to-r from-blue-50 to-emerald-50 border-0 rounded-4 p-4 mb-4 d-flex align-items-start gap-3" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(5, 150, 105, 0.08) 100%);">
-                <i class="bi bi-info-circle-fill text-primary fs-4 mt-1"></i>
-                <div class="small text-muted">
-                    <strong class="text-erp-deep d-block mb-1">Important Information</strong>
-                    Leave requests require approval from your department head and HR administrator. Dates that overlap with existing approved or pending leaves are automatically restricted.
-                </div>
-            </div>
-
-            {{-- Action Buttons --}}
-            <div class="d-flex gap-3 justify-content-end">
-                <a href="{{ route('hr.leaves.index') }}" class="btn btn-white rounded-pill px-5 py-3 fw-700 shadow-sm border-0">
-                    <i class="bi bi-x-circle me-2"></i>Cancel
-                </a>
-                <button type="submit" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-900 shadow-xl border-0">
-                    <i class="bi bi-send-fill me-2 fs-5"></i>SUBMIT LEAVE REQUEST
-                </button>
+            <div class="flex justify-end gap-2 border-t border-base-200 pt-5">
+                <a href="{{ route('hr.leaves.index') }}" class="btn btn-ghost">Cancel</a>
+                <button type="submit" class="btn btn-primary">Submit request</button>
             </div>
         </form>
     </div>
-</div>
-@endsection
 
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const employeeSelect = document.getElementById('employeeSelect');
-        const availabilityHint = document.getElementById('availabilityHint');
-        const availabilityText = document.getElementById('availabilityText');
-        
-        let disabledDates = [];
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sel = document.getElementById('employeeSelect');
+            const start = document.getElementById('startDate');
+            const end = document.getElementById('endDate');
+            const hint = document.getElementById('availabilityHint');
+            const today = new Date().toISOString().slice(0, 10);
+            start.min = today; end.min = today;
+            start.addEventListener('change', () => { end.min = start.value || today; });
 
-        const startPicker = flatpickr("#startDate", {
-            altInput: true,
-            altFormat: "F j, Y",
-            dateFormat: "Y-m-d",
-            minDate: "today",
-            disable: [],
-            onChange: function(selectedDates, dateStr, instance) {
-                endPicker.set('minDate', dateStr);
+            function check(id) {
+                if (!id) return;
+                fetch(`/hr/employees/${id}/leave-dates`)
+                    .then(r => r.json())
+                    .then(data => {
+                        hint.classList.remove('hidden');
+                        hint.textContent = data.length
+                            ? `Notice: this employee has ${data.length} active/pending leave(s). Avoid overlapping dates.`
+                            : 'This employee is available for new leave requests.';
+                    })
+                    .catch(() => hint.classList.add('hidden'));
             }
+            sel.addEventListener('change', () => check(sel.value));
+            if (sel.value) check(sel.value);
         });
-
-        const endPicker = flatpickr("#endDate", {
-            altInput: true,
-            altFormat: "F j, Y",
-            dateFormat: "Y-m-d",
-            minDate: "today",
-            disable: []
-        });
-
-        function fetchLeaveDates(employeeId) {
-            if (!employeeId) return;
-
-            availabilityHint.style.display = 'flex';
-            availabilityText.innerText = 'Checking employee schedule...';
-
-            fetch(`/hr/employees/${employeeId}/leave-dates`)
-                .then(response => response.json())
-                .then(data => {
-                    disabledDates = data.map(leave => {
-                        return {
-                            from: leave.start,
-                            to: leave.end
-                        };
-                    });
-
-                    startPicker.set('disable', disabledDates);
-                    endPicker.set('disable', disabledDates);
-
-                    if (data.length > 0) {
-                        availabilityText.innerHTML = `<strong>Notice:</strong> This employee has ${data.length} active/pending leave(s). Overlapping dates are disabled.`;
-                        availabilityHint.classList.remove('bg-info-soft', 'text-info');
-                        availabilityHint.classList.add('bg-warning-soft', 'text-warning');
-                    } else {
-                        availabilityText.innerText = 'This employee is available for new leave requests.';
-                        availabilityHint.classList.remove('bg-warning-soft', 'text-warning');
-                        availabilityHint.classList.add('bg-success-soft', 'text-success');
-                    }
-                })
-                .catch(err => {
-                    console.error('Error fetching dates:', err);
-                    availabilityHint.style.display = 'none';
-                });
-        }
-
-        employeeSelect.addEventListener('change', function() {
-            fetchLeaveDates(this.value);
-            startPicker.clear();
-            endPicker.clear();
-        });
-
-        // Initialize if value exists (old input)
-        if (employeeSelect.value) {
-            fetchLeaveDates(employeeSelect.value);
-        }
-    });
-</script>
-@endpush
+    </script>
+    @endpush
+</x-layouts.app-shell>

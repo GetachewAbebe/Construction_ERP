@@ -1,301 +1,143 @@
-@extends('layouts.app')
-@section('title', 'System Maintenance & Optimization')
+<x-layouts.app-shell title="Maintenance">
+    <div class="space-y-5">
+        <div>
+            <h2 class="text-xl font-semibold">System Maintenance</h2>
+            <p class="text-sm text-base-content/60">Health, cache, backups and logs.</p>
+        </div>
 
-@section('content')
-<div class="row align-items-center mb-4 stagger-entrance">
-    <div class="col">
-        <h1 class="h3 mb-1 fw-800 text-erp-deep">System Maintenance & Optimization</h1>
-        <p class="text-muted mb-0">Comprehensive utilities for system health monitoring, cache management, and data backup operations.</p>
-    </div>
-</div>
+        @if (session('success'))
+            <div role="alert" class="alert alert-success py-2 text-sm"><span>{{ session('success') }}</span></div>
+        @endif
+        @if (session('error'))
+            <div role="alert" class="alert alert-error py-2 text-sm"><span>{{ session('error') }}</span></div>
+        @endif
 
-@if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show hardened-glass border-0 shadow-sm stagger-entrance" role="alert">
-        <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
-
-@if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show hardened-glass border-0 shadow-sm stagger-entrance" role="alert">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
-
-{{-- Migration Sync --}}
-<div class="card hardened-glass border-0 overflow-hidden shadow-sm mb-4 stagger-entrance">
-    <div class="card-body p-4">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-            <div class="d-flex align-items-center gap-3">
-                <div class="feature-icon-small bg-primary-subtle text-primary rounded-circle p-3">
-                    <i class="bi bi-database-fill-up fs-4"></i>
-                </div>
+        {{-- Migration --}}
+        <div class="flex flex-col items-start justify-between gap-3 rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm sm:flex-row sm:items-center">
+            <div class="flex items-center gap-3">
+                <div class="grid h-10 w-10 place-items-center rounded-lg bg-primary/10 text-primary"><x-mary-icon name="o-circle-stack" class="h-5 w-5" /></div>
                 <div>
-                    <h5 class="fw-800 text-erp-deep mb-1">Database Schema Synchronization</h5>
-                    <p class="text-muted small mb-0 fw-600">
-                        @if($pendingMigrations > 0)
-                            <span class="text-danger"><i class="bi bi-exclamation-circle-fill me-1"></i>{{ $pendingMigrations }} pending database schema updates detected.</span>
+                    <h3 class="font-semibold">Database Schema</h3>
+                    <p class="text-sm">
+                        @if (($pendingMigrations ?? 0) > 0)
+                            <span class="text-error">{{ $pendingMigrations }} pending migration(s) detected.</span>
                         @else
-                            <span class="text-success"><i class="bi bi-check-circle-fill me-1"></i>Database schema is currently synchronized with the application codebase.</span>
+                            <span class="text-success">Schema is synchronized.</span>
                         @endif
                     </p>
                 </div>
             </div>
-            <form action="{{ route('admin.maintenance.migrate') }}" method="POST" onsubmit="return confirm('WARNING: This will execute pending database migrations. Database state will be modified. Continue?');">
+            <form action="{{ route('admin.maintenance.migrate') }}" method="POST" onsubmit="return confirm('Run pending migrations? Database will be modified.')">
                 @csrf
-                <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 fw-800 shadow-sm border-0 d-flex align-items-center gap-2">
-                    <i class="bi bi-gear-fill"></i>
-                    Sync Database Schema
-                </button>
+                <button type="submit" class="btn btn-primary btn-sm">Sync schema</button>
             </form>
         </div>
-    </div>
-</div>
 
-{{-- System Information --}}
-<div class="row g-4 mb-4">
-    <div class="col-lg-6 stagger-entrance">
-        <div class="card hardened-glass border-0 overflow-hidden shadow-sm h-100">
-            <div class="card-header bg-light-soft border-0 p-4">
-                <h5 class="fw-800 text-erp-deep mb-0 d-flex align-items-center gap-2">
-                    <i class="bi bi-cpu-fill text-primary"></i>
-                    System Configuration Matrix
-                </h5>
-            </div>
-            <div class="card-body p-4">
-                <div class="row g-3">
-                    @foreach($systemInfo as $key => $value)
-                        <div class="col-md-6">
-                            <div class="small fw-800 text-muted text-uppercase mb-1">{{ str_replace('_', ' ', $key) }}</div>
-                            <div class="fw-700 text-dark">{{ $value }}</div>
+        {{-- Info grids --}}
+        <div class="grid gap-4 lg:grid-cols-2">
+            <div class="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
+                <h3 class="mb-3 flex items-center gap-2 font-semibold"><x-mary-icon name="o-cpu-chip" class="h-5 w-5 text-primary" /> System</h3>
+                <dl class="grid grid-cols-2 gap-3 text-sm">
+                    @foreach ($systemInfo as $key => $value)
+                        <div>
+                            <dt class="text-xs uppercase tracking-wide text-base-content/50">{{ str_replace('_', ' ', $key) }}</dt>
+                            <dd class="font-medium">{{ $value }}</dd>
                         </div>
                     @endforeach
-                </div>
+                </dl>
             </div>
-        </div>
-    </div>
-
-    <div class="col-lg-6 stagger-entrance">
-        <div class="card hardened-glass border-0 overflow-hidden shadow-sm h-100">
-            <div class="card-header bg-light-soft border-0 p-4">
-                <h5 class="fw-800 text-erp-deep mb-0 d-flex align-items-center gap-2">
-                    <i class="bi bi-hdd-fill text-success"></i>
-                    Storage Utilization Metrics
-                </h5>
-            </div>
-            <div class="card-body p-4">
-                <div class="row g-3">
-                    @foreach($storageInfo as $key => $value)
-                        <div class="col-md-6">
-                            <div class="small fw-800 text-muted text-uppercase mb-1">{{ str_replace('_', ' ', $key) }}</div>
-                            <div class="fw-700 text-dark">{{ $value }}</div>
+            <div class="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
+                <h3 class="mb-3 flex items-center gap-2 font-semibold"><x-mary-icon name="o-server-stack" class="h-5 w-5 text-success" /> Storage &amp; Cache</h3>
+                <dl class="grid grid-cols-2 gap-3 text-sm">
+                    @foreach ($storageInfo as $key => $value)
+                        <div>
+                            <dt class="text-xs uppercase tracking-wide text-base-content/50">{{ str_replace('_', ' ', $key) }}</dt>
+                            <dd class="font-medium">{{ $value }}</dd>
                         </div>
                     @endforeach
-                    <div class="col-md-6">
-                        <div class="small fw-800 text-muted text-uppercase mb-1">Cache Driver</div>
-                        <div class="fw-700 text-dark">{{ $cacheInfo['driver'] }}</div>
+                    <div>
+                        <dt class="text-xs uppercase tracking-wide text-base-content/50">Cache driver</dt>
+                        <dd class="font-medium">{{ $cacheInfo['driver'] ?? '—' }}</dd>
                     </div>
-                </div>
+                </dl>
             </div>
         </div>
-    </div>
-</div>
 
-{{-- Maintenance Actions --}}
-<div class="row g-4 mb-4">
-    <div class="col-lg-4 stagger-entrance">
-        <div class="card hardened-glass border-0 overflow-hidden shadow-sm h-100">
-            <div class="card-body p-4 text-center">
-                <div class="mb-3">
-                    <i class="bi bi-trash3-fill text-warning" style="font-size: 3rem;"></i>
+        {{-- Actions --}}
+        <div class="grid gap-4 sm:grid-cols-3">
+            @foreach ([
+                ['route' => 'admin.maintenance.clear-cache', 'icon' => 'o-trash', 'title' => 'Purge Cache', 'desc' => 'Clear config, route and view caches.', 'btn' => 'btn-warning', 'confirm' => 'Purge all caches?'],
+                ['route' => 'admin.maintenance.optimize', 'icon' => 'o-bolt', 'title' => 'Optimize', 'desc' => 'Rebuild caches for performance.', 'btn' => 'btn-success', 'confirm' => 'Run optimization?'],
+                ['route' => 'admin.maintenance.clear-logs', 'icon' => 'o-document-minus', 'title' => 'Clear Logs', 'desc' => 'Delete all log files.', 'btn' => 'btn-error', 'confirm' => 'Permanently delete all logs?'],
+            ] as $a)
+                <div class="flex flex-col items-center gap-3 rounded-xl border border-base-300 bg-base-100 p-5 text-center shadow-sm">
+                    <div class="grid h-12 w-12 place-items-center rounded-full bg-base-200"><x-mary-icon name="{{ $a['icon'] }}" class="h-6 w-6" /></div>
+                    <div>
+                        <h4 class="font-semibold">{{ $a['title'] }}</h4>
+                        <p class="mt-1 text-xs text-base-content/60">{{ $a['desc'] }}</p>
+                    </div>
+                    <form action="{{ route($a['route']) }}" method="POST" onsubmit="return confirm('{{ $a['confirm'] }}')" class="mt-auto">
+                        @csrf
+                        <button type="submit" class="btn {{ $a['btn'] }} btn-sm">{{ $a['title'] }}</button>
+                    </form>
                 </div>
-                <h5 class="fw-800 text-erp-deep mb-2">Cache Purge Protocol</h5>
-                <p class="text-muted small fw-600 mb-4">Clear all cached configurations, routes, and views from system memory.</p>
-                <form action="{{ route('admin.maintenance.clear-cache') }}" method="POST" onsubmit="return confirm('Execute cache purge operation?');">
+            @endforeach
+        </div>
+
+        {{-- Backups --}}
+        <div class="rounded-xl border border-base-300 bg-base-100 shadow-sm">
+            <div class="flex items-center justify-between border-b border-base-200 px-5 py-3">
+                <h3 class="font-semibold">Database Backups</h3>
+                <form action="{{ route('admin.maintenance.create-backup') }}" method="POST" onsubmit="return confirm('Create a new backup?')">
                     @csrf
-                    <button type="submit" class="btn btn-warning rounded-pill px-4 py-2 fw-800 shadow-sm border-0">
-                        <i class="bi bi-trash3-fill me-2"></i>Purge Cache
-                    </button>
+                    <button type="submit" class="btn btn-primary btn-xs"><x-mary-icon name="o-plus" class="h-4 w-4" /> Create backup</button>
                 </form>
             </div>
+            <div id="backupList" class="p-5 text-center text-sm text-base-content/50">
+                <span class="loading loading-spinner loading-sm"></span> Loading backups…
+            </div>
+        </div>
+
+        {{-- Logs --}}
+        <div class="rounded-xl border border-base-300 bg-base-100 shadow-sm">
+            <div class="border-b border-base-200 px-5 py-3"><h3 class="font-semibold">Recent Log Files</h3></div>
+            @if (count($logFiles) > 0)
+                <div class="overflow-x-auto">
+                    <table class="table table-sm">
+                        <thead><tr class="text-[11px] uppercase tracking-wide text-base-content/60"><th>File</th><th>Size</th><th>Modified</th></tr></thead>
+                        <tbody>
+                            @foreach ($logFiles as $log)
+                                <tr><td class="font-mono text-xs">{{ $log['name'] }}</td><td>{{ $log['size'] }}</td><td class="text-base-content/60">{{ $log['modified'] }}</td></tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <p class="p-5 text-center text-sm text-base-content/40">No log files found.</p>
+            @endif
         </div>
     </div>
 
-    <div class="col-lg-4 stagger-entrance">
-        <div class="card hardened-glass border-0 overflow-hidden shadow-sm h-100">
-            <div class="card-body p-4 text-center">
-                <div class="mb-3">
-                    <i class="bi bi-speedometer2 text-success" style="font-size: 3rem;"></i>
-                </div>
-                <h5 class="fw-800 text-erp-deep mb-2">Performance Optimization</h5>
-                <p class="text-muted small fw-600 mb-4">Rebuild caches and optimize application for maximum performance.</p>
-                <form action="{{ route('admin.maintenance.optimize') }}" method="POST" onsubmit="return confirm('Execute optimization protocols?');">
-                    @csrf
-                    <button type="submit" class="btn btn-success rounded-pill px-4 py-2 fw-800 shadow-sm border-0">
-                        <i class="bi bi-speedometer2 me-2"></i>Optimize System
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-4 stagger-entrance">
-        <div class="card hardened-glass border-0 overflow-hidden shadow-sm h-100">
-            <div class="card-body p-4 text-center">
-                <div class="mb-3">
-                    <i class="bi bi-file-earmark-x-fill text-danger" style="font-size: 3rem;"></i>
-                </div>
-                <h5 class="fw-800 text-erp-deep mb-2">Log Archive Expungement</h5>
-                <p class="text-muted small fw-600 mb-4">Remove all historical log files from storage to free up disk space.</p>
-                <form action="{{ route('admin.maintenance.clear-logs') }}" method="POST" onsubmit="return confirm('WARNING: This will permanently delete all log files. Continue?');">
-                    @csrf
-                    <button type="submit" class="btn btn-danger rounded-pill px-4 py-2 fw-800 shadow-sm border-0">
-                        <i class="bi bi-file-earmark-x-fill me-2"></i>Clear Logs
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- Database Backup --}}
-<div class="row g-4 mb-4">
-    <div class="col-12 stagger-entrance">
-        <div class="card hardened-glass border-0 overflow-hidden shadow-sm">
-            <div class="card-header bg-light-soft border-0 p-4 d-flex align-items-center justify-content-between">
-                <div>
-                    <h5 class="fw-800 text-erp-deep mb-1 d-flex align-items-center gap-2">
-                        <i class="bi bi-database-fill-check text-primary"></i>
-                        Database Backup Repository
-                    </h5>
-                    <p class="text-muted small mb-0 fw-600">Create and manage database backup archives for disaster recovery.</p>
-                </div>
-                <form action="{{ route('admin.maintenance.create-backup') }}" method="POST" onsubmit="return confirm('Create new database backup?');">
-                    @csrf
-                    <button type="submit" class="btn btn-erp-deep rounded-pill px-4 py-2 fw-800 shadow-sm border-0">
-                        <i class="bi bi-plus-circle me-2"></i>Create Backup
-                    </button>
-                </form>
-            </div>
-            <div class="card-body p-0">
-                <div id="backupList" class="p-4">
-                    <div class="text-center py-4">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <p class="text-muted mt-2 small fw-600">Loading backup archives...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- Recent Log Files --}}
-<div class="row g-4">
-    <div class="col-12 stagger-entrance">
-        <div class="card hardened-glass border-0 overflow-hidden shadow-sm">
-            <div class="card-header bg-light-soft border-0 p-4">
-                <h5 class="fw-800 text-erp-deep mb-0 d-flex align-items-center gap-2">
-                    <i class="bi bi-file-earmark-text-fill text-info"></i>
-                    Recent System Log Archives
-                </h5>
-            </div>
-            <div class="card-body p-0">
-                @if(count($logFiles) > 0)
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="bg-light-soft">
-                                <tr>
-                                    <th class="ps-4 py-3">Log File</th>
-                                    <th class="py-3">File Size</th>
-                                    <th class="pe-4 py-3">Last Modified</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($logFiles as $log)
-                                    <tr>
-                                        <td class="ps-4">
-                                            <code class="badge bg-light text-dark border px-3 py-2 font-monospace">{{ $log['name'] }}</code>
-                                        </td>
-                                        <td>
-                                            <span class="fw-700 text-dark">{{ $log['size'] }}</span>
-                                        </td>
-                                        <td class="pe-4">
-                                            <span class="text-muted fw-600">{{ $log['modified'] }}</span>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @else
-                    <div class="p-4 text-center">
-                        <i class="bi bi-file-earmark-x fs-1 text-muted opacity-25"></i>
-                        <p class="text-muted italic mt-2 mb-0">No log files found in the system.</p>
-                    </div>
-                @endif
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-// Load backup list
-document.addEventListener('DOMContentLoaded', function() {
-    loadBackups();
-});
-
-function loadBackups() {
-    fetch('{{ route("admin.maintenance.list-backups") }}')
-        .then(response => response.json())
-        .then(data => {
-            const container = document.getElementById('backupList');
-            
-            if (data.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-4">
-                        <i class="bi bi-database-x fs-1 text-muted opacity-25"></i>
-                        <p class="text-muted italic mt-2 mb-0">No backup archives found in repository.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            let html = '<div class="table-responsive"><table class="table table-hover align-middle mb-0">';
-            html += '<thead class="bg-light-soft"><tr>';
-            html += '<th class="ps-4 py-3">Backup Archive</th>';
-            html += '<th class="py-3">File Size</th>';
-            html += '<th class="py-3">Created Date</th>';
-            html += '<th class="pe-4 py-3 text-end">Actions</th>';
-            html += '</tr></thead><tbody>';
-
-            data.forEach(backup => {
-                html += '<tr>';
-                html += `<td class="ps-4"><code class="badge bg-light text-dark border px-3 py-2 font-monospace">${backup.name}</code></td>`;
-                html += `<td><span class="fw-700 text-dark">${backup.size}</span></td>`;
-                html += `<td><span class="text-muted fw-600">${backup.date}</span></td>`;
-                html += `<td class="pe-4 text-end">
-                    <a href="/admin/maintenance/backup/download/${backup.name}" class="btn btn-sm btn-white rounded-pill px-3 shadow-sm border-0">
-                        <i class="bi bi-download me-1"></i>Download
-                    </a>
-                </td>`;
-                html += '</tr>';
-            });
-
-            html += '</tbody></table></div>';
-            container.innerHTML = html;
-        })
-        .catch(error => {
-            console.error('Error loading backups:', error);
-            document.getElementById('backupList').innerHTML = `
-                <div class="alert alert-danger m-4">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    Failed to load backup archives.
-                </div>
-            `;
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('{{ route('admin.maintenance.list-backups') }}')
+                .then(r => r.json())
+                .then(data => {
+                    const c = document.getElementById('backupList');
+                    if (!data.length) { c.className = 'p-8 text-center text-sm text-base-content/40'; c.textContent = 'No backups found.'; return; }
+                    let h = '<div class="overflow-x-auto"><table class="table table-sm"><thead><tr class="text-[11px] uppercase tracking-wide text-base-content/60"><th>Archive</th><th>Size</th><th>Created</th><th class="text-right">Action</th></tr></thead><tbody>';
+                    data.forEach(b => {
+                        h += `<tr><td class="font-mono text-xs">${b.name}</td><td>${b.size}</td><td class="text-base-content/60">${b.date}</td><td class="text-right"><a href="/admin/maintenance/backup/download/${b.name}" class="btn btn-ghost btn-xs text-primary">Download</a></td></tr>`;
+                    });
+                    h += '</tbody></table></div>';
+                    c.className = ''; c.innerHTML = h;
+                })
+                .catch(() => {
+                    const c = document.getElementById('backupList');
+                    c.className = 'p-5 text-center text-sm text-error'; c.textContent = 'Failed to load backups.';
+                });
         });
-}
-</script>
-@endsection
+    </script>
+    @endpush
+</x-layouts.app-shell>

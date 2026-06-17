@@ -1,82 +1,44 @@
-@extends('layouts.app')
-@section('title', 'Authorized Absence Logs')
-
-@section('content')
-<div class="row align-items-center mb-4 stagger-entrance">
-    <div class="col">
-        <h1 class="h3 mb-1 fw-800 text-erp-deep">Authorized Absence Logs</h1>
-        <p class="text-muted mb-0">Historical record of approved leave transactions and administrative authorizations.</p>
-    </div>
-    <div class="col-auto">
-        <a href="{{ route('hr.leaves.index') }}" class="btn btn-white rounded-pill px-4 shadow-sm border-0">
-            <i class="bi bi-arrow-left me-2"></i>Active Portfolio
-        </a>
-    </div>
-</div>
-
-<div class="card hardened-glass border-0 overflow-hidden stagger-entrance shadow-sm">
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="bg-light-soft text-erp-deep border-0">
-                <tr>
-                    <th class="ps-4 py-3">Personnel Identity</th>
-                    <th class="py-3">Absence Span</th>
-                    <th class="py-3">Validator</th>
-                    <th class="py-3">Validation Date</th>
-                    <th class="text-end pe-4 py-3">Outcome Status</th>
-                </tr>
-            </thead>
-            <tbody class="border-0">
-                @forelse($approved as $row)
-                    <tr>
-                        <td class="ps-4">
-                            <div class="fw-800 text-erp-deep">{{ $row->employee->name ?? 'Legacy Identity' }}</div>
-                            <small class="text-muted fw-bold">ID: #LV-{{ $row->id }}</small>
-                        </td>
-                        <td>
-                            <div class="d-flex flex-column font-monospace">
-                                <span class="fw-700 text-dark">
-                                    {{ \Carbon\Carbon::parse($row->start_date)->format('Y-m-d') }}
-                                </span>
-                                <span class="text-muted small">to {{ \Carbon\Carbon::parse($row->end_date)->format('Y-m-d') }}</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="avatar-xs bg-light rounded-circle p-1" style="width: 24px; height: 24px;">
-                                    <i class="bi bi-person-check text-success"></i>
-                                </div>
-                                <span class="fw-700 text-dark small">{{ $row->approver->name ?? 'System Process' }}</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="small fw-700 text-muted">
-                                {{ $row->approved_at ? $row->approved_at->format('M d, Y') : 'N/A' }}
-                                <div class="x-small fw-normal">at {{ $row->approved_at ? $row->approved_at->format('H:i') : '—' }}</div>
-                            </div>
-                        </td>
-                        <td class="text-end pe-4">
-                            <span class="badge bg-success-soft text-success rounded-pill px-3 py-2 border-0 fw-800">
-                                <i class="bi bi-shield-check me-1"></i>VERIFIED
-                            </span>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="text-center py-5">
-                            <i class="bi bi-archive fs-1 text-muted opacity-25"></i>
-                            <div class="text-muted italic mt-3">The authorized absence archive is currently vacant.</div>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-    @if($approved->hasPages())
-        <div class="card-footer border-0 p-4">
-            {{ $approved->links() }}
+<x-layouts.app-shell title="Authorized Absences">
+    <div class="space-y-5">
+        <div class="flex items-center justify-between gap-3">
+            <div>
+                <h2 class="text-xl font-semibold">Authorized Absence Logs</h2>
+                <p class="text-sm text-base-content/60">History of approved leave transactions.</p>
+            </div>
+            <a href="{{ route('hr.leaves.index') }}" class="btn btn-ghost btn-sm">
+                <x-mary-icon name="o-arrow-left" class="h-4 w-4" /> Active portfolio
+            </a>
         </div>
-    @endif
-</div>
-@endsection
 
+        <div class="rounded-lg border border-base-300 bg-base-100 shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="table">
+                    <thead>
+                        <tr class="text-[11px] uppercase tracking-wide text-base-content/60">
+                            <th>Personnel</th><th>Absence span</th><th>Validator</th><th>Validated</th><th class="text-right">Outcome</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($approved as $row)
+                            <tr class="hover:bg-base-200/40">
+                                <td>
+                                    <div class="font-medium">{{ $row->employee->name ?? '—' }}</div>
+                                    <div class="text-xs text-base-content/50">#LV-{{ $row->id }}</div>
+                                </td>
+                                <td class="font-mono text-sm">{{ \Carbon\Carbon::parse($row->start_date)->format('Y-m-d') }} → {{ \Carbon\Carbon::parse($row->end_date)->format('Y-m-d') }}</td>
+                                <td class="text-sm">{{ $row->approver->name ?? 'System' }}</td>
+                                <td class="text-sm text-base-content/60">{{ $row->approved_at ? $row->approved_at->format('M d, Y H:i') : '—' }}</td>
+                                <td class="text-right"><span class="badge badge-success badge-sm">Verified</span></td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="5" class="py-12 text-center text-base-content/40">No authorized absences yet.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            @if ($approved->hasPages())
+                <div class="border-t border-base-200 p-4">{{ $approved->links() }}</div>
+            @endif
+        </div>
+    </div>
+</x-layouts.app-shell>

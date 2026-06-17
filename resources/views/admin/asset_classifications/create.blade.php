@@ -1,98 +1,55 @@
-@extends('layouts.app')
-@section('title', 'Add New Category')
-
-@section('content')
-<div class="page-header-premium mb-4">
-    <div class="row align-items-center">
-        <div class="col">
-            <h1 class="display-6">Add New Category</h1>
-            <p>Create a new classification to organize your inventory assets.</p>
-        </div>
-        <div class="col-auto">
-            <a href="{{ route('inventory.asset-classifications.index') }}" class="btn btn-white rounded-pill px-4 shadow-sm border-0">
-                <i class="bi bi-arrow-left me-2"></i>Back to Categories
+<x-layouts.app-shell title="New Category">
+    <div class="mx-auto max-w-2xl space-y-5">
+        <div class="flex items-center justify-between gap-3">
+            <div>
+                <h2 class="text-xl font-semibold">Add New Category</h2>
+                <p class="text-sm text-base-content/60">Create a classification to organize inventory assets.</p>
+            </div>
+            <a href="{{ route('inventory.asset-classifications.index') }}" class="btn btn-ghost btn-sm">
+                <x-mary-icon name="o-arrow-left" class="h-4 w-4" /> Back
             </a>
         </div>
-    </div>
-</div>
 
-<div class="row justify-content-center stagger-entrance">
-    <div class="col-lg-8">
-        <div class="erp-card shadow-lg border-0">
-            <form action="{{ route('inventory.asset-classifications.store') }}" method="POST">
-                @csrf
-                
-                <div class="row g-4">
-                    <div class="col-md-8">
-                        <label for="name" class="erp-label">Category Name</label>
-                        <input type="text" name="name" id="name" value="{{ old('name') }}" 
-                               class="erp-input @error('name') is-invalid @enderror" 
-                               placeholder="e.g., Raw Materials, Tools, Equipment" required>
-                        @error('name')
-                            <div class="invalid-feedback fw-bold">{{ $message }}</div>
-                        @enderror
-                    </div>
+        @if ($errors->any())
+            <div role="alert" class="alert alert-error py-2 text-sm"><span>{{ $errors->first() }}</span></div>
+        @endif
 
-                    <div class="col-md-4">
-                        <label for="code" class="erp-label">Category Code</label>
-                        <input type="text" name="code" id="code" value="{{ old('code') }}" 
-                               class="erp-input @error('code') is-invalid @enderror" 
-                               placeholder="e.g. MTRL-RW" style="text-transform: uppercase;">
-                        <small class="text-muted x-small">Leave blank for auto-generation.</small>
-                        @error('code')
-                            <div class="invalid-feedback fw-bold">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="parent_id" class="erp-label">Parent Category</label>
-                        <select name="parent_id" id="parent_id" class="btn btn-white w-100 text-start border py-3 shadow-none @error('parent_id') is-invalid @enderror" style="border-radius: 12px;">
-                            <option value="">No Parent (Root Category)</option>
-                            @foreach($parents as $p)
-                                <option value="{{ $p->id }}" {{ old('parent_id') == $p->id ? 'selected' : '' }}>
-                                    @for($i=0; $i<$p->depth; $i++) &nbsp;&nbsp; @endfor
-                                    {{ $p->name }} ({{ $p->code }})
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('parent_id')
-                            <div class="invalid-feedback fw-bold">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="icon_identifier" class="erp-label">Category Icon</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-0 px-4" style="border-radius: 12px 0 0 12px;">
-                                <i class="bi bi-tag-fill"></i>
-                            </span>
-                            <input type="text" name="icon_identifier" id="icon_identifier" value="{{ old('icon_identifier', 'bi-layers') }}" 
-                                   class="erp-input @error('icon_identifier') is-invalid @enderror" 
-                                   placeholder="e.g. bi-tag, bi-hammer" style="border-radius: 0 12px 12px 0;">
-                        </div>
-                        @error('icon_identifier')
-                            <div class="invalid-feedback fw-bold">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-12">
-                        <label for="description" class="erp-label">Description</label>
-                        <textarea name="description" id="description" rows="4" 
-                                  class="erp-input @error('description') is-invalid @enderror" 
-                                  placeholder="Describe what kind of items belong in this category..."></textarea>
-                        @error('description')
-                            <div class="invalid-feedback fw-bold">{{ $message }}</div>
-                        @enderror
-                    </div>
+        <form action="{{ route('inventory.asset-classifications.store') }}" method="POST"
+              class="rounded-xl border border-base-300 bg-base-100 p-6 shadow-sm sm:p-8">
+            @csrf
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div class="sm:col-span-2">
+                    <label class="mb-1.5 block text-sm font-medium">Category name</label>
+                    <input name="name" value="{{ old('name') }}" required placeholder="e.g. Raw Materials, Tools" class="input input-bordered w-full {{ $errors->has('name') ? 'input-error' : '' }}" />
+                    @error('name') <span class="mt-1 block text-xs text-error">{{ $message }}</span> @enderror
                 </div>
-
-                <div class="mt-5 border-top pt-4 text-end">
-                    <button type="submit" class="btn btn-erp-deep rounded-pill px-5 py-3 shadow-sm border-0 fw-800">
-                        <i class="bi bi-check-circle-fill me-2"></i>Save Category
-                    </button>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Code</label>
+                    <input name="code" value="{{ old('code') }}" placeholder="e.g. MTRL-RW" class="input input-bordered w-full uppercase {{ $errors->has('code') ? 'input-error' : '' }}" />
+                    @error('code') <span class="mt-1 block text-xs text-error">{{ $message }}</span> @enderror
                 </div>
-            </form>
-        </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Parent category</label>
+                    <select name="parent_id" class="select select-bordered w-full">
+                        <option value="">No parent (root)</option>
+                        @foreach ($parents as $p)
+                            <option value="{{ $p->id }}" @selected(old('parent_id') == $p->id)>{{ str_repeat('— ', $p->depth) }}{{ $p->name }} ({{ $p->code }})</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Icon identifier</label>
+                    <input name="icon_identifier" value="{{ old('icon_identifier') }}" placeholder="e.g. bi-tag" class="input input-bordered w-full" />
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="mb-1.5 block text-sm font-medium">Description</label>
+                    <textarea name="description" rows="3" placeholder="What belongs in this category…" class="textarea textarea-bordered w-full">{{ old('description') }}</textarea>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end gap-2">
+                <a href="{{ route('inventory.asset-classifications.index') }}" class="btn btn-ghost">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save category</button>
+            </div>
+        </form>
     </div>
-</div>
-@endsection
+</x-layouts.app-shell>

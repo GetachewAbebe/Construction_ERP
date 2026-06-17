@@ -54,19 +54,33 @@ class ExpenseController extends Controller
             'expense_date' => 'required|date',
         ]);
 
-        // Lines 70 & 72: Inline Type declaration blocks clear Ambiguity for PHPStan
         /** @var \App\Models\Project $project */
         $project = Project::findOrFail($validated['project_id']);
 
-        // Explicit float conversion checks to guarantee math operations inside PHPStan strict mode
-        if ((float) $project->budget < (float) $validated['amount']) {
-            return back()->withInput()->withErrors(['amount' => 'Transaction value exceeds remaining total site allocation metrics.']);
+        // Remaining budget = total budget minus everything already recorded on this project.
+        $alreadySpent = (float) $project->expenses()->sum('amount');
+        $remaining = (float) $project->budget - $alreadySpent;
+
+        if ((float) $validated['amount'] > $remaining) {
+            return back()->withInput()->withErrors([
+                'amount' => 'Amount exceeds the remaining budget for this project (ETB '.number_format($remaining, 2).' left).',
+            ]);
         }
 
         $project->expenses()->create($validated);
 
         return redirect()->route('finance.expenses.index')
             ->with('success', 'Field transaction log verified and recorded successfully.');
+    }
+
+    /**
+     * Display the expenditure voucher.
+     */
+    public function show(Expense $expense): View
+    {
+        $expense->load(['project', 'user', 'approvedBy']);
+
+        return view('finance.expenses.show', compact('expense'));
     }
 
     /**
@@ -92,12 +106,17 @@ class ExpenseController extends Controller
             'expense_date' => 'required|date',
         ]);
 
-        // Lines 121 & 123: Inline Type declaration blocks
         /** @var \App\Models\Project $project */
         $project = Project::findOrFail($validated['project_id']);
 
-        if ((float) $project->budget < (float) $validated['amount']) {
-            return back()->withInput()->withErrors(['amount' => 'Modified transaction value breaches total layout budget limits.']);
+        // Remaining budget excludes the expense being edited (so its old amount doesn't double-count).
+        $alreadySpent = (float) $project->expenses()->where('id', '!=', $expense->id)->sum('amount');
+        $remaining = (float) $project->budget - $alreadySpent;
+
+        if ((float) $validated['amount'] > $remaining) {
+            return back()->withInput()->withErrors([
+                'amount' => 'Amount exceeds the remaining budget for this project (ETB '.number_format($remaining, 2).' left).',
+            ]);
         }
 
         $expense->update($validated);

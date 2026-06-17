@@ -1,29 +1,14 @@
 // vite.config.mjs
 import { defineConfig } from 'vite'
 import laravel from 'laravel-vite-plugin'
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  build: {
-    rollupOptions: {
-      output: {
-        entryFileNames: 'assets/app-main.js',
-        assetFileNames: 'assets/app-main.[ext]',
-      },
-    },
-  },
   plugins: [
     laravel({
-      input: ['resources/sass/app.scss', 'resources/js/app.js', 'resources/css/erp-premium.css', 'resources/js/erp-premium.js'],
+      input: ['resources/css/mary.css'],
       refresh: true,
     }),
+    tailwindcss(),
   ],
-  css: {
-    preprocessorOptions: {
-      scss: {
-        api: 'modern-compiler',
-        // Quiet Bootstrap’s Sass deprecation warnings
-        quietDeps: true,
-      },
-    },
-  },
 })

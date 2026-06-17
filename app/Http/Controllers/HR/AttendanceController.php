@@ -376,12 +376,7 @@ class AttendanceController extends Controller
         $departmentFilter = $request->input('department');
 
         // Departments list for filter
-        $departments = Employee::query()
-            ->whereNotNull('department')
-            ->select('department')
-            ->distinct()
-            ->orderBy('department')
-            ->pluck('department');
+        $departments = \App\Models\Department::orderBy('name')->pluck('name');
 
         $summary = $this->attendanceService->buildMonthlySummaryData($year, $month, $departmentFilter);
 

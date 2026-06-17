@@ -1,150 +1,106 @@
-@extends('layouts.app')
+<x-layouts.auth title="Sign in · Natanem Engineering ERP">
+    <div class="min-h-screen flex items-center justify-center p-4 sm:p-6">
+        <div class="w-full max-w-4xl auth-rise">
+            <div class="overflow-hidden rounded-3xl bg-base-100 shadow-2xl">
+            <div class="grid md:grid-cols-2">
 
-@section('title', 'Natanem Engineering')
+                {{-- LEFT: brand welcome panel --}}
+                <div class="relative hidden flex-col overflow-hidden p-10 text-white md:flex"
+                     style="background: linear-gradient(160deg,#1a3a5c 0%,#0f2438 55%,#0a1a2b 100%);">
+                    {{-- subtle accents --}}
+                    <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-400/60 to-transparent"></div>
+                    <div class="pointer-events-none absolute -bottom-28 -right-24 h-80 w-80 rounded-full bg-amber-500/10 blur-3xl"></div>
+                    <div class="pointer-events-none absolute inset-0 opacity-[0.05]"
+                         style="background-image: radial-gradient(circle at 1px 1px,#fff 1px,transparent 0); background-size: 24px 24px;"></div>
 
-@section('content')
-<div class="min-vh-100 d-flex align-items-center py-5">
-    <div class="container">
-        <div class="row w-100 g-5 align-items-center">
-            {{-- LEFT: System info / feature highlights --}}
-            <div class="col-lg-6">
+                    {{-- brand + value props, vertically centered as one block --}}
+                    <div class="relative my-auto w-full">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold tracking-wide">NATANEM <span class="text-amber-400">ENGINEERING</span></div>
+                            <div class="mt-1.5 text-[11px] font-medium uppercase tracking-[0.3em] text-white/40">Enterprise Resource Planning</div>
+                        </div>
 
-                {{-- Centered title + subtitle with just a spacing "break" above --}}
-                <div class="text-center mb-5 mt-2">
-                    <h1 class="display-5 fw-800 text-erp-deep mb-0 tracking-tight">
-                        Natanem Engineering
-                    </h1>
+                        <ul class="mx-auto mt-10 w-fit space-y-4">
+                            @foreach ([
+                                'Real-time inventory & stock control',
+                                'Employee, attendance & leave management',
+                                'Project budgeting & expense approvals',
+                            ] as $feature)
+                                <li class="flex items-center gap-3">
+                                    <x-mary-icon name="o-check-circle" class="w-5 h-5 shrink-0 text-amber-400" />
+                                    <span class="text-sm text-white/85">{{ $feature }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
                 </div>
 
-                {{-- Three colorful feature cards (Inventory / HR / Finance) --}}
-                <div class="vstack gap-3">
-
-                    {{-- Inventory --}}
-                    <div class="hardened-glass stagger-entrance transition-all hover-translate-y">
-                        <div class="d-flex align-items-center gap-4">
-                            <div class="metric-icon" style="background: var(--gradient-primary);">
-                                <i class="bi bi-box-seam-fill fs-3"></i>
-                            </div>
-                            <div>
-                                <h5 class="fw-800 text-erp-deep mb-1">Inventory Management</h5>
-                                <p class="text-muted small mb-0">High-precision material tracking and stock logistics.</p>
-                            </div>
-                        </div>
+                {{-- RIGHT: sign-in form --}}
+                <div class="p-8 sm:p-10">
+                    {{-- mobile brand --}}
+                    <div class="mb-7 md:hidden">
+                        <span class="text-lg font-bold tracking-wide">NATANEM <span class="text-primary">ENGINEERING</span></span>
                     </div>
 
-                    {{-- Human Resource --}}
-                    <div class="hardened-glass stagger-entrance transition-all hover-translate-y">
-                        <div class="d-flex align-items-center gap-4">
-                            <div class="metric-icon" style="background: var(--gradient-warning);">
-                                <i class="bi bi-person-badge-fill fs-3"></i>
-                            </div>
-                            <div>
-                                <h5 class="fw-800 text-erp-deep mb-1">Human Resource Management</h5>
-                                <p class="text-muted small mb-0">Strategic organizational analytics and team management.</p>
-                            </div>
-                        </div>
-                    </div>
+                    <h1 class="text-2xl font-bold">Sign in</h1>
+                    <p class="mt-1 mb-6 text-sm text-base-content/60">Enter your credentials to continue.</p>
 
-                    {{-- Finance --}}
-                    <div class="hardened-glass stagger-entrance transition-all hover-translate-y">
-                        <div class="d-flex align-items-center gap-4">
-                            <div class="metric-icon" style="background: var(--gradient-danger);">
-                                <i class="bi bi-bar-chart-steps fs-3"></i>
-                            </div>
-                            <div>
-                                <h5 class="fw-800 text-erp-deep mb-1">Financial Management</h5>
-                                <p class="text-muted small mb-0">Comprehensive project budgeting and cash flow audits.</p>
-                            </div>
-                        </div>
-                    </div>
+                    @if (session('status'))
+                        <div role="alert" class="alert alert-success mb-4 py-2 text-sm"><span>{{ session('status') }}</span></div>
+                    @endif
+                    @if ($errors->any())
+                        <div role="alert" class="alert alert-error mb-4 py-2 text-sm"><span>{{ $errors->first() }}</span></div>
+                    @endif
 
-                </div>
-            </div>
+                    <form method="POST" action="{{ route('login', absolute: false) }}" class="space-y-4">
+                        @csrf
 
-            {{-- RIGHT: Login form --}}
-            <div class="col-lg-6">
-                <div class="hardened-glass-static p-4 p-md-5">
-                    <div class="text-center mb-5">
-                        <h2 class="fw-800 text-erp-deep tracking-tight mb-0">Login</h2>
-                    </div>
-
-                        <form method="POST" action="{{ route('login', absolute: false) }}" class="mb-3">
-                            @csrf
-
-                            <div class="mb-4">
-                                <label for="email" class="form-label fw-800 text-erp-deep small text-uppercase tracking-wider">Email</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-end-0 rounded-start-4">
-                                        <i class="bi bi-envelope text-muted"></i>
-                                    </span>
-                                    <input type="email" class="form-control border-start-0 rounded-end-4 py-3" id="email" name="email" value="{{ old('email') }}" required autocomplete="username">
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="password" class="form-label fw-800 text-erp-deep small text-uppercase tracking-wider">Password</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-end-0 rounded-start-4">
-                                        <i class="bi bi-lock text-muted"></i>
-                                    </span>
-                                    <input type="password" class="form-control border-start-0 border-end-0 py-3" id="password" name="password" required autocomplete="current-password">
-                                    <button class="btn btn-secondary border-start-0 rounded-end-4" type="button" onclick="togglePasswordVis('password', 'login-eye-text')" style="min-width: 80px;">
-                                        <span id="login-eye-text">Show</span> <i class="bi bi-eye ms-1"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <script>
-                                function togglePasswordVis(inputId, textId) {
-                                    const input = document.getElementById(inputId);
-                                    const textSpan = document.getElementById(textId);
-                                    if (input.type === "password") {
-                                        input.type = "text";
-                                        textSpan.textContent = "Hide";
-                                    } else {
-                                        input.type = "password";
-                                        textSpan.textContent = "Show";
-                                    }
-                                }
-                            </script>
-
-                            {{-- Status / flash message MOVED HERE --}}
-                            @if (session('status'))
-                                <div class="alert alert-success small mb-3 text-center rounded-3">
-                                    {{ session('status') }}
-                                </div>
-                            @endif
-
-                            {{-- Validation errors MOVED HERE --}}
-                            @if ($errors->any())
-                                <div class="alert alert-danger small mb-3 text-center rounded-3">
-                                    {{ $errors->first() }}
-                                </div>
-                            @endif
-
-                            <button type="submit" class="btn btn-lg w-100 mt-2 py-3 rounded-4 fw-800 text-white border-0 shadow-lg transition-all"
-                                    style="background: var(--gradient-primary);">
-                                Login
-                            </button>
-                        </form>
-
-                        {{-- Forgot Password Link --}}
-                        <div class="text-center mb-3">
-                            <a href="{{ route('password.request') }}" class="text-decoration-none fw-semibold" style="color: var(--erp-primary);">
-                                <i class="bi bi-key me-1"></i>
-                                Forgot your password?
-                            </a>
+                        <div>
+                            <label for="email" class="mb-1.5 block text-sm font-medium">Email address</label>
+                            <label class="input input-bordered flex items-center gap-2 w-full {{ $errors->has('email') ? 'input-error' : '' }}">
+                                <x-mary-icon name="o-envelope" class="w-4 h-4 opacity-40" />
+                                <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
+                                       autocomplete="username" placeholder="you@company.com" class="grow" />
+                            </label>
                         </div>
 
-                        {{-- Centered helper text under the form --}}
-                        <p class="text-muted small mb-0 text-center">
-                            Having trouble signing in? <span class="fw-semibold">Contact the Admin.</span>
-                        </p>
-                    </div>
+                        <div>
+                            <label for="password" class="mb-1.5 block text-sm font-medium">Password</label>
+                            <label class="input input-bordered flex items-center gap-2 w-full {{ $errors->has('password') ? 'input-error' : '' }}">
+                                <x-mary-icon name="o-lock-closed" class="w-4 h-4 opacity-40" />
+                                <input id="password" type="password" name="password" required autocomplete="current-password"
+                                       placeholder="••••••••" class="grow" />
+                                <button type="button" onclick="togglePw()" class="text-base-content/40 hover:text-base-content/70">
+                                    <span id="pw-eye"><x-mary-icon name="o-eye" class="w-5 h-5" /></span>
+                                    <span id="pw-eye-off" class="hidden"><x-mary-icon name="o-eye-slash" class="w-5 h-5" /></span>
+                                </button>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1">
+                            <label class="flex cursor-pointer items-center gap-2 text-sm text-base-content/70">
+                                <input type="checkbox" name="remember" class="checkbox checkbox-sm checkbox-primary" />
+                                Remember me
+                            </label>
+                            <a href="{{ route('password.request') }}" class="text-sm font-medium text-amber-700 hover:underline">Forgot password?</a>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-full mt-2">Sign in</button>
+                    </form>
                 </div>
             </div>
-
-        </div> {{-- /row --}}
+            </div>
+            <p class="mt-5 text-center text-xs text-base-content/50">© {{ date('Y') }} Natanem Engineering</p>
+        </div>
     </div>
-</div>
-@endsection
+
+    <script>
+        function togglePw() {
+            const input = document.getElementById('password');
+            const show = input.type === 'password';
+            input.type = show ? 'text' : 'password';
+            document.getElementById('pw-eye').classList.toggle('hidden', show);
+            document.getElementById('pw-eye-off').classList.toggle('hidden', !show);
+        }
+    </script>
+</x-layouts.auth>

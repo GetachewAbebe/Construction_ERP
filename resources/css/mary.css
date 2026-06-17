@@ -1,0 +1,93 @@
+/*
+ | Isolated Tailwind v4 + daisyUI + Mary UI stylesheet for the Livewire POC.
+ | This is intentionally SEPARATE from resources/sass/app.scss (Bootstrap),
+ | so the existing UI is untouched while the new stack is evaluated.
+ */
+@import "tailwindcss";
+
+/* Tell Tailwind where to scan for class names used by the POC + Mary UI. */
+@source "../views/**/*.blade.php";
+@source "../../app/Livewire/**/*.php";
+@source "../../vendor/robsontenorio/mary/src/**/*.php";
+@source "../../vendor/robsontenorio/blade-ui-kit/blade-heroicons/src/**/*.php";
+
+/* daisyUI provides the component theme Mary UI builds on. */
+@plugin "daisyui" {
+    themes: corporate, business;
+}
+
+/*
+ | Natanem Engineering brand theme — derived from the company website:
+ | deep navy (#0d1b2a) + amber/orange accent (#f5a623) on white surfaces.
+ */
+@plugin "daisyui/theme" {
+    name: "natanem";
+    default: true;
+    prefersdark: false;
+    color-scheme: light;
+
+    --color-base-100: #ffffff;
+    --color-base-200: #f3f5f8;
+    --color-base-300: #e3e8ef;
+    --color-base-content: #0d1b2a;
+
+    --color-primary: #f5a623;
+    --color-primary-content: #0d1b2a;
+
+    --color-secondary: #13263b;
+    --color-secondary-content: #ffffff;
+
+    --color-accent: #f5a623;
+    --color-accent-content: #0d1b2a;
+
+    --color-neutral: #0d1b2a;
+    --color-neutral-content: #ffffff;
+
+    --color-info: #2563eb;
+    --color-info-content: #ffffff;
+    --color-success: #16a34a;
+    --color-success-content: #ffffff;
+    --color-warning: #d97706;
+    --color-warning-content: #ffffff;
+    --color-error: #dc2626;
+    --color-error-content: #ffffff;
+
+    --radius-selector: 0.5rem;
+    --radius-field: 0.5rem;
+    --radius-box: 0.75rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 1;
+    --noise: 0;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ | Softer, branded focus state for form controls.
+ | These rules are intentionally UN-layered so they win over daisyUI's
+ | layered defaults (the harsh dark focus outline).
+ */
+.input:focus,
+.input:focus-within,
+.select:focus,
+.select:focus-within,
+.textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 18%, transparent);
+}
+
+/* Auth pages: entrance animation + slow floating blobs */
+@keyframes auth-rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.auth-rise { animation: auth-rise .55s cubic-bezier(.2,.7,.2,1) both; }
+
+@keyframes auth-float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(20px, -20px) scale(1.06); }
+}
+.auth-float { animation: auth-float 14s ease-in-out infinite; }

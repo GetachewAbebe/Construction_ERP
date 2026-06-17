@@ -1,179 +1,115 @@
-@extends('layouts.app')
+<x-layouts.app-shell title="Weekly Attendance">
+    @php $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']; @endphp
 
-@section('content')
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-800 text-erp-deep mb-1">Weekly Workforce Presence</h2>
-            <p class="text-muted">Direct Check-In/Out management for Monday through Saturday.</p>
-        </div>
-        <div>
-            <form action="{{ route('hr.attendance.weekly-sheet') }}" method="GET" class="d-flex gap-2">
-                <input type="date" name="date" class="form-control glass-input" value="{{ $date->toDateString() }}" onchange="this.form.submit()">
+    <div class="space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+                <h2 class="text-xl font-semibold">Weekly Workforce Presence</h2>
+                <p class="text-sm text-base-content/60">Check-in/out management, Monday–Saturday.</p>
+            </div>
+            <form action="{{ route('hr.attendance.weekly-sheet') }}" method="GET">
+                <input type="date" name="date" value="{{ $date->toDateString() }}" onchange="this.form.submit()" class="input input-bordered input-sm" />
             </form>
         </div>
-    </div>
 
-    <div class="card glass-card border-0 shadow-sm overflow-hidden">
-        <div class="table-responsive">
-            <table class="table table-bordered align-middle mb-0 text-center">
-                <thead class="bg-light">
-                    <tr>
-                        <th class="text-start ps-4" style="min-width: 200px;">Employee</th>
-                        @php
-                            $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                        @endphp
-                        @foreach($days as $index => $day)
-                            @php $currentDay = (clone $monday)->addDays($index); @endphp
-                            <th style="min-width: 140px;">
-                                <div class="fw-bold">{{ $day }}</div>
-                                <div class="small text-muted">{{ $currentDay->format('M d') }}</div>
-                            </th>
-                        @endforeach
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($employees as $employee)
-                        <tr>
-                            <td class="text-start ps-4">
-                                <div class="fw-bold text-erp-deep small">{{ $employee->full_name }}</div>
-                                <div class="x-small text-muted">{{ $employee->department }}</div>
-                            </td>
-                            @foreach($days as $index => $day)
-                                @php 
-                                    $currentDayStr = (clone $monday)->addDays($index)->toDateString();
-                                    $dayAttColl = $attendances->get($employee->id)?->get($currentDayStr);
-                                    $att = $dayAttColl ? $dayAttColl->first() : null;
-                                    
-                                    $morning = $att ? $att->morning_status : 'absent';
-                                    $evening = $att ? $att->afternoon_status : 'absent';
-                                    $mClock = $att && $att->clock_in ? $att->clock_in->format('H:i') : null;
-                                    $eClock = $att && $att->clock_out ? $att->clock_out->format('H:i') : null;
-                                    $isToday = $currentDayStr === \Carbon\Carbon::today()->toDateString();
-                                @endphp
-                                <td class="p-2 {{ $isToday ? 'bg-white' : 'bg-light bg-opacity-50' }}" data-employee="{{ $employee->id }}" data-date="{{ $currentDayStr }}">
-                                    <div class="d-flex flex-column gap-2 opacity-{{ $isToday ? '100' : '75' }}">
-                                        <!-- Morning Button -->
-                                        <div class="session-box">
-                                            <div class="d-flex justify-content-between px-1 mb-1">
-                                                <span class="x-small fw-bold text-muted">IN</span>
-                                                <span class="clock-display x-small fw-bold text-primary">{{ $mClock ?? '--:--' }}</span>
-                                            </div>
-                                            <button type="button" 
-                                                class="btn btn-sm w-100 fw-bold {{ in_array($morning, ['present', 'late']) ? 'btn-success' : 'btn-outline-secondary' }}"
-                                                style="font-size: 0.7rem;"
-                                                {{ $isToday ? '' : 'disabled' }}
-                                                onclick="toggleAttendance(this, 'morning', 'check-in')">
-                                                {{ $morning == 'late' ? 'LATE' : 'CHECK IN' }}
-                                            </button>
-                                        </div>
-
-                                        <!-- Evening Button -->
-                                        <div class="session-box">
-                                            <div class="d-flex justify-content-between px-1 mb-1">
-                                                <span class="x-small fw-bold text-muted">OUT</span>
-                                                <span class="clock-display x-small fw-bold text-primary">{{ $eClock ?? '--:--' }}</span>
-                                            </div>
-                                            <button type="button" 
-                                                class="btn btn-sm w-100 fw-bold {{ $evening == 'present' ? 'btn-success' : 'btn-outline-secondary' }}"
-                                                style="font-size: 0.7rem;"
-                                                {{ $isToday ? '' : 'disabled' }}
-                                                onclick="toggleAttendance(this, 'afternoon', 'check-out')">
-                                                CHECK OUT
-                                            </button>
-                                        </div>
-                                    </div>
-                                </td>
+        <div class="rounded-lg border border-base-300 bg-base-100 shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="table border-separate border-spacing-0">
+                    <thead>
+                        <tr class="text-[11px] uppercase tracking-wide text-base-content/60">
+                            <th class="min-w-44">Employee</th>
+                            @foreach ($days as $index => $day)
+                                @php $currentDay = (clone $monday)->addDays($index); @endphp
+                                <th class="min-w-36 text-center">
+                                    <div class="font-semibold">{{ $day }}</div>
+                                    <div class="text-base-content/40">{{ $currentDay->format('M d') }}</div>
+                                </th>
                             @endforeach
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach ($employees as $employee)
+                            <tr>
+                                <td class="align-top">
+                                    <div class="text-sm font-medium">{{ $employee->full_name ?? $employee->name }}</div>
+                                    <div class="text-xs text-base-content/50">{{ $employee->department }}</div>
+                                </td>
+                                @foreach ($days as $index => $day)
+                                    @php
+                                        $currentDayStr = (clone $monday)->addDays($index)->toDateString();
+                                        $dayAttColl = $attendances->get($employee->id)?->get($currentDayStr);
+                                        $att = $dayAttColl ? $dayAttColl->first() : null;
+                                        $morning = $att ? $att->morning_status : 'absent';
+                                        $evening = $att ? $att->afternoon_status : 'absent';
+                                        $mClock = $att && $att->clock_in ? $att->clock_in->format('H:i') : null;
+                                        $eClock = $att && $att->clock_out ? $att->clock_out->format('H:i') : null;
+                                        $isToday = $currentDayStr === \Carbon\Carbon::today()->toDateString();
+                                    @endphp
+                                    <td class="align-top {{ $isToday ? '' : 'opacity-60' }}" data-employee="{{ $employee->id }}" data-date="{{ $currentDayStr }}">
+                                        <div class="flex flex-col gap-2">
+                                            <div class="session-box">
+                                                <div class="mb-1 flex justify-between px-0.5 text-[10px] font-semibold"><span class="text-base-content/40">IN</span><span class="clock-display font-mono text-primary">{{ $mClock ?? '--:--' }}</span></div>
+                                                <button type="button" {{ $isToday ? '' : 'disabled' }}
+                                                    class="btn btn-xs w-full {{ in_array($morning, ['present', 'late']) ? 'btn-success' : 'btn-outline' }}"
+                                                    onclick="toggleAttendance(this, 'morning', 'check-in')">{{ $morning == 'late' ? 'LATE' : 'IN' }}</button>
+                                            </div>
+                                            <div class="session-box">
+                                                <div class="mb-1 flex justify-between px-0.5 text-[10px] font-semibold"><span class="text-base-content/40">OUT</span><span class="clock-display font-mono text-primary">{{ $eClock ?? '--:--' }}</span></div>
+                                                <button type="button" {{ $isToday ? '' : 'disabled' }}
+                                                    class="btn btn-xs w-full {{ $evening == 'present' ? 'btn-success' : 'btn-outline' }}"
+                                                    onclick="toggleAttendance(this, 'afternoon', 'check-out')">OUT</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                @endforeach
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container"></div>
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
 
-<script>
-async function toggleAttendance(btn, session, action) {
-    const cell = btn.closest('td');
-    const employeeId = cell.dataset.employee;
-    const date = cell.dataset.date;
-    const box = btn.closest('.session-box');
-    const clockDisplay = box.querySelector('.clock-display');
-
-    btn.disabled = true;
-    const originalText = btn.innerText;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span>';
-
-    try {
-        const response = await fetch('{{ route('hr.attendance.toggle') }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-                employee_id: employeeId,
-                date: date,
-                session: session,
-                action: action
-            })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            if (session === 'morning') {
-                btn.innerText = data.status === 'late' ? 'LATE' : 'CHECK IN';
-                btn.className = (data.status === 'present' || data.status === 'late') ? 'btn btn-sm w-100 fw-bold btn-success' : 'btn btn-sm w-100 fw-bold btn-outline-secondary';
-            } else {
-                btn.innerText = 'CHECK OUT';
-                btn.className = data.status === 'present' ? 'btn btn-sm w-100 fw-bold btn-success' : 'btn btn-sm w-100 fw-bold btn-outline-secondary';
+    @push('scripts')
+    <script>
+        async function toggleAttendance(btn, session, action) {
+            const cell = btn.closest('td');
+            const box = btn.closest('.session-box');
+            const clock = box.querySelector('.clock-display');
+            const original = btn.innerText;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading loading-spinner loading-xs"></span>';
+            try {
+                const res = await fetch('{{ route('hr.attendance.toggle') }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    body: JSON.stringify({ employee_id: cell.dataset.employee, date: cell.dataset.date, session, action }),
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const on = session === 'morning' ? ['present', 'late'].includes(data.status) : data.status === 'present';
+                    btn.className = 'btn btn-xs w-full ' + (on ? 'btn-success' : 'btn-outline');
+                    btn.innerText = session === 'morning' ? (data.status === 'late' ? 'LATE' : 'IN') : 'OUT';
+                    clock.innerText = data.time || '--:--';
+                } else {
+                    btn.innerText = original; showToast(data.message || 'Update failed', 'alert-error');
+                }
+            } catch (e) {
+                btn.innerText = original; showToast('Network error', 'alert-error');
+            } finally {
+                btn.disabled = false;
             }
-            clockDisplay.innerText = data.time || '--:--';
-        } else {
-            // Show server-side error message (e.g., date lock)
-            showToast(data.message || "Update Failed", "bg-danger");
         }
-    } catch (err) {
-        showToast("Network Error", "bg-danger");
-    } finally {
-        btn.disabled = false;
-        if (btn.innerHTML.includes('spinner-border')) {
-             btn.innerText = originalText;
+        function showToast(message, cls) {
+            const c = document.getElementById('toast-container');
+            const t = document.createElement('div');
+            t.className = 'alert ' + cls + ' py-2 text-sm shadow-lg';
+            t.innerHTML = '<span>' + message + '</span>';
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 4000);
         }
-    }
-}
-
-function showToast(message, bgColor) {
-    const container = document.getElementById('toast-container');
-    const toastDiv = document.createElement('div');
-    toastDiv.className = `toast align-items-center text-white ${bgColor} border-0 shadow-lg mb-2`;
-    toastDiv.setAttribute('role', 'alert');
-    toastDiv.setAttribute('aria-live', 'assertive');
-    toastDiv.setAttribute('aria-atomic', 'true');
-    
-    toastDiv.innerHTML = `
-        <div class="d-flex">
-            <div class="toast-body fw-bold">${message}</div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-        </div>
-    `;
-    
-    container.appendChild(toastDiv);
-    const toast = new bootstrap.Toast(toastDiv, { delay: 4000 });
-    toast.show();
-    
-    toastDiv.addEventListener('hidden.bs.toast', () => toastDiv.remove());
-}
-</script>
-
-<style>
-    .x-small { font-size: 0.6rem; }
-    .glass-input { background: rgba(255,255,255,0.7); backdrop-filter: blur(5px); border: 1px solid rgba(0,0,0,0.05); }
-    th { vertical-align: middle !important; background: #f8f9fa !important; border-bottom: 2px solid #ddd !important; }
-    .clock-display { font-family: 'Courier New', Courier, monospace; }
-</style>
-@endsection
+    </script>
+    @endpush
+</x-layouts.app-shell>

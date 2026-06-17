@@ -1,309 +1,164 @@
-@extends('layouts.app')
+<x-layouts.app-shell title="Dashboard">
+    @php
+        $pendingTotal = ($pendingLoanCount ?? 0) + ($pendingExpenseCount ?? 0) + ($pendingLeaveCount ?? 0);
+    @endphp
 
-@section('title', 'Admin Command Center | Natanem Engineering')
-
-@section('content')
-<div class="py-4 px-2">
-    {{-- Page Header --}}
-    <div class="page-header-premium mb-5">
-        <h1 class="display-3 fw-900 text-erp-deep mb-2 tracking-tight">System Administration</h1>
-        <p class="text-muted fs-5 mb-0">Central command for user management, approvals, and system configuration.</p>
-    </div>
-
-    {{-- EXECUTIVE INSIGHTS / SYSTEM PULSE --}}
-    <div class="row g-4 mb-5 stagger-entrance">
-        {{-- System Health Radar --}}
-        <div class="col-lg-4">
-            <div class="erp-card h-100 p-4 hardened-glass position-relative overflow-hidden" style="min-height: 380px;">
-                <div class="d-flex justify-content-between align-items-start mb-4">
-                    <div>
-                        <h5 class="fw-800 text-erp-deep mb-1">System Vitality</h5>
-                        <p class="text-muted small">Real-time operational health index</p>
-                    </div>
-                    @if(($systemHealth ?? 100) > 80)
-                        <div class="badge bg-success-soft text-success rounded-pill px-3 py-2 fw-bold border border-success-subtle">
-                            OPTIMAL
-                        </div>
-                    @elseif(($systemHealth ?? 100) > 60)
-                        <div class="badge bg-warning-soft text-warning rounded-pill px-3 py-2 fw-bold border border-warning-subtle">
-                            STABLE
-                        </div>
-                    @else
-                        <div class="badge bg-danger-soft text-danger rounded-pill px-3 py-2 fw-bold border border-danger-subtle">
-                            CRITICAL
-                        </div>
-                    @endif
-                </div>
-                
-                <div id="healthRadarChart"></div>
-                
-                <div class="position-absolute bottom-0 start-0 w-100 p-4 bg-white-50 border-top" style="backdrop-filter: blur(5px);">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted small fw-bold">OPERATIONAL UPTIME</span>
-                        <span class="text-erp-deep fw-800 fs-5">99.9%</span>
-                    </div>
-                </div>
-            </div>
+    <div class="space-y-6">
+        {{-- Heading --}}
+        <div>
+            <h2 class="text-xl font-semibold">System Administration</h2>
+            <p class="text-sm text-base-content/60">Central command for users, approvals and configuration.</p>
         </div>
 
-        {{-- Live Pulse / Activity Stream --}}
-        <div class="col-lg-8">
-            <div class="erp-card h-100 p-4 hardened-glass" style="min-height: 380px;">
-                <div class="d-flex justify-content-between align-items-center mb-4">
+        {{-- KPI cards --}}
+        <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            @foreach ([
+                ['label' => 'Total Users', 'value' => $totalUsers ?? 0, 'icon' => 'o-users', 'accent' => 'border-l-primary', 'text' => 'text-primary'],
+                ['label' => 'Projects', 'value' => $totalProjects ?? 0, 'icon' => 'o-briefcase', 'accent' => 'border-l-info', 'text' => 'text-info'],
+                ['label' => 'Employees', 'value' => $totalEmployees ?? 0, 'icon' => 'o-identification', 'accent' => 'border-l-success', 'text' => 'text-success'],
+                ['label' => 'Pending Approvals', 'value' => $pendingTotal, 'icon' => 'o-clock', 'accent' => 'border-l-warning', 'text' => 'text-warning'],
+            ] as $kpi)
+                <div class="flex items-center justify-between rounded-lg border border-base-300 border-l-4 {{ $kpi['accent'] }} bg-base-100 px-4 py-3 shadow-sm">
                     <div>
-                        <h5 class="fw-800 text-erp-deep mb-1">Enterprise Pulse</h5>
-                        <p class="text-muted small">Live stream of critical system activities</p>
+                        <div class="text-[11px] font-medium uppercase tracking-wide text-base-content/50">{{ $kpi['label'] }}</div>
+                        <div class="mt-1 text-2xl font-bold tabular-nums {{ $kpi['text'] }}">{{ $kpi['value'] }}</div>
                     </div>
-                    <a href="{{ route('admin.activity-logs') }}" class="btn btn-sm btn-white border-0 shadow-sm rounded-pill px-3 fw-bold">
-                        View Full History
-                    </a>
+                    <div class="grid h-10 w-10 place-items-center rounded-lg bg-base-200 {{ $kpi['text'] }}">
+                        <x-mary-icon name="{{ $kpi['icon'] }}" class="h-5 w-5" />
+                    </div>
                 </div>
+            @endforeach
+        </div>
 
-                <div class="activity-stream" style="max-height: 250px; overflow-y: auto;">
-                    @forelse($activities as $activity)
-                    <div class="activity-item d-flex gap-3 mb-3 pb-3 border-bottom border-light-subtle">
-                        <div class="activity-icon-container">
-                            <div class="rounded-circle bg-primary-soft text-primary d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                                <i class="bi {{ $activity->action == 'created' ? 'bi-plus-circle' : ($activity->action == 'updated' ? 'bi-pencil-square' : 'bi-info-circle') }} small"></i>
-                            </div>
-                        </div>
-                        <div class="activity-content flex-grow-1">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <p class="mb-0 small fw-800 text-erp-deep">
-                                    {{ $activity->user->name ?? 'System' }} 
-                                    <span class="fw-normal text-muted">{{ $activity->action }}</span> 
-                                    {{ class_basename($activity->model_type) }}
+        {{-- Vitality + Activity --}}
+        <div class="grid gap-4 lg:grid-cols-3">
+            {{-- System vitality --}}
+            <div class="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="font-semibold">System Vitality</h3>
+                        <p class="text-xs text-base-content/50">Operational health index</p>
+                    </div>
+                    @php($h = $systemHealth ?? 100)
+                    <span class="badge badge-sm {{ $h > 80 ? 'badge-success' : ($h > 60 ? 'badge-warning' : 'badge-error') }}">
+                        {{ $h > 80 ? 'Optimal' : ($h > 60 ? 'Stable' : 'Critical') }}
+                    </span>
+                </div>
+                <div id="healthRadarChart" class="mt-2"></div>
+                <div class="mt-2 flex items-center justify-between border-t border-base-200 pt-3 text-sm">
+                    <span class="text-base-content/50">Operational uptime</span>
+                    <span class="font-semibold">99.9%</span>
+                </div>
+            </div>
+
+            {{-- Activity stream --}}
+            <div class="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm lg:col-span-2">
+                <div class="mb-4 flex items-center justify-between">
+                    <div>
+                        <h3 class="font-semibold">Recent Activity</h3>
+                        <p class="text-xs text-base-content/50">Live stream of system events</p>
+                    </div>
+                    <a href="{{ route('admin.activity-logs') }}" class="btn btn-ghost btn-xs">View all</a>
+                </div>
+                <div class="max-h-72 space-y-1 overflow-y-auto">
+                    @forelse ($activities as $activity)
+                        <div class="flex items-start gap-3 rounded-lg px-2 py-2 hover:bg-base-200/50">
+                            <span class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
+                                <x-mary-icon name="{{ $activity->action === 'created' ? 'o-plus' : ($activity->action === 'updated' ? 'o-pencil-square' : 'o-information-circle') }}" class="h-4 w-4" />
+                            </span>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm">
+                                    <span class="font-medium">{{ $activity->user->name ?? 'System' }}</span>
+                                    <span class="text-base-content/60">{{ $activity->action }}</span>
+                                    <span class="font-medium">{{ class_basename($activity->model_type) }}</span>
                                 </p>
-                                <span class="x-small text-muted">{{ $activity->created_at->diffForHumans() }}</span>
+                                <p class="text-xs text-base-content/40">{{ $activity->created_at->diffForHumans() }}</p>
                             </div>
                         </div>
-                    </div>
                     @empty
-                    <div class="text-center py-5">
-                        <i class="bi bi-activity fs-1 text-muted opacity-25"></i>
-                        <p class="text-muted small mt-2">No recent activity detected.</p>
-                    </div>
+                        <div class="flex flex-col items-center gap-2 py-10 text-base-content/40">
+                            <x-mary-icon name="o-bolt-slash" class="h-8 w-8" />
+                            <p class="text-sm">No recent activity.</p>
+                        </div>
                     @endforelse
                 </div>
             </div>
         </div>
+
+        {{-- Approvals queue --}}
+        @if ($pendingTotal > 0)
+            <div class="rounded-xl border border-warning/30 bg-warning/5 p-5">
+                <div class="mb-3 flex items-center gap-2">
+                    <x-mary-icon name="o-exclamation-triangle" class="h-5 w-5 text-warning" />
+                    <h3 class="font-semibold">Pending Approvals</h3>
+                </div>
+                <div class="grid gap-3 sm:grid-cols-3">
+                    @if (($pendingLeaveCount ?? 0) > 0)
+                        <a href="{{ route('admin.requests.leave-approvals.index') }}" class="flex items-center justify-between rounded-lg border border-base-300 bg-base-100 px-4 py-3 shadow-sm transition hover:shadow">
+                            <span class="text-sm font-medium">Leave Requests</span>
+                            <span class="badge badge-warning">{{ $pendingLeaveCount }}</span>
+                        </a>
+                    @endif
+                    @if (($pendingExpenseCount ?? 0) > 0)
+                        <a href="{{ route('admin.requests.finance') }}" class="flex items-center justify-between rounded-lg border border-base-300 bg-base-100 px-4 py-3 shadow-sm transition hover:shadow">
+                            <span class="text-sm font-medium">Expenses</span>
+                            <span class="badge badge-warning">{{ $pendingExpenseCount }}</span>
+                        </a>
+                    @endif
+                    @if (($pendingLoanCount ?? 0) > 0)
+                        <a href="{{ route('admin.requests.items') }}" class="flex items-center justify-between rounded-lg border border-base-300 bg-base-100 px-4 py-3 shadow-sm transition hover:shadow">
+                            <span class="text-sm font-medium">Inventory Loans</span>
+                            <span class="badge badge-warning">{{ $pendingLoanCount }}</span>
+                        </a>
+                    @endif
+                </div>
+            </div>
+        @endif
+
+        {{-- Module grid --}}
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            @foreach ([
+                ['title' => 'User Management', 'desc' => 'Accounts, roles and access control.', 'icon' => 'o-users', 'route' => 'admin.users.index', 'cta' => 'Manage users'],
+                ['title' => 'Human Resources', 'desc' => 'Employees, attendance and leave.', 'icon' => 'o-identification', 'route' => 'admin.hr', 'cta' => 'Open HR hub'],
+                ['title' => 'Inventory Control', 'desc' => 'Stock, equipment loans and audit trails.', 'icon' => 'o-cube', 'route' => 'admin.inventory', 'cta' => 'Open inventory'],
+                ['title' => 'Financial Operations', 'desc' => 'Project budgets and expense approvals.', 'icon' => 'o-banknotes', 'route' => 'admin.finance', 'cta' => 'Open finance'],
+                ['title' => 'Maintenance', 'desc' => 'Backups, logs and recycle bin.', 'icon' => 'o-wrench-screwdriver', 'route' => 'admin.maintenance.index', 'cta' => 'Open maintenance'],
+                ['title' => 'Settings', 'desc' => 'System parameters and notifications.', 'icon' => 'o-cog-6-tooth', 'route' => 'admin.system-settings.index', 'cta' => 'Open settings'],
+            ] as $mod)
+                <div class="flex flex-col rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
+                    <div class="mb-3 grid h-10 w-10 place-items-center rounded-lg bg-primary/10 text-primary">
+                        <x-mary-icon name="{{ $mod['icon'] }}" class="h-5 w-5" />
+                    </div>
+                    <h4 class="font-semibold">{{ $mod['title'] }}</h4>
+                    <p class="mt-1 mb-4 text-sm text-base-content/60">{{ $mod['desc'] }}</p>
+                    <a href="{{ route($mod['route']) }}" class="btn btn-outline btn-sm mt-auto w-fit">{{ $mod['cta'] }}</a>
+                </div>
+            @endforeach
+        </div>
     </div>
 
-    {{-- ALERT / ACTION CENTER (Only if pending items exist) --}}
-    @if(($pendingLeaveCount ?? 0) > 0 || ($pendingExpenseCount ?? 0) > 0 || ($pendingLoanCount ?? 0) > 0)
-    <div class="card bg-danger-soft border-0 mb-5 shadow-sm overflow-hidden stagger-entrance" style="border-radius: 20px;">
-        <div class="card-body p-4">
-            <div class="d-flex align-items-center gap-3 mb-3">
-                <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center pulse" style="width: 40px; height: 40px;">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                </div>
-                <h5 class="fw-800 text-erp-deep mb-0">High Priority Approvals Queue</h5>
-            </div>
-            
-            <div class="row g-3">
-                @if(($pendingLeaveCount ?? 0) > 0)
-                    <div class="col-md-4">
-                        <a href="{{ route('admin.requests.leave-approvals.index') }}" class="d-flex align-items-center justify-content-between p-3 bg-white rounded-3 shadow-sm text-decoration-none transition-all hover-translate-y">
-                            <span class="text-muted fw-bold small text-uppercase">Leave Requests</span>
-                            <span class="badge bg-danger rounded-pill px-3">{{ $pendingLeaveCount }}</span>
-                        </a>
-                    </div>
-                @endif
-                @if(($pendingExpenseCount ?? 0) > 0)
-                    <div class="col-md-4">
-                        <a href="{{ route('admin.requests.finance') }}" class="d-flex align-items-center justify-content-between p-3 bg-white rounded-3 shadow-sm text-decoration-none transition-all hover-translate-y">
-                            <span class="text-muted fw-bold small text-uppercase">Financial Requisitions</span>
-                            <span class="badge bg-danger rounded-pill px-3">{{ $pendingExpenseCount }}</span>
-                        </a>
-                    </div>
-                @endif
-                @if(($pendingLoanCount ?? 0) > 0)
-                    <div class="col-md-4">
-                        <a href="{{ route('admin.requests.items') }}" class="d-flex align-items-center justify-content-between p-3 bg-white rounded-3 shadow-sm text-decoration-none transition-all hover-translate-y">
-                            <span class="text-muted fw-bold small text-uppercase">Inventory Loans</span>
-                            <span class="badge bg-danger rounded-pill px-3">{{ $pendingLoanCount }}</span>
-                        </a>
-                    </div>
-                @endif
-            </div>
-        </div>
-    </div>
-    @endif
-
-    {{-- MODULE NAVIGATION GRID --}}
-    <div class="row g-4">
-        {{-- Users --}}
-        <div class="col-md-6 col-lg-4">
-            <div class="erp-card h-100 p-4 stagger-entrance">
-                {{-- Icon removed per user request --}}
-                <h5 class="fw-800 mb-2">User Management</h5>
-                <p class="text-muted small mb-4">
-                    Manage system accounts, assign roles, and control access permissions.
-                </p>
-                <div class="mt-auto">
-                    <a href="{{ route('admin.users.index') }}" class="btn btn-erp-deep rounded-pill px-4 fw-bold w-100">
-                        Manage Users
-                    </a>
-                    <a href="{{ route('admin.roles.index') }}" class="btn btn-sm btn-link text-muted w-100 mt-2 text-decoration-none">
-                        Manage Roles
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        {{-- HR Hub --}}
-        <div class="col-md-6 col-lg-4">
-            <div class="erp-card h-100 p-4 stagger-entrance">
-                {{-- Icon removed per user request --}}
-                <h5 class="fw-800 mb-2">Human Resources</h5>
-                <p class="text-muted small mb-4">
-                    View employee directory, attendance logs, and leave history.
-                </p>
-                <div class="mt-auto">
-                    <a href="{{ route('admin.hr') }}" class="btn btn-outline-erp-deep rounded-pill px-4 fw-bold w-100">
-                        Enter HR Hub
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        {{-- Inventory Hub --}}
-        <div class="col-md-6 col-lg-4">
-            <div class="erp-card h-100 p-4 stagger-entrance">
-                {{-- Icon removed per user request --}}
-                <h5 class="fw-800 mb-2">Inventory Control</h5>
-                <p class="text-muted small mb-4">
-                    Track material stock, manage equipment loans, and view audit trails.
-                </p>
-                <div class="mt-auto">
-                    <a href="{{ route('admin.inventory') }}" class="btn btn-outline-erp-deep rounded-pill px-4 fw-bold w-100">
-                        Enter Stock Manager
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        {{-- Finance Hub --}}
-        <div class="col-md-6 col-lg-4">
-            <div class="erp-card h-100 p-4 stagger-entrance">
-                {{-- Icon removed per user request --}}
-                <h5 class="fw-800 mb-2">Financial Operations</h5>
-                <p class="text-muted small mb-4">
-                    Oversee project budgets, approve expenses, and analyze spending.
-                </p>
-                <div class="mt-auto">
-                    <a href="{{ route('admin.finance') }}" class="btn btn-outline-erp-deep rounded-pill px-4 fw-bold w-100">
-                        Enter Finance Hub
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        {{-- Logs & Trash (Maintenance) --}}
-        <div class="col-md-6 col-lg-4">
-            <div class="erp-card h-100 p-4 stagger-entrance">
-                {{-- Icon removed per user request --}}
-                <h5 class="fw-800 mb-2">System Maintenance</h5>
-                <p class="text-muted small mb-4">
-                    View activity logs, system health, backups, and restore deleted items.
-                </p>
-                <div class="mt-auto">
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('admin.maintenance.index') }}" class="btn btn-sm btn-white border shadow-sm fw-bold">Maintenance</a>
-                        <a href="{{ route('admin.trash.index') }}" class="btn btn-sm btn-white border shadow-sm fw-bold">Recycle Bin</a>
-                        <a href="{{ route('admin.activity-logs') }}" class="btn btn-sm btn-white border shadow-sm fw-bold">Activity Logs</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Global Settings --}}
-        <div class="col-md-6 col-lg-4">
-            <div class="erp-card h-100 p-4 stagger-entrance">
-                {{-- Icon removed per user request --}}
-                <h5 class="fw-800 mb-2">Global Config</h5>
-                <p class="text-muted small mb-4">
-                    Adjust system parameters, attendance rules, and notification templates.
-                </p>
-                <div class="mt-auto">
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('admin.attendance-settings.index') }}" class="btn btn-sm btn-white border shadow-sm fw-bold">Attendance Rules</a>
-                        <a href="{{ route('admin.system-settings.index') }}" class="btn btn-sm btn-white border shadow-sm fw-bold">System Settings</a>
-                        <a href="{{ route('admin.notification-templates.index') }}" class="btn btn-sm btn-white border shadow-sm fw-bold">Notifications</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // System Health Radar Chart
-        var healthOptions = {
-            series: [{{ $systemHealth ?? 98 }}],
-            chart: {
-                height: 300,
-                type: 'radialBar',
-                toolbar: { show: false },
-                animations: { enabled: false }
-            },
-            plotOptions: {
-                radialBar: {
-                    startAngle: -135,
-                    endAngle: 135,
-                    hollow: {
-                        margin: 0,
-                        size: '70%',
-                        background: 'transparent',
-                    },
-                    track: {
-                        background: '#e2e8f0',
-                        strokeWidth: '97%',
-                        margin: 5,
-                    },
-                    dataLabels: {
-                        name: {
-                            show: true,
-                            fontSize: '14px',
-                            fontWeight: 800,
-                            color: '#64748b',
-                            offsetY: -10
-                        },
-                        value: {
-                            offsetY: 15,
-                            fontSize: '32px',
-                            fontWeight: 900,
-                            color: '#1e293b',
-                            formatter: function (val) {
-                                return val + "%";
-                            }
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var el = document.querySelector("#healthRadarChart");
+            if (!el || typeof ApexCharts === 'undefined') return;
+            new ApexCharts(el, {
+                series: [{{ $systemHealth ?? 98 }}],
+                chart: { height: 260, type: 'radialBar', sparkline: { enabled: false }, toolbar: { show: false } },
+                plotOptions: {
+                    radialBar: {
+                        hollow: { size: '62%' },
+                        track: { background: '#e3e8ef' },
+                        dataLabels: {
+                            name: { show: true, fontSize: '12px', color: '#64748b', offsetY: -6, formatter: () => 'Vitality' },
+                            value: { fontSize: '30px', fontWeight: 700, color: '#0d1b2a', offsetY: 6, formatter: (v) => v + '%' }
                         }
                     }
-                }
-            },
-            fill: {
-                type: 'gradient',
-                gradient: {
-                    shade: 'dark',
-                    type: 'horizontal',
-                    shadeIntensity: 0.5,
-                    gradientToColors: ['#3b82f6'],
-                    inverseColors: true,
-                    opacityFrom: 1,
-                    opacityTo: 1,
-                    stops: [0, 100]
-                }
-            },
-            stroke: {
-                lineCap: 'round'
-            },
-            labels: ['VITALITY INDEX'],
-        };
-
-        var chart = new ApexCharts(document.querySelector("#healthRadarChart"), healthOptions);
-        chart.render();
-    });
-</script>
-@endpush
-@endsection
+                },
+                fill: { colors: ['#f5a623'] },
+                stroke: { lineCap: 'round' },
+            }).render();
+        });
+    </script>
+    @endpush
+</x-layouts.app-shell>

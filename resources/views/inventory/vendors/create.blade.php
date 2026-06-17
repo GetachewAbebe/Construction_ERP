@@ -1,107 +1,82 @@
-@extends('layouts.app')
-@section('title', 'Onboard New Vendor')
-
-@section('content')
-<div class="page-header-premium mb-4">
-    <div class="row align-items-center">
-        <div class="col">
-            <h1 class="display-6">Onboard Partner</h1>
-            <p>Register a new supplier or service provider in the enterprise registry.</p>
-        </div>
-        <div class="col-auto">
-            <a href="{{ route('inventory.vendors.index') }}" class="btn btn-white rounded-pill px-4 shadow-sm border-0">
-                <i class="bi bi-arrow-left me-2"></i>Back to Registry
+<x-layouts.app-shell title="New Vendor">
+    <div class="mx-auto max-w-3xl space-y-5">
+        <div class="flex items-center justify-between gap-3">
+            <div>
+                <h2 class="text-xl font-semibold">Onboard Vendor</h2>
+                <p class="text-sm text-base-content/60">Register a supplier or service provider.</p>
+            </div>
+            <a href="{{ route('inventory.vendors.index') }}" class="btn btn-ghost btn-sm">
+                <x-mary-icon name="o-arrow-left" class="h-4 w-4" /> Back
             </a>
         </div>
-    </div>
-</div>
 
-<div class="row justify-content-center stagger-entrance">
-    <div class="col-lg-10">
-        <div class="erp-card shadow-lg border-0">
-            <form action="{{ route('inventory.vendors.store') }}" method="POST">
-                @csrf
-                
-                <h5 class="fw-800 text-erp-deep mb-4 border-bottom pb-2">
-                    <i class="bi bi-info-circle me-2"></i>Basic Information
-                </h5>
-                <div class="row g-4 mb-5">
-                    <div class="col-md-8">
-                        <label for="name" class="erp-label">Legal Name / Enterprise Entity</label>
-                        <input type="text" name="name" id="name" value="{{ old('name') }}" 
-                               class="erp-input @error('name') is-invalid @enderror" 
-                               placeholder="e.g. Acme Construction Supplies Plc" required>
-                        @error('name')
-                            <div class="invalid-feedback fw-bold">{{ $message }}</div>
-                        @enderror
+        @if ($errors->any())
+            <div role="alert" class="alert alert-error py-2 text-sm"><span>{{ $errors->first() }}</span></div>
+        @endif
+
+        <form action="{{ route('inventory.vendors.store') }}" method="POST"
+              class="space-y-6 rounded-xl border border-base-300 bg-base-100 p-6 shadow-sm sm:p-8">
+            @csrf
+
+            <div>
+                <h3 class="mb-4 flex items-center gap-2 font-semibold"><x-mary-icon name="o-information-circle" class="h-5 w-5 text-primary" /> Basic information</h3>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="sm:col-span-2">
+                        <label class="mb-1.5 block text-sm font-medium">Legal name</label>
+                        <input name="name" value="{{ old('name') }}" required placeholder="e.g. Acme Supplies Plc" class="input input-bordered w-full {{ $errors->has('name') ? 'input-error' : '' }}" />
+                        @error('name') <span class="mt-1 block text-xs text-error">{{ $message }}</span> @enderror
                     </div>
-
-                    <div class="col-md-4">
-                        <label for="category" class="erp-label">Partner Category</label>
-                        <select name="category" id="category" class="erp-input">
-                            <option value="">General Supplier</option>
-                            <option value="Raw Materials">Raw Materials</option>
-                            <option value="Machinery & Tools">Machinery & Tools</option>
-                            <option value="Safety Gear">Safety Gear</option>
-                            <option value="Services">Services (Sub-contractor)</option>
-                            <option value="Logistics">Logistics & Transport</option>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium">Category</label>
+                        <select name="category" class="select select-bordered w-full">
+                            <option value="">General supplier</option>
+                            @foreach (['Raw Materials', 'Machinery & Tools', 'Safety Gear', 'Services', 'Logistics'] as $c)
+                                <option value="{{ $c }}" @selected(old('category') === $c)>{{ $c }}</option>
+                            @endforeach
                         </select>
                     </div>
-
-                    <div class="col-md-6">
-                        <label for="tax_id" class="erp-label">Tax Identification Number (TIN)</label>
-                        <input type="text" name="tax_id" id="tax_id" value="{{ old('tax_id') }}" 
-                               class="erp-input" placeholder="e.g. 0012345678">
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="payment_terms" class="erp-label">Default Payment Terms</label>
-                        <select name="payment_terms" id="payment_terms" class="erp-input">
-                            <option value="Immediate">Immediate / COD</option>
-                            <option value="Net 15">Net 15 Days</option>
-                            <option value="Net 30">Net 30 Days</option>
-                            <option value="Net 60">Net 60 Days</option>
-                            <option value="Milestone">Milestone Based</option>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium">Payment terms</label>
+                        <select name="payment_terms" class="select select-bordered w-full">
+                            @foreach (['Immediate', 'Net 15', 'Net 30', 'Net 60', 'Milestone'] as $t)
+                                <option value="{{ $t }}" @selected(old('payment_terms') === $t)>{{ $t }}</option>
+                            @endforeach
                         </select>
                     </div>
-                </div>
-
-                <h5 class="fw-800 text-erp-deep mb-4 border-bottom pb-2">
-                    <i class="bi bi-person-lines-fill me-2"></i>Communication & Logistics
-                </h5>
-                <div class="row g-4 mb-4">
-                    <div class="col-md-6">
-                        <label for="contact_person" class="erp-label">Primary Contact Person</label>
-                        <input type="text" name="contact_person" id="contact_person" value="{{ old('contact_person') }}" 
-                               class="erp-input" placeholder="e.g. John Doe">
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="email" class="erp-label">Corporate Email Address</label>
-                        <input type="email" name="email" id="email" value="{{ old('email') }}" 
-                               class="erp-input" placeholder="e.g. sales@vendor.com">
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="phone" class="erp-label">Primary Phone / Mobile</label>
-                        <input type="text" name="phone" id="phone" value="{{ old('phone') }}" 
-                               class="erp-input" placeholder="e.g. +251 911 ...">
-                    </div>
-
-                    <div class="col-12">
-                        <label for="address" class="erp-label">Registered Site Address</label>
-                        <textarea name="address" id="address" rows="3" 
-                                  class="erp-input" placeholder="Full physical location details..."></textarea>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium">Tax ID (TIN)</label>
+                        <input name="tax_id" value="{{ old('tax_id') }}" placeholder="0012345678" class="input input-bordered w-full" />
                     </div>
                 </div>
+            </div>
 
-                <div class="mt-5 border-top pt-4 text-end">
-                    <button type="submit" class="btn btn-erp-deep rounded-pill px-5 py-3 shadow-sm border-0 fw-800">
-                        <i class="bi bi-check-circle-fill me-2"></i>Official Registration
-                    </button>
+            <div>
+                <h3 class="mb-4 flex items-center gap-2 font-semibold"><x-mary-icon name="o-user-circle" class="h-5 w-5 text-success" /> Communication</h3>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium">Contact person</label>
+                        <input name="contact_person" value="{{ old('contact_person') }}" placeholder="e.g. John Doe" class="input input-bordered w-full" />
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium">Email</label>
+                        <input type="email" name="email" value="{{ old('email') }}" placeholder="sales@vendor.com" class="input input-bordered w-full {{ $errors->has('email') ? 'input-error' : '' }}" />
+                        @error('email') <span class="mt-1 block text-xs text-error">{{ $message }}</span> @enderror
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium">Phone</label>
+                        <input name="phone" value="{{ old('phone') }}" placeholder="+251 911 …" class="input input-bordered w-full" />
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="mb-1.5 block text-sm font-medium">Address</label>
+                        <textarea name="address" rows="3" placeholder="Full physical location…" class="textarea textarea-bordered w-full">{{ old('address') }}</textarea>
+                    </div>
                 </div>
-            </form>
-        </div>
+            </div>
+
+            <div class="flex justify-end gap-2 border-t border-base-200 pt-5">
+                <a href="{{ route('inventory.vendors.index') }}" class="btn btn-ghost">Cancel</a>
+                <button type="submit" class="btn btn-primary">Register vendor</button>
+            </div>
+        </form>
     </div>
-</div>
-@endsection
+</x-layouts.app-shell>

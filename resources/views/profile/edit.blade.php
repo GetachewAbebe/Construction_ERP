@@ -1,138 +1,100 @@
-@extends('layouts.app')
-@section('title', 'Modify ' . ($user->role ?? 'User') . ' Profile')
+<x-layouts.app-shell title="Edit Profile">
+    <div class="mx-auto max-w-2xl space-y-5">
+        <div class="flex items-center justify-between gap-3">
+            <div>
+                <h2 class="text-xl font-semibold">Edit Profile</h2>
+                <p class="text-sm text-base-content/60">Update your personal details and password.</p>
+            </div>
+            <a href="{{ route($user->getProfileRouteName('show')) }}" class="btn btn-ghost btn-sm">
+                <x-mary-icon name="o-arrow-left" class="h-4 w-4" /> Back
+            </a>
+        </div>
 
-@section('content')
-<div class="row align-items-center mb-4 stagger-entrance">
-    <div class="col">
-        <h1 class="h3 mb-1 fw-800 text-erp-deep">Modify {{ $user->role ?? 'User' }} Profile</h1>
-        <p class="text-muted mb-0">Adjusting operational credentials and personal identity anchoring.</p>
-    </div>
-    <div class="col-auto">
-        <a href="{{ route($user->getProfileRouteName('show')) }}" class="btn btn-white rounded-pill px-4 shadow-sm border-0">
-            <i class="bi bi-arrow-left me-2"></i>Return to Profile
-        </a>
-    </div>
-</div>
+        @if ($errors->any())
+            <div role="alert" class="alert alert-error py-2 text-sm"><span>{{ $errors->first() }}</span></div>
+        @endif
 
-<div class="stagger-entrance">
-    <div class="card border-0 bg-white shadow-sm overflow-hidden" style="border-radius: 30px;">
-        <div class="card-body p-4 p-md-5">
-            <form method="POST" action="{{ route($user->getProfileRouteName('update')) }}" enctype="multipart/form-data">
-                @csrf 
-                @method('PUT')
+        <form method="POST" action="{{ route($user->getProfileRouteName('update')) }}" enctype="multipart/form-data"
+              class="space-y-6 rounded-xl border border-base-300 bg-base-100 p-6 shadow-sm sm:p-8">
+            @csrf @method('PUT')
 
-                <div class="row g-4">
-                    {{-- Profile Picture Section --}}
-                    <div class="col-12 text-center mb-5">
-                        <div class="position-relative d-inline-block">
-                            <label for="profile_picture" class="cursor-pointer">
-                                <div class="avatar-preview-box rounded-circle bg-light d-flex align-items-center justify-content-center overflow-hidden position-relative shadow-lg border border-5 border-white" style="width: 160px; height: 160px;">
-                                    @if(optional($user->employee)->profile_picture_url)
-                                        <img id="avatar_preview" src="{{ $user->employee->profile_picture_url }}" alt="Preview" class="w-100 h-100 object-fit-cover">
-                                    @else
-                                        <div id="avatar_placeholder" class="w-100 h-100 d-flex align-items-center justify-content-center bg-erp-deep text-white fs-1 fw-900">
-                                            {{ substr($user->first_name, 0, 1) }}
-                                        </div>
-                                        <img id="avatar_preview" src="#" alt="Preview" class="w-100 h-100 object-fit-cover d-none">
-                                    @endif
-                                </div>
-                                <div class="badge bg-primary rounded-circle position-absolute bottom-0 end-0 p-3 border border-4 border-white shadow-lg translate-middle-x mb-2">
-                                    <i class="bi bi-camera-fill text-white fs-5"></i>
-                                </div>
-                            </label>
-                            <input type="file" name="profile_picture" id="profile_picture" class="d-none" accept="image/*" onchange="previewAvatar(this)">
-                            <div class="mt-4 fw-800 text-erp-deep text-uppercase small tracking-widest">Identify Photo</div>
-                        </div>
-                        @error('profile_picture') <div class="text-danger small mt-2 fw-bold">{{ $message }}</div> @enderror
+            <div class="flex flex-col items-center gap-2">
+                <label for="profile_picture" class="cursor-pointer">
+                    <div class="relative grid h-28 w-28 place-items-center overflow-hidden rounded-full border-2 border-base-300 bg-base-200 text-2xl font-bold text-base-content/40">
+                        @if (optional($user->employee)->profile_picture_url)
+                            <img id="avatar_preview" src="{{ $user->employee->profile_picture_url }}" class="h-full w-full object-cover" alt="">
+                        @else
+                            <span id="avatar_placeholder">{{ strtoupper(mb_substr($user->first_name ?? 'U', 0, 1)) }}</span>
+                            <img id="avatar_preview" src="#" alt="" class="hidden h-full w-full object-cover">
+                        @endif
+                        <span class="absolute bottom-0 right-0 grid h-7 w-7 place-items-center rounded-full bg-primary text-primary-content ring-2 ring-base-100"><x-mary-icon name="o-camera" class="h-4 w-4" /></span>
                     </div>
+                </label>
+                <input type="file" name="profile_picture" id="profile_picture" class="hidden" accept="image/*" onchange="previewAvatar(this)">
+                <span class="text-xs uppercase tracking-wide text-base-content/50">Profile photo</span>
+                @error('profile_picture') <span class="text-xs text-error">{{ $message }}</span> @enderror
+            </div>
 
-                    {{-- Identity Section --}}
-                    <div class="col-12">
-                        <h5 class="fw-900 text-erp-deep mb-4 d-flex align-items-center gap-3">
-                            <span class="bg-primary-soft p-2 rounded-3 text-primary"><i class="bi bi-person-badge"></i></span>
-                            Personal Information
-                        </h5>
+            <div>
+                <h3 class="mb-4 flex items-center gap-2 font-semibold"><x-mary-icon name="o-user" class="h-5 w-5 text-primary" /> Personal information</h3>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium">Display name</label>
+                        <input name="name" value="{{ old('name', $user->name) }}" required class="input input-bordered w-full {{ $errors->has('name') ? 'input-error' : '' }}" />
+                        @error('name') <span class="mt-1 block text-xs text-error">{{ $message }}</span> @enderror
                     </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label small fw-bold text-muted text-uppercase tracking-wider">Display Name</label>
-                        <input name="name" value="{{ old('name', $user->name) }}" required 
-                               class="form-control border-0 bg-light rounded-4 py-3 px-4 @error('name') is-invalid @enderror"/>
-                        @error('name') <div class="invalid-feedback fw-bold">{{ $message }}</div> @enderror
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium">Email</label>
+                        <input type="email" name="email" value="{{ old('email', $user->email) }}" required class="input input-bordered w-full {{ $errors->has('email') ? 'input-error' : '' }}" />
+                        @error('email') <span class="mt-1 block text-xs text-error">{{ $message }}</span> @enderror
                     </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label small fw-bold text-muted text-uppercase tracking-wider">Email Address</label>
-                        <input type="email" name="email" value="{{ old('email', $user->email) }}" required
-                               class="form-control border-0 bg-light rounded-4 py-3 px-4 @error('email') is-invalid @enderror"/>
-                        @error('email') <div class="invalid-feedback fw-bold">{{ $message }}</div> @enderror
-                    </div>
-
-                    {{-- Security Section --}}
-                    <div class="col-12 mt-4">
-                        <h5 class="fw-900 text-erp-deep mb-4 d-flex align-items-center gap-3">
-                            <span class="bg-warning-soft p-2 rounded-3 text-warning"><i class="bi bi-shield-lock"></i></span>
-                            Security & Access
-                        </h5>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label small fw-bold text-muted text-uppercase tracking-wider">Change Password</label>
-                        <input type="password" name="password" placeholder="Leave blank to keep current"
-                               class="form-control border-0 bg-light rounded-4 py-3 px-4 @error('password') is-invalid @enderror"/>
-                        <p class="small text-muted mt-2">Update this only if you want to rotate your credentials.</p>
-                        @error('password') <div class="invalid-feedback fw-bold">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label small fw-bold text-muted text-uppercase tracking-wider">Confirm New Password</label>
-                        <input type="password" name="password_confirmation" placeholder="Re-type new password"
-                               class="form-control border-0 bg-light rounded-4 py-3 px-4"/>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label small fw-bold text-muted text-uppercase tracking-wider">Contact Phone</label>
-                        <input name="phone_number" value="{{ old('phone_number', $user->phone_number) }}" 
-                               class="form-control border-0 bg-light rounded-4 py-3 px-4 @error('phone_number') is-invalid @enderror"/>
-                        @error('phone_number') <div class="invalid-feedback fw-bold">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="col-12">
-                        <div class="bg-light-soft p-4 rounded-4 border-start border-4 border-primary mt-4">
-                            <div class="d-flex gap-3 align-items-center">
-                                <i class="bi bi-info-circle-fill text-primary fs-4"></i>
-                                <div>
-                                    <h6 class="fw-bold text-erp-deep mb-1">Administrative Controlled Fields</h6>
-                                    <p class="mb-0 text-muted small">Your Role ({{ $user->role }}), Department, and Job Position are managed by the System Administrator or HR. To update these, please contact the Support team.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 text-end mt-5">
-                        <button type="submit" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-bold shadow-lg border-0">
-                            Apply Identity Updates
-                        </button>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium">Phone</label>
+                        <input name="phone_number" value="{{ old('phone_number', $user->phone_number) }}" class="input input-bordered w-full" />
                     </div>
                 </div>
-            </form>
-        </div>
-    </div>
-</div>
+            </div>
 
-<script>
-    function previewAvatar(input) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.getElementById('avatar_preview');
-                const placeholder = document.getElementById('avatar_placeholder');
-                img.src = e.target.result;
-                img.classList.remove('d-none');
-                if(placeholder) placeholder.classList.add('d-none');
+            <div>
+                <h3 class="mb-4 flex items-center gap-2 font-semibold"><x-mary-icon name="o-shield-check" class="h-5 w-5 text-warning" /> Security</h3>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium">New password</label>
+                        <input type="password" name="password" placeholder="Leave blank to keep current" class="input input-bordered w-full {{ $errors->has('password') ? 'input-error' : '' }}" />
+                        @error('password') <span class="mt-1 block text-xs text-error">{{ $message }}</span> @enderror
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium">Confirm password</label>
+                        <input type="password" name="password_confirmation" placeholder="Re-type new password" class="input input-bordered w-full" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-start gap-2 rounded-lg border border-info/30 bg-info/5 p-3 text-xs text-base-content/70">
+                <x-mary-icon name="o-information-circle" class="h-5 w-5 shrink-0 text-info" />
+                <span>Your role ({{ $user->role }}), department and position are managed by an administrator.</span>
+            </div>
+
+            <div class="flex justify-end gap-2 border-t border-base-200 pt-5">
+                <a href="{{ route($user->getProfileRouteName('show')) }}" class="btn btn-ghost">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+    </div>
+
+    @push('scripts')
+    <script>
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = document.getElementById('avatar_preview');
+                    img.src = e.target.result; img.classList.remove('hidden');
+                    const p = document.getElementById('avatar_placeholder'); if (p) p.classList.add('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
             }
-            reader.readAsDataURL(input.files[0]);
         }
-    }
-</script>
-@endsection
+    </script>
+    @endpush
+</x-layouts.app-shell>

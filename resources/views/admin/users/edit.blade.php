@@ -1,152 +1,119 @@
-@extends('layouts.app')
-@section('title', 'Modify Identity Archive')
-
-@section('content')
-<div class="page-header-premium">
-    <div class="row align-items-center">
-        <div class="col">
-            <h1>Modify Identity Archive</h1>
-            <p>Adjusting operational credentials and professional anchoring for: <span class="text-erp-deep fw-800">{{ $user->name }}</span></p>
-        </div>
-        <div class="col-auto">
-            <a href="{{ route('admin.users.index') }}" class="btn btn-white rounded-pill px-4 shadow-sm border-0">
-                <i class="bi bi-arrow-left me-2"></i>Return to Registry
+<x-layouts.app-shell title="Edit User">
+    <div class="mx-auto max-w-3xl space-y-5">
+        <div class="flex items-center justify-between gap-3">
+            <div>
+                <h2 class="text-xl font-semibold">Edit User</h2>
+                <p class="text-sm text-base-content/60">Updating credentials for <span class="font-medium text-base-content">{{ $user->name }}</span>.</p>
+            </div>
+            <a href="{{ route('admin.users.index') }}" class="btn btn-ghost btn-sm">
+                <x-mary-icon name="o-arrow-left" class="h-4 w-4" /> Back
             </a>
         </div>
-    </div>
-</div>
 
-<div class="stagger-entrance">
-    <div class="erp-card">
-        <form method="POST" action="{{ route('admin.users.update', $user) }}" enctype="multipart/form-data">
-            @csrf 
-            @method('PUT')
+        @if ($errors->any())
+            <div role="alert" class="alert alert-error py-2 text-sm"><span>{{ $errors->first() }}</span></div>
+        @endif
 
-            <div class="row g-4 mb-5">
-                <div class="col-12 text-center mb-4">
-                    <div class="position-relative d-inline-block">
-                        <label for="profile_picture" class="cursor-pointer">
-                            <div class="avatar-preview-box rounded-circle bg-light border border-2 d-flex align-items-center justify-content-center overflow-hidden position-relative shadow-sm" style="width: 140px; height: 140px;">
-                                @if(optional($user->employee)->profile_picture_url)
-                                    <img id="avatar_preview" src="{{ $user->employee->profile_picture_url }}" alt="Preview" class="w-100 h-100 object-fit-cover"
-                                         onerror="this.style.display='none'; document.getElementById('avatar_placeholder').classList.remove('d-none');">
-                                @else
-                                    <i class="bi bi-person-bounding-box fs-1 text-muted opacity-25" id="avatar_placeholder"></i>
-                                    <img id="avatar_preview" src="#" alt="Preview" class="w-100 h-100 object-fit-cover d-none">
-                                @endif
-                            </div>
-                            <div class="badge bg-erp-deep rounded-pill position-absolute bottom-0 end-0 p-3 border border-3 border-white shadow-lg">
-                                <i class="bi bi-camera-fill text-white"></i>
-                            </div>
-                        </label>
-                        <input type="file" name="profile_picture" id="profile_picture" class="d-none" accept="image/*" onchange="previewAvatar(this)">
-                        <div class="mt-3 fw-bold text-erp-deep text-uppercase small tracking-wide">Profile Picture</div>
+        <form method="POST" action="{{ route('admin.users.update', $user) }}" enctype="multipart/form-data"
+              class="rounded-xl border border-base-300 bg-base-100 p-6 shadow-sm sm:p-8">
+            @csrf @method('PUT')
+
+            {{-- Avatar --}}
+            <div class="mb-8 flex flex-col items-center gap-2">
+                <label for="profile_picture" class="cursor-pointer">
+                    <div class="relative grid h-28 w-28 place-items-center overflow-hidden rounded-full border-2 border-base-300 bg-base-200">
+                        @if (optional($user->employee)->profile_picture_url)
+                            <img id="avatar_preview" src="{{ $user->employee->profile_picture_url }}" alt="" class="h-full w-full object-cover">
+                            <x-mary-icon name="o-camera" id="avatar_placeholder" class="hidden h-8 w-8 text-base-content/30" />
+                        @else
+                            <x-mary-icon name="o-camera" id="avatar_placeholder" class="h-8 w-8 text-base-content/30" />
+                            <img id="avatar_preview" src="#" alt="" class="hidden h-full w-full object-cover">
+                        @endif
+                        <span class="absolute bottom-0 right-0 grid h-7 w-7 place-items-center rounded-full bg-primary text-primary-content ring-2 ring-base-100">
+                            <x-mary-icon name="o-camera" class="h-4 w-4" />
+                        </span>
                     </div>
-                    @error('profile_picture') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
-                </div>
+                </label>
+                <input type="file" name="profile_picture" id="profile_picture" class="hidden" accept="image/*" onchange="previewAvatar(this)">
+                <span class="text-xs uppercase tracking-wide text-base-content/50">Profile picture</span>
+                @error('profile_picture') <span class="text-xs text-error">{{ $message }}</span> @enderror
+            </div>
 
-                <div class="col-12">
-                    <h5 class="fw-bold text-erp-deep mb-4 d-flex align-items-center gap-2">
-                        <i class="bi bi-shield-lock text-primary"></i>
-                        Account & Security
-                    </h5>
+            <h3 class="mb-4 flex items-center gap-2 font-semibold">
+                <x-mary-icon name="o-shield-check" class="h-5 w-5 text-primary" /> Account &amp; Security
+            </h3>
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Full name</label>
+                    <input name="name" value="{{ old('name', $user->name) }}" required class="input input-bordered w-full {{ $errors->has('name') ? 'input-error' : '' }}" />
+                    @error('name') <span class="mt-1 block text-xs text-error">{{ $message }}</span> @enderror
                 </div>
-
-                <div class="col-md-6">
-                    <label class="erp-label">Full Name</label>
-                    <input name="name" value="{{ old('name', $user->name) }}" required placeholder="e.g. Getachew Abebe"
-                           class="erp-input @error('name') is-invalid @enderror"/>
-                    @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Email address</label>
+                    <input type="email" name="email" value="{{ old('email', $user->email) }}" required class="input input-bordered w-full {{ $errors->has('email') ? 'input-error' : '' }}" />
+                    @error('email') <span class="mt-1 block text-xs text-error">{{ $message }}</span> @enderror
                 </div>
-
-                <div class="col-md-6">
-                    <label class="erp-label">Email Address</label>
-                    <input type="email" name="email" value="{{ old('email', $user->email) }}" required
-                           class="erp-input @error('email') is-invalid @enderror"/>
-                    @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Change password</label>
+                    <input type="password" name="password" placeholder="Leave blank to keep current" class="input input-bordered w-full {{ $errors->has('password') ? 'input-error' : '' }}" />
+                    @error('password') <span class="mt-1 block text-xs text-error">{{ $message }}</span> @enderror
                 </div>
-
-                <div class="col-md-6">
-                    <label class="erp-label">Change Password</label>
-                    <input type="password" name="password" placeholder="Leave blank to keep current"
-                           class="erp-input @error('password') is-invalid @enderror"/>
-                    @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label class="erp-label">System Role</label>
-                    <select name="role" required class="erp-input @error('role') is-invalid @enderror" style="appearance: auto;">
-                        @foreach($roles as $role)
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">System role</label>
+                    <select name="role" required class="select select-bordered w-full">
+                        @foreach ($roles as $role)
                             <option value="{{ $role }}" @selected(old('role', $user->role) === $role)>{{ $role }}</option>
                         @endforeach
                     </select>
-                    @error('role') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
-
-                <div class="col-12 mt-5">
-                    <h5 class="fw-bold text-erp-deep mb-4 d-flex align-items-center gap-2">
-                        <i class="bi bi-person-badge text-success"></i>
-                        Professional Details
-                    </h5>
-                </div>
-
-                <div class="col-md-6">
-                    <label class="erp-label">Phone Number</label>
-                    <input name="phone_number" value="{{ old('phone_number', $user->phone_number) }}" placeholder="+251 ..."
-                           class="erp-input @error('phone_number') is-invalid @enderror"/>
-                    @error('phone_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label class="erp-label">Status</label>
-                    <select name="status" class="erp-input @error('status') is-invalid @enderror" style="appearance: auto;">
-                        <option value="Active" @selected(old('status', $user->status) == 'Active')>Active</option>
-                        <option value="Inactive" @selected(old('status', $user->status) == 'Inactive')>Inactive</option>
-                        <option value="Suspended" @selected(old('status', $user->status) == 'Suspended')>Suspended</option>
-                    </select>
-                    @error('status') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label class="erp-label">Job Title / Position</label>
-                    <input name="position" value="{{ old('position', $user->position) }}" placeholder="e.g. Civil Engineer"
-                           class="erp-input @error('position') is-invalid @enderror"/>
-                    @error('position') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label class="erp-label">Department</label>
-                    <input name="department" value="{{ old('department', $user->department) }}" placeholder="e.g. Engineering"
-                           class="erp-input @error('department') is-invalid @enderror"/>
-                    @error('department') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-
             </div>
 
-            <div class="text-end mt-5">
-                <button type="submit" class="btn btn-erp-deep rounded-pill px-5 py-3 fw-bold shadow-lg border-0">
-                    Update Identity Archive
-                </button>
+            <h3 class="mb-4 mt-8 flex items-center gap-2 font-semibold">
+                <x-mary-icon name="o-identification" class="h-5 w-5 text-success" /> Professional Details
+            </h3>
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Phone number</label>
+                    <input name="phone_number" value="{{ old('phone_number', $user->phone_number) }}" placeholder="+251 …" class="input input-bordered w-full" />
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Status</label>
+                    <select name="status" class="select select-bordered w-full">
+                        @foreach (['Active', 'Inactive', 'Suspended'] as $s)
+                            <option value="{{ $s }}" @selected(old('status', $user->status) === $s)>{{ $s }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Job title / position</label>
+                    <input name="position" value="{{ old('position', $user->position) }}" placeholder="e.g. Civil Engineer" class="input input-bordered w-full" />
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium">Department</label>
+                    <input name="department" value="{{ old('department', $user->department) }}" placeholder="e.g. Engineering" class="input input-bordered w-full" />
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-end gap-2">
+                <a href="{{ route('admin.users.index') }}" class="btn btn-ghost">Cancel</a>
+                <button type="submit" class="btn btn-primary">Update user</button>
             </div>
         </form>
     </div>
-</div>
 
-
-<script>
-    function previewAvatar(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var img = document.getElementById('avatar_preview');
-                var placeholder = document.getElementById('avatar_placeholder');
-                img.src = e.target.result;
-                img.classList.remove('d-none');
-                if(placeholder) placeholder.classList.add('d-none');
+    @push('scripts')
+    <script>
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = document.getElementById('avatar_preview');
+                    img.src = e.target.result; img.classList.remove('hidden');
+                    const p = document.getElementById('avatar_placeholder'); if (p) p.classList.add('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
             }
-            reader.readAsDataURL(input.files[0]);
         }
-    }
-</script>
-@endsection
-
+    </script>
+    @endpush
+</x-layouts.app-shell>

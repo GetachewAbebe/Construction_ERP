@@ -1,118 +1,78 @@
-@extends('layouts.app')
-@section('title', 'System Audit Trail')
+<x-layouts.app-shell title="Activity Logs">
+    @php
+        $actionBadge = [
+            'created' => 'badge-success', 'updated' => 'badge-info',
+            'deleted' => 'badge-error', 'restored' => 'badge-warning',
+        ];
+    @endphp
 
-@section('content')
-<div class="row align-items-center mb-4 stagger-entrance">
-    <div class="col">
-        <h1 class="h3 mb-1 fw-800 text-erp-deep">System-Wide Audit Trail</h1>
-        <p class="text-muted mb-0">High-fidelity chronological record of all administrative and operational data modifications.</p>
-    </div>
-</div>
-
-<div class="card hardened-glass border-0 overflow-hidden stagger-entrance shadow-sm">
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="bg-light-soft text-erp-deep">
-                <tr>
-                    <th class="ps-4 py-3">Temporal Marker</th>
-                    <th class="py-3">Originator</th>
-                    <th class="py-3">Action Signature</th>
-                    <th class="py-3">Target Resource</th>
-                    <th class="py-3">Schema Delta</th>
-                    <th class="pe-4 py-3 text-end">Connection Metadata</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($logs as $log)
-                    <tr>
-                        <td class="ps-4">
-                            <div class="d-flex flex-column">
-                                <span class="fw-800 text-erp-deep">{{ $log->created_at->format('M d, Y') }}</span>
-                                <span class="text-muted small fw-bold">{{ $log->created_at->format('H:i:s') }}</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="avatar-xs bg-erp-deep text-white rounded-circle d-flex align-items-center justify-content-center fw-800" style="width: 32px; height: 32px; font-size: 11px;">
-                                    {{ substr($log->user->name ?? 'S', 0, 1) }}
-                                </div>
-                                <div>
-                                    <div class="fw-700 text-dark small">{{ $log->user->name ?? 'System Process' }}</div>
-                                    <div class="text-muted x-small fw-bold">{{ $log->user->role ?? 'N/A' }}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            @php
-                                $badgeClass = match($log->action) {
-                                    'created' => 'bg-success-soft text-success',
-                                    'updated' => 'bg-primary-soft text-primary',
-                                    'deleted' => 'bg-danger-soft text-danger',
-                                    'restored' => 'bg-info-soft text-info',
-                                    default => 'bg-secondary-soft text-secondary'
-                                };
-                            @endphp
-                            <span class="badge {{ $badgeClass }} border-0 text-uppercase rounded-pill px-3 py-2 fw-800 small">
-                                <i class="bi bi-dot me-1"></i>{{ $log->action }}
-                            </span>
-                        </td>
-                        <td>
-                            <div class="fw-800 text-erp-deep small">{{ class_basename($log->model_type) }}</div>
-                            <div class="text-muted x-small fw-bold">UID: #{{ $log->model_id }}</div>
-                        </td>
-                        <td>
-                            @if($log->action === 'updated' && $log->changes)
-                                <button class="btn btn-white btn-sm rounded-pill px-3 shadow-sm border-0 fw-700 small" 
-                                        type="button" data-bs-toggle="collapse" data-bs-target="#changes-{{ $log->id }}">
-                                    <i class="bi bi-eye-fill me-1"></i>Inspect Delta
-                                </button>
-                                <div class="collapse mt-2" id="changes-{{ $log->id }}">
-                                    <div class="p-3 bg-light-soft rounded-4 border-0 small shadow-inner">
-                                        @foreach($log->changes['after'] ?? [] as $key => $value)
-                                            @if($key !== 'updated_at')
-                                                <div class="mb-2 pb-1 border-bottom border-white opacity-75">
-                                                    <div class="fw-800 text-erp-deep text-uppercase x-small mb-1">{{ str_replace('_', ' ', $key) }}</div>
-                                                    <div class="d-flex align-items-center gap-2">
-                                                        <span class="text-muted text-decoration-line-through">{{ $log->changes['before'][$key] ?? 'void' }}</span>
-                                                        <i class="bi bi-arrow-right text-primary"></i>
-                                                        <span class="text-erp-deep fw-800">{{ $value }}</span>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @elseif($log->action === 'created')
-                                <span class="text-success small fw-700"><i class="bi bi-plus-circle me-1"></i>Resource Initiation</span>
-                            @elseif($log->action === 'deleted')
-                                <span class="text-danger small fw-700"><i class="bi bi-dash-circle me-1"></i>Resource Expungement</span>
-                            @else
-                                <span class="text-muted italic small fw-600">No delta recorded</span>
-                            @endif
-                        </td>
-                        <td class="pe-4 text-end">
-                            <div class="text-muted x-small fw-bold">{{ $log->ip_address }}</div>
-                            <div class="text-muted x-small text-truncate d-inline-block" style="max-width: 120px;" title="{{ $log->user_agent }}">
-                                {{ $log->user_agent }}
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="text-center py-5">
-                            <i class="bi bi-clipboard-x fs-1 text-muted opacity-25"></i>
-                            <div class="text-muted italic mt-3">The system audit trail is currently unpopulated.</div>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-    @if($logs->hasPages())
-        <div class="card-footer border-0 p-4">
-            {{ $logs->links() }}
+    <div class="space-y-5">
+        <div>
+            <h2 class="text-xl font-semibold">System Audit Trail</h2>
+            <p class="text-sm text-base-content/60">Chronological record of data modifications.</p>
         </div>
-    @endif
-</div>
-@endsection
 
+        <div class="rounded-lg border border-base-300 bg-base-100 shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="table">
+                    <thead>
+                        <tr class="text-[11px] uppercase tracking-wide text-base-content/60">
+                            <th>When</th><th>User</th><th>Action</th><th>Resource</th><th>Changes</th><th class="text-right">Source</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($logs as $log)
+                            <tr x-data="{ open: false }" class="align-top">
+                                <td class="whitespace-nowrap">
+                                    <div class="text-sm font-medium">{{ $log->created_at->format('M d, Y') }}</div>
+                                    <div class="text-xs text-base-content/50">{{ $log->created_at->format('H:i:s') }}</div>
+                                </td>
+                                <td>
+                                    <div class="flex items-center gap-2">
+                                        <span class="grid h-7 w-7 place-items-center rounded-full bg-base-300/60 text-[10px] font-semibold">{{ strtoupper(mb_substr($log->user->name ?? 'S', 0, 1)) }}</span>
+                                        <div>
+                                            <div class="text-sm">{{ $log->user->name ?? 'System' }}</div>
+                                            <div class="text-xs text-base-content/50">{{ $log->user->role ?? '—' }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge badge-sm {{ $actionBadge[$log->action] ?? 'badge-ghost' }} capitalize">{{ $log->action }}</span></td>
+                                <td>
+                                    <div class="text-sm font-medium">{{ class_basename($log->model_type) }}</div>
+                                    <div class="text-xs text-base-content/50">#{{ $log->model_id }}</div>
+                                </td>
+                                <td>
+                                    @if ($log->action === 'updated' && $log->changes)
+                                        <button type="button" @click="open = !open" class="btn btn-ghost btn-xs">Inspect</button>
+                                        <div x-show="open" x-transition class="mt-2 space-y-1 rounded-lg bg-base-200/50 p-2 text-xs" style="display:none">
+                                            @foreach (($log->changes['after'] ?? []) as $key => $value)
+                                                @if ($key !== 'updated_at')
+                                                    <div>
+                                                        <span class="font-medium uppercase tracking-wide text-base-content/50">{{ str_replace('_', ' ', $key) }}:</span>
+                                                        <span class="line-through opacity-60">{{ $log->changes['before'][$key] ?? '∅' }}</span>
+                                                        →
+                                                        <span class="font-medium">{{ $value }}</span>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <span class="text-xs text-base-content/40">—</span>
+                                    @endif
+                                </td>
+                                <td class="text-right">
+                                    <div class="text-xs text-base-content/50">{{ $log->ip_address }}</div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="6" class="py-12 text-center text-base-content/40">The audit trail is empty.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            @if ($logs->hasPages())
+                <div class="border-t border-base-200 p-4">{{ $logs->links() }}</div>
+            @endif
+        </div>
+    </div>
+</x-layouts.app-shell>
