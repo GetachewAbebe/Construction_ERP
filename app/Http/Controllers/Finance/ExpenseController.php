@@ -13,6 +13,8 @@ use Illuminate\View\View;
 
 class ExpenseController extends Controller
 {
+    private const EXPENSEABLE_PROJECT_STATUSES = ['active', 'operational', 'In Progress'];
+
     /**
      * Display a listing of field expenditures.
      */
@@ -36,7 +38,9 @@ class ExpenseController extends Controller
      */
     public function create(): View
     {
-        $projects = Project::where('status', 'operational')->get();
+        $projects = Project::whereIn('status', self::EXPENSEABLE_PROJECT_STATUSES)
+            ->orderBy('name')
+            ->get();
 
         return view('finance.expenses.create', compact('projects'));
     }
@@ -88,7 +92,9 @@ class ExpenseController extends Controller
      */
     public function edit(Expense $expense): View
     {
-        $projects = Project::where('status', 'operational')->get();
+        $projects = Project::whereIn('status', self::EXPENSEABLE_PROJECT_STATUSES)
+            ->orderBy('name')
+            ->get();
 
         return view('finance.expenses.edit', compact('expense', 'projects'));
     }

@@ -18,8 +18,24 @@ fi
 
 touch "$LOCK_FILE"
 
-# Ensure lock file is removed on script exit (success or failure)
-trap 'rm -f "$LOCK_FILE"; echo "🔓 Deployment lock released."' EXIT
+DEPLOYMENT_WENT_DOWN=0
+
+cleanup() {
+    status=$?
+
+    if [ "$status" -ne 0 ] && [ "$DEPLOYMENT_WENT_DOWN" -eq 1 ]; then
+        echo "⚠️ Deployment failed. Restoring application availability..."
+        php artisan up || true
+    fi
+
+    rm -f "$LOCK_FILE"
+    echo "🔓 Deployment lock released."
+
+    exit "$status"
+}
+
+# Ensure lock file is removed and the app is not left in maintenance mode.
+trap cleanup EXIT
 
 # Set HOME and COMPOSER_HOME for environments where it's missing (e.g. shell_exec)
 if [ -z "$HOME" ]; then
@@ -32,6 +48,7 @@ export COMPOSER_HOME=$HOME/.composer
 # ==========================================
 echo "🚧 Entering maintenance mode..."
 php artisan down || true
+DEPLOYMENT_WENT_DOWN=1
 
 # ==========================================
 # 2. Pull Latest Code from GitHub
@@ -113,5 +130,6 @@ rm -f /home/natanewn/public_html/erp/hot
 # ==========================================
 echo "🌐 Bringing system back online..."
 php artisan up
+DEPLOYMENT_WENT_DOWN=0
 
 echo "✅ Deployment Successful! Natanem ERP is stable and live."
