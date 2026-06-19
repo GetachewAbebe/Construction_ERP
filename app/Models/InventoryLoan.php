@@ -10,6 +10,28 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property int $id
+ * @property int|null $inventory_item_id
+ * @property int|null $employee_id
+ * @property int|null $requested_by_user_id
+ * @property int|null $approved_by_user_id
+ * @property int $quantity
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $requested_at
+ * @property \Illuminate\Support\Carbon|null $due_date
+ * @property string|null $remarks
+ * @property string|null $notes
+ * @property int|null $approved_by
+ * @property \Illuminate\Support\Carbon|null $approved_at
+ * @property int|null $rejected_by
+ * @property \Illuminate\Support\Carbon|null $rejected_at
+ * @property \Illuminate\Support\Carbon|null $returned_at
+ * @property string|null $rejection_reason
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ */
 class InventoryLoan extends Model
 {
     use HasFactory, LogsActivity, SoftDeletes;
