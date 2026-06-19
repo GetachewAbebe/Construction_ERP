@@ -69,7 +69,7 @@ class InventoryLoanApprovalController extends Controller
             );
 
             $loan->status = 'approved';
-            $loan->approved_by = auth()->id();
+            $loan->approved_by = (int) auth()->id();
             $loan->approved_at = now();
             $loan->save();
 
