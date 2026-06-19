@@ -85,7 +85,7 @@ class InventoryLoanApprovalController extends Controller
             return back()->with('status', 'This request has already been processed.');
         }
 
-        return DB::transaction(function () use ($loan) {
+        return DB::transaction(function () use ($loan, $request) {
             // Lock the loan row and re-check so a concurrent approve can't deduct
             // stock for a request that we are rejecting (and vice versa).
             $loan = InventoryLoan::whereKey($loan->id)->lockForUpdate()->first();
@@ -95,7 +95,7 @@ class InventoryLoanApprovalController extends Controller
             }
 
             $loan->status = 'rejected';
-            $loan->rejected_by = auth()->id();
+            $loan->rejected_by = (int) auth()->id();
             $loan->rejected_at = now();
             $loan->rejection_reason = $request->input('rejection_reason');
             $loan->save();

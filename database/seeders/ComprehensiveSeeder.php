@@ -39,8 +39,8 @@ class ComprehensiveSeeder extends Seeder
             [
                 'first_name' => 'HR',
                 'last_name' => 'Manager',
-                'email' => env('HR_DEFAULT_EMAIL', 'humanresource@natanemengineering.com'),
-                'password' => env('HR_DEFAULT_PASSWORD', 'HumanResource@123'),
+                'email' => (string) config('seeder.hr_email', 'humanresource@natanemengineering.com'),
+                'password' => (string) config('seeder.hr_password', 'HumanResource@123'),
                 'role' => 'HumanResourceManager',
                 'dept' => 'Human Resources',
                 'pos' => 'Human Resource Manager',
@@ -48,8 +48,8 @@ class ComprehensiveSeeder extends Seeder
             [
                 'first_name' => 'Inventory',
                 'last_name' => 'Manager',
-                'email' => env('INVENTORY_DEFAULT_EMAIL', 'inventorymanager@natanemengineering.com'),
-                'password' => env('INVENTORY_DEFAULT_PASSWORD', 'InventoryManager@123'),
+                'email' => (string) config('seeder.inventory_email', 'inventorymanager@natanemengineering.com'),
+                'password' => (string) config('seeder.inventory_password', 'InventoryManager@123'),
                 'role' => 'InventoryManager',
                 'dept' => 'Logistics',
                 'pos' => 'Inventory Manager',
@@ -57,8 +57,8 @@ class ComprehensiveSeeder extends Seeder
             [
                 'first_name' => 'Finance',
                 'last_name' => 'Manager',
-                'email' => env('FINANCE_DEFAULT_EMAIL', 'financialmanager@natanemengineering.com'),
-                'password' => env('FINANCE_DEFAULT_PASSWORD', 'FinancialManager@123'),
+                'email' => (string) config('seeder.finance_email', 'financialmanager@natanemengineering.com'),
+                'password' => (string) config('seeder.finance_password', 'FinancialManager@123'),
                 'role' => 'FinancialManager',
                 'dept' => 'Finance',
                 'pos' => 'Financial Manager',
@@ -72,13 +72,13 @@ class ComprehensiveSeeder extends Seeder
                     'first_name' => $mgrData['first_name'],
                     'last_name' => $mgrData['last_name'],
                     'middle_name' => '',
-                    'password' => Hash::make($mgrData['password']),
+                    'password' => Hash::make((string) $mgrData['password']),
                     'role' => $mgrData['role'],
                     'email_verified_at' => now(),
                 ]
             );
             // Ensure password and role are in sync even if user exists
-            $user->password = Hash::make($mgrData['password']);
+            $user->password = Hash::make((string) $mgrData['password']);
             $user->role = $mgrData['role'];
             $user->save();
             $user->syncRoles([$mgrData['role']]);

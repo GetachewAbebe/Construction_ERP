@@ -22,8 +22,8 @@ class RolesAndAdminSeeder extends Seeder
             Role::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
         }
 
-        $email = env('ADMIN_DEFAULT_EMAIL', 'administrator@natanemengineering.com');
-        $pass = env('ADMIN_DEFAULT_PASSWORD', 'AdminNatanem@123');
+        $email = (string) config('seeder.admin_email', 'administrator@natanemengineering.com');
+        $pass = (string) config('seeder.admin_password', 'AdminNatanem@123');
 
         $admin = User::firstOrCreate(
             ['email' => $email],
@@ -31,14 +31,14 @@ class RolesAndAdminSeeder extends Seeder
                 'first_name' => 'System',
                 'last_name' => 'Admin',
                 'middle_name' => '',
-                'password' => Hash::make($pass),
+                'password' => Hash::make((string) $pass),
                 'role' => 'Administrator',
                 'email_verified_at' => now(),
             ]
         );
 
         // Keep password and role in sync with the provided one
-        $admin->password = Hash::make($pass);
+        $admin->password = Hash::make((string) $pass);
         $admin->role = 'Administrator';
         $admin->save();
 

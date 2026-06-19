@@ -9,6 +9,26 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property int $id
+ * @property int|null $user_id
+ * @property string $first_name
+ * @property string $last_name
+ * @property string|null $name
+ * @property string $email
+ * @property string|null $department
+ * @property int|null $department_id
+ * @property string|null $position
+ * @property int|null $position_id
+ * @property string|null $phone
+ * @property string|null $profile_picture
+ * @property \Illuminate\Support\Carbon|null $hire_date
+ * @property string|null $salary
+ * @property string|null $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ */
 class Employee extends Model
 {
     use HasFactory, LogsActivity, SoftDeletes;
