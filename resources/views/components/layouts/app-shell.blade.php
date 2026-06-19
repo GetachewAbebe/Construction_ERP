@@ -78,7 +78,7 @@
 @endphp
 
 <!DOCTYPE html>
-<html lang="en" data-theme="natanem">
+<html lang="en" id="html-root" data-theme="natanem">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -88,8 +88,27 @@
     @vite(['resources/css/mary.css'])
     @livewireStyles
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    {{-- Apply saved theme BEFORE first paint to eliminate FOUC --}}
+    <script>
+        (function () {
+            var saved = localStorage.getItem('erp-theme');
+            var preferred = (saved === 'natanem-dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches))
+                ? 'natanem-dark' : 'natanem';
+            document.getElementById('html-root').setAttribute('data-theme', preferred);
+        })();
+    </script>
 </head>
-<body class="min-h-screen bg-base-200 text-base-content antialiased" x-data="{ sidebar: false }">
+<body class="min-h-screen bg-base-200 text-base-content antialiased"
+      x-data="{
+          sidebar: false,
+          darkMode: localStorage.getItem('erp-theme') === 'natanem-dark' || (!localStorage.getItem('erp-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches),
+          toggleTheme() {
+              this.darkMode = !this.darkMode;
+              var theme = this.darkMode ? 'natanem-dark' : 'natanem';
+              document.getElementById('html-root').setAttribute('data-theme', theme);
+              localStorage.setItem('erp-theme', theme);
+          }
+      }">
 
     {{-- Mobile overlay --}}
     <div x-show="sidebar" x-transition.opacity @click="sidebar = false"
@@ -140,6 +159,15 @@
             <h1 class="truncate text-base font-semibold">{{ $title }}</h1>
 
             <div class="ml-auto flex items-center gap-1">
+                {{-- Dark / Light mode toggle --}}
+                <button @click="toggleTheme()"
+                        class="rounded-md p-2 text-base-content/60 hover:bg-base-200 transition-colors"
+                        :title="darkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+                        id="theme-toggle-btn">
+                    <x-mary-icon x-show="darkMode" name="o-sun" class="h-5 w-5" />
+                    <x-mary-icon x-show="!darkMode" name="o-moon" class="h-5 w-5" />
+                </button>
+
                 <a href="{{ route('notifications.index') }}" class="rounded-md p-2 text-base-content/60 hover:bg-base-200" title="Notifications">
                     <x-mary-icon name="o-bell" class="h-5 w-5" />
                 </a>

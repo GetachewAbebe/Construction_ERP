@@ -62,6 +62,58 @@
     --noise: 0;
 }
 
+@plugin "daisyui/theme" {
+    name: "natanem-dark";
+    prefersdark: true;
+    color-scheme: dark;
+
+    --color-base-100: #0d1b2a;
+    --color-base-200: #061019;
+    --color-base-300: #1b2d41;
+    --color-base-content: #f3f5f8;
+
+    --color-primary: #f5a623;
+    --color-primary-content: #0d1b2a;
+
+    --color-secondary: #1b2d41;
+    --color-secondary-content: #ffffff;
+
+    --color-accent: #f5a623;
+    --color-accent-content: #0d1b2a;
+
+    --color-neutral: #1b2d41;
+    --color-neutral-content: #ffffff;
+
+    --color-info: #3b82f6;
+    --color-info-content: #ffffff;
+    --color-success: #22c55e;
+    --color-success-content: #ffffff;
+    --color-warning: #eab308;
+    --color-warning-content: #ffffff;
+    --color-error: #ef4444;
+    --color-error-content: #ffffff;
+
+    --radius-selector: 0.5rem;
+    --radius-field: 0.5rem;
+    --radius-box: 0.75rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 1;
+    --noise: 0;
+}
+
+/* Premium Card hover interactive classes */
+.card-interactive {
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.15);
+    border-color: rgba(245, 166, 35, 0.2);
+}
+
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*

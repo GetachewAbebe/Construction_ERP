@@ -18,7 +18,7 @@
                 ['label' => 'Employees', 'value' => $totalEmployees ?? 0, 'icon' => 'o-identification', 'accent' => 'border-l-success', 'text' => 'text-success'],
                 ['label' => 'Pending Approvals', 'value' => $pendingTotal, 'icon' => 'o-clock', 'accent' => 'border-l-warning', 'text' => 'text-warning'],
             ] as $kpi)
-                <div class="flex items-center justify-between rounded-lg border border-base-300 border-l-4 {{ $kpi['accent'] }} bg-base-100 px-4 py-3 shadow-sm">
+                <div class="card-interactive flex items-center justify-between rounded-lg border border-base-300 border-l-4 {{ $kpi['accent'] }} bg-base-100 px-4 py-3 shadow-sm">
                     <div>
                         <div class="text-[11px] font-medium uppercase tracking-wide text-base-content/50">{{ $kpi['label'] }}</div>
                         <div class="mt-1 text-2xl font-bold tabular-nums {{ $kpi['text'] }}">{{ $kpi['value'] }}</div>
@@ -33,7 +33,7 @@
         {{-- Vitality + Activity --}}
         <div class="grid gap-4 lg:grid-cols-3">
             {{-- System vitality --}}
-            <div class="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
+            <div class="card-interactive rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
                 <div class="flex items-start justify-between">
                     <div>
                         <h3 class="font-semibold">System Vitality</h3>
@@ -52,7 +52,7 @@
             </div>
 
             {{-- Activity stream --}}
-            <div class="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm lg:col-span-2">
+            <div class="card-interactive rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm lg:col-span-2">
                 <div class="mb-4 flex items-center justify-between">
                     <div>
                         <h3 class="font-semibold">Recent Activity</h3>
@@ -94,19 +94,19 @@
                 </div>
                 <div class="grid gap-3 sm:grid-cols-3">
                     @if (($pendingLeaveCount ?? 0) > 0)
-                        <a href="{{ route('admin.requests.leave-approvals.index') }}" class="flex items-center justify-between rounded-lg border border-base-300 bg-base-100 px-4 py-3 shadow-sm transition hover:shadow">
+                        <a href="{{ route('admin.requests.leave-approvals.index') }}" class="card-interactive flex items-center justify-between rounded-lg border border-base-300 bg-base-100 px-4 py-3 shadow-sm">
                             <span class="text-sm font-medium">Leave Requests</span>
                             <span class="badge badge-warning">{{ $pendingLeaveCount }}</span>
                         </a>
                     @endif
                     @if (($pendingExpenseCount ?? 0) > 0)
-                        <a href="{{ route('admin.requests.finance') }}" class="flex items-center justify-between rounded-lg border border-base-300 bg-base-100 px-4 py-3 shadow-sm transition hover:shadow">
+                        <a href="{{ route('admin.requests.finance') }}" class="card-interactive flex items-center justify-between rounded-lg border border-base-300 bg-base-100 px-4 py-3 shadow-sm">
                             <span class="text-sm font-medium">Expenses</span>
                             <span class="badge badge-warning">{{ $pendingExpenseCount }}</span>
                         </a>
                     @endif
                     @if (($pendingLoanCount ?? 0) > 0)
-                        <a href="{{ route('admin.requests.items') }}" class="flex items-center justify-between rounded-lg border border-base-300 bg-base-100 px-4 py-3 shadow-sm transition hover:shadow">
+                        <a href="{{ route('admin.requests.items') }}" class="card-interactive flex items-center justify-between rounded-lg border border-base-300 bg-base-100 px-4 py-3 shadow-sm">
                             <span class="text-sm font-medium">Inventory Loans</span>
                             <span class="badge badge-warning">{{ $pendingLoanCount }}</span>
                         </a>
@@ -125,7 +125,7 @@
                 ['title' => 'Maintenance', 'desc' => 'Backups, logs and recycle bin.', 'icon' => 'o-wrench-screwdriver', 'route' => 'admin.maintenance.index', 'cta' => 'Open maintenance'],
                 ['title' => 'Settings', 'desc' => 'System parameters and notifications.', 'icon' => 'o-cog-6-tooth', 'route' => 'admin.system-settings.index', 'cta' => 'Open settings'],
             ] as $mod)
-                <div class="flex flex-col rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
+                <div class="card-interactive flex flex-col rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
                     <div class="mb-3 grid h-10 w-10 place-items-center rounded-lg bg-primary/10 text-primary">
                         <x-mary-icon name="{{ $mod['icon'] }}" class="h-5 w-5" />
                     </div>

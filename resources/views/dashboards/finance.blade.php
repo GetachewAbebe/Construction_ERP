@@ -13,7 +13,7 @@
                 ['label' => 'Total Expenses', 'value' => number_format($totalExpenses ?? 0), 'icon' => 'o-credit-card', 'accent' => 'border-l-warning', 'text' => 'text-warning'],
                 ['label' => 'Remaining', 'value' => number_format($remainingBudget ?? 0), 'icon' => 'o-wallet', 'accent' => 'border-l-success', 'text' => 'text-success'],
             ] as $kpi)
-                <div class="flex items-center justify-between rounded-lg border border-base-300 border-l-4 {{ $kpi['accent'] }} bg-base-100 px-4 py-3 shadow-sm">
+                <div class="card-interactive flex items-center justify-between rounded-lg border border-base-300 border-l-4 {{ $kpi['accent'] }} bg-base-100 px-4 py-3 shadow-sm">
                     <div>
                         <div class="text-[11px] font-medium uppercase tracking-wide text-base-content/50">{{ $kpi['label'] }}</div>
                         <div class="mt-1 text-xl font-bold tabular-nums {{ $kpi['text'] }}">{{ $kpi['value'] }}</div>
@@ -26,7 +26,7 @@
         </div>
 
         {{-- Budget usage bar --}}
-        <div class="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
+        <div class="card-interactive rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
             <div class="mb-2 flex items-center justify-between text-sm">
                 <span class="font-medium">Budget utilisation</span>
                 <span class="text-base-content/60">{{ $usagePercentage ?? 0 }}%</span>
@@ -39,14 +39,14 @@
 
         <div class="grid gap-4 lg:grid-cols-3">
             {{-- Portfolio chart --}}
-            <div class="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm lg:col-span-2">
+            <div class="card-interactive rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm lg:col-span-2">
                 <h3 class="font-semibold">Project Portfolio</h3>
                 <p class="text-xs text-base-content/50">Budget vs spend by project</p>
                 <div id="portfolioChart" class="mt-3"></div>
             </div>
 
             {{-- Recent projects --}}
-            <div class="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
+            <div class="card-interactive rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
                 <div class="mb-3 flex items-center justify-between">
                     <h3 class="font-semibold">Recent Projects</h3>
                     <a href="{{ route('finance.projects.index') }}" class="btn btn-ghost btn-xs">All</a>
