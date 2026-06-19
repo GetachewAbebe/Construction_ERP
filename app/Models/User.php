@@ -29,6 +29,7 @@ class User extends Authenticatable
         'position',
         'department',
         'status',
+        'bio',
     ];
 
     /**
@@ -173,10 +174,13 @@ class User extends Authenticatable
         // Simpler fallback: Filter in PHP collection if volume is low (usually unread count < 100).
         // Or use proper Json query.
 
-        // Attempting PHP-side filtering for robust cross-driver compatibility:
-        return $this->unreadNotifications->filter(function ($notification) use ($types, $module) {
-            return in_array($notification->data['type'] ?? '', $types[$module]);
-        })->count();
+        return $this->unreadNotifications()
+            ->where(function ($query) use ($types, $module) {
+                foreach ($types[$module] as $type) {
+                    $query->orWhere('data', 'like', '%"type":"' . $type . '"%');
+                }
+            })
+            ->count();
     }
 
     /**

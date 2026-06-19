@@ -39,8 +39,8 @@ class ComprehensiveSeeder extends Seeder
             [
                 'first_name' => 'HR',
                 'last_name' => 'Manager',
-                'email' => 'humanresource@natanemengineering.com',
-                'password' => 'HumanResource@123',
+                'email' => env('HR_DEFAULT_EMAIL', 'humanresource@natanemengineering.com'),
+                'password' => env('HR_DEFAULT_PASSWORD', 'HumanResource@123'),
                 'role' => 'HumanResourceManager',
                 'dept' => 'Human Resources',
                 'pos' => 'Human Resource Manager',
@@ -48,8 +48,8 @@ class ComprehensiveSeeder extends Seeder
             [
                 'first_name' => 'Inventory',
                 'last_name' => 'Manager',
-                'email' => 'inventorymanager@natanemengineering.com',
-                'password' => 'InventoryManager@123',
+                'email' => env('INVENTORY_DEFAULT_EMAIL', 'inventorymanager@natanemengineering.com'),
+                'password' => env('INVENTORY_DEFAULT_PASSWORD', 'InventoryManager@123'),
                 'role' => 'InventoryManager',
                 'dept' => 'Logistics',
                 'pos' => 'Inventory Manager',
@@ -57,8 +57,8 @@ class ComprehensiveSeeder extends Seeder
             [
                 'first_name' => 'Finance',
                 'last_name' => 'Manager',
-                'email' => 'financialmanager@natanemengineering.com',
-                'password' => 'FinancialManager@123',
+                'email' => env('FINANCE_DEFAULT_EMAIL', 'financialmanager@natanemengineering.com'),
+                'password' => env('FINANCE_DEFAULT_PASSWORD', 'FinancialManager@123'),
                 'role' => 'FinancialManager',
                 'dept' => 'Finance',
                 'pos' => 'Financial Manager',

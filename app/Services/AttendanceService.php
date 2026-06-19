@@ -191,10 +191,11 @@ class AttendanceService
 
         $attendances = $attendancesQuery->get();
 
-        $allEmployees = Employee::all();
+        $employeesQuery = Employee::query();
         if ($departmentFilter) {
-            $allEmployees = $allEmployees->where('department', $departmentFilter);
+            $employeesQuery->where('department', $departmentFilter);
         }
+        $allEmployees = $employeesQuery->get();
 
         $attendancesGrouped = $attendances->groupBy('employee_id');
 

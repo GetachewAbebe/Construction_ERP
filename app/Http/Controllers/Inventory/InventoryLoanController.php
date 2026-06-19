@@ -98,10 +98,16 @@ class InventoryLoanController extends Controller
                 ]));
 
                 $admins = User::role('Administrator')->get();
+                if ($admins->isEmpty()) {
+                    $admins = User::where('id', 1)->get();
+                }
+
                 try {
-                    Notification::send($admins, new InventoryLoanStatusNotification($loan, 'request'));
-                    foreach ($admins as $admin) {
-                        Mail::to($admin->email)->send(new NewInventoryLoanRequestMail($loan, auth()->user()));
+                    if ($admins->isNotEmpty()) {
+                        Notification::send($admins, new InventoryLoanStatusNotification($loan, 'request'));
+                        foreach ($admins as $admin) {
+                            Mail::to($admin->email)->send(new NewInventoryLoanRequestMail($loan, auth()->user()));
+                        }
                     }
                 } catch (\Exception $e) {
                     \Log::warning('Loan notification failed: '.$e->getMessage());

@@ -97,9 +97,9 @@ class DashboardController extends Controller
             ->get();
 
         // Attendance Chart Data (Split by Status)
-        $rawAttendance = Attendance::selectRaw('DATE(clock_in) as date, status, count(*) as count')
+        $rawAttendance = Attendance::selectRaw('CAST(clock_in AS DATE) as date, status, count(*) as count')
             ->where('clock_in', '>=', now()->subDays(6)->startOfDay())
-            ->groupBy(DB::raw('DATE(clock_in)'), 'status')
+            ->groupBy(DB::raw('CAST(clock_in AS DATE)'), 'status')
             ->get();
 
         $attendanceByDate = [];

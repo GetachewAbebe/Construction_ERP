@@ -54,10 +54,11 @@ class AdminUserController extends Controller
         $users = User::with('employee')
             ->when($q !== '', function ($query) use ($q) {
                 $query->where(function ($sub) use ($q) {
-                    $sub->where('first_name', 'ILIKE', "%{$q}%")
-                        ->orWhere('middle_name', 'ILIKE', "%{$q}%")
-                        ->orWhere('last_name', 'ILIKE', "%{$q}%")
-                        ->orWhere('email', 'ILIKE', "%{$q}%");
+                    $lowerQ = mb_strtolower($q);
+                    $sub->where(\Illuminate\Support\Facades\DB::raw('LOWER(first_name)'), 'like', "%{$lowerQ}%")
+                        ->orWhere(\Illuminate\Support\Facades\DB::raw('LOWER(middle_name)'), 'like', "%{$lowerQ}%")
+                        ->orWhere(\Illuminate\Support\Facades\DB::raw('LOWER(last_name)'), 'like', "%{$lowerQ}%")
+                        ->orWhere(\Illuminate\Support\Facades\DB::raw('LOWER(email)'), 'like', "%{$lowerQ}%");
                 });
             })
             ->orderBy('first_name')
@@ -108,6 +109,7 @@ class AdminUserController extends Controller
             'position' => $request->position,
             'department' => $request->department,
             'status' => $request->status ?? 'Active',
+            'bio' => $request->bio,
             'email_verified_at' => now(),
         ]);
 
@@ -126,8 +128,8 @@ class AdminUserController extends Controller
         // High-Integrity Employee Linking (Intelligent Sync)
         $email = strtolower(trim($user->email));
 
-        // Use ILIKE for PostgreSQL case-insensitive match
-        $employee = \App\Models\Employee::where('email', 'ILIKE', $email)->first();
+        // Database-agnostic case-insensitive match
+        $employee = \App\Models\Employee::where(\Illuminate\Support\Facades\DB::raw('LOWER(email)'), '=', mb_strtolower($email))->first();
 
         $employeeData = [
             'user_id' => $user->id,
@@ -195,7 +197,7 @@ class AdminUserController extends Controller
         $user->position = $request->position;
         $user->department = $request->department;
         $user->status = $request->status ?? 'Active';
-        // $user->bio          = $request->bio; // Disable: Column missing in prod
+        $user->bio          = $request->bio;
 
         if (! empty($validated['password'])) {
             $user->password = Hash::make($validated['password']);
@@ -222,9 +224,8 @@ class AdminUserController extends Controller
         $employee = \App\Models\Employee::withTrashed()->where('user_id', $user->id)->first();
 
         if (! $employee) {
-            // Fallback: Check if an employee exists with this email (orphan record or soft deleted)
-            // Use ILIKE for PostgreSQL case-insensitive match
-            $employee = \App\Models\Employee::withTrashed()->where('email', 'ILIKE', $user->email)->first();
+            // Fallback: Check if an employee exists with this email (database-agnostic case-insensitive)
+            $employee = \App\Models\Employee::withTrashed()->where(\Illuminate\Support\Facades\DB::raw('LOWER(email)'), '=', mb_strtolower($user->email))->first();
         }
 
         $employeeData = [

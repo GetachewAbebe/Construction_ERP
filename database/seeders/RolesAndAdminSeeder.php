@@ -22,8 +22,8 @@ class RolesAndAdminSeeder extends Seeder
             Role::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
         }
 
-        $email = 'administrator@natanemengineering.com';
-        $pass = 'AdminNatanem@123';
+        $email = env('ADMIN_DEFAULT_EMAIL', 'administrator@natanemengineering.com');
+        $pass = env('ADMIN_DEFAULT_PASSWORD', 'AdminNatanem@123');
 
         $admin = User::firstOrCreate(
             ['email' => $email],

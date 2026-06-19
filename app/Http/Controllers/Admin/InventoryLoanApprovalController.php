@@ -95,8 +95,9 @@ class InventoryLoanApprovalController extends Controller
             }
 
             $loan->status = 'rejected';
-            $loan->approved_by = auth()->id();
-            $loan->approved_at = now();
+            $loan->rejected_by = auth()->id();
+            $loan->rejected_at = now();
+            $loan->rejection_reason = $request->input('rejection_reason');
             $loan->save();
 
             $this->notifyParties($loan);

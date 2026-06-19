@@ -33,12 +33,12 @@ class ExpenseStatusNotification extends Notification
             return [
                 'type' => 'expense_request',
                 'title' => 'New Expense Request',
-                'message' => 'A new expense of ETB '.number_format($this->expense->amount, 2)." for project {$this->expense->project->name} requires your approval.",
+                'message' => 'A new expense of ETB '.number_format((float) $this->expense->amount, 2)." for project {$this->expense->project->name} requires your approval.",
                 'expense_id' => $this->expense->id,
                 'url' => route('finance.expenses.show', $this->expense),
                 'icon' => 'bi-receipt',
                 'color' => 'primary',
-                'priority' => $this->expense->amount > 5000 ? 'high' : 'medium',
+                'priority' => (float) $this->expense->amount > 5000 ? 'high' : 'medium',
             ];
         }
 
@@ -49,7 +49,7 @@ class ExpenseStatusNotification extends Notification
             return [
                 'type' => 'expense_status',
                 'title' => "Expense {$statusText}",
-                'message' => "{$name}'s expense request of ETB ".number_format($this->expense->amount, 2)." has been {$this->expense->status}.",
+                'message' => "{$name}'s expense request of ETB ".number_format((float) $this->expense->amount, 2)." has been {$this->expense->status}.",
                 'expense_id' => $this->expense->id,
                 'url' => route('finance.expenses.show', $this->expense),
                 'icon' => $this->expense->status === 'approved' ? 'bi-check-circle' : 'bi-x-circle',
@@ -64,7 +64,7 @@ class ExpenseStatusNotification extends Notification
         return [
             'type' => 'expense_status',
             'title' => "Expense {$statusText}",
-            'message' => 'Your expense request of ETB '.number_format($this->expense->amount, 2)." has been {$this->expense->status}.",
+            'message' => 'Your expense request of ETB '.number_format((float) $this->expense->amount, 2)." has been {$this->expense->status}.",
             'expense_id' => $this->expense->id,
             'url' => route('finance.expenses.show', $this->expense),
             'icon' => $this->expense->status === 'approved' ? 'bi-check-circle' : 'bi-x-circle',

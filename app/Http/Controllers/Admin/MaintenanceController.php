@@ -188,9 +188,10 @@ class MaintenanceController extends Controller
 
     public function downloadBackup($filename)
     {
+        $filename = basename($filename);
         $backupPath = storage_path("app/backups/{$filename}");
 
-        if (! File::exists($backupPath)) {
+        if (! preg_match('/^backup_\d{4}-\d{2}-\d{2}_\d{6}\.sql$/', $filename) || ! File::exists($backupPath)) {
             return redirect()->route('admin.maintenance.index')
                 ->with('error', 'Backup file not found in repository.');
         }

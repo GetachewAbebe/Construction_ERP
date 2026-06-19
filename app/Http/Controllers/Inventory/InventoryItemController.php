@@ -33,9 +33,10 @@ class InventoryItemController extends Controller
         $query = InventoryItem::query()
             ->when($q !== '', function ($query) use ($q) {
                 $query->where(function ($qq) use ($q) {
-                    $qq->where('item_no', 'ILIKE', "%{$q}%")
-                        ->orWhere('name', 'ILIKE', "%{$q}%")
-                        ->orWhere('description', 'ILIKE', "%{$q}%");
+                    $lowerQ = mb_strtolower($q);
+                    $qq->where(DB::raw('LOWER(item_no)'), 'like', "%{$lowerQ}%")
+                        ->orWhere(DB::raw('LOWER(name)'), 'like', "%{$lowerQ}%")
+                        ->orWhere(DB::raw('LOWER(description)'), 'like', "%{$lowerQ}%");
                 });
             })
             ->when($loc !== '', fn ($query) => $query->where('store_location', $loc))

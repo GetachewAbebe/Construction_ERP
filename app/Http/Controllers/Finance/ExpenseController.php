@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Finance;
 use App\Http\Controllers\Controller;
 use App\Models\Expense;
 use App\Models\Project;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -71,7 +72,28 @@ class ExpenseController extends Controller
             ]);
         }
 
-        $project->expenses()->create($validated);
+        $validated['user_id'] = auth()->id();
+        $expense = $project->expenses()->create($validated);
+
+        // Notify Financial Managers
+        try {
+            $managers = User::role(['Financial Manager', 'FinancialManager'])->get();
+            if ($managers->isEmpty()) {
+                $managers = User::role('Administrator')->get();
+            }
+            if ($managers->isEmpty()) {
+                $managers = User::where('id', 1)->get();
+            }
+
+            if ($managers->isNotEmpty()) {
+                \Illuminate\Support\Facades\Notification::send($managers, new \App\Notifications\ExpenseStatusNotification($expense, 'request'));
+                foreach ($managers as $manager) {
+                    \Illuminate\Support\Facades\Mail::to($manager->email)->send(new \App\Mail\NewExpenseRequestMail($expense, auth()->user()));
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::warning('New expense notification dispatch failed: '.$e->getMessage());
+        }
 
         return redirect()->route('finance.expenses.index')
             ->with('success', 'Field transaction log verified and recorded successfully.');
