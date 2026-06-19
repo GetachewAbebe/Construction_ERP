@@ -94,7 +94,7 @@ class LeaveApprovalController extends Controller
         }
 
         auth()->user()->unreadNotifications()
-            ->where('data->leave_id', (string) $leave->id)
+            ->whereRaw("(data::jsonb)->>'leave_id' = ?", [(string) $leave->id])
             ->get()
             ->markAsRead();
     }

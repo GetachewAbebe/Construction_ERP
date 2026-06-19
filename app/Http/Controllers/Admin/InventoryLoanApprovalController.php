@@ -124,7 +124,7 @@ class InventoryLoanApprovalController extends Controller
         }
 
         auth()->user()->unreadNotifications()
-            ->where('data->loan_id', (string) $loan->id)
+            ->whereRaw("(data::jsonb)->>'loan_id' = ?", [(string) $loan->id])
             ->get()
             ->markAsRead();
     }

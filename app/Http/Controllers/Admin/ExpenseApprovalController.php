@@ -77,7 +77,7 @@ class ExpenseApprovalController extends Controller
 
         try {
             Auth::user()->unreadNotifications()
-                ->where('data->expense_id', (string) $expense->id)
+                ->whereRaw("(data::jsonb)->>'expense_id' = ?", [(string) $expense->id])
                 ->get()
                 ->markAsRead();
         } catch (\Exception $e) {
