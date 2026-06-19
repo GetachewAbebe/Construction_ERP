@@ -177,7 +177,7 @@ class User extends Authenticatable
         return $this->unreadNotifications()
             ->where(function ($query) use ($types, $module) {
                 foreach ($types[$module] as $type) {
-                    $query->orWhere('data', 'like', '%"type":"' . $type . '"%');
+                    $query->orWhere('data', 'like', '%"type":"'.$type.'"%');
                 }
             })
             ->count();
