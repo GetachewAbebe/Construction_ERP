@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\ExpenseStatus;
+use App\Enums\LeaveStatus;
+use App\Enums\LoanStatus;
 use App\Models\Attendance;
 use App\Models\Employee;
 use App\Models\Expense;
@@ -12,9 +15,8 @@ use App\Models\InventoryLoan;
 use App\Models\LeaveRequest;
 use App\Models\Project;
 use Illuminate\Support\Facades\DB;
-
-// use App\Models\EmployeeOnLeave; // Removed as it might be a custom view/model not standard.
-// If code below uses it, I will assume it exists or replace with DB query.
+use Inertia\Inertia;
+use Inertia\Response;
 
 class DashboardController extends Controller
 {
@@ -25,33 +27,138 @@ class DashboardController extends Controller
     public function admin()
     {
         // 1. Pending Approvals
-        $pendingLoanCount = InventoryLoan::where('status', 'pending')->count();
-        $pendingExpenseCount = Expense::where('status', 'pending')->count();
-        $pendingLeaveCount = LeaveRequest::where('status', 'pending')->count();
+        $pendingLoanCount = InventoryLoan::where('status', LoanStatus::Pending->value)->count();
+        $pendingExpenseCount = Expense::where('status', ExpenseStatus::Pending->value)->count();
+        $pendingLeaveCount = LeaveRequest::where('status', LeaveStatus::Pending->value)->count();
 
         // 2. System Intelligence (Stats)
         $totalUsers = \App\Models\User::count();
         $totalProjects = Project::count();
         $totalEmployees = Employee::count();
+        $totalItems = InventoryItem::count();
+        $activeLoans = InventoryLoan::where('status', LoanStatus::Approved->value)->count();
+        $presentToday = Attendance::whereDate('date', now()->toDateString())
+            ->whereIn('status', ['present', 'Present'])
+            ->count();
 
-        // 3. Activity Stream
+        // 3. Financial Trajectory & Project Breakdown
+        $totalBudget = (float) Project::sum('budget');
+        $totalSpent = (float) Expense::where('status', ExpenseStatus::Approved->value)->sum('amount');
+        $financialStats = [
+            'total_budget' => $totalBudget,
+            'total_spent' => $totalSpent,
+            'remaining_budget' => max(0, $totalBudget - $totalSpent),
+            'usage_pct' => $totalBudget > 0 ? min(100, round(($totalSpent / $totalBudget) * 100, 1)) : 0,
+        ];
+
+        // Top projects with actual allocated vs spent
+        $projectsList = Project::with(['expenses' => function ($q) {
+            $q->where('status', ExpenseStatus::Approved->value);
+        }])->take(6)->get();
+
+        $projectBreakdown = $projectsList->map(function ($p) {
+            $spent = (float) $p->expenses->sum('amount');
+            $budget = (float) ($p->budget ?? 0);
+
+            return [
+                'name' => $p->name,
+                'budget' => round($budget / 1000000, 2),
+                'spent' => round($spent / 1000000, 2),
+                'raw_budget' => $budget,
+                'raw_spent' => $spent,
+            ];
+        });
+
+        // 4. Expense Categories Breakdown
+        $expenseCategories = DB::table('expenses')
+            ->where('status', ExpenseStatus::Approved->value)
+            ->whereNull('deleted_at')
+            ->select('category', DB::raw('SUM(amount) as total'))
+            ->groupBy('category')
+            ->orderByDesc('total')
+            ->get()
+            ->map(fn ($c) => [
+                'category' => ucfirst((string) $c->category),
+                'total' => (float) $c->total,
+                'total_formatted' => number_format((float) $c->total, 0),
+            ]);
+
+        // 5. Monthly Cash Flow (Dynamic Trailing 6 Months)
+        $months = [];
+        $expenseData = [];
+        $budgetData = [];
+        $totalProjectBudget = (float) Project::sum('budget');
+
+        for ($i = 5; $i >= 0; $i--) {
+            $monthDate = now()->subMonths($i);
+            $months[] = $monthDate->format('M');
+            $year = $monthDate->year;
+            $month = $monthDate->month;
+
+            $monthSpent = (float) Expense::whereIn('status', ['approved', 'Approved', ExpenseStatus::Approved->value])
+                ->whereYear('expense_date', $year)
+                ->whereMonth('expense_date', $month)
+                ->whereNull('deleted_at')
+                ->sum('amount');
+
+            $expenseData[] = round($monthSpent, 2);
+            $budgetData[] = $totalProjectBudget;
+        }
+
+        $monthlyCashFlow = [
+            'months' => $months,
+            'expenses' => $expenseData,
+            'budgets' => $budgetData,
+        ];
+
+        // 6. Recent Core Module Feeds
+        $recentExpenses = Expense::with(['project', 'user'])->latest('id')->take(4)->get();
+        $recentLoans = InventoryLoan::with(['item', 'employee'])->latest('id')->take(4)->get();
+        $recentEmployees = Employee::latest('id')->take(4)->get();
+        $recentLeaves = LeaveRequest::with('employee')->latest('id')->take(4)->get();
+
+        // 7. Department Workforce Distribution
+        $departmentStats = \App\Models\Department::has('employees')
+            ->withCount('employees')
+            ->get()
+            ->map(fn ($d) => (object) [
+                'department' => $d->name,
+                'total' => $d->employees_count,
+            ]);
+
+        // 8. Inventory Utilization
+        $inventoryUtilization = $totalItems > 0 ? round(($activeLoans / max(1, $totalItems)) * 100) : 0;
+
+        // 9. Activity Stream
         $activities = \App\Models\ActivityLog::with('user')
             ->latest()
-            ->take(10)
+            ->take(6)
             ->get();
 
-        // 4. System Health calculation (Simple logic: Pending vs total relevant records)
-        // High pending count reduces health. Higher approvals/records increase it.
+        // 10. System Health calculation
         $totalCritical = $pendingLoanCount + $pendingExpenseCount + $pendingLeaveCount;
         $systemHealth = $totalCritical > 15 ? max(65, 100 - ($totalCritical * 2)) : 98;
 
-        return view('dashboards.admin', [
+        return Inertia::render('Dashboards/AdminDashboard', [
             'pendingLoanCount' => $pendingLoanCount,
             'pendingLeaveCount' => $pendingLeaveCount,
             'pendingExpenseCount' => $pendingExpenseCount,
             'totalUsers' => $totalUsers,
             'totalProjects' => $totalProjects,
             'totalEmployees' => $totalEmployees,
+            'totalItems' => $totalItems,
+            'activeLoans' => $activeLoans,
+            'presentToday' => $presentToday,
+            'financialStats' => $financialStats,
+            'projectBreakdown' => $projectBreakdown,
+            'expenseCategories' => $expenseCategories,
+            'monthlyCashFlow' => $monthlyCashFlow,
+            'inventoryUtilization' => $inventoryUtilization,
+            'recentExpenses' => $recentExpenses,
+            'recentLoans' => $recentLoans,
+            'recentEmployees' => $recentEmployees,
+            'recentLeaves' => $recentLeaves,
+            'departmentStats' => $departmentStats,
             'activities' => $activities,
             'systemHealth' => $systemHealth,
         ]);
@@ -67,7 +174,6 @@ class DashboardController extends Controller
 
         // Calculate real-time "On Leave Today"
         $today = now()->toDateString();
-        // Using DB query instead of possibly missing Model if safe, but user had it working. I'll invoke Model as per original.
         try {
             $onLeaveTodayCount = \App\Models\EmployeeOnLeave::where('start_date', '<=', $today)
                 ->where('end_date', '>=', $today)
@@ -75,13 +181,13 @@ class DashboardController extends Controller
                 ->count();
         } catch (\Throwable $e) {
             // Fallback if view/model missing
-            $onLeaveTodayCount = LeaveRequest::where('status', 'approved')
+            $onLeaveTodayCount = LeaveRequest::where('status', LeaveStatus::Approved->value)
                 ->whereDate('start_date', '<=', $today)
                 ->whereDate('end_date', '>=', $today)
                 ->count();
         }
 
-        $pendingLeaveApprovals = LeaveRequest::where('status', 'pending')->count();
+        $pendingLeaveApprovals = LeaveRequest::where('status', LeaveStatus::Pending->value)->count();
         $recentHires = Employee::where('hire_date', '>=', now()->subDays(30))->count();
 
         // Latest 5 employees
@@ -125,7 +231,7 @@ class DashboardController extends Controller
             $lateData[] = $attendanceByDate[$dateString]['late'] ?? 0;
         }
 
-        return view('dashboards.hr', compact(
+        return Inertia::render('Dashboards/HrDashboard', compact(
             'employeeCount',
             'activeEmployees',
             'onLeaveTodayCount',
@@ -154,7 +260,7 @@ class DashboardController extends Controller
         $totalItems = $stableItemsCount + $lowStockCount + $zeroStockCount;
 
         // Open loans: active commitments
-        $openLoanCount = InventoryLoan::whereIn('status', ['pending', 'approved'])->count();
+        $openLoanCount = InventoryLoan::whereIn('status', [LoanStatus::Pending->value, LoanStatus::Approved->value])->count();
 
         // Health = % of catalog that is "Stable" (Stock > 5)
         $healthPercentage = $totalItems > 0 ? round(($stableItemsCount / $totalItems) * 100) : 0;
@@ -171,7 +277,7 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        return view('dashboards.inventory', compact(
+        return Inertia::render('Dashboards/InventoryDashboard', compact(
             'totalItems',
             'stableItemsCount',
             'lowStockCount',
@@ -204,7 +310,7 @@ class DashboardController extends Controller
         $portfolioBudgets = $projectsParams->pluck('budget')->toArray();
         $portfolioExpenses = $projectsParams->pluck('expenses_sum_amount')->map(fn ($v) => $v ?? 0)->toArray();
 
-        return view('dashboards.finance', compact(
+        return Inertia::render('Dashboards/FinanceDashboard', compact(
             'totalProjects',
             'totalBudget',
             'totalExpenses',

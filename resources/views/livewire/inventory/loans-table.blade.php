@@ -147,11 +147,16 @@
                                             spinner="reject({{ $loan->id }})"
                                             class="btn-ghost btn-xs text-error" />
                                     @elseif ($loan->status === 'approved')
-                                        <x-mary-button label="Mark Returned"
-                                            wire:click="markReturned({{ $loan->id }})"
-                                            wire:confirm="Mark this loan as returned and restore stock?"
-                                            spinner="markReturned({{ $loan->id }})"
-                                            class="btn-outline btn-xs" />
+                                        <div class="flex items-center justify-end gap-1">
+                                            <a href="{{ route('inventory.loans.print', $loan) }}" target="_blank" class="btn btn-xs btn-ghost text-primary" title="Print Gate Pass">
+                                                <x-mary-icon name="o-printer" class="w-3.5 h-3.5" /> Pass
+                                            </a>
+                                            <x-mary-button label="Mark Returned"
+                                                wire:click="markReturned({{ $loan->id }})"
+                                                wire:confirm="Mark this loan as returned and restore stock?"
+                                                spinner="markReturned({{ $loan->id }})"
+                                                class="btn-outline btn-xs" />
+                                        </div>
                                     @else
                                         <span class="text-xs text-base-content/30">—</span>
                                     @endif

@@ -12,9 +12,11 @@ use Illuminate\Support\Facades\Route;
  */
 Route::middleware([
     'auth',
-    'role:Administrator,Admin,Financial Manager',
+    'role:Administrator,Admin,Financial Manager,FinancialManager',
     'prevent-back-history',
 ])->group(function () {
+    Route::redirect('/finance', '/finance/dashboard');
+
     // Finance Management
     Route::prefix('finance')->name('finance.')->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'finance'])->name('dashboard');
@@ -26,13 +28,14 @@ Route::middleware([
         Route::put('/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 
         // Projects & Expenses
+        Route::get('/expenses/export', [App\Http\Controllers\Finance\ExpenseController::class, 'exportCsv'])->name('expenses.export');
         Route::resource('projects', App\Http\Controllers\Finance\ProjectController::class);
         Route::resource('expenses', App\Http\Controllers\Finance\ExpenseController::class);
 
         // Expense Approval Workflow
-        Route::post('/expenses/{expense}/approve', [App\Http\Controllers\Finance\ExpenseController::class, 'approve'])
+        Route::post('/expenses/{expense}/approve', [App\Http\Controllers\Admin\ExpenseApprovalController::class, 'approve'])
             ->name('expenses.approve');
-        Route::post('/expenses/{expense}/reject', [App\Http\Controllers\Finance\ExpenseController::class, 'reject'])
+        Route::post('/expenses/{expense}/reject', [App\Http\Controllers\Admin\ExpenseApprovalController::class, 'reject'])
             ->name('expenses.reject');
     });
 });

@@ -16,10 +16,11 @@ use Illuminate\Support\Facades\Route;
  */
 Route::middleware([
     'auth',
-    'role:Administrator,Admin,Human Resource Manager',
+    'role:Administrator,Admin,Human Resource Manager,HumanResourceManager',
     'prevent-back-history',
 ])->group(function () {
     Route::get('/hr', [DashboardController::class, 'hr'])->name('hr.dashboard');
+    Route::redirect('/hr/dashboard', '/hr');
     Route::get('/hr/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('hr.notifications');
 
     // Professional Identity Management

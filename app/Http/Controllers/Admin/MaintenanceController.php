@@ -43,7 +43,10 @@ class MaintenanceController extends Controller
         // Get recent log files
         $logFiles = $this->getRecentLogFiles();
 
-        return view('admin.maintenance.index', compact('systemInfo', 'cacheInfo', 'storageInfo', 'logFiles', 'pendingMigrations'));
+        // Get database backups
+        $backups = $this->listBackupsData();
+
+        return \Inertia\Inertia::render('Admin/Maintenance/Index', compact('systemInfo', 'cacheInfo', 'storageInfo', 'logFiles', 'pendingMigrations', 'backups'));
     }
 
     public function runMigrations()
@@ -201,6 +204,11 @@ class MaintenanceController extends Controller
 
     public function listBackups()
     {
+        return response()->json($this->listBackupsData());
+    }
+
+    private function listBackupsData()
+    {
         $backupPath = storage_path('app/backups');
 
         if (! File::exists($backupPath)) {
@@ -218,7 +226,7 @@ class MaintenanceController extends Controller
             ];
         }
 
-        return response()->json($backups);
+        return $backups;
     }
 
     private function getDirectorySize($path)

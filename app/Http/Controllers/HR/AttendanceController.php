@@ -66,11 +66,12 @@ class AttendanceController extends Controller
                 ->first();
         }
 
-        return view('hr.attendance.index', [
+        return \Inertia\Inertia::render('HR/Attendance/Index', [
             'attendances' => $attendances,
             'employees' => $employees,
             'todayStats' => $todayStats,
             'myOpenAttendance' => $myOpenAttendance,
+            'filters' => $request->only(['date_from', 'date_to', 'employee_filter', 'status']),
         ]);
     }
 
@@ -86,10 +87,11 @@ class AttendanceController extends Controller
 
         $attendances = Attendance::whereDate('date', $date)->get()->keyBy('employee_id');
 
-        return view('hr.attendance.daily-sheet', [
-            'date' => $date,
+        return \Inertia\Inertia::render('HR/Attendance/DailySheet', [
+            'date' => $date->toDateString(),
             'employees' => $employees,
             'attendances' => $attendances,
+            'isToday' => $date->isToday(),
         ]);
     }
 
@@ -151,12 +153,12 @@ class AttendanceController extends Controller
                 return $item->date->toDateString();
             }]);
 
-        return view('hr.attendance.weekly-sheet', [
-            'monday' => $monday,
-            'saturday' => $saturday,
+        return \Inertia\Inertia::render('HR/Attendance/WeeklySheet', [
+            'monday' => $monday->toDateString(),
+            'saturday' => $saturday->toDateString(),
             'employees' => $employees,
             'attendances' => $attendances,
-            'date' => $date,
+            'date' => $date->toDateString(),
         ]);
     }
 
@@ -297,9 +299,9 @@ class AttendanceController extends Controller
             $analysis[count($analysis) - 1]['employee'] = $employee;
         }
 
-        return view('hr.attendance.weekly-salary', [
-            'weekStart' => $date,
-            'weekEnd' => (clone $date)->addDays(6),
+        return \Inertia\Inertia::render('HR/Attendance/WeeklySalary', [
+            'weekStart' => $date->toDateString(),
+            'weekEnd' => (clone $date)->addDays(6)->toDateString(),
             'analysis' => $analysis,
         ]);
     }
@@ -380,12 +382,17 @@ class AttendanceController extends Controller
 
         $summary = $this->attendanceService->buildMonthlySummaryData($year, $month, $departmentFilter);
 
-        return view('hr.attendance.monthly-summary', array_merge($summary, [
+        return \Inertia\Inertia::render('HR/Attendance/MonthlySummary', [
+            'perEmployee' => $summary['perEmployee']->values(),
+            'totalEmployeesInScope' => $summary['totalEmployeesInScope'],
+            'totalCreditsInScope' => $summary['totalCreditsInScope'],
             'year' => $year,
             'month' => $month,
             'departmentFilter' => $departmentFilter,
             'departments' => $departments,
-        ]));
+            'startOfMonth' => $summary['startOfMonth']->toDateString(),
+            'endOfMonth' => $summary['endOfMonth']->toDateString(),
+        ]);
     }
 
     /**

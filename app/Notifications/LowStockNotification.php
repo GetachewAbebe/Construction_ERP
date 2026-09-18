@@ -6,11 +6,9 @@ namespace App\Notifications;
 
 use App\Models\InventoryItem;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class LowStockNotification extends Notification implements ShouldQueue
+class LowStockNotification extends Notification
 {
     use Queueable;
 
@@ -31,23 +29,7 @@ class LowStockNotification extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
-    }
-
-    /**
-     * Get the mail representation of the notification.
-     */
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->error()
-            ->subject('Low Stock Alert: '.$this->item->name)
-            ->line('The following item has reached a low stock level:')
-            ->line('Item No: '.$this->item->item_no)
-            ->line('Item Name: '.$this->item->name)
-            ->line('Current Quantity: '.$this->item->quantity)
-            ->action('View Item', route('inventory.items.edit', $this->item->id))
-            ->line('Please consider restock soon.');
+        return ['database'];
     }
 
     /**
@@ -57,11 +39,25 @@ class LowStockNotification extends Notification implements ShouldQueue
      */
     public function toArray(object $notifiable): array
     {
+        $unit = $this->item->unit_of_measurement ?? 'units';
+        $qty = $this->item->quantity;
+        $isZero = $qty <= 0;
+
         return [
+            'type' => 'inventory_low_stock',
+            'title' => $isZero ? 'Out of Stock Alert' : 'Low Stock Warning',
+            'message' => $isZero
+                ? "Item '{$this->item->name}' is completely out of stock (0 {$unit}). Restock immediately."
+                : "Item '{$this->item->name}' is running critically low ({$qty} {$unit} remaining).",
             'item_id' => $this->item->id,
             'item_name' => $this->item->name,
-            'quantity' => $this->item->quantity,
-            'message' => "Low stock alert for {$this->item->name} (Qty: {$this->item->quantity})",
+            'quantity' => $qty,
+            'unit' => $unit,
+            'url' => route('inventory.items.index'),
+            'icon' => 'bi-exclamation-triangle',
+            'color' => $isZero ? 'danger' : 'warning',
+            'priority' => 'high',
         ];
     }
 }
+

@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
+
 class NotificationController extends Controller
 {
     public function index()
     {
         $notifications = auth()->user()->notifications()->paginate(15);
 
-        return view('notifications.index', compact('notifications'));
+        return Inertia::render('Notifications/Index', [
+            'notifications' => $notifications,
+        ]);
     }
 
     public function markAsRead($id)
@@ -18,13 +22,13 @@ class NotificationController extends Controller
         $notification = auth()->user()->notifications()->findOrFail($id);
         $notification->markAsRead();
 
-        return response()->json(['success' => true]);
+        return back()->with('success', 'Notification marked as read.');
     }
 
     public function markAllAsRead()
     {
         auth()->user()->unreadNotifications->markAsRead();
 
-        return back();
+        return back()->with('success', 'All notifications marked as read.');
     }
 }

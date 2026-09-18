@@ -15,11 +15,11 @@ class ActivityLogController extends Controller
             ->latest()
             ->paginate(50);
 
-        return view('admin.activity-logs.index', compact('logs'));
+        return \Inertia\Inertia::render('Admin/ActivityLogs/Index', compact('logs'));
     }
 
     public function show(ActivityLog $activityLog)
     {
-        return view('admin.activity-logs.show', ['log' => $activityLog]);
+        return \Inertia\Inertia::render('Admin/ActivityLogs/Show', ['log' => $activityLog->load('user')]);
     }
 }

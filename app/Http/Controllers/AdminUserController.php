@@ -9,7 +9,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 use Spatie\Permission\Models\Role;
 
 class AdminUserController extends Controller
@@ -26,20 +27,25 @@ class AdminUserController extends Controller
 
     /**
      * (Optional) Extra safety so only Administrator can manage users,
-     * even though web.php already uses middleware('role:Administrator').
+     * even though routes already use middleware('role:Administrator').
      */
     private function enforceAdmin(): void
     {
+        /** @var \App\Models\User|null $user */
         $user = Auth::user();
 
         if (! $user) {
             abort(403, 'Unauthorized.');
         }
 
+        if ($user->hasRole('Administrator') || $user->hasRole('Admin')) {
+            return;
+        }
+
         $rawRole = $user->role ?? '';
         $roleSlug = strtolower(trim((string) $rawRole));
 
-        if ($roleSlug !== 'administrator') {
+        if ($roleSlug !== 'administrator' && $roleSlug !== 'admin') {
             abort(403, 'Only Administrators can access this page.');
         }
     }
@@ -47,11 +53,11 @@ class AdminUserController extends Controller
     /**
      * List users with optional search + pagination.
      */
-    public function index(Request $request): View
+    public function index(Request $request): Response
     {
         $q = trim((string) $request->get('q', ''));
 
-        $users = User::with('employee')
+        $users = User::with(['employee', 'roles'])
             ->when($q !== '', function ($query) use ($q) {
                 $query->where(function ($sub) use ($q) {
                     $lowerQ = mb_strtolower($q);
@@ -68,13 +74,13 @@ class AdminUserController extends Controller
 
         $roles = $this->allowedRoles;
 
-        return view('admin.users.index', compact('users', 'q', 'roles'));
+        return \Inertia\Inertia::render('Admin/Users/Index', compact('users', 'q', 'roles'));
     }
 
     /**
      * Show create form.
      */
-    public function create(Request $request): View
+    public function create(Request $request)
     {
         $roles = $this->allowedRoles;
         $employee = null;
@@ -82,7 +88,7 @@ class AdminUserController extends Controller
             $employee = \App\Models\Employee::find($request->employee_id);
         }
 
-        return view('admin.users.create', compact('roles', 'employee'));
+        return \Inertia\Inertia::render('Admin/Users/Create', compact('roles', 'employee'));
     }
 
     /**
@@ -163,19 +169,22 @@ class AdminUserController extends Controller
     /**
      * Show a specific user's profile overview (View First).
      */
-    public function show(User $user): View
+    public function show(User $user)
     {
-        return view('admin.users.show', compact('user'));
+        $user->load('roles');
+
+        return \Inertia\Inertia::render('Admin/Users/Show', compact('user'));
     }
 
     /**
      * Show edit form.
      */
-    public function edit(User $user): View
+    public function edit(User $user)
     {
         $roles = $this->allowedRoles;
+        $user->load('roles');
 
-        return view('admin.users.edit', compact('user', 'roles'));
+        return \Inertia\Inertia::render('Admin/Users/Edit', compact('user', 'roles'));
     }
 
     /**

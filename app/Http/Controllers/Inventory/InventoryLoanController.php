@@ -17,7 +17,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class InventoryLoanController extends Controller
 {
@@ -32,7 +33,7 @@ class InventoryLoanController extends Controller
      * List all loans for Inventory (Inventory Manager + Admin).
      * Route: GET /inventory/loans
      */
-    public function index(Request $request): View
+    public function index(Request $request): Response
     {
         $q = trim((string) $request->input('q', ''));
         $status = $request->input('status');
@@ -55,19 +56,19 @@ class InventoryLoanController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        return view('inventory.loans.index', compact('loans', 'q', 'status'));
+        return Inertia::render('Inventory/Loans/Index', compact('loans', 'q', 'status'));
     }
 
     /**
      * Show create loan form.
      * Route: GET /inventory/loans/create
      */
-    public function create(): View
+    public function create(): Response
     {
         $items = InventoryItem::orderBy('name')->where('quantity', '>', 0)->get();
         $employees = Employee::orderBy('first_name')->get();
 
-        return view('inventory.loans.create', compact('items', 'employees'));
+        return Inertia::render('Inventory/Loans/Create', compact('items', 'employees'));
     }
 
     /**
@@ -123,20 +124,20 @@ class InventoryLoanController extends Controller
         }
     }
 
-    public function show(InventoryLoan $loan): View
+    public function show(InventoryLoan $loan): Response
     {
         $loan->load(['item', 'employee', 'approvedBy', 'rejectedBy']);
 
-        return view('inventory.loans.show', compact('loan'));
+        return Inertia::render('Inventory/Loans/Show', compact('loan'));
     }
 
-    public function edit(InventoryLoan $loan): View
+    public function edit(InventoryLoan $loan): Response
     {
         $loan->load(['item', 'employee']);
         $items = InventoryItem::orderBy('name')->get();
         $employees = Employee::orderBy('first_name')->get();
 
-        return view('inventory.loans.edit', compact('loan', 'items', 'employees'));
+        return Inertia::render('Inventory/Loans/Edit', compact('loan', 'items', 'employees'));
     }
 
     public function update(\App\Http\Requests\Inventory\UpdateInventoryLoanRequest $request, InventoryLoan $loan): RedirectResponse
@@ -221,5 +222,66 @@ class InventoryLoanController extends Controller
 
         return redirect()->route('inventory.loans.index')
             ->with('success', 'Loan successfully marked as returned.');
+    }
+
+    /**
+     * Export all loan ledger records as a CSV download.
+     * Route: GET /inventory/loans/export
+     */
+    public function exportCsv(Request $request)
+    {
+        $loans = InventoryLoan::with(['item', 'employee', 'approvedBy', 'rejectedBy'])
+            ->latest('id')
+            ->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="inventory_loans_export_'.date('Y-m-d_His').'.csv"',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        $callback = function () use ($loans) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, [
+                'Loan ID',
+                'Item No',
+                'Item Name',
+                'Borrower / Employee',
+                'Quantity Borrowed',
+                'Status',
+                'Requested At',
+                'Approved At',
+                'Returned At',
+                'Approved By',
+                'Remarks / Purpose',
+            ]);
+
+            foreach ($loans as $loan) {
+                $borrowerName = trim(($loan->employee->first_name ?? '').' '.($loan->employee->last_name ?? ''));
+                if (! $borrowerName && $loan->employee) {
+                    $borrowerName = $loan->employee->name ?? 'Employee #'.$loan->employee_id;
+                }
+
+                fputcsv($file, [
+                    $loan->id,
+                    $loan->item?->item_no ?? 'N/A',
+                    $loan->item?->name ?? 'N/A',
+                    $borrowerName ?: 'N/A',
+                    $loan->quantity,
+                    strtoupper($loan->status),
+                    $loan->requested_at ? (is_string($loan->requested_at) ? substr($loan->requested_at, 0, 10) : $loan->requested_at->format('Y-m-d')) : '',
+                    $loan->approved_at ? (is_string($loan->approved_at) ? substr($loan->approved_at, 0, 10) : $loan->approved_at->format('Y-m-d')) : '',
+                    $loan->returned_at ? (is_string($loan->returned_at) ? substr($loan->returned_at, 0, 10) : $loan->returned_at->format('Y-m-d')) : '',
+                    $loan->approvedBy?->name ?? 'N/A',
+                    $loan->remarks ?? '',
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

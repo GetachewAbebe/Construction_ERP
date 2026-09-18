@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\LoanStatus;
 use App\Http\Controllers\Controller;
 use App\Mail\InventoryLoanStatusMail;
 use App\Models\InventoryLoan;
@@ -16,7 +17,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class InventoryLoanApprovalController extends Controller
 {
@@ -24,19 +26,64 @@ class InventoryLoanApprovalController extends Controller
         private readonly InventoryService $inventoryService,
     ) {}
 
-    public function index(): View
+    public function index(): Response
     {
-        $loans = InventoryLoan::with(['item', 'employee'])
-            ->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")
-            ->latest()
-            ->paginate(20);
+        // Auto-clear any dangling unread loan request notifications for requests already processed
+        try {
+            $decidedLoanIds = InventoryLoan::where('status', '!=', LoanStatus::Pending->value)->pluck('id');
+            if ($decidedLoanIds->isNotEmpty()) {
+                \Illuminate\Notifications\DatabaseNotification::whereNull('read_at')
+                    ->where(function ($q) {
+                        $q->where('data', 'like', '%"type":"inventory_request"%')
+                          ->orWhere('data', 'like', '%"type": "inventory_request"%');
+                    })
+                    ->where(function ($q) use ($decidedLoanIds) {
+                        foreach ($decidedLoanIds as $id) {
+                            $q->orWhere('data', 'like', '%"loan_id":'.$id.'%')
+                              ->orWhere('data', 'like', '%"loan_id":"'.$id.'"%');
+                        }
+                    })
+                    ->update(['read_at' => now()]);
+            }
+            if (auth()->check()) {
+                auth()->user()->unsetRelation('unreadNotifications');
+            }
+        } catch (\Exception $e) {
+            Log::warning('Failed to auto-clear processed loan notifications: '.$e->getMessage());
+        }
 
-        return view('admin.requests.items', compact('loans'));
+        $pendingLoans = InventoryLoan::with(['item', 'employee'])
+            ->where('status', LoanStatus::Pending->value)
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+
+        $historyLoans = InventoryLoan::with(['item', 'employee'])
+            ->where('status', '!=', LoanStatus::Pending->value)
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+
+        $stats = [
+            'pending_count' => InventoryLoan::where('status', LoanStatus::Pending->value)->count(),
+            'active_borrowed' => InventoryLoan::where('status', LoanStatus::Approved->value)->whereNull('returned_at')->count(),
+            'approved_this_month' => InventoryLoan::where('status', LoanStatus::Approved->value)
+                ->whereMonth('approved_at', now()->month)
+                ->count(),
+        ];
+
+        return Inertia::render('Admin/Requests/LoanApprovals', [
+            'pendingLoans' => $pendingLoans,
+            'historyLoans' => $historyLoans,
+            'stats' => $stats,
+        ]);
     }
 
     public function approve(InventoryLoan $loan, Request $request): RedirectResponse
     {
-        if ($loan->status !== 'pending') {
+        $this->markLoanNotificationAsRead($loan);
+
+        if ($loan->status !== LoanStatus::Pending->value) {
             return back()->with('status', 'This request has already been processed.');
         }
 
@@ -45,7 +92,7 @@ class InventoryLoanApprovalController extends Controller
             // concurrent approvals can't both deduct stock for the same request.
             $loan = InventoryLoan::whereKey($loan->id)->lockForUpdate()->first();
 
-            if (! $loan || $loan->status !== 'pending') {
+            if (! $loan || $loan->status !== LoanStatus::Pending->value) {
                 return back()->with('status', 'This request has already been processed.');
             }
 
@@ -68,7 +115,7 @@ class InventoryLoanApprovalController extends Controller
                 "Approved loan ID: {$loan->id} for employee: {$loan->employee->name}"
             );
 
-            $loan->status = 'approved';
+            $loan->status = LoanStatus::Approved->value;
             $loan->approved_by = (int) auth()->id();
             $loan->approved_at = now();
             $loan->save();
@@ -81,7 +128,9 @@ class InventoryLoanApprovalController extends Controller
 
     public function reject(InventoryLoan $loan, Request $request): RedirectResponse
     {
-        if ($loan->status !== 'pending') {
+        $this->markLoanNotificationAsRead($loan);
+
+        if ($loan->status !== LoanStatus::Pending->value) {
             return back()->with('status', 'This request has already been processed.');
         }
 
@@ -90,11 +139,11 @@ class InventoryLoanApprovalController extends Controller
             // stock for a request that we are rejecting (and vice versa).
             $loan = InventoryLoan::whereKey($loan->id)->lockForUpdate()->first();
 
-            if (! $loan || $loan->status !== 'pending') {
+            if (! $loan || $loan->status !== LoanStatus::Pending->value) {
                 return back()->with('status', 'This request has already been processed.');
             }
 
-            $loan->status = 'rejected';
+            $loan->status = LoanStatus::Rejected->value;
             $loan->rejected_by = (int) auth()->id();
             $loan->rejected_at = now();
             $loan->rejection_reason = $request->input('rejection_reason');
@@ -109,7 +158,12 @@ class InventoryLoanApprovalController extends Controller
     private function notifyParties(InventoryLoan $loan): void
     {
         if ($loan->employee && $loan->employee->user) {
-            $loan->employee->user->notify(new InventoryLoanStatusNotification($loan, 'status_change'));
+            try {
+                $loan->employee->user->notify(new InventoryLoanStatusNotification($loan, 'status_change'));
+            } catch (\Exception $e) {
+                Log::warning('Employee loan status notification failed: '.$e->getMessage());
+            }
+
             try {
                 Mail::to($loan->employee->user->email)
                     ->send(new InventoryLoanStatusMail($loan, $loan->employee->user));
@@ -118,14 +172,38 @@ class InventoryLoanApprovalController extends Controller
             }
         }
 
-        $inventoryManagers = User::role('InventoryManager')->get();
-        if ($inventoryManagers->isNotEmpty()) {
-            Notification::send($inventoryManagers, new InventoryLoanStatusNotification($loan, 'status_update'));
+        try {
+            $inventoryManagers = User::role('InventoryManager')->get();
+            if ($inventoryManagers->isNotEmpty()) {
+                Notification::send($inventoryManagers, new InventoryLoanStatusNotification($loan, 'status_update'));
+            }
+        } catch (\Exception $e) {
+            Log::warning('Inventory manager notification failed: '.$e->getMessage());
         }
 
-        auth()->user()->unreadNotifications()
-            ->whereRaw("(data::jsonb)->>'loan_id' = ?", [(string) $loan->id])
-            ->get()
-            ->markAsRead();
+        $this->markLoanNotificationAsRead($loan);
+    }
+
+    private function markLoanNotificationAsRead(InventoryLoan $loan): void
+    {
+        try {
+            \Illuminate\Notifications\DatabaseNotification::whereNull('read_at')
+                ->where(function ($q) {
+                    $q->where('data', 'like', '%"type":"inventory_request"%')
+                      ->orWhere('data', 'like', '%"type": "inventory_request"%');
+                })
+                ->where(function ($q) use ($loan) {
+                    $q->where('data', 'like', '%"loan_id":'.$loan->id.'%')
+                      ->orWhere('data', 'like', '%"loan_id":"'.$loan->id.'"%')
+                      ->orWhere('data', 'like', '%"loan_id": "'.$loan->id.'"%');
+                })
+                ->update(['read_at' => now()]);
+
+            if (auth()->check()) {
+                auth()->user()->unsetRelation('unreadNotifications');
+            }
+        } catch (\Exception $e) {
+            Log::warning('Failed to mark loan notification as read: '.$e->getMessage());
+        }
     }
 }

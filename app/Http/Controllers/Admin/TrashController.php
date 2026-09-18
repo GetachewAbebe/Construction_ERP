@@ -15,6 +15,19 @@ use Illuminate\Http\Request;
 
 class TrashController extends Controller
 {
+    /**
+     * Whitelist of models permitted for restoration from the vault.
+     */
+    private const ALLOWED_MODELS = [
+        User::class,
+        Employee::class,
+        Expense::class,
+        InventoryItem::class,
+        \App\Models\InventoryLoan::class,
+        Project::class,
+        LeaveRequest::class,
+    ];
+
     public function index()
     {
         $trashedItems = collect();
@@ -25,6 +38,7 @@ class TrashController extends Controller
             'Employee' => Employee::onlyTrashed()->get(),
             'Expense' => Expense::onlyTrashed()->get(),
             'InventoryItem' => InventoryItem::onlyTrashed()->get(),
+            'InventoryLoan' => \App\Models\InventoryLoan::onlyTrashed()->get(),
             'Project' => Project::onlyTrashed()->get(),
             'LeaveRequest' => LeaveRequest::onlyTrashed()->get(),
         ];
@@ -43,22 +57,31 @@ class TrashController extends Controller
 
         $trashedItems = $trashedItems->sortByDesc('deleted_at');
 
-        return view('admin.trash.index', compact('trashedItems'));
+        return \Inertia\Inertia::render('Admin/Trash/Index', [
+            'trashedItems' => $trashedItems->values(),
+        ]);
     }
 
     public function restore(Request $request)
     {
-        $modelClass = $request->input('model');
-        $id = $request->input('id');
+        $request->validate([
+            'model' => ['required', 'string'],
+            'id' => ['required', 'integer'],
+        ]);
 
-        if (class_exists($modelClass)) {
-            $item = $modelClass::withTrashed()->find($id);
-            if ($item) {
-                $item->restore();
-                $resourceType = class_basename($modelClass);
+        $modelClass = (string) $request->input('model');
+        $id = (int) $request->input('id');
 
-                return redirect()->back()->with('success', "Asset restoration complete: {$resourceType} #{$id} has been successfully recovered from the vault.");
-            }
+        if (! in_array($modelClass, self::ALLOWED_MODELS, true) || ! class_exists($modelClass)) {
+            return redirect()->back()->with('error', 'Security Alert: Unauthorized or invalid model type for restoration.');
+        }
+
+        $item = $modelClass::withTrashed()->find($id);
+        if ($item) {
+            $item->restore();
+            $resourceType = class_basename($modelClass);
+
+            return redirect()->back()->with('success', "Asset restoration complete: {$resourceType} #{$id} has been successfully recovered from the vault.");
         }
 
         return redirect()->back()->with('error', 'Critical Error: Unable to execute restoration protocol. The specified resource may no longer exist in the vault.');

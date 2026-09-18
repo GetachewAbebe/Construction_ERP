@@ -11,6 +11,8 @@ use App\Services\InventoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class InventoryItemController extends Controller
 {
@@ -76,7 +78,7 @@ class InventoryItemController extends Controller
 
         $classifications = AssetClassification::orderBy('name')->get();
 
-        return view('inventory.items.index', compact('items', 'totals', 'q', 'loc', 'from', 'to', 'storeLocations', 'classifications'));
+        return Inertia::render('Inventory/Items/Index', compact('items', 'totals', 'q', 'loc', 'from', 'to', 'storeLocations', 'classifications'));
     }
 
     public function create()
@@ -84,7 +86,7 @@ class InventoryItemController extends Controller
         $classifications = AssetClassification::orderBy('name')->get();
         $vendors = \App\Models\Vendor::active()->orderBy('name')->get();
 
-        return view('inventory.items.create', compact('classifications', 'vendors'));
+        return Inertia::render('Inventory/Items/Create', compact('classifications', 'vendors'));
     }
 
     public function store(\App\Http\Requests\Inventory\StoreInventoryItemRequest $request)
@@ -131,7 +133,7 @@ class InventoryItemController extends Controller
         $classifications = AssetClassification::orderBy('name')->get();
         $vendors = \App\Models\Vendor::active()->orderBy('name')->get();
 
-        return view('inventory.items.edit', compact('item', 'classifications', 'vendors'));
+        return Inertia::render('Inventory/Items/Edit', compact('item', 'classifications', 'vendors'));
     }
 
     public function update(\App\Http\Requests\Inventory\UpdateInventoryItemRequest $request, InventoryItem $item)

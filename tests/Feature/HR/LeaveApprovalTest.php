@@ -20,6 +20,7 @@ class LeaveApprovalTest extends TestCase
     {
         Role::findOrCreate('Administrator', 'web');
         Role::findOrCreate('HumanResourceManager', 'web');
+        Role::findOrCreate('Human Resource Manager', 'web');
         $user = User::factory()->create();
         $user->assignRole('Administrator');
 

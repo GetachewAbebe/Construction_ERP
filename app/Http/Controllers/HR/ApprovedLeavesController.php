@@ -19,6 +19,9 @@ class ApprovedLeavesController extends Controller
             ->latest('approved_at')
             ->paginate(20);
 
-        return view('hr.leaves.approved', compact('approved'));
+        return \Inertia\Inertia::render('HR/Leaves/Index', [
+            'approved' => $approved,
+            'view' => 'logs',
+        ]);
     }
 }

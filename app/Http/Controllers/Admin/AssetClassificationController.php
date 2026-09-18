@@ -27,7 +27,7 @@ class AssetClassificationController extends Controller
             ->orderBy('hierarchy_path')
             ->paginate(25);
 
-        return view('admin.asset_classifications.index', compact('classifications'));
+        return \Inertia\Inertia::render('Inventory/AssetClassifications/Index', compact('classifications'));
     }
 
     /**
@@ -37,7 +37,7 @@ class AssetClassificationController extends Controller
     {
         $parents = AssetClassification::orderBy('name')->get();
 
-        return view('admin.asset_classifications.create', compact('parents'));
+        return \Inertia\Inertia::render('Inventory/AssetClassifications/Create', compact('parents'));
     }
 
     /**
@@ -69,7 +69,7 @@ class AssetClassificationController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('admin.asset_classifications.edit', [
+        return \Inertia\Inertia::render('Inventory/AssetClassifications/Edit', [
             'classification' => $assetClassification,
             'parents' => $parents,
         ]);

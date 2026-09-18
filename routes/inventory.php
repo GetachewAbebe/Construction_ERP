@@ -15,11 +15,12 @@ use Illuminate\Support\Facades\Route;
  */
 Route::middleware([
     'auth',
-    'role:Administrator,Admin,Inventory Manager',
+    'role:Administrator,Admin,Inventory Manager,InventoryManager',
     'prevent-back-history',
 ])->group(function () {
 
     Route::get('/inventory', [DashboardController::class, 'inventory'])->name('inventory.dashboard');
+    Route::redirect('/inventory/dashboard', '/inventory');
     Route::get('/inventory/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('inventory.notifications');
 
     // Professional Identity Management
@@ -51,6 +52,7 @@ Route::middleware([
          * LOANS (lending items to employees)
          */
         Route::get('/loans', [InventoryLoanController::class, 'index'])->name('loans.index');
+        Route::get('/loans/export', [InventoryLoanController::class, 'exportCsv'])->name('loans.export');
         Route::get('/loans/create', [InventoryLoanController::class, 'create'])->name('loans.create');
         Route::post('/loans', [InventoryLoanController::class, 'store'])->name('loans.store');
         Route::get('/loans/{loan}', [InventoryLoanController::class, 'show'])->name('loans.show');

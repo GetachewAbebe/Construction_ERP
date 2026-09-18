@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -23,11 +24,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $phone
  * @property string|null $profile_picture
  * @property \Illuminate\Support\Carbon|null $hire_date
- * @property string|null $salary
+ * @property \Illuminate\Support\Carbon|null $contract_end_date
+ * @property string|null $employment_type
  * @property string|null $status
+ * @property string|null $salary
+ * @property string|null $tin_number
+ * @property string|null $pension_number
+ * @property string|null $bank_name
+ * @property string|null $bank_account
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read Department|null $department_rel
+ * @property-read Position|null $position_rel
+ * @property-read User|null $user
  */
 class Employee extends Model
 {
@@ -35,37 +45,55 @@ class Employee extends Model
 
     protected $fillable = [
         'user_id',
-        'first_name', // Updated to match DB
-        'last_name',  // Updated to match DB
-        'name',       // Keeping for backward compatibility if needed, though DB seems to not have it
+        'first_name',
+        'middle_name',
+        'last_name',
         'email',
-        'department',
-        'department_id', // Added
-        'position',
-        'position_id',   // Added
         'phone',
-        'profile_picture', // Image path
+        'department',
+        'department_id',
+        'position',
+        'position_id',
         'hire_date',
-        'salary',
+        'contract_end_date',
+        'employment_type',
         'status',
+        'salary',
+        'tin_number',
+        'pension_number',
+        'bank_name',
+        'bank_account',
+        'profile_picture',
+        'created_by',
+        'updated_by',
     ];
 
     protected $casts = [
         'hire_date' => 'date',
+        'contract_end_date' => 'date',
         'salary' => 'decimal:2',
     ];
 
-    public function user()
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function department_rel()
+    /**
+     * @return BelongsTo<Department, $this>
+     */
+    public function department_rel(): BelongsTo
     {
         return $this->belongsTo(Department::class, 'department_id');
     }
 
-    public function position_rel()
+    /**
+     * @return BelongsTo<Position, $this>
+     */
+    public function position_rel(): BelongsTo
     {
         return $this->belongsTo(Position::class, 'position_id');
     }

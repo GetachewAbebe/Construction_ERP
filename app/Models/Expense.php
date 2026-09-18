@@ -29,7 +29,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \App\Models\Project $project
- * @property-read \App\Models\User $user
+ * @property-read \App\Models\User|null $user
  * @property-read \App\Models\User|null $approvedBy
  * @property-read \App\Models\User|null $rejectedBy
  */
@@ -50,10 +50,20 @@ class Expense extends Model
         'description',
         'expense_date',
         'reference_no',
+        'attachment_path',
         'status',
         'approved_by',
         'rejected_by',
         'rejection_reason',
+    ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var list<string>
+     */
+    protected $appends = [
+        'attachment_url',
     ];
 
     /**
@@ -65,6 +75,16 @@ class Expense extends Model
         'expense_date' => 'date',
         'amount' => 'decimal:2',
     ];
+
+    /**
+     * Get the publicly accessible URL for the receipt or document attachment.
+     */
+    public function getAttachmentUrlAttribute(): ?string
+    {
+        return $this->attachment_path
+            ? \Illuminate\Support\Facades\Storage::disk('public')->url($this->attachment_path)
+            : null;
+    }
 
     /**
      * Get the construction site project that owns this field expenditure.

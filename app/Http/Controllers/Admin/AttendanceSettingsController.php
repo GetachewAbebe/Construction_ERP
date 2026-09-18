@@ -27,7 +27,7 @@ class AttendanceSettingsController extends Controller
             }
         }
 
-        return view('admin.attendance_settings.index', compact('settings'));
+        return \Inertia\Inertia::render('Admin/AttendanceSettings/Index', compact('settings'));
     }
 
     public function update(Request $request)

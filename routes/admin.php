@@ -28,7 +28,7 @@ Route::middleware([
 
     // Admin dashboards
     Route::get('/admin', [DashboardController::class, 'admin'])->name('admin.dashboard');
-    Route::get('/admin/home', [DashboardController::class, 'admin'])->name('admin.home');
+    Route::redirect('/admin/home', '/admin')->name('admin.home');
 
     // Admin "sections" - reusing the same dashboards but keeping /admin prefix for sidebar context
     Route::get('/admin/hr', [DashboardController::class, 'hr'])->name('admin.hr');
@@ -40,8 +40,8 @@ Route::middleware([
      * Admin: requests / approvals (leave, purchases, items, finance)
      */
     Route::prefix('admin/requests')->name('admin.requests.')->group(function () {
-        Route::view('/leave', 'admin.requests.leave')->name('leave');
-        Route::view('/purchases', 'admin.requests.purchases')->name('purchases');
+        Route::redirect('/leave', '/admin/requests/leave-approvals')->name('leave');
+        Route::redirect('/purchases', '/admin/requests/finance')->name('purchases');
         Route::get('/finance', [App\Http\Controllers\Admin\ExpenseApprovalController::class, 'index'])->name('finance');
         Route::post('/finance/{expense}/approve', [App\Http\Controllers\Admin\ExpenseApprovalController::class, 'approve'])->name('finance.approve');
         Route::post('/finance/{expense}/reject', [App\Http\Controllers\Admin\ExpenseApprovalController::class, 'reject'])->name('finance.reject');
@@ -67,9 +67,10 @@ Route::middleware([
     });
 
     /**
-     * Admin Users CRUD
+     * Strict Administrator-Only Operations (Users, Roles, System Settings, Maintenance, Trash)
      */
-    Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('admin')->name('admin.')->middleware('role:Administrator,Admin')->group(function () {
+        // Users CRUD
         Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
         Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');
         Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
@@ -77,8 +78,6 @@ Route::middleware([
         Route::get('/users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
         Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
-
-        // Administrative Tasks (User Management, etc)
 
         // Attendance Settings
         Route::get('/attendance-settings', [App\Http\Controllers\Admin\AttendanceSettingsController::class, 'index'])
@@ -131,11 +130,13 @@ Route::middleware([
         // Trash Recovery
         Route::get('/trash', [App\Http\Controllers\Admin\TrashController::class, 'index'])->name('trash.index');
         Route::post('/trash/restore', [App\Http\Controllers\Admin\TrashController::class, 'restore'])->name('trash.restore');
+    });
 
-        // Professional Identity Management
+    // Professional Identity Management (for any manager accessing /admin)
+    Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
         Route::get('/profile/update', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
-        Route::put('/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+        Route::match(['PUT', 'POST'], '/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
     });
 
     // === SHADOW ROUTES FOR ADMIN CONTEXT (Read-Only / Management View) ===

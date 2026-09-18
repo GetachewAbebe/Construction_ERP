@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: __DIR__.'/../routes/health.php',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->web(append: [
+            \App\Http\Middleware\HandleInertiaRequests::class,
+        ]);
         /**
          * Global middleware (runs on every request)
          *

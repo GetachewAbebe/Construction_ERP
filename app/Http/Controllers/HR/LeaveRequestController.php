@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\HR;
 
+use App\Enums\LeaveStatus;
 use App\Http\Controllers\Controller;
 use App\Mail\NewLeaveRequestMail;
 use App\Models\Employee;
@@ -26,7 +27,12 @@ class LeaveRequestController extends Controller
                 ->paginate(20)
                 ->withQueryString();
 
-            return view('hr.leaves.index', compact('approved', 'view'));
+            return \Inertia\Inertia::render('HR/Leaves/Index', [
+                'approved' => $approved,
+                'view' => $view,
+                'q' => $request->q ?? '',
+                'status' => $request->status ?? '',
+            ]);
         }
 
         $query = LeaveRequest::with('employee');
@@ -49,18 +55,26 @@ class LeaveRequestController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        $pendingCount = LeaveRequest::where('status', 'Pending')->count();
-        $approvedCount = LeaveRequest::where('status', 'Approved')->count();
-        $rejectedCount = LeaveRequest::where('status', 'Rejected')->count();
+        $pendingCount = LeaveRequest::where('status', LeaveStatus::Pending->value)->count();
+        $approvedCount = LeaveRequest::where('status', LeaveStatus::Approved->value)->count();
+        $rejectedCount = LeaveRequest::where('status', LeaveStatus::Rejected->value)->count();
 
-        return view('hr.leaves.index', compact('requests', 'pendingCount', 'approvedCount', 'rejectedCount', 'view'));
+        return \Inertia\Inertia::render('HR/Leaves/Index', [
+            'requests' => $requests,
+            'pendingCount' => $pendingCount,
+            'approvedCount' => $approvedCount,
+            'rejectedCount' => $rejectedCount,
+            'view' => $view,
+            'q' => $request->q ?? '',
+            'status' => $request->status ?? '',
+        ]);
     }
 
     public function create()
     {
         $employees = Employee::orderBy('last_name')->orderBy('first_name')->get(['id', 'first_name', 'last_name']);
 
-        return view('hr.leaves.create', compact('employees'));
+        return \Inertia\Inertia::render('HR/Leaves/Create', compact('employees'));
     }
 
     public function store(\App\Http\Requests\HR\StoreLeaveRequest $request)
@@ -71,11 +85,8 @@ class LeaveRequestController extends Controller
             $leaveRequest = LeaveRequest::create($data);
 
             // Notify Administrators
-            // Notify Administrators
-            // Default to 'Administrator' role, but fallback to first user if none found (for dev/testing safety)
             $admins = User::role('Administrator')->get();
             if ($admins->isEmpty()) {
-                // Determine a fallback admin (e.g., ID 1 or a specific email)
                 $admins = User::where('id', 1)->get();
             }
 
@@ -85,8 +96,7 @@ class LeaveRequestController extends Controller
                     Mail::to($admin->email)->send(new NewLeaveRequestMail($leaveRequest, auth()->user()));
                 }
             } catch (\Exception $e) {
-                // Log detailed error but don't stop the request
-                \Log::error('Leave request notification dispatch failed: '.$e->getMessage().' | Trace: '.$e->getTraceAsString());
+                \Log::error('Leave request notification dispatch failed: '.$e->getMessage());
             }
 
             return redirect()->route('hr.leaves.index')
@@ -102,7 +112,7 @@ class LeaveRequestController extends Controller
     public function getLeaveDates(Employee $employee)
     {
         $leaves = LeaveRequest::where('employee_id', $employee->id)
-            ->whereIn('status', ['Pending', 'Approved'])
+            ->whereIn('status', [LeaveStatus::Pending->value, LeaveStatus::Approved->value])
             ->select('start_date', 'end_date', 'status')
             ->get()
             ->map(function ($l) {
@@ -120,6 +130,6 @@ class LeaveRequestController extends Controller
     {
         $leave->load('employee');
 
-        return view('hr.leaves.show', compact('leave'));
+        return \Inertia\Inertia::render('HR/Leaves/Show', compact('leave'));
     }
 }

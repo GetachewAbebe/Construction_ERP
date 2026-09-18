@@ -28,6 +28,7 @@ class StoreExpenseRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'expense_date' => ['required', 'date'],
             'reference_no' => ['nullable', 'string', 'max:255'],
+            'attachment' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:10240'],
         ];
     }
 }

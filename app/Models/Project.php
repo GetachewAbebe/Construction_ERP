@@ -7,8 +7,15 @@ namespace App\Models;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property float|null $budget
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Expense> $expenses
+ */
 class Project extends Model
 {
     use HasFactory, LogsActivity, SoftDeletes;
@@ -29,7 +36,10 @@ class Project extends Model
         'budget' => 'decimal:2',
     ];
 
-    public function expenses()
+    /**
+     * @return HasMany<Expense, $this>
+     */
+    public function expenses(): HasMany
     {
         return $this->hasMany(Expense::class);
     }

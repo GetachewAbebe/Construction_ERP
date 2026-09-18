@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\LeaveStatus;
 use App\Http\Controllers\Controller;
 use App\Models\LeaveRequest;
 use Illuminate\Support\Facades\DB;
@@ -13,38 +14,30 @@ class HrOverviewController extends Controller
 {
     public function index()
     {
-        // ----- Pending leave approvals (robust to schema differences)
-        $hasStatus = Schema::hasColumn('leave_requests', 'status');
-        $hasApprovedAt = Schema::hasColumn('leave_requests', 'approved_at');
-        $hasRejectedAt = Schema::hasColumn('leave_requests', 'rejected_at');
-
-        $pendingQuery = LeaveRequest::query()->with('employee')->latest();
-
-        if ($hasStatus) {
-            $pendingQuery->where('status', 'pending');
-        } elseif ($hasApprovedAt && $hasRejectedAt) {
-            $pendingQuery->whereNull('approved_at')->whereNull('rejected_at');
-        }
-        // Otherwise: show latest requests as a fallback.
+        // Pending leave approvals
+        $pendingQuery = LeaveRequest::query()
+            ->with('employee')
+            ->where('status', LeaveStatus::Pending->value)
+            ->latest();
 
         $pendingLeavesCount = (clone $pendingQuery)->count();
         $recentPending = (clone $pendingQuery)->limit(6)->get();
 
-        // ----- Attendance snapshot (optional; safe if table not created yet)
+        // Attendance snapshot
         $attendanceToday = 0;
         $lateToday = 0;
 
-        if (Schema::hasTable('attendance_records')) {
-            // Example schema: attendance_records(employee_id, date, status, check_in_time)
+        if (Schema::hasTable('attendances')) {
             $today = now()->toDateString();
 
-            $attendanceToday = DB::table('attendance_records')
+            $attendanceToday = DB::table('attendances')
                 ->whereDate('date', $today)
+                ->whereIn('morning_status', ['present', 'late'])
                 ->count();
 
-            $lateToday = DB::table('attendance_records')
+            $lateToday = DB::table('attendances')
                 ->whereDate('date', $today)
-                ->where('status', 'late')
+                ->where('morning_status', 'late')
                 ->count();
         }
 

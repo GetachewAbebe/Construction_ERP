@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class HomeController extends Controller
 {
@@ -19,7 +20,9 @@ class HomeController extends Controller
             return redirect()->route(Auth::user()->getDashboardRouteName());
         }
 
-        // Guest: show the login form
-        return view('home');
+        // Guest: show the React Inertia login form
+        return Inertia::render('Auth/Login', [
+            'status' => session('status'),
+        ]);
     }
 }

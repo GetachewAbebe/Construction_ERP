@@ -13,6 +13,12 @@ use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property int $id
+ * @property string|null $role
+ * @property string $name
+ * @property string $email
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, HasRoles, LogsActivity, Notifiable, SoftDeletes;
@@ -37,7 +43,7 @@ class User extends Authenticatable
      */
     public function getNameAttribute()
     {
-        return trim("{$this->first_name} {$this->middle_name} {$this->last_name}");
+        return trim((string) preg_replace('/\s+/', ' ', "{$this->first_name} {$this->middle_name} {$this->last_name}"));
     }
 
     /**
@@ -49,6 +55,27 @@ class User extends Authenticatable
         $this->attributes['first_name'] = array_shift($parts);
         $this->attributes['last_name'] = array_pop($parts);
         $this->attributes['middle_name'] = implode(' ', $parts);
+    }
+
+    /**
+     * Get primary role name.
+     */
+    public function getRoleAttribute(): ?string
+    {
+        $roleName = $this->getRoleNames()->first();
+        if ($roleName !== null && $roleName !== '') {
+            return $roleName;
+        }
+
+        return isset($this->attributes['role']) ? (string) $this->attributes['role'] : null;
+    }
+
+    /**
+     * Set primary role name.
+     */
+    public function setRoleAttribute(?string $value): void
+    {
+        $this->attributes['role'] = $value;
     }
 
     protected $hidden = [

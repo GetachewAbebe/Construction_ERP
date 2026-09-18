@@ -14,12 +14,12 @@ class NotificationTemplateController extends Controller
     {
         $templates = NotificationTemplate::orderBy('type')->orderBy('name')->get();
 
-        return view('admin.notification_templates.index', compact('templates'));
+        return \Inertia\Inertia::render('Admin/NotificationTemplates/Index', compact('templates'));
     }
 
     public function create()
     {
-        return view('admin.notification_templates.create');
+        return \Inertia\Inertia::render('Admin/NotificationTemplates/Create');
     }
 
     public function store(Request $request)
@@ -51,7 +51,7 @@ class NotificationTemplateController extends Controller
 
     public function edit(NotificationTemplate $notificationTemplate)
     {
-        return view('admin.notification_templates.edit', compact('notificationTemplate'));
+        return \Inertia\Inertia::render('Admin/NotificationTemplates/Edit', compact('notificationTemplate'));
     }
 
     public function update(Request $request, NotificationTemplate $notificationTemplate)
@@ -102,6 +102,6 @@ class NotificationTemplateController extends Controller
 
         $renderedBody = $notificationTemplate->render($sampleData);
 
-        return view('admin.notification_templates.preview', compact('notificationTemplate', 'renderedBody', 'sampleData'));
+        return \Inertia\Inertia::render('Admin/NotificationTemplates/Preview', compact('notificationTemplate', 'renderedBody', 'sampleData'));
     }
 }

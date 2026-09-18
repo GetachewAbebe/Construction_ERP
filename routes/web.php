@@ -15,9 +15,11 @@ use Illuminate\Support\Facades\Route;
  * POST /  -> perform login and redirect based on role
  */
 Route::get('/', HomeController::class)->middleware('throttle:system_global')->name('home');
+Route::get('/login', HomeController::class)->middleware('throttle:system_global');
 
 // Login submit
 Route::post('/', [SimpleAuthController::class, 'login'])->middleware('throttle:auth')->name('login');
+Route::post('/login', [SimpleAuthController::class, 'login'])->middleware('throttle:auth');
 
 /**
  * --------------------------------------------------------------------------
@@ -73,27 +75,60 @@ Route::get('/profile-picture/{filename}', [App\Http\Controllers\ProfilePictureCo
     ->where('filename', '.*') // Capture subdirectories if any
     ->name('employee.profile-picture');
 
-// Notifications
+// Notifications & Profile
 Route::middleware('auth')->group(function () {
+    Route::get('/profile', function () {
+        $user = auth()->user();
+        if ($user->hasRole(['HumanResourceManager', 'Human Resource Manager']) || str_contains(strtolower((string) $user->role), 'hr') || str_contains(strtolower((string) $user->role), 'human')) {
+            return redirect()->route('hr.profile.show');
+        }
+        if ($user->hasRole(['InventoryManager', 'Inventory Manager']) || str_contains(strtolower((string) $user->role), 'inventory')) {
+            return redirect()->route('inventory.profile.show');
+        }
+        if ($user->hasRole(['FinancialManager', 'Financial Manager']) || str_contains(strtolower((string) $user->role), 'financ')) {
+            return redirect()->route('finance.profile.show');
+        }
+        return redirect()->route('admin.profile.show');
+    })->name('profile');
+
     Route::get('/notifications', function () {
         $user = auth()->user();
-        if ($user->hasRole('Administrator')) {
-            return redirect()->route('admin.notifications');
-        }
-        if ($user->hasRole('HumanResourceManager')) {
+        if ($user->hasRole(['HumanResourceManager', 'Human Resource Manager']) || str_contains(strtolower((string) $user->role), 'hr') || str_contains(strtolower((string) $user->role), 'human')) {
             return redirect()->route('hr.notifications');
         }
-        if ($user->hasRole('InventoryManager')) {
+        if ($user->hasRole(['InventoryManager', 'Inventory Manager']) || str_contains(strtolower((string) $user->role), 'inventory')) {
             return redirect()->route('inventory.notifications');
         }
-        if ($user->hasRole('FinancialManager')) {
+        if ($user->hasRole(['FinancialManager', 'Financial Manager']) || str_contains(strtolower((string) $user->role), 'financ')) {
             return redirect()->route('finance.notifications');
+        }
+        if ($user->hasRole(['Administrator', 'Admin']) || str_contains(strtolower((string) $user->role), 'admin')) {
+            return redirect()->route('admin.notifications');
         }
 
         return redirect()->route('home'); // Fallback
     })->name('notifications.index');
     Route::post('/notifications/{id}/mark-as-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
     Route::post('/notifications/mark-all-as-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
+
+    // Construction & Fleet Workflows
+    Route::get('/equipment', [\App\Http\Controllers\Operations\EquipmentController::class, 'index'])->name('equipment.index');
+    Route::post('/equipment', [\App\Http\Controllers\Operations\EquipmentController::class, 'store'])->name('equipment.store');
+    Route::put('/equipment/{equipment}', [\App\Http\Controllers\Operations\EquipmentController::class, 'update'])->name('equipment.update');
+    Route::delete('/equipment/{equipment}', [\App\Http\Controllers\Operations\EquipmentController::class, 'destroy'])->name('equipment.destroy');
+    Route::post('/equipment/{equipment}/logs', [\App\Http\Controllers\Operations\EquipmentController::class, 'storeLog'])->name('equipment.logs.store');
+
+    Route::get('/projects/daily-reports', [\App\Http\Controllers\Operations\DailyReportController::class, 'index'])->name('projects.daily-reports.index');
+    Route::post('/projects/daily-reports', [\App\Http\Controllers\Operations\DailyReportController::class, 'store'])->name('projects.daily-reports.store');
+    Route::get('/projects/daily-reports/{report}', [\App\Http\Controllers\Operations\DailyReportController::class, 'show'])->name('projects.daily-reports.show');
+
+    // Print & Document Generation
+    Route::get('/finance/expenses/{expense}/print', [App\Http\Controllers\PrintController::class, 'expenseVoucher'])->name('finance.expenses.print');
+    Route::get('/inventory/loans/{loan}/print', [App\Http\Controllers\PrintController::class, 'loanGatePass'])->name('inventory.loans.print');
+    Route::get('/prints/expenses/{expense}', [App\Http\Controllers\PrintController::class, 'expenseVoucher'])->name('prints.expense-voucher');
+    Route::get('/prints/expense-voucher/{expense}', [App\Http\Controllers\PrintController::class, 'expenseVoucher']);
+    Route::get('/prints/loans/{loan}', [App\Http\Controllers\PrintController::class, 'loanGatePass'])->name('prints.loan-gate-pass');
+    Route::get('/prints/loan-gate-pass/{loan}', [App\Http\Controllers\PrintController::class, 'loanGatePass']);
 });
 
 /**

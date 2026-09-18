@@ -70,6 +70,22 @@ class InventoryLoan extends Model
         return $this->belongsTo(InventoryItem::class, 'inventory_item_id');
     }
 
+    /**
+     * @return BelongsTo<InventoryItem, $this>
+     */
+    public function inventoryItem(): BelongsTo
+    {
+        return $this->item();
+    }
+
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'requested_by_user_id');
+    }
+
     public function employee(): BelongsTo
     {
         return $this->belongsTo(\App\Models\Employee::class, 'employee_id');
@@ -83,5 +99,10 @@ class InventoryLoan extends Model
     public function rejectedBy(): BelongsTo
     {
         return $this->belongsTo(\App\Models\User::class, 'rejected_by');
+    }
+
+    public function getExpectedReturnDateAttribute(): mixed
+    {
+        return $this->due_date;
     }
 }

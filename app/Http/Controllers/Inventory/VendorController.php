@@ -9,6 +9,7 @@ use App\Http\Requests\Inventory\StoreVendorRequest;
 use App\Http\Requests\Inventory\UpdateVendorRequest;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class VendorController extends Controller
 {
@@ -29,7 +30,7 @@ class VendorController extends Controller
             ->latest()
             ->paginate(20);
 
-        return view('inventory.vendors.index', compact('vendors', 'q'));
+        return Inertia::render('Inventory/Vendors/Index', compact('vendors', 'q'));
     }
 
     /**
@@ -37,7 +38,7 @@ class VendorController extends Controller
      */
     public function create()
     {
-        return view('inventory.vendors.create');
+        return Inertia::render('Inventory/Vendors/Create');
     }
 
     /**
@@ -56,7 +57,7 @@ class VendorController extends Controller
      */
     public function show(Vendor $vendor)
     {
-        return view('inventory.vendors.show', compact('vendor'));
+        return Inertia::render('Inventory/Vendors/Show', compact('vendor'));
     }
 
     /**
@@ -64,7 +65,7 @@ class VendorController extends Controller
      */
     public function edit(Vendor $vendor)
     {
-        return view('inventory.vendors.edit', compact('vendor'));
+        return Inertia::render('Inventory/Vendors/Edit', compact('vendor'));
     }
 
     /**

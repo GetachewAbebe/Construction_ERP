@@ -23,7 +23,11 @@ class EmployeeController extends Controller
     {
         $employees = $this->hrService->getEmployees($request->only(['q', 'status']));
 
-        return view('hr.employees.index', compact('employees'));
+        return \Inertia\Inertia::render('HR/Employees/Index', [
+            'employees' => $employees,
+            'q' => $request->q ?? '',
+            'status' => $request->status ?? '',
+        ]);
     }
 
     public function create()
@@ -31,7 +35,7 @@ class EmployeeController extends Controller
         $departments = Department::orderBy('name')->get();
         $positions = Position::orderBy('title')->get();
 
-        return view('hr.employees.create', compact('departments', 'positions'));
+        return \Inertia\Inertia::render('HR/Employees/Create', compact('departments', 'positions'));
     }
 
     public function store(StoreEmployeeRequest $request)
@@ -44,10 +48,11 @@ class EmployeeController extends Controller
 
     public function edit(Employee $employee)
     {
+        $employee->load(['department_rel', 'position_rel']);
         $departments = Department::orderBy('name')->get();
         $positions = Position::orderBy('title')->get();
 
-        return view('hr.employees.edit', compact('employee', 'departments', 'positions'));
+        return \Inertia\Inertia::render('HR/Employees/Edit', compact('employee', 'departments', 'positions'));
     }
 
     public function update(UpdateEmployeeRequest $request, Employee $employee)

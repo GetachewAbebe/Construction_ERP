@@ -72,6 +72,14 @@ class InventoryItem extends Model
     }
 
     /**
+     * Audit logs associated with this inventory item.
+     */
+    public function logs(): HasMany
+    {
+        return $this->hasMany(InventoryLog::class, 'inventory_item_id');
+    }
+
+    /**
      * Accessors / helpers
      */
 

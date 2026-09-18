@@ -32,7 +32,7 @@ class SystemSettingsController extends Controller
             }
         }
 
-        return view('admin.system_settings.index', compact('settings'));
+        return \Inertia\Inertia::render('Admin/SystemSettings/Index', compact('settings'));
     }
 
     public function update(Request $request)

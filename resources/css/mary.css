@@ -1,24 +1,23 @@
 /*
- | Isolated Tailwind v4 + daisyUI + Mary UI stylesheet for the Livewire POC.
- | This is intentionally SEPARATE from resources/sass/app.scss (Bootstrap),
- | so the existing UI is untouched while the new stack is evaluated.
+ | Sneat Design System for Laravel / Livewire
+ | Clean, elevated SaaS dashboard aesthetic with soft shadows and pastel badges
  */
 @import "tailwindcss";
 
-/* Tell Tailwind where to scan for class names used by the POC + Mary UI. */
+/* Tell Tailwind where to scan for class names */
 @source "../views/**/*.blade.php";
+@source "../js/**/*.{jsx,tsx,js,ts}";
 @source "../../app/Livewire/**/*.php";
 @source "../../vendor/robsontenorio/mary/src/**/*.php";
 @source "../../vendor/robsontenorio/blade-ui-kit/blade-heroicons/src/**/*.php";
 
-/* daisyUI provides the component theme Mary UI builds on. */
+/* daisyUI configuration */
 @plugin "daisyui" {
     themes: corporate, business;
 }
 
 /*
- | Natanem Engineering brand theme — derived from the company website:
- | deep navy (#0d1b2a) + amber/orange accent (#f5a623) on white surfaces.
+ | Executive Navy & Construction Amber Light Theme
  */
 @plugin "daisyui/theme" {
     name: "natanem";
@@ -27,25 +26,25 @@
     color-scheme: light;
 
     --color-base-100: #ffffff;
-    --color-base-200: #f3f5f8;
-    --color-base-300: #e3e8ef;
-    --color-base-content: #0d1b2a;
+    --color-base-200: #f8fafc;
+    --color-base-300: #e2e8f0;
+    --color-base-content: #334155;
 
-    --color-primary: #f5a623;
-    --color-primary-content: #0d1b2a;
+    --color-primary: #1e3a8a;
+    --color-primary-content: #ffffff;
 
-    --color-secondary: #13263b;
+    --color-secondary: #64748b;
     --color-secondary-content: #ffffff;
 
-    --color-accent: #f5a623;
-    --color-accent-content: #0d1b2a;
+    --color-accent: #d97706;
+    --color-accent-content: #ffffff;
 
-    --color-neutral: #0d1b2a;
+    --color-neutral: #0f172a;
     --color-neutral-content: #ffffff;
 
-    --color-info: #2563eb;
+    --color-info: #0284c7;
     --color-info-content: #ffffff;
-    --color-success: #16a34a;
+    --color-success: #059669;
     --color-success-content: #ffffff;
     --color-warning: #d97706;
     --color-warning-content: #ffffff;
@@ -62,35 +61,38 @@
     --noise: 0;
 }
 
+/*
+ | Executive Navy & Construction Amber Dark Theme
+ */
 @plugin "daisyui/theme" {
     name: "natanem-dark";
     prefersdark: true;
     color-scheme: dark;
 
-    --color-base-100: #0d1b2a;
-    --color-base-200: #061019;
-    --color-base-300: #1b2d41;
-    --color-base-content: #f3f5f8;
+    --color-base-100: #1e293b;
+    --color-base-200: #0f172a;
+    --color-base-300: #334155;
+    --color-base-content: #cbd5e1;
 
-    --color-primary: #f5a623;
-    --color-primary-content: #0d1b2a;
+    --color-primary: #3b82f6;
+    --color-primary-content: #ffffff;
 
-    --color-secondary: #1b2d41;
+    --color-secondary: #94a3b8;
     --color-secondary-content: #ffffff;
 
-    --color-accent: #f5a623;
-    --color-accent-content: #0d1b2a;
+    --color-accent: #f59e0b;
+    --color-accent-content: #0f172a;
 
-    --color-neutral: #1b2d41;
+    --color-neutral: #020617;
     --color-neutral-content: #ffffff;
 
-    --color-info: #3b82f6;
-    --color-info-content: #ffffff;
-    --color-success: #22c55e;
-    --color-success-content: #ffffff;
-    --color-warning: #eab308;
-    --color-warning-content: #ffffff;
-    --color-error: #ef4444;
+    --color-info: #38bdf8;
+    --color-info-content: #0f172a;
+    --color-success: #10b981;
+    --color-success-content: #0f172a;
+    --color-warning: #f59e0b;
+    --color-warning-content: #0f172a;
+    --color-error: #f87171;
     --color-error-content: #ffffff;
 
     --radius-selector: 0.5rem;
@@ -103,43 +105,72 @@
     --noise: 0;
 }
 
-/* Premium Card hover interactive classes */
-.card-interactive {
+/* Sneat Elevated Card Styling */
+.sneat-card {
+    background-color: var(--color-base-100);
+    border: 1px solid var(--color-base-300);
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
     transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.card-interactive:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.15);
-    border-color: rgba(245, 166, 35, 0.2);
+
+.sneat-card:hover {
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.05);
 }
 
+/* Custom Thin Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(30, 58, 138, 0.25);
+    border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(30, 58, 138, 0.45);
+}
 
-@custom-variant dark (&:where(.dark, .dark *));
+/* Professional Industry Pastel Icon Boxes */
+.icon-box-primary {
+    background-color: #eff6ff;
+    color: #1e3a8a;
+}
 
-/*
- | Softer, branded focus state for form controls.
- | These rules are intentionally UN-layered so they win over daisyUI's
- | layered defaults (the harsh dark focus outline).
- */
+.icon-box-warning {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.icon-box-success {
+    background-color: #ecfdf5;
+    color: #059669;
+}
+
+.icon-box-info {
+    background-color: #f0f9ff;
+    color: #0284c7;
+}
+
+.icon-box-danger {
+    background-color: #fef2f2;
+    color: #dc2626;
+}
+
+/* Form Controls */
 .input:focus,
 .input:focus-within,
 .select:focus,
 .select:focus-within,
 .textarea:focus {
     outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 18%, transparent);
+    border-color: #1e3a8a;
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
 }
 
-/* Auth pages: entrance animation + slow floating blobs */
-@keyframes auth-rise {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-.auth-rise { animation: auth-rise .55s cubic-bezier(.2,.7,.2,1) both; }
+/* Custom variant for dark mode */
+@custom-variant dark (&:where(.dark, .dark *));
 
-@keyframes auth-float {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50%      { transform: translate(20px, -20px) scale(1.06); }
-}
-.auth-float { animation: auth-float 14s ease-in-out infinite; }

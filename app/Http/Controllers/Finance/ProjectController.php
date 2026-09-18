@@ -32,12 +32,16 @@ class ProjectController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('finance.projects.index', compact('projects'));
+        return \Inertia\Inertia::render('Finance/Projects/Index', [
+            'projects' => $projects,
+            'status' => $status ?? '',
+            'q' => $search ?? '',
+        ]);
     }
 
     public function create()
     {
-        return view('finance.projects.create');
+        return \Inertia\Inertia::render('Finance/Projects/Create');
     }
 
     public function store(\App\Http\Requests\Projects\StoreProjectRequest $request)
@@ -61,12 +65,12 @@ class ProjectController extends Controller
         // Chunk-load relations cleanly for detailed reporting views
         $project->load(['expenses.user']);
 
-        return view('finance.projects.show', compact('project'));
+        return \Inertia\Inertia::render('Finance/Projects/Show', compact('project'));
     }
 
     public function edit(Project $project)
     {
-        return view('finance.projects.edit', compact('project'));
+        return \Inertia\Inertia::render('Finance/Projects/Edit', compact('project'));
     }
 
     public function update(\App\Http\Requests\Projects\UpdateProjectRequest $request, Project $project)

@@ -8,29 +8,90 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ProfileController extends Controller
 {
     /**
      * Show the authenticated user's profile overview.
      */
-    public function show()
+    public function show(): Response
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
+        $user->loadMissing(['employee', 'roles', 'permissions']);
 
-        return view('profile.show', compact('user'));
+        $userData = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'first_name' => $user->first_name,
+            'middle_name' => $user->middle_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'phone_number' => $user->phone_number,
+            'role' => $user->role ?? ($user->getRoleNames()->first() ?? 'Administrator'),
+            'roles' => $user->getRoleNames(),
+            'position' => $user->position ?? ($user->employee?->position ?? 'Authorized Personnel'),
+            'department' => $user->department ?? ($user->employee?->department ?? 'Operations'),
+            'status' => $user->status ?? 'Active',
+            'created_at' => $user->created_at ? $user->created_at->format('M d, Y') : null,
+            'permissions' => method_exists($user, 'getAllPermissions') ? $user->getAllPermissions()->pluck('name')->values()->all() : [],
+            'employee' => $user->employee ? [
+                'id' => $user->employee->id,
+                'first_name' => $user->employee->first_name,
+                'last_name' => $user->employee->last_name,
+                'department' => $user->employee->department,
+                'position' => $user->employee->position,
+                'hire_date' => $user->employee->hire_date ? \Carbon\Carbon::parse($user->employee->hire_date)->format('M d, Y') : null,
+                'profile_picture' => $user->employee->profile_picture,
+                'profile_picture_url' => $user->employee->profile_picture_url,
+            ] : null,
+            'profile_picture_url' => $user->employee?->profile_picture_url,
+        ];
+
+        return Inertia::render('Profile/Show', [
+            'user' => $userData,
+            'status' => session('status'),
+        ]);
     }
 
     /**
      * Show the profile edit form.
      */
-    public function edit()
+    public function edit(): Response
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
+        $user->loadMissing(['employee', 'roles']);
 
-        return view('profile.edit', compact('user'));
+        $userData = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'first_name' => $user->first_name,
+            'middle_name' => $user->middle_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'phone_number' => $user->phone_number,
+            'role' => $user->role ?? ($user->getRoleNames()->first() ?? 'Administrator'),
+            'roles' => $user->getRoleNames(),
+            'position' => $user->position,
+            'department' => $user->department,
+            'status' => $user->status ?? 'Active',
+            'employee' => $user->employee ? [
+                'id' => $user->employee->id,
+                'profile_picture_url' => $user->employee->profile_picture_url,
+            ] : null,
+            'profile_picture_url' => $user->employee?->profile_picture_url,
+        ];
+
+        return Inertia::render('Profile/Edit', [
+            'user' => $userData,
+            'status' => session('status'),
+        ]);
     }
 
     /**
@@ -38,6 +99,7 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         $request->validate([
@@ -49,14 +111,13 @@ class ProfileController extends Controller
         ]);
 
         // Handle Name Parts
-        $parts = explode(' ', $request->name);
+        $parts = explode(' ', trim($request->name));
         $user->first_name = array_shift($parts);
         $user->last_name = array_pop($parts) ?: '';
         $user->middle_name = implode(' ', $parts);
 
         $user->email = $request->email;
         $user->phone_number = $request->phone_number;
-        // $user->bio = $request->bio; // Disabled: Column missing in production schema
 
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
@@ -90,6 +151,12 @@ class ProfileController extends Controller
             }
         }
 
-        return redirect()->route($user->getProfileRouteName('show'))->with('success', 'Profile identity updated successfully.');
+        $targetRoute = $user->getProfileRouteName('show');
+        if (! Route::has($targetRoute)) {
+            $targetRoute = 'admin.profile.show';
+        }
+
+        return redirect()->route($targetRoute)->with('success', 'Profile updated successfully.');
     }
 }
+

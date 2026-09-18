@@ -72,14 +72,22 @@ class InventoryService
      */
     protected function checkLowStock(InventoryItem $item): void
     {
-        $threshold = config('inventory.low_stock_threshold', 5);
+        $threshold = (int) config('inventory.low_stock_threshold', 5);
 
         if ($item->quantity <= $threshold) {
-            // Find all administrators
-            $admins = \App\Models\User::role('Administrator')->get();
+            $recipients = \App\Models\User::role(['Administrator', 'InventoryManager'])->get();
 
-            if ($admins->isNotEmpty()) {
-                \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\LowStockNotification($item));
+            if ($recipients->isNotEmpty()) {
+                // Prevent duplicate alert spam: check if unread notification for this item already exists
+                $alreadyNotified = DB::table('notifications')
+                    ->whereNull('read_at')
+                    ->where('data', 'like', '%"type":"inventory_low_stock"%')
+                    ->where('data', 'like', '%"item_id":'.$item->id.'%')
+                    ->exists();
+
+                if (! $alreadyNotified) {
+                    \Illuminate\Support\Facades\Notification::send($recipients, new \App\Notifications\LowStockNotification($item));
+                }
             }
         }
     }

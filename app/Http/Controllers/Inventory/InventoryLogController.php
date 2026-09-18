@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Inventory;
 use App\Http\Controllers\Controller;
 use App\Models\InventoryLog;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class InventoryLogController extends Controller
 {
@@ -29,6 +30,6 @@ class InventoryLogController extends Controller
 
         $logs = $query->paginate(25);
 
-        return view('inventory.logs.index', compact('logs'));
+        return Inertia::render('Inventory/Logs/Index', compact('logs'));
     }
 }

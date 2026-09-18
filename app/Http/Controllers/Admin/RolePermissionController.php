@@ -21,7 +21,7 @@ class RolePermissionController extends Controller
             return $parts[0] ?? 'general';
         });
 
-        return view('admin.roles.index', compact('roles', 'permissions'));
+        return \Inertia\Inertia::render('Admin/Roles/Index', compact('roles', 'permissions'));
     }
 
     public function create()
@@ -32,7 +32,7 @@ class RolePermissionController extends Controller
             return $parts[0] ?? 'general';
         });
 
-        return view('admin.roles.create', compact('permissions'));
+        return \Inertia\Inertia::render('Admin/Roles/Create', compact('permissions'));
     }
 
     public function store(Request $request)
@@ -68,7 +68,7 @@ class RolePermissionController extends Controller
 
         $rolePermissions = $role->permissions->pluck('id')->toArray();
 
-        return view('admin.roles.edit', compact('role', 'permissions', 'rolePermissions'));
+        return \Inertia\Inertia::render('Admin/Roles/Edit', compact('role', 'permissions', 'rolePermissions'));
     }
 
     public function update(Request $request, Role $role)
@@ -115,7 +115,7 @@ class RolePermissionController extends Controller
             return $parts[0] ?? 'general';
         });
 
-        return view('admin.roles.permissions', compact('permissions'));
+        return \Inertia\Inertia::render('Admin/Roles/Permissions', compact('permissions'));
     }
 
     public function storePermission(Request $request)
