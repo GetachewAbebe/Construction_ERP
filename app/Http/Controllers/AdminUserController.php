@@ -103,7 +103,7 @@ class AdminUserController extends Controller
         $lastName = array_pop($parts);
         $middleName = implode(' ', $parts);
 
-        $user = User::create([
+        $userData = [
             'name' => $validated['name'],
             'first_name' => $firstName,
             'middle_name' => $middleName,
@@ -115,9 +115,14 @@ class AdminUserController extends Controller
             'position' => $request->position,
             'department' => $request->department,
             'status' => $request->status ?? 'Active',
-            'bio' => $request->bio,
             'email_verified_at' => now(),
-        ]);
+        ];
+
+        if ($request->has('bio') && \Illuminate\Support\Facades\Schema::hasColumn('users', 'bio')) {
+            $userData['bio'] = $request->bio;
+        }
+
+        $user = User::create($userData);
 
         // Sync role via Spatie if applicable
         if (method_exists($user, 'assignRole')) {
@@ -206,7 +211,10 @@ class AdminUserController extends Controller
         $user->position = $request->position;
         $user->department = $request->department;
         $user->status = $request->status ?? 'Active';
-        $user->bio = $request->bio;
+
+        if ($request->has('bio') && \Illuminate\Support\Facades\Schema::hasColumn('users', 'bio')) {
+            $user->bio = $request->bio;
+        }
 
         if (! empty($validated['password'])) {
             $user->password = Hash::make($validated['password']);

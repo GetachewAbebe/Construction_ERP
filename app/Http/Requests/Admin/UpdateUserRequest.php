@@ -33,6 +33,7 @@ class UpdateUserRequest extends FormRequest
             'position' => ['nullable', 'string', 'max:255'],
             'department' => ['nullable', 'string', 'max:255'],
             'status' => ['nullable', 'in:Active,Inactive,Suspended'],
+            'bio' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }
