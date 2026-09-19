@@ -83,6 +83,10 @@ class Vendor extends Model
      */
     public function scopeActive($query)
     {
-        return $query->where('is_active', true);
+        if (\Illuminate\Support\Facades\Schema::hasColumn('vendors', 'is_active')) {
+            return $query->where('is_active', true);
+        }
+
+        return $query;
     }
 }

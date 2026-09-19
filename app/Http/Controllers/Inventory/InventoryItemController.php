@@ -84,7 +84,11 @@ class InventoryItemController extends Controller
     public function create()
     {
         $classifications = AssetClassification::orderBy('name')->get();
-        $vendors = \App\Models\Vendor::active()->orderBy('name')->get();
+        try {
+            $vendors = \App\Models\Vendor::active()->orderBy('name')->get();
+        } catch (\Throwable $e) {
+            $vendors = \App\Models\Vendor::orderBy('name')->get();
+        }
 
         return Inertia::render('Inventory/Items/Create', compact('classifications', 'vendors'));
     }
@@ -92,6 +96,10 @@ class InventoryItemController extends Controller
     public function store(\App\Http\Requests\Inventory\StoreInventoryItemRequest $request)
     {
         $data = $request->validated();
+
+        if (isset($data['vendor_id']) && ! \Illuminate\Support\Facades\Schema::hasColumn('inventory_items', 'vendor_id')) {
+            unset($data['vendor_id']);
+        }
 
         try {
             // Check for existing item with same item_no and store_location
@@ -131,7 +139,11 @@ class InventoryItemController extends Controller
     public function edit(InventoryItem $item)
     {
         $classifications = AssetClassification::orderBy('name')->get();
-        $vendors = \App\Models\Vendor::active()->orderBy('name')->get();
+        try {
+            $vendors = \App\Models\Vendor::active()->orderBy('name')->get();
+        } catch (\Throwable $e) {
+            $vendors = \App\Models\Vendor::orderBy('name')->get();
+        }
 
         return Inertia::render('Inventory/Items/Edit', compact('item', 'classifications', 'vendors'));
     }
