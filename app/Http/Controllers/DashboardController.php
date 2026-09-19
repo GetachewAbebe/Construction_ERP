@@ -29,6 +29,7 @@ class DashboardController extends Controller
         // 1. Pending Approvals
         $pendingLoanCount = InventoryLoan::where('status', LoanStatus::Pending->value)->count();
         $pendingExpenseCount = Expense::where('status', ExpenseStatus::Pending->value)->count();
+        $pendingExpenseAmount = (float) Expense::where('status', ExpenseStatus::Pending->value)->sum('amount');
         $pendingLeaveCount = LeaveRequest::where('status', LeaveStatus::Pending->value)->count();
 
         // 2. System Intelligence (Stats)
@@ -98,14 +99,11 @@ class DashboardController extends Controller
             ]);
 
         // 5. Monthly Cash Flow (Dynamic Trailing 6 Months)
-        $months = [];
-        $expenseData = [];
-        $budgetData = [];
-        $totalProjectBudget = (float) Project::sum('budget');
+        $cashFlowChartData = [];
+        $monthlyBaseline = $totalBudget > 0 ? round($totalBudget / 12, 2) : 500000;
 
         for ($i = 5; $i >= 0; $i--) {
             $monthDate = now()->subMonths($i);
-            $months[] = $monthDate->format('M');
             $year = $monthDate->year;
             $month = $monthDate->month;
 
@@ -115,23 +113,42 @@ class DashboardController extends Controller
                 ->whereNull('deleted_at')
                 ->sum('amount');
 
-            $expenseData[] = round($monthSpent, 2);
-            $budgetData[] = $totalProjectBudget;
+            $cashFlowChartData[] = [
+                'month' => $monthDate->format('M'),
+                'actual' => round($monthSpent, 2),
+                'baseline' => $monthlyBaseline,
+            ];
         }
 
-        $monthlyCashFlow = [
-            'months' => $months,
-            'expenses' => $expenseData,
-            'budgets' => $budgetData,
-        ];
+        // 6. Dynamic Enterprise Risk Score
+        $criticalProjectsCount = Project::with('expenses')->get()->filter(function ($p) {
+            $spent = (float) $p->expenses->where('status', ExpenseStatus::Approved->value)->sum('amount');
+            $budget = (float) ($p->budget ?? 0);
+            return $budget > 0 && ($spent / $budget) >= 0.85;
+        })->count();
 
-        // 6. Recent Core Module Feeds
-        $recentExpenses = Expense::with(['project', 'user'])->latest('id')->take(4)->get();
-        $recentLoans = InventoryLoan::with(['item', 'employee'])->latest('id')->take(4)->get();
-        $recentEmployees = Employee::latest('id')->take(4)->get();
-        $recentLeaves = LeaveRequest::with('employee')->latest('id')->take(4)->get();
+        $breakdownMachinery = \App\Models\Equipment::whereIn('status', ['breakdown', 'maintenance', 'under_maintenance'])->count();
+        $lowStockItems = InventoryItem::where(function ($q) {
+            $q->whereColumn('quantity', '<=', 'reorder_level')
+              ->orWhere('quantity', '<=', 0);
+        })->count();
 
-        // 7. Department Workforce Distribution
+        $riskPoints = 1.0;
+        if ($pendingExpenseCount > 0) $riskPoints += min(2.5, $pendingExpenseCount * 0.4);
+        if ($criticalProjectsCount > 0) $riskPoints += min(3.0, $criticalProjectsCount * 1.0);
+        if ($breakdownMachinery > 0) $riskPoints += min(2.0, $breakdownMachinery * 0.5);
+        if ($lowStockItems > 0) $riskPoints += min(1.5, $lowStockItems * 0.3);
+
+        $riskScore = round(min(9.9, max(1.2, $riskPoints)), 1);
+        $riskLevel = $riskScore >= 7.0 ? 'High' : ($riskScore >= 4.0 ? 'Moderate' : 'Low');
+
+        // 7. Recent Core Module Feeds
+        $recentExpenses = Expense::with(['project', 'user'])->latest('id')->take(6)->get();
+        $recentLoans = InventoryLoan::with(['item', 'employee.user'])->latest('id')->take(6)->get();
+        $recentEmployees = Employee::latest('id')->take(6)->get();
+        $recentLeaves = LeaveRequest::with(['employee.user'])->latest('id')->take(6)->get();
+
+        // 8. Department Workforce Distribution
         $departmentStats = \App\Models\Department::has('employees')
             ->withCount('employees')
             ->get()
@@ -140,16 +157,16 @@ class DashboardController extends Controller
                 'total' => $d->employees_count,
             ]);
 
-        // 8. Inventory Utilization
+        // 9. Inventory Utilization
         $inventoryUtilization = $totalItems > 0 ? round(($activeLoans / max(1, $totalItems)) * 100) : 0;
 
-        // 9. Activity Stream
+        // 10. Activity Stream
         $activities = \App\Models\ActivityLog::with('user')
             ->latest()
             ->take(6)
             ->get();
 
-        // 10. System Health calculation
+        // 11. System Health calculation
         $totalCritical = $pendingLoanCount + $pendingExpenseCount + $pendingLeaveCount;
         $systemHealth = $totalCritical > 15 ? max(65, 100 - ($totalCritical * 2)) : 98;
 
@@ -157,6 +174,7 @@ class DashboardController extends Controller
             'pendingLoanCount' => $pendingLoanCount,
             'pendingLeaveCount' => $pendingLeaveCount,
             'pendingExpenseCount' => $pendingExpenseCount,
+            'pendingExpenseAmount' => $pendingExpenseAmount,
             'totalUsers' => $totalUsers,
             'totalProjects' => $totalProjects,
             'totalEmployees' => $totalEmployees,
@@ -166,7 +184,7 @@ class DashboardController extends Controller
             'financialStats' => $financialStats,
             'projectBreakdown' => $projectBreakdown,
             'expenseCategories' => $expenseCategories,
-            'monthlyCashFlow' => $monthlyCashFlow,
+            'monthlyCashFlow' => $cashFlowChartData,
             'inventoryUtilization' => $inventoryUtilization,
             'recentExpenses' => $recentExpenses,
             'recentLoans' => $recentLoans,
@@ -176,6 +194,8 @@ class DashboardController extends Controller
             'activities' => $activities,
             'systemHealth' => $systemHealth,
             'fleetStats' => $fleetStats,
+            'riskScore' => $riskScore,
+            'riskLevel' => $riskLevel,
         ]);
     }
 

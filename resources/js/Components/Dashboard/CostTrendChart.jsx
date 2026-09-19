@@ -21,6 +21,7 @@ export default function CostTrendChart({
     title = 'Cost Trend Analysis',
     currency = 'ETB',
 }) {
+    const chartData = Array.isArray(data) && data.length > 0 ? data : DEFAULT_DATA;
     const [hoverIndex, setHoverIndex] = useState(null);
 
     const width = 760;
@@ -30,11 +31,21 @@ export default function CostTrendChart({
     const chartWidth = width - padding.left - padding.right;
     const chartHeight = height - padding.top - padding.bottom;
 
-    const maxY = 1200000;
-    const yTicks = [1200000, 900000, 600000, 300000, 0];
+    const maxDataVal = Math.max(
+        ...chartData.map(d => Math.max(Number(d.actual || 0), Number(d.baseline || 0))),
+        100000
+    );
+    const maxY = Math.ceil((maxDataVal * 1.2) / 100000) * 100000 || 1200000;
+    const yTicks = [
+        maxY,
+        Math.round(maxY * 0.75),
+        Math.round(maxY * 0.5),
+        Math.round(maxY * 0.25),
+        0
+    ];
 
-    const getX = (index) => padding.left + (index / (data.length - 1)) * chartWidth;
-    const getY = (val) => padding.top + chartHeight - (val / maxY) * chartHeight;
+    const getX = (index) => padding.left + (index / Math.max(1, chartData.length - 1)) * chartWidth;
+    const getY = (val) => padding.top + chartHeight - (val / Math.max(1, maxY)) * chartHeight;
 
     const formatYValue = (val) => {
         if (val >= 1000000) return `${(val / 1000000).toFixed(1)}M`;
@@ -44,13 +55,13 @@ export default function CostTrendChart({
 
     // Cubic spline path
     const buildPath = (key) => {
-        if (!data.length) return '';
-        let path = `M ${getX(0)} ${getY(data[0][key])}`;
-        for (let i = 0; i < data.length - 1; i++) {
+        if (!chartData.length) return '';
+        let path = `M ${getX(0)} ${getY(chartData[0][key])}`;
+        for (let i = 0; i < chartData.length - 1; i++) {
             const x0 = getX(i);
-            const y0 = getY(data[i][key]);
+            const y0 = getY(chartData[i][key]);
             const x1 = getX(i + 1);
-            const y1 = getY(data[i + 1][key]);
+            const y1 = getY(chartData[i + 1][key]);
             const cx = (x0 + x1) / 2;
             path += ` C ${cx} ${y0}, ${cx} ${y1}, ${x1} ${y1}`;
         }
@@ -58,12 +69,12 @@ export default function CostTrendChart({
     };
 
     const actualLine = buildPath('actual');
-    const actualArea = `${actualLine} L ${getX(data.length - 1)} ${padding.top + chartHeight} L ${getX(0)} ${padding.top + chartHeight} Z`;
+    const actualArea = `${actualLine} L ${getX(chartData.length - 1)} ${padding.top + chartHeight} L ${getX(0)} ${padding.top + chartHeight} Z`;
 
     const baselineLine = buildPath('baseline');
-    const baselineArea = `${baselineLine} L ${getX(data.length - 1)} ${padding.top + chartHeight} L ${getX(0)} ${padding.top + chartHeight} Z`;
+    const baselineArea = `${baselineLine} L ${getX(chartData.length - 1)} ${padding.top + chartHeight} L ${getX(0)} ${padding.top + chartHeight} Z`;
 
-    const activeItem = hoverIndex !== null ? data[hoverIndex] : null;
+    const activeItem = hoverIndex !== null ? chartData[hoverIndex] : null;
     const activeX = hoverIndex !== null ? getX(hoverIndex) : 0;
     const activeY = hoverIndex !== null ? getY(activeItem.actual) : 0;
 
@@ -200,7 +211,7 @@ export default function CostTrendChart({
                     )}
 
                     {/* X-Axis Month Labels & Triggers */}
-                    {data.map((item, idx) => {
+                    {chartData.map((item, idx) => {
                         const xPos = getX(idx);
                         const isSelected = hoverIndex === idx;
                         return (
@@ -222,9 +233,9 @@ export default function CostTrendChart({
                                     {item.month}
                                 </text>
                                 <rect
-                                    x={xPos - chartWidth / (data.length * 2)}
+                                    x={xPos - chartWidth / (chartData.length * 2)}
                                     y={0}
-                                    width={chartWidth / data.length}
+                                    width={chartWidth / chartData.length}
                                     height={height}
                                     fill="transparent"
                                 />
