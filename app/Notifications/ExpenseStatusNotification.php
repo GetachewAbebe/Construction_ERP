@@ -35,7 +35,7 @@ class ExpenseStatusNotification extends Notification
                 'title' => 'New Expense Request',
                 'message' => 'A new expense of ETB '.number_format((float) $this->expense->amount, 2)." for project {$this->expense->project->name} requires your approval.",
                 'expense_id' => $this->expense->id,
-                'url' => route('finance.expenses.show', $this->expense),
+                'url' => route('admin.requests.finance'),
                 'icon' => 'bi-receipt',
                 'color' => 'primary',
                 'priority' => (float) $this->expense->amount > 5000 ? 'high' : 'medium',
