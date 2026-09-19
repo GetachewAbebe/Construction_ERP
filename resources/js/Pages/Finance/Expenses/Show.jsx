@@ -26,9 +26,9 @@ export default function Show({ expense }) {
 
     return (
         <AuthenticatedLayout title={`Voucher #${voucherId}`} header="Finance & Operations">
-            <div className="max-w-4xl mx-auto space-y-6">
+            <div className="max-w-4xl mx-auto space-y-6 print:space-y-0 print:max-w-none print:w-full print:p-0 print:m-0">
                 {/* Print and Back Controls */}
-                <div className="flex items-center justify-between gap-4 pb-2 border-b border-slate-200 dark:border-slate-800 print:hidden">
+                <div className="flex items-center justify-between gap-4 pb-2 border-b border-slate-200 dark:border-slate-800 print:hidden no-print">
                     <div className="flex items-center gap-3">
                         <Link
                             href="/finance/expenses"

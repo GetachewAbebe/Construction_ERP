@@ -54,20 +54,34 @@ class DashboardController extends Controller
         // Top projects with actual allocated vs spent
         $projectsList = Project::with(['expenses' => function ($q) {
             $q->where('status', ExpenseStatus::Approved->value);
-        }])->take(6)->get();
+        }])->take(5)->get();
 
         $projectBreakdown = $projectsList->map(function ($p) {
             $spent = (float) $p->expenses->sum('amount');
             $budget = (float) ($p->budget ?? 0);
+            $usagePct = $budget > 0 ? min(100, round(($spent / $budget) * 100, 1)) : 0;
 
             return [
+                'id' => $p->id,
                 'name' => $p->name,
+                'location' => $p->location ?: 'Site Operations',
+                'status' => $p->status ?: 'active',
                 'budget' => round($budget / 1000000, 2),
                 'spent' => round($spent / 1000000, 2),
                 'raw_budget' => $budget,
                 'raw_spent' => $spent,
+                'usage_pct' => $usagePct,
+                'status_label' => $usagePct > 90 ? 'Critical' : ($usagePct > 75 ? 'Caution' : 'On Track'),
             ];
         });
+
+        // Heavy Machinery Fleet Availability
+        $fleetStats = [
+            'total' => \App\Models\Equipment::count(),
+            'operational' => \App\Models\Equipment::whereIn('status', ['operational', 'active'])->count(),
+            'maintenance' => \App\Models\Equipment::whereIn('status', ['maintenance', 'under_maintenance', 'in_service'])->count(),
+            'standby' => \App\Models\Equipment::where('status', 'standby')->count(),
+        ];
 
         // 4. Expense Categories Breakdown
         $expenseCategories = DB::table('expenses')
@@ -161,6 +175,7 @@ class DashboardController extends Controller
             'departmentStats' => $departmentStats,
             'activities' => $activities,
             'systemHealth' => $systemHealth,
+            'fleetStats' => $fleetStats,
         ]);
     }
 

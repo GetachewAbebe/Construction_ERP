@@ -126,7 +126,7 @@ class InventoryLoanController extends Controller
 
     public function show(InventoryLoan $loan): Response
     {
-        $loan->load(['item', 'employee', 'approvedBy', 'rejectedBy']);
+        $loan->load(['item', 'employee.department_rel', 'employee.position_rel', 'approvedBy', 'rejectedBy', 'user']);
 
         return Inertia::render('Inventory/Loans/Show', compact('loan'));
     }

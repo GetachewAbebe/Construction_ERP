@@ -27,7 +27,7 @@ class PrintController extends Controller
      */
     public function loanGatePass(InventoryLoan $loan): View
     {
-        $loan->load(['inventoryItem', 'user', 'employee', 'approvedBy']);
+        $loan->load(['inventoryItem', 'user', 'employee.department_rel', 'employee.position_rel', 'approvedBy']);
 
         return view('prints.loan-gate-pass', [
             'loan' => $loan,

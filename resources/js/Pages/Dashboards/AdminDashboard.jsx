@@ -2,7 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import MetricCard from '@/Components/Dashboard/MetricCard';
 import CostTrendChart from '@/Components/Dashboard/CostTrendChart';
-import RiskGauge from '@/Components/Dashboard/RiskGauge';
+import ProjectVelocityCard from '@/Components/Dashboard/ProjectVelocityCard';
 import WorkforceAllocationChart from '@/Components/Dashboard/WorkforceAllocationChart';
 import SchedulePerformanceChart from '@/Components/Dashboard/SchedulePerformanceChart';
 import {
@@ -39,6 +39,7 @@ export default function AdminDashboard({
     recentLeaves = [],
     departmentStats = [],
     systemHealth = 98,
+    fleetStats = {},
 }) {
     const pendingTotal = (pendingLoanCount || 0) + (pendingExpenseCount || 0) + (pendingLeaveCount || 0);
 
@@ -125,14 +126,13 @@ export default function AdminDashboard({
                         />
                     </div>
 
-                    {/* Risk Distribution Radial Gauge */}
+                    {/* Active Construction Sites & Fleet Velocity */}
                     <div className="lg:col-span-4 flex flex-col">
-                        <RiskGauge
-                            score={80}
-                            status="Medium"
-                            title="Risk Distribution"
-                            healthPercent={systemHealth}
-                            href="/projects/daily-reports"
+                        <ProjectVelocityCard
+                            projects={projectBreakdown}
+                            fleetStats={fleetStats}
+                            title="Site Execution & Health"
+                            href="/finance/projects"
                         />
                     </div>
                 </div>

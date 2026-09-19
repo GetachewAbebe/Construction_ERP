@@ -174,3 +174,79 @@
 /* Custom variant for dark mode */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Custom variant for print mode */
+@custom-variant print (@media print);
+
+/*
+ | Enterprise Print Engine & Document Cleaner
+ | Completely suppresses web application UI chrome, navbars, sidebars, buttons,
+ | and outer screen titles when printing official gate passes and vouchers.
+ */
+@media print {
+    /* Hide all web application chrome, navigation bars, headers, footers, buttons */
+    header,
+    nav,
+    aside,
+    footer,
+    [role="navigation"],
+    .no-print,
+    .print\:hidden,
+    .print-hidden {
+        display: none !important;
+    }
+
+    /* Reset page canvas to clean white paper without screen background */
+    html,
+    body {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    main {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    /* Print utility classes */
+    .print\:border-none {
+        border: none !important;
+    }
+
+    .print\:shadow-none {
+        box-shadow: none !important;
+    }
+
+    .print\:p-0 {
+        padding: 0 !important;
+    }
+
+    .print\:m-0 {
+        margin: 0 !important;
+    }
+
+    .print\:w-full {
+        width: 100% !important;
+    }
+
+    .print\:max-w-none {
+        max-width: none !important;
+    }
+
+    .print\:space-y-0 > :not([hidden]) ~ :not([hidden]) {
+        margin-top: 0 !important;
+    }
+
+    /* Maintain crisp colors for signature blocks and tables */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
+

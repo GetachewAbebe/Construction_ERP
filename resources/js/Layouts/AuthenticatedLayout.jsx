@@ -153,14 +153,14 @@ export default function AuthenticatedLayout({ title, header, children }) {
                     active: Boolean(currentUrl.startsWith('/hr/employees')),
                 },
                 {
-                    label: 'Leave Requests',
-                    href: '/hr/leaves',
-                    active: Boolean(currentUrl.startsWith('/hr/leaves')),
-                },
-                {
                     label: 'Attendance',
                     href: '/hr/attendance',
                     active: Boolean(currentUrl.startsWith('/hr/attendance')),
+                },
+                {
+                    label: 'Leave Requests',
+                    href: '/hr/leaves',
+                    active: Boolean(currentUrl.startsWith('/hr/leaves')),
                 },
             ];
         }
@@ -173,29 +173,24 @@ export default function AuthenticatedLayout({ title, header, children }) {
                     active: Boolean(currentUrl === '/inventory' || currentUrl.startsWith('/inventory/dashboard')),
                 },
                 {
-                    label: 'Inventory Items',
+                    label: 'Warehouse Stock',
                     href: '/inventory/items',
                     active: Boolean(currentUrl.startsWith('/inventory/items')),
                 },
                 {
-                    label: 'Asset Loans',
+                    label: 'Gate Passes & Loans',
                     href: '/inventory/loans',
                     active: Boolean(currentUrl.startsWith('/inventory/loans')),
+                },
+                {
+                    label: 'Equipment Fleet',
+                    href: '/equipment',
+                    active: Boolean(currentUrl.startsWith('/equipment')),
                 },
                 {
                     label: 'Suppliers & Vendors',
                     href: '/inventory/vendors',
                     active: Boolean(currentUrl.startsWith('/inventory/vendors')),
-                },
-                {
-                    label: 'Audit Logs',
-                    href: '/inventory/logs',
-                    active: Boolean(currentUrl.startsWith('/inventory/logs')),
-                },
-                {
-                    label: 'Fleet & Equipment',
-                    href: '/equipment',
-                    active: Boolean(currentUrl.startsWith('/equipment')),
                 },
             ];
         }
@@ -218,14 +213,14 @@ export default function AuthenticatedLayout({ title, header, children }) {
                     active: Boolean(currentUrl.startsWith('/finance/expenses')),
                 },
                 {
-                    label: 'Daily Construction Logs',
+                    label: 'Site Daily Logs',
                     href: '/projects/daily-reports',
                     active: Boolean(currentUrl.startsWith('/projects/daily-reports')),
                 },
             ];
         }
 
-        // Administrator (Executive Oversight)
+        // Administrator (Executive Oversight of all Core Business Domains)
         return [
             {
                 label: 'Dashboard',
@@ -233,14 +228,14 @@ export default function AuthenticatedLayout({ title, header, children }) {
                 active: Boolean(currentUrl === '/admin' || currentUrl.startsWith('/admin/dashboard') || currentUrl.includes('/admin/home')),
             },
             {
-                label: 'Cost Management',
-                href: '/finance/projects',
-                active: Boolean(currentUrl.startsWith('/finance')),
+                label: 'Operations',
+                href: '/equipment',
+                active: Boolean(currentUrl.startsWith('/equipment') || currentUrl.startsWith('/projects/daily-reports')),
             },
             {
-                label: 'Users',
-                href: '/admin/users',
-                active: Boolean(currentUrl.startsWith('/admin/users') || currentUrl.startsWith('/admin/roles')),
+                label: 'Finance',
+                href: '/finance/projects',
+                active: Boolean(currentUrl.startsWith('/finance')),
             },
             {
                 label: 'Inventory',
@@ -248,9 +243,23 @@ export default function AuthenticatedLayout({ title, header, children }) {
                 active: Boolean(currentUrl.startsWith('/inventory')),
             },
             {
-                label: 'Operations',
-                href: '/equipment',
-                active: Boolean(currentUrl.startsWith('/equipment') || currentUrl.startsWith('/projects/daily-reports')),
+                label: 'Human Resource',
+                href: '/hr/employees',
+                active: Boolean(currentUrl.startsWith('/hr')),
+            },
+            {
+                label: 'Users',
+                href: '/admin/users',
+                active: Boolean(
+                    currentUrl.startsWith('/admin/users') ||
+                    currentUrl.startsWith('/admin/roles') ||
+                    currentUrl.startsWith('/admin/activity-logs') ||
+                    currentUrl.startsWith('/admin/system-settings') ||
+                    currentUrl.startsWith('/admin/attendance-settings') ||
+                    currentUrl.startsWith('/admin/maintenance') ||
+                    currentUrl.startsWith('/admin/notification-templates') ||
+                    currentUrl.startsWith('/admin/trash')
+                ),
             },
         ];
     };
@@ -388,7 +397,7 @@ export default function AuthenticatedLayout({ title, header, children }) {
             <Head title={title ? `${title} — Natanem Engineering` : 'Natanem Engineering ERP'} />
 
             {/* TOP NAVIGATION BAR (BuildIQ Style) */}
-            <div className="relative z-40 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">
+            <div className="relative z-40 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 print:hidden no-print">
                 <header className="relative z-40 bg-[#0b0f19] dark:bg-slate-900/95 text-white rounded-2xl md:rounded-3xl px-4 sm:px-6 py-3 shadow-xl border border-slate-800/80 backdrop-blur-xl flex items-center justify-between gap-3 sm:gap-6">
                     {/* Left: Brand Identity */}
                     <div className="flex items-center gap-3 shrink-0">
@@ -408,7 +417,7 @@ export default function AuthenticatedLayout({ title, header, children }) {
                             <Link
                                 key={item.label}
                                 href={item.href}
-                                className={`text-xs font-semibold px-4 py-1.5 rounded-full transition-all duration-200 ${
+                                className={`text-xs font-semibold px-3 xl:px-4 py-1.5 rounded-full whitespace-nowrap transition-all duration-200 ${
                                     item.active
                                         ? 'bg-white text-slate-950 shadow-sm font-bold scale-[1.02]'
                                         : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
@@ -609,7 +618,7 @@ export default function AuthenticatedLayout({ title, header, children }) {
 
             {/* FLASH NOTIFICATIONS */}
             {flash?.success && (
-                <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+                <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 mt-4 print:hidden no-print">
                     <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 text-xs font-semibold border border-emerald-200 dark:border-emerald-800/50 flex items-center gap-2.5 shadow-sm">
                         <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                         <span>{flash.success}</span>
@@ -618,7 +627,7 @@ export default function AuthenticatedLayout({ title, header, children }) {
             )}
 
             {flash?.error && (
-                <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+                <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 mt-4 print:hidden no-print">
                     <div className="p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 text-xs font-semibold border border-rose-200 dark:border-rose-800/50 flex items-center gap-2.5 shadow-sm">
                         <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
                         <span>{flash.error}</span>
@@ -627,12 +636,12 @@ export default function AuthenticatedLayout({ title, header, children }) {
             )}
 
             {/* MAIN DASHBOARD CANVAS */}
-            <main className="relative z-10 flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <main className="relative z-10 flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 print:p-0 print:m-0 print:max-w-none print:w-full">
                 {children}
             </main>
 
             {/* ENRICHED ENTERPRISE FOOTER */}
-            <footer className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-xs font-medium text-slate-400 dark:text-slate-500 border-t border-slate-200/60 dark:border-slate-800/80">
+            <footer className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-xs font-medium text-slate-400 dark:text-slate-500 border-t border-slate-200/60 dark:border-slate-800/80 print:hidden no-print">
                 <span>© 2026 Natanem Engineering &amp; Construction PLC</span>
                 <span className="hidden sm:inline mx-1.5 text-slate-300 dark:text-slate-700">•</span>
                 <span className="block sm:inline text-[11px] sm:text-xs text-slate-400/90 dark:text-slate-500">Enterprise Resource Planning. All rights reserved.</span>
