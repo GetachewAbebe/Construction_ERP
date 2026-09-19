@@ -128,10 +128,12 @@ class DashboardController extends Controller
         })->count();
 
         $breakdownMachinery = \App\Models\Equipment::whereIn('status', ['breakdown', 'maintenance', 'under_maintenance'])->count();
-        $lowStockItems = InventoryItem::where(function ($q) {
-            $q->whereColumn('quantity', '<=', 'reorder_level')
-              ->orWhere('quantity', '<=', 0);
-        })->count();
+        $lowStockItems = 0;
+        try {
+            $lowStockItems = InventoryItem::where('quantity', '<=', 0)->count();
+        } catch (\Throwable $e) {
+            $lowStockItems = 0;
+        }
 
         $riskPoints = 1.0;
         if ($pendingExpenseCount > 0) $riskPoints += min(2.5, $pendingExpenseCount * 0.4);
