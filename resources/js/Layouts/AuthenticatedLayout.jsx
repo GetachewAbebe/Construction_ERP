@@ -184,8 +184,8 @@ export default function AuthenticatedLayout({ title, header, children }) {
                 },
                 {
                     label: 'Equipment Fleet',
-                    href: '/equipment',
-                    active: Boolean(currentUrl.startsWith('/equipment')),
+                    href: '/inventory/equipment',
+                    active: Boolean(currentUrl.startsWith('/inventory/equipment') || currentUrl.startsWith('/equipment')),
                 },
                 {
                     label: 'Suppliers & Vendors',
@@ -220,7 +220,7 @@ export default function AuthenticatedLayout({ title, header, children }) {
             ];
         }
 
-        // Administrator (Executive Oversight of all Core Business Domains)
+        // Administrator (Executive Oversight of Core Business Domains)
         return [
             {
                 label: 'Dashboard',
@@ -228,19 +228,14 @@ export default function AuthenticatedLayout({ title, header, children }) {
                 active: Boolean(currentUrl === '/admin' || currentUrl.startsWith('/admin/dashboard') || currentUrl.includes('/admin/home')),
             },
             {
-                label: 'Operations',
-                href: '/equipment',
-                active: Boolean(currentUrl.startsWith('/equipment') || currentUrl.startsWith('/projects/daily-reports')),
-            },
-            {
                 label: 'Finance',
                 href: '/finance/projects',
-                active: Boolean(currentUrl.startsWith('/finance')),
+                active: Boolean(currentUrl.startsWith('/finance') || currentUrl.startsWith('/projects/daily-reports')),
             },
             {
                 label: 'Inventory',
                 href: '/inventory/items',
-                active: Boolean(currentUrl.startsWith('/inventory')),
+                active: Boolean(currentUrl.startsWith('/inventory') || currentUrl.startsWith('/equipment')),
             },
             {
                 label: 'Human Resource',
@@ -300,6 +295,12 @@ export default function AuthenticatedLayout({ title, header, children }) {
         if (isInventory) {
             return [
                 {
+                    label: 'Register Machinery',
+                    href: '/inventory/equipment?action=register',
+                    icon: HardHat,
+                    color: 'text-indigo-400',
+                },
+                {
                     label: 'Issue Asset Loan',
                     href: '/inventory/loans/create',
                     icon: Package,
@@ -316,12 +317,6 @@ export default function AuthenticatedLayout({ title, header, children }) {
                     href: '/inventory/vendors/create',
                     icon: Truck,
                     color: 'text-emerald-400',
-                },
-                {
-                    label: 'Fleet & Equipment',
-                    href: '/equipment',
-                    icon: HardHat,
-                    color: 'text-indigo-400',
                 },
             ];
         }

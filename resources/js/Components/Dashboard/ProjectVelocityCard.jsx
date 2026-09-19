@@ -134,7 +134,7 @@ export default function ProjectVelocityCard({
             {/* Heavy Plant Machinery Fleet Availability Footer */}
             <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80">
                 <Link
-                    href="/operations/equipment"
+                    href="/inventory/equipment"
                     className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-blue-50/50 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-700/60 transition-colors flex items-center justify-between text-xs group"
                     title="Inspect fleet preventive maintenance & status"
                 >

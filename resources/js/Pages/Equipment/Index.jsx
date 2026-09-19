@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {
@@ -15,6 +15,8 @@ import {
     Trash2,
     X,
     Save,
+    Activity,
+    Shield,
 } from 'lucide-react';
 
 export default function Index({
@@ -22,6 +24,8 @@ export default function Index({
     projects = [],
     totals = {},
     filters = {},
+    canRegister = false,
+    isInventoryContext = false,
 }) {
     const [search, setSearch] = useState(filters.q || '');
     const [statusFilter, setStatusFilter] = useState(filters.status || '');
@@ -34,6 +38,17 @@ export default function Index({
     // Maintenance log modal
     const [showLogModal, setShowLogModal] = useState(false);
     const [selectedEquipmentForLog, setSelectedEquipmentForLog] = useState(null);
+
+    const basePath = isInventoryContext ? '/inventory/equipment' : '/equipment';
+
+    useEffect(() => {
+        if (canRegister && typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('action') === 'register') {
+                openCreate();
+            }
+        }
+    }, [canRegister]);
 
     const { data, setData, post, put, reset, processing, errors } = useForm({
         name: '',
@@ -59,7 +74,7 @@ export default function Index({
 
     const handleFilter = (e) => {
         if (e) e.preventDefault();
-        router.get('/equipment', {
+        router.get(basePath, {
             q: search,
             status: statusFilter,
             project_id: projectFilter,
@@ -108,11 +123,11 @@ export default function Index({
     const handleFormSubmit = (e) => {
         e.preventDefault();
         if (editingEquipment) {
-            put(`/equipment/${editingEquipment.id}`, {
+            put(`${basePath}/${editingEquipment.id}`, {
                 onSuccess: () => setShowFormModal(false),
             });
         } else {
-            post('/equipment', {
+            post(basePath, {
                 onSuccess: () => setShowFormModal(false),
             });
         }
@@ -120,21 +135,21 @@ export default function Index({
 
     const handleLogSubmit = (e) => {
         e.preventDefault();
-        logForm.post(`/equipment/${selectedEquipmentForLog.id}/logs`, {
+        logForm.post(`${basePath}/${selectedEquipmentForLog.id}/logs`, {
             onSuccess: () => setShowLogModal(false),
         });
     };
 
     const handleDelete = (id, name) => {
         if (confirm(`Decommission machinery unit "${name}"?`)) {
-            router.delete(`/equipment/${id}`);
+            router.delete(`${basePath}/${id}`);
         }
     };
 
     const machines = equipmentList?.data || [];
 
     return (
-        <AuthenticatedLayout title="Machinery Fleet" header="Operations & Plant">
+        <AuthenticatedLayout title="Machinery Fleet" header={isInventoryContext ? "Inventory & Assets" : "Executive Fleet Telemetry"}>
             <div className="space-y-6">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200 dark:border-slate-800">
@@ -147,13 +162,20 @@ export default function Index({
                         </p>
                     </div>
 
-                    <button
-                        onClick={openCreate}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs shadow-sm transition-colors cursor-pointer self-start sm:self-auto"
-                    >
-                        <PlusCircle className="w-4 h-4" />
-                        <span>Register Machinery</span>
-                    </button>
+                    {canRegister ? (
+                        <button
+                            onClick={openCreate}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs shadow-sm transition-colors cursor-pointer self-start sm:self-auto"
+                        >
+                            <PlusCircle className="w-4 h-4" />
+                            <span>Register Machinery</span>
+                        </button>
+                    ) : (
+                        <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs self-start sm:self-auto">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Executive Fleet Telemetry</span>
+                        </div>
+                    )}
                 </div>
 
                 {/* Totals */}
@@ -175,7 +197,7 @@ export default function Index({
                         onClick={() => {
                             const next = statusFilter === 'service_due' ? '' : 'service_due';
                             setStatusFilter(next);
-                            router.get('/equipment', {
+                            router.get(basePath, {
                                 q: search,
                                 status: next,
                                 project_id: projectFilter,
@@ -336,22 +358,24 @@ export default function Index({
                                             <span>Record Service</span>
                                         </button>
 
-                                        <div className="flex items-center gap-1">
-                                            <button
-                                                onClick={() => openEdit(eq)}
-                                                className="p-1.5 rounded-lg text-slate-500 hover:text-blue-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                                                title="Edit Machinery"
-                                            >
-                                                <Edit className="w-3.5 h-3.5" />
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(eq.id, eq.name)}
-                                                className="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
-                                                title="Decommission"
-                                            >
-                                                <Trash2 className="w-3.5 h-3.5" />
-                                            </button>
-                                        </div>
+                                        {canRegister && (
+                                            <div className="flex items-center gap-1">
+                                                <button
+                                                    onClick={() => openEdit(eq)}
+                                                    className="p-1.5 rounded-lg text-slate-500 hover:text-blue-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                                                    title="Edit Machinery"
+                                                >
+                                                    <Edit className="w-3.5 h-3.5" />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(eq.id, eq.name)}
+                                                    className="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+                                                    title="Decommission"
+                                                >
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             );

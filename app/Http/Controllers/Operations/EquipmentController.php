@@ -55,11 +55,18 @@ class EquipmentController extends Controller
             'service_due' => $serviceDueCount,
         ];
 
+        $user = Auth::user();
+        $isInventoryUser = $user && ($user->hasRole(['InventoryManager', 'Inventory Manager']) || str_contains(strtolower((string) $user->role), 'inventory'));
+        $isInventoryContext = $request->routeIs('inventory.*') || $request->is('inventory/*') || $isInventoryUser;
+        $canRegister = $isInventoryContext;
+
         return Inertia::render('Equipment/Index', [
             'equipmentList' => $equipmentList,
             'projects' => $projects,
             'totals' => $totals,
             'filters' => $request->only(['q', 'status', 'project_id']),
+            'canRegister' => $canRegister,
+            'isInventoryContext' => $isInventoryContext,
         ]);
     }
 
@@ -81,7 +88,11 @@ class EquipmentController extends Controller
 
         Equipment::create($validated);
 
-        return redirect()->route('equipment.index')
+        $redirectRoute = ($request->routeIs('inventory.*') || $request->is('inventory/*'))
+            ? 'inventory.equipment.index'
+            : 'equipment.index';
+
+        return redirect()->route($redirectRoute)
             ->with('success', 'Heavy machinery successfully registered into company fleet.');
     }
 
@@ -103,15 +114,23 @@ class EquipmentController extends Controller
 
         $equipment->update($validated);
 
-        return redirect()->route('equipment.index')
+        $redirectRoute = ($request->routeIs('inventory.*') || $request->is('inventory/*'))
+            ? 'inventory.equipment.index'
+            : 'equipment.index';
+
+        return redirect()->route($redirectRoute)
             ->with('success', 'Machinery fleet specifications updated successfully.');
     }
 
-    public function destroy(Equipment $equipment)
+    public function destroy(Request $request, Equipment $equipment)
     {
         $equipment->delete();
 
-        return redirect()->route('equipment.index')
+        $redirectRoute = ($request->routeIs('inventory.*') || $request->is('inventory/*'))
+            ? 'inventory.equipment.index'
+            : 'equipment.index';
+
+        return redirect()->route($redirectRoute)
             ->with('success', 'Machinery unit decommissioned from active telemetry.');
     }
 

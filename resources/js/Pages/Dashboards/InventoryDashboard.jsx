@@ -10,6 +10,8 @@ import {
     ShieldAlert,
     CheckCircle2,
     ArrowUpRight,
+    Truck,
+    HardHat,
 } from 'lucide-react';
 
 export default function InventoryDashboard({
@@ -21,6 +23,9 @@ export default function InventoryDashboard({
     chartCategories = [],
     chartData = [],
     recentAlerts = [],
+    fleetTotal = 0,
+    fleetOperational = 0,
+    fleetServiceDue = 0,
 }) {
     return (
         <AuthenticatedLayout title="Inventory Dashboard" header="Inventory & Warehouse">
@@ -36,7 +41,7 @@ export default function InventoryDashboard({
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                         <Link
                             href="/inventory/items/create"
                             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs shadow-sm transition-colors"
@@ -51,11 +56,18 @@ export default function InventoryDashboard({
                             <Repeat className="w-4 h-4 text-amber-500" />
                             <span>Issue Loan</span>
                         </Link>
+                        <Link
+                            href="/inventory/equipment?action=register"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white font-bold text-xs shadow-sm transition-colors"
+                        >
+                            <Truck className="w-4 h-4" />
+                            <span>Register Machinery</span>
+                        </Link>
                     </div>
                 </div>
 
                 {/* KPIs */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                     <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs flex items-center justify-between">
                         <div>
                             <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Items</div>
@@ -99,6 +111,22 @@ export default function InventoryDashboard({
                             <Repeat className="w-6 h-6" />
                         </div>
                     </div>
+
+                    <Link
+                        href="/inventory/equipment"
+                        className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs flex items-center justify-between hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors group cursor-pointer"
+                    >
+                        <div>
+                            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Machinery Fleet</div>
+                            <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white font-mono mt-1">{fleetTotal}</div>
+                            <div className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-0.5 font-semibold">
+                                {fleetOperational} Operational
+                            </div>
+                        </div>
+                        <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-950/60 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                            <Truck className="w-6 h-6" />
+                        </div>
+                    </Link>
                 </div>
 
                 {/* Content Split */}

@@ -292,6 +292,13 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        // Heavy Machinery & Equipment Fleet
+        $fleetTotal = \App\Models\Equipment::count();
+        $fleetOperational = \App\Models\Equipment::where('status', 'operational')->count();
+        $fleetServiceDue = \App\Models\Equipment::whereNotNull('next_service_hours')
+            ->whereRaw('operating_hours >= (next_service_hours - 25)')
+            ->count();
+
         return Inertia::render('Dashboards/InventoryDashboard', compact(
             'totalItems',
             'stableItemsCount',
@@ -301,7 +308,10 @@ class DashboardController extends Controller
             'healthPercentage',
             'chartCategories',
             'chartData',
-            'recentAlerts'
+            'recentAlerts',
+            'fleetTotal',
+            'fleetOperational',
+            'fleetServiceDue'
         ));
     }
 

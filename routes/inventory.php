@@ -60,6 +60,15 @@ Route::middleware([
         Route::put('/loans/{loan}', [InventoryLoanController::class, 'update'])->name('loans.update');
         Route::delete('/loans/{loan}', [InventoryLoanController::class, 'destroy'])->name('loans.destroy');
 
+        /**
+         * EQUIPMENT & HEAVY MACHINERY FLEET (Asset Inventory)
+         */
+        Route::get('/equipment', [\App\Http\Controllers\Operations\EquipmentController::class, 'index'])->name('equipment.index');
+        Route::post('/equipment', [\App\Http\Controllers\Operations\EquipmentController::class, 'store'])->name('equipment.store');
+        Route::put('/equipment/{equipment}', [\App\Http\Controllers\Operations\EquipmentController::class, 'update'])->name('equipment.update');
+        Route::delete('/equipment/{equipment}', [\App\Http\Controllers\Operations\EquipmentController::class, 'destroy'])->name('equipment.destroy');
+        Route::post('/equipment/{equipment}/logs', [\App\Http\Controllers\Operations\EquipmentController::class, 'storeLog'])->name('equipment.logs.store');
+
         Route::post(
             '/loans/{loan}/mark-returned',
             [InventoryLoanController::class, 'markReturned']
