@@ -42,107 +42,127 @@ class DashboardController extends Controller
             ->whereIn('status', ['present', 'Present'])
             ->count();
 
-        // 3. Financial Trajectory & Project Breakdown
-        $totalBudget = (float) Project::sum('budget');
-        $totalSpent = (float) Expense::where('status', ExpenseStatus::Approved->value)->sum('amount');
-        $financialStats = [
-            'total_budget' => $totalBudget,
-            'total_spent' => $totalSpent,
-            'remaining_budget' => max(0, $totalBudget - $totalSpent),
-            'usage_pct' => $totalBudget > 0 ? min(100, round(($totalSpent / $totalBudget) * 100, 1)) : 0,
-        ];
-
-        // Top projects with actual allocated vs spent
-        $projectsList = Project::with(['expenses' => function ($q) {
-            $q->where('status', ExpenseStatus::Approved->value);
-        }])->take(5)->get();
-
-        $projectBreakdown = $projectsList->map(function ($p) {
-            $spent = (float) $p->expenses->sum('amount');
-            $budget = (float) ($p->budget ?? 0);
-            $usagePct = $budget > 0 ? min(100, round(($spent / $budget) * 100, 1)) : 0;
-
-            return [
-                'id' => $p->id,
-                'name' => $p->name,
-                'location' => $p->location ?: 'Site Operations',
-                'status' => $p->status ?: 'active',
-                'budget' => round($budget / 1000000, 2),
-                'spent' => round($spent / 1000000, 2),
-                'raw_budget' => $budget,
-                'raw_spent' => $spent,
-                'usage_pct' => $usagePct,
-                'status_label' => $usagePct > 90 ? 'Critical' : ($usagePct > 75 ? 'Caution' : 'On Track'),
+        // 2. Heavy Metric Aggregates (Cached for 180s for performance)
+        $cachedMetrics = \Illuminate\Support\Facades\Cache::remember('admin_dashboard_aggregates', 180, function () use ($pendingExpenseCount) {
+            $totalBudget = (float) Project::sum('budget');
+            $totalSpent = (float) Expense::where('status', ExpenseStatus::Approved->value)->sum('amount');
+            $financialStats = [
+                'total_budget' => $totalBudget,
+                'total_spent' => $totalSpent,
+                'remaining_budget' => max(0, $totalBudget - $totalSpent),
+                'usage_pct' => $totalBudget > 0 ? min(100, round(($totalSpent / $totalBudget) * 100, 1)) : 0,
             ];
+
+            // Top projects with actual allocated vs spent
+            $projectsList = Project::with(['expenses' => function ($q) {
+                $q->where('status', ExpenseStatus::Approved->value);
+            }])->take(5)->get();
+
+            $projectBreakdown = $projectsList->map(function ($p) {
+                $spent = (float) $p->expenses->sum('amount');
+                $budget = (float) ($p->budget ?? 0);
+                $usagePct = $budget > 0 ? min(100, round(($spent / $budget) * 100, 1)) : 0;
+
+                return [
+                    'id' => $p->id,
+                    'name' => $p->name,
+                    'location' => $p->location ?: 'Site Operations',
+                    'status' => $p->status ?: 'active',
+                    'budget' => round($budget / 1000000, 2),
+                    'spent' => round($spent / 1000000, 2),
+                    'raw_budget' => $budget,
+                    'raw_spent' => $spent,
+                    'usage_pct' => $usagePct,
+                    'status_label' => $usagePct > 90 ? 'Critical' : ($usagePct > 75 ? 'Caution' : 'On Track'),
+                ];
+            });
+
+            // Heavy Machinery Fleet Availability
+            $fleetStats = [
+                'total' => \App\Models\Equipment::count(),
+                'operational' => \App\Models\Equipment::whereIn('status', ['operational', 'active'])->count(),
+                'maintenance' => \App\Models\Equipment::whereIn('status', ['maintenance', 'under_maintenance', 'in_service'])->count(),
+                'standby' => \App\Models\Equipment::where('status', 'standby')->count(),
+            ];
+
+            // Expense Categories Breakdown
+            $expenseCategories = DB::table('expenses')
+                ->where('status', ExpenseStatus::Approved->value)
+                ->whereNull('deleted_at')
+                ->select('category', DB::raw('SUM(amount) as total'))
+                ->groupBy('category')
+                ->orderByDesc('total')
+                ->get()
+                ->map(fn ($c) => [
+                    'category' => ucfirst((string) $c->category),
+                    'total' => (float) $c->total,
+                    'total_formatted' => number_format((float) $c->total, 0),
+                ]);
+
+            // Monthly Cash Flow (Dynamic Trailing 6 Months)
+            $cashFlowChartData = [];
+            $monthlyBaseline = $totalBudget > 0 ? round($totalBudget / 12, 2) : 500000;
+
+            for ($i = 5; $i >= 0; $i--) {
+                $monthDate = now()->subMonths($i);
+                $year = $monthDate->year;
+                $month = $monthDate->month;
+
+                $monthSpent = (float) Expense::whereIn('status', ['approved', 'Approved', ExpenseStatus::Approved->value])
+                    ->whereYear('expense_date', $year)
+                    ->whereMonth('expense_date', $month)
+                    ->whereNull('deleted_at')
+                    ->sum('amount');
+
+                $cashFlowChartData[] = [
+                    'month' => $monthDate->format('M'),
+                    'actual' => round($monthSpent, 2),
+                    'baseline' => $monthlyBaseline,
+                ];
+            }
+
+            // Dynamic Enterprise Risk Score
+            $criticalProjectsCount = Project::with('expenses')->get()->filter(function ($p) {
+                $spent = (float) $p->expenses->where('status', ExpenseStatus::Approved->value)->sum('amount');
+                $budget = (float) ($p->budget ?? 0);
+                return $budget > 0 && ($spent / $budget) >= 0.85;
+            })->count();
+
+            $breakdownMachinery = \App\Models\Equipment::whereIn('status', ['breakdown', 'maintenance', 'under_maintenance'])->count();
+            $lowStockItems = 0;
+            try {
+                $lowStockItems = InventoryItem::where('quantity', '<=', 0)->count();
+            } catch (\Throwable $e) {
+                $lowStockItems = 0;
+            }
+
+            $riskPoints = 1.0;
+            if ($pendingExpenseCount > 0) $riskPoints += min(2.5, $pendingExpenseCount * 0.4);
+            if ($criticalProjectsCount > 0) $riskPoints += min(3.0, $criticalProjectsCount * 1.0);
+            if ($breakdownMachinery > 0) $riskPoints += min(2.0, $breakdownMachinery * 0.5);
+            if ($lowStockItems > 0) $riskPoints += min(1.5, $lowStockItems * 0.3);
+
+            $riskScore = round(min(9.9, max(1.2, $riskPoints)), 1);
+            $riskLevel = $riskScore >= 7.0 ? 'High' : ($riskScore >= 4.0 ? 'Moderate' : 'Low');
+
+            return compact(
+                'financialStats',
+                'projectBreakdown',
+                'fleetStats',
+                'expenseCategories',
+                'cashFlowChartData',
+                'riskScore',
+                'riskLevel'
+            );
         });
 
-        // Heavy Machinery Fleet Availability
-        $fleetStats = [
-            'total' => \App\Models\Equipment::count(),
-            'operational' => \App\Models\Equipment::whereIn('status', ['operational', 'active'])->count(),
-            'maintenance' => \App\Models\Equipment::whereIn('status', ['maintenance', 'under_maintenance', 'in_service'])->count(),
-            'standby' => \App\Models\Equipment::where('status', 'standby')->count(),
-        ];
-
-        // 4. Expense Categories Breakdown
-        $expenseCategories = DB::table('expenses')
-            ->where('status', ExpenseStatus::Approved->value)
-            ->whereNull('deleted_at')
-            ->select('category', DB::raw('SUM(amount) as total'))
-            ->groupBy('category')
-            ->orderByDesc('total')
-            ->get()
-            ->map(fn ($c) => [
-                'category' => ucfirst((string) $c->category),
-                'total' => (float) $c->total,
-                'total_formatted' => number_format((float) $c->total, 0),
-            ]);
-
-        // 5. Monthly Cash Flow (Dynamic Trailing 6 Months)
-        $cashFlowChartData = [];
-        $monthlyBaseline = $totalBudget > 0 ? round($totalBudget / 12, 2) : 500000;
-
-        for ($i = 5; $i >= 0; $i--) {
-            $monthDate = now()->subMonths($i);
-            $year = $monthDate->year;
-            $month = $monthDate->month;
-
-            $monthSpent = (float) Expense::whereIn('status', ['approved', 'Approved', ExpenseStatus::Approved->value])
-                ->whereYear('expense_date', $year)
-                ->whereMonth('expense_date', $month)
-                ->whereNull('deleted_at')
-                ->sum('amount');
-
-            $cashFlowChartData[] = [
-                'month' => $monthDate->format('M'),
-                'actual' => round($monthSpent, 2),
-                'baseline' => $monthlyBaseline,
-            ];
-        }
-
-        // 6. Dynamic Enterprise Risk Score
-        $criticalProjectsCount = Project::with('expenses')->get()->filter(function ($p) {
-            $spent = (float) $p->expenses->where('status', ExpenseStatus::Approved->value)->sum('amount');
-            $budget = (float) ($p->budget ?? 0);
-            return $budget > 0 && ($spent / $budget) >= 0.85;
-        })->count();
-
-        $breakdownMachinery = \App\Models\Equipment::whereIn('status', ['breakdown', 'maintenance', 'under_maintenance'])->count();
-        $lowStockItems = 0;
-        try {
-            $lowStockItems = InventoryItem::where('quantity', '<=', 0)->count();
-        } catch (\Throwable $e) {
-            $lowStockItems = 0;
-        }
-
-        $riskPoints = 1.0;
-        if ($pendingExpenseCount > 0) $riskPoints += min(2.5, $pendingExpenseCount * 0.4);
-        if ($criticalProjectsCount > 0) $riskPoints += min(3.0, $criticalProjectsCount * 1.0);
-        if ($breakdownMachinery > 0) $riskPoints += min(2.0, $breakdownMachinery * 0.5);
-        if ($lowStockItems > 0) $riskPoints += min(1.5, $lowStockItems * 0.3);
-
-        $riskScore = round(min(9.9, max(1.2, $riskPoints)), 1);
-        $riskLevel = $riskScore >= 7.0 ? 'High' : ($riskScore >= 4.0 ? 'Moderate' : 'Low');
+        $financialStats = $cachedMetrics['financialStats'];
+        $projectBreakdown = $cachedMetrics['projectBreakdown'];
+        $fleetStats = $cachedMetrics['fleetStats'];
+        $expenseCategories = $cachedMetrics['expenseCategories'];
+        $cashFlowChartData = $cachedMetrics['cashFlowChartData'];
+        $riskScore = $cachedMetrics['riskScore'];
+        $riskLevel = $cachedMetrics['riskLevel'];
 
         // 7. Recent Core Module Feeds
         $recentExpenses = Expense::with(['project', 'user'])->latest('id')->take(6)->get();

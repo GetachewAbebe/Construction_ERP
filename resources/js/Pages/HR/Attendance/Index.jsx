@@ -14,6 +14,7 @@ import {
     DollarSign,
     BarChart3,
     CheckCircle2,
+    Download,
 } from 'lucide-react';
 
 export default function Index({
@@ -100,6 +101,14 @@ export default function Index({
                             <DollarSign className="w-3.5 h-3.5" />
                             <span>Salary Credits</span>
                         </Link>
+                        <a
+                            href={`/hr/attendance/export?date_from=${encodeURIComponent(dateFrom)}&date_to=${encodeURIComponent(dateTo)}&employee_filter=${encodeURIComponent(empFilter)}&status=${encodeURIComponent(statusFilter)}`}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/60 dark:bg-blue-950/40 text-xs font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors shadow-sm"
+                            title="Export filtered attendance records to CSV"
+                        >
+                            <Download className="w-3.5 h-3.5" />
+                            <span>Export CSV</span>
+                        </a>
                     </div>
                 </div>
 

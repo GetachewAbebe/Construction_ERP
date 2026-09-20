@@ -170,4 +170,85 @@ class EquipmentController extends Controller
         return redirect()->route('equipment.index')
             ->with('success', 'Maintenance event logged successfully.');
     }
+
+    /**
+     * Export fleet telemetry and heavy machinery registry as CSV.
+     */
+    public function exportCsv(Request $request)
+    {
+        $query = Equipment::with('project');
+
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function ($sub) use ($q) {
+                $sub->where('name', 'like', "%{$q}%")
+                    ->orWhere('plate_number', 'like', "%{$q}%")
+                    ->orWhere('type', 'like', "%{$q}%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            if ($request->status === 'service_due') {
+                $query->whereNotNull('next_service_hours')
+                    ->whereRaw('operating_hours >= (next_service_hours - 25)');
+            } else {
+                $query->where('status', $request->status);
+            }
+        }
+
+        if ($request->filled('project_id')) {
+            $query->where('project_id', $request->project_id);
+        }
+
+        $filename = 'equipment_fleet_telemetry_'.date('Y-m-d_His').'.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        $callback = function () use ($query) {
+            $file = fopen('php://output', 'w');
+            fputs($file, "\xEF\xBB\xBF");
+
+            fputcsv($file, [
+                'ID',
+                'Machinery / Plant Name',
+                'Plate / Serial No',
+                'Type',
+                'Assigned Project',
+                'Status',
+                'Operating Hours',
+                'Next Service (Hours)',
+                'Fuel Type',
+                'Purchase Date',
+                'Purchase Cost (ETB)',
+            ]);
+
+            $query->orderBy('name')->chunk(100, function ($equipments) use ($file) {
+                foreach ($equipments as $eq) {
+                    fputcsv($file, [
+                        $eq->id,
+                        $eq->name,
+                        $eq->plate_number ?? 'N/A',
+                        $eq->type,
+                        $eq->project?->name ?? 'Unassigned / Yard',
+                        strtoupper((string) $eq->status),
+                        number_format((float) $eq->operating_hours, 2, '.', ''),
+                        $eq->next_service_hours ?? 'N/A',
+                        $eq->fuel_type ?? 'Diesel',
+                        $eq->purchase_date ? (string) $eq->purchase_date : 'N/A',
+                        $eq->purchase_cost ? number_format((float) $eq->purchase_cost, 2, '.', '') : '0.00',
+                    ]);
+                }
+            });
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

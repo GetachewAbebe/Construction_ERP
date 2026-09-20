@@ -1,0 +1,17 @@
+{
+  "name": "Natanem Construction ERP",
+  "short_name": "Natanem ERP",
+  "start_url": "/projects/daily-reports",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#1e3a8a",
+  "orientation": "portrait-primary",
+  "description": "Enterprise engineering management, site progress reporting, and equipment telemetry.",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

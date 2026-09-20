@@ -459,4 +459,78 @@ class AttendanceController extends Controller
             fclose($handle);
         }, $filename, $headers);
     }
+
+    /**
+     * Export filtered attendance records as a CSV spreadsheet.
+     */
+    public function exportCsv(Request $request)
+    {
+        $query = Attendance::with('employee');
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('date', '>=', $request->input('date_from'));
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('date', '<=', $request->input('date_to'));
+        }
+
+        if ($request->filled('employee_filter')) {
+            $query->where('employee_id', $request->input('employee_filter'));
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        $filename = 'attendance_records_'.date('Y-m-d_His').'.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        $callback = function () use ($query) {
+            $handle = fopen('php://output', 'w');
+            fputs($handle, "\xEF\xBB\xBF");
+
+            fputcsv($handle, [
+                'ID',
+                'Date',
+                'Employee Name',
+                'Employee Code',
+                'Status',
+                'Clock In',
+                'Clock Out',
+                'Work Hours',
+                'Overtime (Hours)',
+            ]);
+
+            $query->orderByDesc('date')->orderByDesc('clock_in')->chunk(200, function ($records) use ($handle) {
+                foreach ($records as $rec) {
+                    $name = $rec->employee ? ($rec->employee->first_name.' '.$rec->employee->last_name) : 'N/A';
+                    $code = $rec->employee?->employee_id ?? 'N/A';
+
+                    fputcsv($handle, [
+                        $rec->id,
+                        $rec->date ? (string) $rec->date : '',
+                        $name,
+                        $code,
+                        ucfirst((string) $rec->status),
+                        $rec->clock_in ?? '',
+                        $rec->clock_out ?? '',
+                        $rec->work_hours ?? '0.00',
+                        $rec->overtime_hours ?? '0.00',
+                    ]);
+                }
+            });
+
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

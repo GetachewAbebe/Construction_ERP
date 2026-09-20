@@ -37,5 +37,20 @@ class AppServiceProvider extends ServiceProvider
             return $user->hasRole('HumanResourceManager') ||
                    $user->hasRole('Human Resource Manager');
         });
+
+        \Illuminate\Support\Facades\Event::listen(
+            \App\Events\ExpenseApproved::class,
+            \App\Listeners\SendExpenseApprovalNotification::class
+        );
+
+        \Illuminate\Support\Facades\Event::listen(
+            \App\Events\ExpenseRejected::class,
+            \App\Listeners\SendExpenseApprovalNotification::class
+        );
+
+        \Illuminate\Support\Facades\Event::listen(
+            \App\Events\InventoryLoanApproved::class,
+            \App\Listeners\ProcessInventoryLoanStockAdjustment::class
+        );
     }
 }

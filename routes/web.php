@@ -114,6 +114,7 @@ Route::middleware('auth')->group(function () {
 
     // Construction & Fleet Workflows
     Route::get('/equipment', [\App\Http\Controllers\Operations\EquipmentController::class, 'index'])->name('equipment.index');
+    Route::get('/equipment/export', [\App\Http\Controllers\Operations\EquipmentController::class, 'exportCsv'])->name('equipment.export');
     Route::post('/equipment', [\App\Http\Controllers\Operations\EquipmentController::class, 'store'])->name('equipment.store');
     Route::put('/equipment/{equipment}', [\App\Http\Controllers\Operations\EquipmentController::class, 'update'])->name('equipment.update');
     Route::delete('/equipment/{equipment}', [\App\Http\Controllers\Operations\EquipmentController::class, 'destroy'])->name('equipment.destroy');

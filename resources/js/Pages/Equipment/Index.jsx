@@ -17,6 +17,7 @@ import {
     Save,
     Activity,
     Shield,
+    Download,
 } from 'lucide-react';
 
 export default function Index({
@@ -162,20 +163,31 @@ export default function Index({
                         </p>
                     </div>
 
-                    {canRegister ? (
-                        <button
-                            onClick={openCreate}
-                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs shadow-sm transition-colors cursor-pointer self-start sm:self-auto"
+                    <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+                        <a
+                            href={`${basePath}/export?q=${encodeURIComponent(search)}&status=${encodeURIComponent(statusFilter)}&project_id=${encodeURIComponent(projectFilter)}`}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold text-xs shadow-xs transition-colors cursor-pointer"
+                            title="Export fleet records and telemetry to CSV"
                         >
-                            <PlusCircle className="w-4 h-4" />
-                            <span>Register Machinery</span>
-                        </button>
-                    ) : (
-                        <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs self-start sm:self-auto">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Executive Fleet Telemetry</span>
-                        </div>
-                    )}
+                            <Download className="w-4 h-4 text-blue-600" />
+                            <span>Export Telemetry</span>
+                        </a>
+
+                        {canRegister ? (
+                            <button
+                                onClick={openCreate}
+                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs shadow-sm transition-colors cursor-pointer"
+                            >
+                                <PlusCircle className="w-4 h-4" />
+                                <span>Register Machinery</span>
+                            </button>
+                        ) : (
+                            <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
+                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Executive Fleet Telemetry</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Totals */}

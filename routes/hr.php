@@ -49,6 +49,8 @@ Route::middleware([
         // Attendance
         Route::get('/attendance', [App\Http\Controllers\HR\AttendanceController::class, 'index'])
             ->name('attendance.index');
+        Route::get('/attendance/export', [App\Http\Controllers\HR\AttendanceController::class, 'exportCsv'])
+            ->name('attendance.export');
 
         // --- NEW: Session Based Attendance ---
         Route::get('/attendance/daily-sheet', [App\Http\Controllers\HR\AttendanceController::class, 'dailySheet'])

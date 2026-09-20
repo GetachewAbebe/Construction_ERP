@@ -87,7 +87,9 @@ class ExpenseApprovalController extends Controller
             'approved_by' => Auth::id(),
         ]);
 
-        $this->notifyParties($expense);
+        event(new \App\Events\ExpenseApproved($expense));
+        $this->markExpenseNotificationAsRead($expense);
+        \Illuminate\Support\Facades\Cache::forget('admin_dashboard_aggregates');
 
         return back()->with('status', 'Requisition authorized successfully.')->with('success', 'Requisition authorized successfully.');
     }
@@ -110,33 +112,11 @@ class ExpenseApprovalController extends Controller
             'rejection_reason' => $request->rejection_reason,
         ]);
 
-        $this->notifyParties($expense);
+        event(new \App\Events\ExpenseRejected($expense));
+        $this->markExpenseNotificationAsRead($expense);
+        \Illuminate\Support\Facades\Cache::forget('admin_dashboard_aggregates');
 
         return back()->with('status', 'Requisition declined.')->with('success', 'Requisition declined.');
-    }
-
-    private function notifyParties(Expense $expense): void
-    {
-        try {
-            if ($expense->user) {
-                $expense->user->notify(new ExpenseStatusNotification($expense, 'status_change'));
-                Mail::to($expense->user->email)
-                    ->send(new ExpenseRequestStatusMail($expense, $expense->user));
-            }
-        } catch (\Exception $e) {
-            Log::warning('Expense requester notification failed: '.$e->getMessage());
-        }
-
-        try {
-            $financialManagers = User::role('FinancialManager')->get();
-            if ($financialManagers->isNotEmpty()) {
-                Notification::send($financialManagers, new ExpenseStatusNotification($expense, 'status_update'));
-            }
-        } catch (\Exception $e) {
-            Log::warning('Expense manager notification failed: '.$e->getMessage());
-        }
-
-        $this->markExpenseNotificationAsRead($expense);
     }
 
     private function markExpenseNotificationAsRead(Expense $expense): void

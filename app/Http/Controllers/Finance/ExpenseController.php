@@ -212,34 +212,55 @@ class ExpenseController extends Controller
      */
     public function exportCsv(Request $request)
     {
-        $expenses = Expense::with(['project', 'user'])->orderByDesc('expense_date')->get();
+        $query = Expense::with(['project', 'user']);
+
+        if ($request->filled('q')) {
+            $search = $request->input('q');
+            $query->where(function ($q) use ($search) {
+                $q->where('category', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('project_id')) {
+            $query->where('project_id', $request->input('project_id'));
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
 
         $headers = [
-            'Content-Type' => 'text/csv',
+            'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="expenses_export_'.date('Y-m-d_His').'.csv"',
             'Pragma' => 'no-cache',
             'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
             'Expires' => '0',
         ];
 
-        $callback = function () use ($expenses) {
+        $callback = function () use ($query) {
             $file = fopen('php://output', 'w');
+            // Write UTF-8 BOM for Microsoft Excel compatibility
+            fputs($file, "\xEF\xBB\xBF");
+
             fputcsv($file, ['ID', 'Reference No', 'Project', 'Category', 'Amount (ETB)', 'Date', 'Status', 'Logged By', 'Receipt Attached', 'Description']);
 
-            foreach ($expenses as $expense) {
-                fputcsv($file, [
-                    $expense->id,
-                    $expense->reference_no ?? 'N/A',
-                    $expense->project?->name ?? 'N/A',
-                    $expense->category,
-                    number_format((float) $expense->amount, 2, '.', ''),
-                    $expense->expense_date?->format('Y-m-d') ?? '',
-                    strtoupper($expense->status),
-                    $expense->user?->name ?? 'N/A',
-                    $expense->attachment_path ? 'Yes' : 'No',
-                    $expense->description ?? '',
-                ]);
-            }
+            $query->orderByDesc('expense_date')->chunk(200, function ($expenses) use ($file) {
+                foreach ($expenses as $expense) {
+                    fputcsv($file, [
+                        $expense->id,
+                        $expense->reference_no ?? 'N/A',
+                        $expense->project?->name ?? 'N/A',
+                        $expense->category,
+                        number_format((float) $expense->amount, 2, '.', ''),
+                        $expense->expense_date?->format('Y-m-d') ?? '',
+                        strtoupper((string) $expense->status),
+                        $expense->user?->name ?? 'N/A',
+                        $expense->attachment_path ? 'Yes' : 'No',
+                        $expense->description ?? '',
+                    ]);
+                }
+            });
 
             fclose($file);
         };
