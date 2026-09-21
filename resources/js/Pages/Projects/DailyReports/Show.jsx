@@ -12,6 +12,9 @@ import {
     Package,
     UserCheck,
     Clock,
+    Printer,
+    Camera,
+    ExternalLink,
 } from 'lucide-react';
 
 export default function Show({ report }) {
@@ -52,9 +55,20 @@ export default function Show({ report }) {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2 self-start sm:self-auto text-xs text-slate-500 font-mono bg-white dark:bg-slate-900 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800">
-                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                        <span>{reportDate}</span>
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex items-center gap-2 text-xs text-slate-500 font-mono bg-white dark:bg-slate-900 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                            <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                            <span>{reportDate}</span>
+                        </div>
+                        <a
+                            href={`/projects/daily-reports/${report.id}/print`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-md shadow-teal-600/20 transition-all cursor-pointer"
+                        >
+                            <Printer className="w-3.5 h-3.5" />
+                            <span>Print DPR Voucher</span>
+                        </a>
                     </div>
                 </div>
 
@@ -149,6 +163,39 @@ export default function Show({ report }) {
                             {report.safety_incidents || 'Zero safety incidents or hazards reported.'}
                         </p>
                     </div>
+
+                    {/* Visual Progress & Site Photos */}
+                    {Array.isArray(report.photos) && report.photos.length > 0 && (
+                        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                    <Camera className="w-4 h-4 text-teal-500" />
+                                    <span>Field Evidence & Site Photos ({report.photos.length})</span>
+                                </div>
+                                <span className="text-[11px] text-slate-400">Click photo to view full size</span>
+                            </div>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                                {report.photos.map((photo, idx) => (
+                                    <a
+                                        key={idx}
+                                        href={photo}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="group relative block aspect-video rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 hover:ring-2 hover:ring-teal-500 transition-all bg-slate-100 dark:bg-slate-800"
+                                    >
+                                        <img
+                                            src={photo}
+                                            alt={`Site evidence ${idx + 1}`}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2 text-white text-[10px] font-bold">
+                                            <span>Photo #{idx + 1}</span>
+                                        </div>
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Footer Navigation */}

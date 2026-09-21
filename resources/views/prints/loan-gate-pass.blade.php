@@ -118,22 +118,17 @@
                 </div>
             </div>
 
-            <div class="pass-badge-box">
-                <div class="title">MATERIAL GATE PASS / የመጋዘን እቃ መውጫ</div>
-                <div class="pass-id">#{{ $passId }}</div>
-                <div class="date">Issue Date: <strong>{{ $issueDate }}</strong></div>
-                <div class="barcode">
-                    <div style="width: 3px;"></div>
-                    <div style="width: 1px;"></div>
-                    <div style="width: 4px;"></div>
-                    <div style="width: 2px;"></div>
-                    <div style="width: 1px;"></div>
-                    <div style="width: 3px;"></div>
-                    <div style="width: 2px;"></div>
-                    <div style="width: 4px;"></div>
-                    <div style="width: 1px;"></div>
-                    <div style="width: 2px;"></div>
-                    <div style="width: 3px;"></div>
+            <div class="pass-badge-box" style="display: flex; align-items: center; gap: 14px; text-align: left;">
+                @if(!empty($qrCodeSvg))
+                    <div style="text-align: center; flex-shrink: 0;">
+                        {!! $qrCodeSvg !!}
+                        <div style="font-size: 7.5px; font-weight: 800; color: #0f172a; margin-top: 2px; letter-spacing: 0.5px;">SCAN TO VERIFY</div>
+                    </div>
+                @endif
+                <div>
+                    <div class="title">MATERIAL GATE PASS / የመጋዘን እቃ መውጫ</div>
+                    <div class="pass-id">#{{ $passId }}</div>
+                    <div class="date">Issue Date: <strong>{{ $issueDate }}</strong></div>
                 </div>
             </div>
         </div>

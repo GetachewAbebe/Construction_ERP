@@ -213,6 +213,11 @@ export default function AuthenticatedLayout({ title, header, children }) {
                     active: Boolean(currentUrl.startsWith('/finance/expenses')),
                 },
                 {
+                    label: 'Trade Contracts',
+                    href: '/contracts/subcontractors',
+                    active: Boolean(currentUrl.startsWith('/contracts')),
+                },
+                {
                     label: 'Site Daily Logs',
                     href: '/projects/daily-reports',
                     active: Boolean(currentUrl.startsWith('/projects/daily-reports')),
@@ -340,6 +345,12 @@ export default function AuthenticatedLayout({ title, header, children }) {
                     href: '/projects/daily-reports',
                     icon: FileText,
                     color: 'text-emerald-400',
+                },
+                {
+                    label: 'Trade Contracts & IPCs',
+                    href: '/contracts/subcontractors',
+                    icon: Briefcase,
+                    color: 'text-indigo-400',
                 },
             ];
         }

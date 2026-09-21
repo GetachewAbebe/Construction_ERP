@@ -71,16 +71,56 @@ class Equipment extends Model
         return $this->hasMany(EquipmentLog::class);
     }
 
+    protected $appends = [
+        'status_badge',
+        'fuel_efficiency',
+        'service_status',
+    ];
+
     /**
      * Check if machine is overdue for preventive maintenance.
      */
     public function isServiceOverdue(): bool
     {
-        if (! $this->next_service_hours || $this->next_service_hours <= 0) {
-            return false;
+        return $this->service_status === 'overdue';
+    }
+
+    /**
+     * Compute fuel burn rate in Liters per Operating Hour (L/hr).
+     */
+    public function getFuelEfficiencyAttribute(): ?float
+    {
+        $totalFuel = (float) $this->logs()->whereNotNull('fuel_liters')->sum('fuel_liters');
+        $hours = (float) $this->operating_hours;
+
+        if ($totalFuel > 0 && $hours > 0) {
+            return round($totalFuel / $hours, 2);
         }
 
-        return (float) $this->operating_hours >= (float) $this->next_service_hours;
+        return null;
+    }
+
+    /**
+     * Service due alert status: 'overdue', 'due_soon', 'ok'.
+     */
+    public function getServiceStatusAttribute(): string
+    {
+        if (! $this->next_service_hours || $this->next_service_hours <= 0) {
+            return 'ok';
+        }
+
+        $current = (float) $this->operating_hours;
+        $next = (float) $this->next_service_hours;
+
+        if ($current >= $next) {
+            return 'overdue';
+        }
+
+        if (($next - $current) <= 25.0) {
+            return 'due_soon';
+        }
+
+        return 'ok';
     }
 
     /**

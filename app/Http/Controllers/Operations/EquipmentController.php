@@ -139,6 +139,7 @@ class EquipmentController extends Controller
         $validated = $request->validate([
             'log_type' => ['required', 'in:service,repair,fuel,hours_update,breakdown'],
             'hours_at_log' => ['nullable', 'numeric', 'min:0'],
+            'fuel_liters' => ['nullable', 'numeric', 'min:0'],
             'cost' => ['required', 'numeric', 'min:0'],
             'description' => ['required', 'string', 'max:1000'],
             'logged_at' => ['required', 'date'],
@@ -148,7 +149,8 @@ class EquipmentController extends Controller
             'equipment_id' => $equipment->id,
             'user_id' => Auth::id(),
             'log_type' => $validated['log_type'],
-            'hours_at_log' => $validated['hours_at_log'],
+            'hours_at_log' => $validated['hours_at_log'] ?? null,
+            'fuel_liters' => $validated['fuel_liters'] ?? null,
             'cost' => $validated['cost'],
             'description' => $validated['description'],
             'logged_at' => $validated['logged_at'],
@@ -226,6 +228,8 @@ class EquipmentController extends Controller
                 'Fuel Type',
                 'Purchase Date',
                 'Purchase Cost (ETB)',
+                'Fuel Burn Rate (L/hr)',
+                'Maintenance Alert',
             ]);
 
             $query->orderBy('name')->chunk(100, function ($equipments) use ($file) {
@@ -242,6 +246,8 @@ class EquipmentController extends Controller
                         $eq->fuel_type ?? 'Diesel',
                         $eq->purchase_date ? (string) $eq->purchase_date : 'N/A',
                         $eq->purchase_cost ? number_format((float) $eq->purchase_cost, 2, '.', '') : '0.00',
+                        $eq->fuel_efficiency ? number_format((float) $eq->fuel_efficiency, 2, '.', '').' L/hr' : 'No fuel logs',
+                        strtoupper($eq->service_status),
                     ]);
                 }
             });

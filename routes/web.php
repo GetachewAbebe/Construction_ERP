@@ -61,6 +61,11 @@ Route::post('/reset-password', [NewPasswordController::class, 'store'])
  */
 Route::view('/about', 'about')->name('about');
 
+// Digital Verification Endpoints (Field QR Scanning)
+Route::get('/verify/gate-pass/{loan}', [\App\Http\Controllers\VerificationController::class, 'verifyGatePass'])->name('verify.gate-pass');
+Route::post('/verify/gate-pass/{loan}/confirm', [\App\Http\Controllers\VerificationController::class, 'confirmGatePassReceipt'])->name('verify.gate-pass.confirm');
+Route::get('/verify/expense-voucher/{expense}', [\App\Http\Controllers\VerificationController::class, 'verifyExpenseVoucher'])->name('verify.expense-voucher');
+
 /**
  * --------------------------------------------------------------------------
  * LOGOUT
@@ -128,6 +133,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/projects/daily-reports', [\App\Http\Controllers\Operations\DailyReportController::class, 'index'])->name('projects.daily-reports.index');
     Route::post('/projects/daily-reports', [\App\Http\Controllers\Operations\DailyReportController::class, 'store'])->name('projects.daily-reports.store');
     Route::get('/projects/daily-reports/{report}', [\App\Http\Controllers\Operations\DailyReportController::class, 'show'])->name('projects.daily-reports.show');
+    Route::get('/projects/daily-reports/{report}/print', [\App\Http\Controllers\Operations\DailyReportController::class, 'print'])->name('projects.daily-reports.print');
+
+    // Subcontractors & Progress Measurement Certificates
+    Route::get('/contracts/subcontractors', [\App\Http\Controllers\Contracts\SubcontractorController::class, 'index'])->name('contracts.subcontractors.index');
+    Route::post('/contracts/subcontractors', [\App\Http\Controllers\Contracts\SubcontractorController::class, 'store'])->name('contracts.subcontractors.store');
+    Route::post('/contracts/subcontractors/{subcontractor}/certificates', [\App\Http\Controllers\Contracts\SubcontractorController::class, 'storeCertificate'])->name('contracts.subcontractors.certificates.store');
 
     // Print & Document Generation
     Route::get('/finance/expenses/{expense}/print', [App\Http\Controllers\PrintController::class, 'expenseVoucher'])->name('finance.expenses.print');

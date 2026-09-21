@@ -42,12 +42,14 @@ class DailyProgressReport extends Model
         'materials_received',
         'machinery_deployed',
         'safety_incidents',
+        'photos',
         'status',
     ];
 
     protected $casts = [
         'report_date' => 'date',
         'manpower_count' => 'integer',
+        'photos' => 'array',
     ];
 
     /**

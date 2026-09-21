@@ -55,9 +55,22 @@ class DailyReportController extends Controller
             'materials_received' => ['nullable', 'string'],
             'machinery_deployed' => ['nullable', 'string'],
             'safety_incidents' => ['nullable', 'string'],
+            'photos' => ['nullable', 'array'],
+            'photos.*' => ['nullable', 'image', 'max:10240'],
         ]);
 
-        $validated['created_by'] = Auth::id();
+        $validated['user_id'] = Auth::id();
+
+        if ($request->hasFile('photos')) {
+            $photoPaths = [];
+            foreach ($request->file('photos') as $file) {
+                if ($file && $file->isValid()) {
+                    $path = $file->store('reports', 'public');
+                    $photoPaths[] = \Illuminate\Support\Facades\Storage::url($path);
+                }
+            }
+            $validated['photos'] = $photoPaths;
+        }
 
         DailyProgressReport::create($validated);
 
@@ -70,5 +83,17 @@ class DailyReportController extends Controller
         $report->load(['project', 'author']);
 
         return Inertia::render('Projects/DailyReports/Show', compact('report'));
+    }
+
+    /**
+     * Render printable corporate Daily Project Report (DPR).
+     */
+    public function print(DailyProgressReport $report)
+    {
+        $report->load(['project', 'author']);
+
+        return view('prints.dpr', [
+            'report' => $report,
+        ]);
     }
 }

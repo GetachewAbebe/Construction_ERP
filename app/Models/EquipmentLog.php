@@ -32,6 +32,7 @@ class EquipmentLog extends Model
         'user_id',
         'log_type',
         'hours_at_log',
+        'fuel_liters',
         'cost',
         'description',
         'logged_at',
@@ -39,6 +40,7 @@ class EquipmentLog extends Model
 
     protected $casts = [
         'hours_at_log' => 'decimal:2',
+        'fuel_liters' => 'decimal:2',
         'cost' => 'decimal:2',
         'logged_at' => 'date',
     ];

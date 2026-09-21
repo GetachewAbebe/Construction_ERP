@@ -49,10 +49,18 @@
                 <h1>NATANEM ENGINEERING</h1>
                 <p>Construction, General Contracting & Engineering</p>
             </div>
-            <div class="voucher-meta">
-                <div class="badge">PAYMENT VOUCHER</div>
-                <p>#EXP-{{ str_pad((string) $expense->id, 5, '0', STR_PAD_LEFT) }}</p>
-                <p>Date: {{ $expense->expense_date ? $expense->expense_date->format('F d, Y') : now()->format('F d, Y') }}</p>
+            <div class="voucher-meta" style="display: flex; align-items: center; gap: 16px;">
+                @if(!empty($qrCodeSvg))
+                    <div style="text-align: center;">
+                        {!! $qrCodeSvg !!}
+                        <div style="font-size: 8px; font-weight: 700; color: #1e3a8a; margin-top: 2px; letter-spacing: 0.5px;">SCAN TO VERIFY</div>
+                    </div>
+                @endif
+                <div>
+                    <div class="badge">PAYMENT VOUCHER</div>
+                    <p>#EXP-{{ str_pad((string) $expense->id, 5, '0', STR_PAD_LEFT) }}</p>
+                    <p>Date: {{ $expense->expense_date ? $expense->expense_date->format('F d, Y') : now()->format('F d, Y') }}</p>
+                </div>
             </div>
         </div>
 
