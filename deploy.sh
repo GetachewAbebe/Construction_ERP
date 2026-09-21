@@ -25,7 +25,7 @@ cleanup() {
 
     if [ "$status" -ne 0 ] && [ "$DEPLOYMENT_WENT_DOWN" -eq 1 ]; then
         echo "⚠️ Deployment failed. Restoring application availability..."
-        php artisan up || true
+        ${PHP_BIN:-php} artisan up || true
     fi
 
     rm -f "$LOCK_FILE"
@@ -43,11 +43,29 @@ if [ -z "$HOME" ]; then
 fi
 export COMPOSER_HOME=$HOME/.composer
 
+# Detect best available PHP binary (prefer PHP 8.4+ if present, else fallback to system php)
+PHP_BIN="php"
+for candidate in \
+    /opt/alt/php84/usr/bin/php \
+    /usr/local/bin/alt-php84 \
+    /opt/cpanel/ea-php84/root/usr/bin/php \
+    /usr/local/bin/ea-php84 \
+    /usr/bin/php8.4 \
+    /usr/bin/php84; do
+    if [ -x "$candidate" ]; then
+        PHP_BIN="$candidate"
+        export PATH="$(dirname "$candidate"):$PATH"
+        break
+    fi
+done
+
+echo "🐘 Active PHP CLI: $PHP_BIN ($($PHP_BIN -v | head -n 1))"
+
 # ==========================================
 # 1. Enter Maintenance Mode
 # ==========================================
 echo "🚧 Entering maintenance mode..."
-php artisan down || true
+$PHP_BIN artisan down || true
 DEPLOYMENT_WENT_DOWN=1
 
 # ==========================================
@@ -79,11 +97,11 @@ echo "📦 Updating dependencies..."
 if ! command -v composer &> /dev/null; then
     if [ ! -f "/tmp/composer.phar" ]; then
         echo "📥 Composer not found. Downloading to /tmp..."
-        php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');"
-        php /tmp/composer-setup.php --install-dir=/tmp --filename=composer.phar --quiet
-        php -r "unlink('/tmp/composer-setup.php');"
+        $PHP_BIN -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');"
+        $PHP_BIN /tmp/composer-setup.php --install-dir=/tmp --filename=composer.phar --quiet
+        $PHP_BIN -r "unlink('/tmp/composer-setup.php');"
     fi
-    COMPOSER="php /tmp/composer.phar"
+    COMPOSER="$PHP_BIN /tmp/composer.phar"
 else
     COMPOSER="composer"
 fi
@@ -101,15 +119,15 @@ fi
 # 6. Run Database Migrations
 # ==========================================
 echo "🗄️ Running database migrations..."
-php artisan migrate --force
+$PHP_BIN artisan migrate --force
 
 # ==========================================
 # 7. Atomic Optimization Cache Update
 # ==========================================
 echo "⚡ Updating production caches atomically..."
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+$PHP_BIN artisan config:cache
+$PHP_BIN artisan route:cache
+$PHP_BIN artisan view:cache
 
 # ==========================================
 # 8. Sync Public Assets to Web Root
@@ -129,7 +147,7 @@ rm -f /home/natanewn/public_html/erp/hot
 # 9. Exit Maintenance Mode & Go Live
 # ==========================================
 echo "🌐 Bringing system back online..."
-php artisan up
+$PHP_BIN artisan up
 DEPLOYMENT_WENT_DOWN=0
 
 echo "✅ Deployment Successful! Natanem ERP is stable and live."
