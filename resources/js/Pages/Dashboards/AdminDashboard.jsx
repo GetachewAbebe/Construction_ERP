@@ -81,64 +81,68 @@ export default function AdminDashboard({
     return (
         <AuthenticatedLayout title="Executive Overview">
             <div className="space-y-6">
-                {/* EXECUTIVE WELCOME & QUICK ACTIONS TOOLBAR */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80 shadow-sm">
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/50">
-                                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
-                                Live Enterprise Command
-                            </span>
-                            <span className="text-xs text-slate-400">
-                                {new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
-                            </span>
-                        </div>
-                        <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight mt-1">
-                            Executive Administration &amp; Operations
-                        </h1>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                            Real-time budget tracking, workflow approvals, plant telemetry, and workforce pacing.
-                        </p>
-                    </div>
+                {/* EXECUTIVE WELCOME & QUICK ACTIONS HERO BANNER */}
+                <div className="rounded-3xl bg-gradient-to-r from-slate-950 via-blue-950 to-indigo-950 p-6 sm:p-8 text-white shadow-lg relative overflow-hidden">
+                    <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
-                    {/* Quick Shortcuts */}
-                    <div className="flex flex-wrap items-center gap-2 shrink-0">
-                        <Link
-                            href="/admin/requests/finance"
-                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-sm shadow-amber-500/20 transition-all cursor-pointer"
-                        >
-                            <Banknote className="w-4 h-4" />
-                            <span>Approvals</span>
-                            {pendingTotal > 0 && (
-                                <span className="px-1.5 py-0.2 rounded-full bg-slate-950 text-amber-400 text-[10px] font-extrabold ml-0.5">
-                                    {pendingTotal}
+                    <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                        <div>
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-extrabold tracking-wider uppercase border border-blue-500/30 flex items-center gap-1.5">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                                    Live Enterprise Command &amp; C-Suite Operations
                                 </span>
-                            )}
-                        </Link>
+                                <span className="text-xs text-slate-300 hidden sm:inline">
+                                    {new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
+                                </span>
+                            </div>
+                            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                                Executive Administration &amp; Operations
+                            </h1>
+                            <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
+                                Real-time portfolio capital tracking, workflow approval authorizations, plant telemetry, and workforce pacing.
+                            </p>
+                        </div>
 
-                        <Link
-                            href="/admin/users/create"
-                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all cursor-pointer"
-                        >
-                            <UserPlus className="w-4 h-4 text-blue-500" />
-                            <span>Add User</span>
-                        </Link>
+                        {/* Quick Shortcuts */}
+                        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                            <Link
+                                href="/admin/requests/finance"
+                                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-extrabold bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-md shadow-amber-500/20 transition-all cursor-pointer relative"
+                            >
+                                <Banknote className="w-4 h-4" />
+                                <span>Approvals Desk</span>
+                                {pendingTotal > 0 && (
+                                    <span className="px-1.5 py-0.2 rounded-full bg-slate-950 text-amber-400 text-[10px] font-black ml-0.5">
+                                        {pendingTotal}
+                                    </span>
+                                )}
+                            </Link>
 
-                        <Link
-                            href="/projects/daily-reports"
-                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all cursor-pointer"
-                        >
-                            <FileText className="w-4 h-4 text-emerald-500" />
-                            <span>Site Reports</span>
-                        </Link>
+                            <Link
+                                href="/admin/users/create"
+                                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm transition-all cursor-pointer"
+                            >
+                                <UserPlus className="w-4 h-4 text-blue-300" />
+                                <span>Add User</span>
+                            </Link>
 
-                        <Link
-                            href="/inventory/equipment"
-                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all cursor-pointer"
-                        >
-                            <Wrench className="w-4 h-4 text-orange-500" />
-                            <span>Fleet &amp; Plant</span>
-                        </Link>
+                            <Link
+                                href="/projects/daily-reports"
+                                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm transition-all cursor-pointer"
+                            >
+                                <FileText className="w-4 h-4 text-emerald-300" />
+                                <span>Site Reports</span>
+                            </Link>
+
+                            <Link
+                                href="/inventory/equipment"
+                                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm transition-all cursor-pointer"
+                            >
+                                <Wrench className="w-4 h-4 text-orange-400" />
+                                <span>Fleet &amp; Plant</span>
+                            </Link>
+                        </div>
                     </div>
                 </div>
 

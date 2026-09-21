@@ -247,19 +247,33 @@ class DashboardController extends Controller
         $pendingLeaveApprovals = LeaveRequest::where('status', LeaveStatus::Pending->value)->count();
         $recentHires = Employee::where('hire_date', '>=', now()->subDays(30))->count();
 
-        // Latest 5 employees
-        $latestEmployees = Employee::with(['department_rel', 'position_rel'])->latest('created_at')->take(5)->get();
+        // Latest 6 employees
+        $latestEmployees = Employee::with(['department_rel', 'position_rel'])->latest('created_at')->take(6)->get();
 
-        // Department Breakdown (Top 5 largest departments)
+        // Pending Leave Requests queue with employee details
+        $pendingLeaves = LeaveRequest::with(['employee.department_rel', 'employee.user'])
+            ->where('status', LeaveStatus::Pending->value)
+            ->latest('id')
+            ->take(6)
+            ->get();
+
+        // Department Breakdown
         $departmentStats = DB::table('departments')
             ->join('employees', 'departments.id', '=', 'employees.department_id')
             ->select('departments.name', DB::raw('count(employees.id) as total'))
             ->groupBy('departments.name')
             ->orderByDesc('total')
-            ->take(5)
             ->get();
 
-        // Attendance Chart Data (Split by Status)
+        // Attendance stats for today
+        $todayAttendance = Attendance::whereDate('clock_in', $today)->get();
+        $presentToday = $todayAttendance->whereIn('status', ['present', 'Present'])->count();
+        $lateToday = $todayAttendance->whereIn('status', ['late', 'Late'])->count();
+        $totalClockedToday = $todayAttendance->count();
+        $attendanceRate = $activeEmployees > 0 ? min(100, round(($totalClockedToday / $activeEmployees) * 100)) : 100;
+        $punctualityRate = $totalClockedToday > 0 ? round(($presentToday / $totalClockedToday) * 100) : 95;
+
+        // Attendance 7-Day Chart Data (Split by Status)
         $rawAttendance = Attendance::selectRaw('CAST(clock_in AS DATE) as date, status, count(*) as count')
             ->where('clock_in', '>=', now()->subDays(6)->startOfDay())
             ->groupBy(DB::raw('CAST(clock_in AS DATE)'), 'status')
@@ -267,39 +281,52 @@ class DashboardController extends Controller
 
         $attendanceByDate = [];
         foreach ($rawAttendance as $row) {
-            // $row->date might be just the date string depending on DB driver,
-            // casting in model might make it Carbon. Safest to handle both.
             $d = is_string($row->date) ? substr($row->date, 0, 10) : $row->date->format('Y-m-d');
-            $attendanceByDate[$d][$row->status] = $row->count;
+            $attendanceByDate[$d][strtolower((string) $row->status)] = (int) $row->count;
         }
 
         $chartLabels = [];
         $onTimeData = [];
         $lateData = [];
+        $attendanceDailyTotals = [];
 
         for ($i = 6; $i >= 0; $i--) {
             $dateObj = now()->subDays($i);
             $dateString = $dateObj->format('Y-m-d');
 
-            $chartLabels[] = $dateObj->format('D'); // e.g. Mon, Tue
+            $chartLabels[] = $dateObj->format('D');
+            $onTime = $attendanceByDate[$dateString]['present'] ?? 0;
+            $late = $attendanceByDate[$dateString]['late'] ?? 0;
 
-            // Use constants from Model or hardcoded strings matching DB
-            $onTimeData[] = $attendanceByDate[$dateString]['present'] ?? 0;
-            $lateData[] = $attendanceByDate[$dateString]['late'] ?? 0;
+            $onTimeData[] = $onTime;
+            $lateData[] = $late;
+            $attendanceDailyTotals[] = [
+                'day' => $dateObj->format('D'),
+                'date' => $dateObj->format('M j'),
+                'onTime' => $onTime,
+                'late' => $late,
+                'total' => $onTime + $late,
+            ];
         }
 
-        return Inertia::render('Dashboards/HrDashboard', compact(
-            'employeeCount',
-            'activeEmployees',
-            'onLeaveTodayCount',
-            'pendingLeaveApprovals',
-            'recentHires',
-            'latestEmployees',
-            'departmentStats',
-            'chartLabels',
-            'onTimeData',
-            'lateData'
-        ));
+        return Inertia::render('Dashboards/HrDashboard', [
+            'employeeCount' => $employeeCount,
+            'activeEmployees' => $activeEmployees,
+            'onLeaveTodayCount' => $onLeaveTodayCount,
+            'pendingLeaveApprovals' => $pendingLeaveApprovals,
+            'recentHires' => $recentHires,
+            'latestEmployees' => $latestEmployees,
+            'pendingLeaves' => $pendingLeaves,
+            'departmentStats' => $departmentStats,
+            'chartLabels' => $chartLabels,
+            'onTimeData' => $onTimeData,
+            'lateData' => $lateData,
+            'attendanceDailyTotals' => $attendanceDailyTotals,
+            'presentToday' => $presentToday,
+            'lateToday' => $lateToday,
+            'attendanceRate' => $attendanceRate,
+            'punctualityRate' => $punctualityRate,
+        ]);
     }
 
     /**
@@ -317,6 +344,7 @@ class DashboardController extends Controller
         $totalItems = $stableItemsCount + $lowStockCount + $zeroStockCount;
 
         // Open loans: active commitments
+        $pendingLoanCount = InventoryLoan::where('status', LoanStatus::Pending->value)->count();
         $openLoanCount = InventoryLoan::whereIn('status', [LoanStatus::Pending->value, LoanStatus::Approved->value])->count();
 
         // Health = % of catalog that is "Stable" (Stock > 5)
@@ -333,28 +361,57 @@ class DashboardController extends Controller
             ->orderBy('quantity', 'asc')
             ->take(5)
             ->get();
+        $zeroStockItems = InventoryItem::where('quantity', '<=', 0)->take(5)->get();
 
         // Heavy Machinery & Equipment Fleet
         $fleetTotal = \App\Models\Equipment::count();
-        $fleetOperational = \App\Models\Equipment::where('status', 'operational')->count();
+        $fleetOperational = \App\Models\Equipment::whereIn('status', ['operational', 'active'])->count();
+        $fleetMaintenance = \App\Models\Equipment::whereIn('status', ['maintenance', 'under_maintenance', 'in_service'])->count();
+        $fleetStandby = \App\Models\Equipment::where('status', 'standby')->count();
         $fleetServiceDue = \App\Models\Equipment::whereNotNull('next_service_hours')
             ->whereRaw('operating_hours >= (next_service_hours - 25)')
             ->count();
 
-        return Inertia::render('Dashboards/InventoryDashboard', compact(
-            'totalItems',
-            'stableItemsCount',
-            'lowStockCount',
-            'zeroStockCount',
-            'openLoanCount',
-            'healthPercentage',
-            'chartCategories',
-            'chartData',
-            'recentAlerts',
-            'fleetTotal',
-            'fleetOperational',
-            'fleetServiceDue'
-        ));
+        // Active Loans Stream with employee, item details
+        $activeLoansList = InventoryLoan::with(['item', 'employee.user', 'employee.department_rel'])
+            ->whereIn('status', [LoanStatus::Pending->value, LoanStatus::Approved->value])
+            ->latest('id')
+            ->take(6)
+            ->get();
+
+        // Category breakdown
+        $categoryBreakdown = InventoryItem::select('category', DB::raw('count(*) as count'), DB::raw('SUM(quantity) as total_qty'))
+            ->groupBy('category')
+            ->orderByDesc('count')
+            ->take(6)
+            ->get()
+            ->map(fn ($c) => [
+                'category' => ucfirst((string) ($c->category ?: 'General Hardware')),
+                'count' => (int) $c->count,
+                'total_qty' => (float) $c->total_qty,
+            ]);
+
+        return Inertia::render('Dashboards/InventoryDashboard', [
+            'totalItems' => $totalItems,
+            'stableItemsCount' => $stableItemsCount,
+            'lowStockCount' => $lowStockCount,
+            'zeroStockCount' => $zeroStockCount,
+            'openLoanCount' => $openLoanCount,
+            'pendingLoanCount' => $pendingLoanCount,
+            'healthPercentage' => $healthPercentage,
+            'topItems' => $topItems,
+            'chartCategories' => $chartCategories,
+            'chartData' => $chartData,
+            'recentAlerts' => $recentAlerts,
+            'zeroStockItems' => $zeroStockItems,
+            'fleetTotal' => $fleetTotal,
+            'fleetOperational' => $fleetOperational,
+            'fleetMaintenance' => $fleetMaintenance,
+            'fleetStandby' => $fleetStandby,
+            'fleetServiceDue' => $fleetServiceDue,
+            'activeLoansList' => $activeLoansList,
+            'categoryBreakdown' => $categoryBreakdown,
+        ]);
     }
 
     /**
@@ -363,30 +420,107 @@ class DashboardController extends Controller
     public function finance()
     {
         $totalProjects = Project::count();
-        $totalBudget = Project::sum('budget');
-        $totalExpenses = Expense::sum('amount');
-        $remainingBudget = $totalBudget - $totalExpenses;
-        $usagePercentage = $totalBudget > 0 ? round(($totalExpenses / $totalBudget) * 100) : 0;
+        $totalBudget = (float) Project::sum('budget');
+        $totalExpenses = (float) Expense::whereIn('status', [ExpenseStatus::Approved->value, 'approved', 'Approved'])->sum('amount');
+        $remainingBudget = max(0, $totalBudget - $totalExpenses);
+        $usagePercentage = $totalBudget > 0 ? min(100, round(($totalExpenses / $totalBudget) * 100, 1)) : 0;
 
-        // Recent Projects for list
-        $recentProjects = Project::latest()->take(3)->get();
+        // Pending expenses queue
+        $pendingExpenses = Expense::with(['project', 'user'])
+            ->where('status', ExpenseStatus::Pending->value)
+            ->latest('id')
+            ->take(6)
+            ->get();
+        $pendingExpenseCount = Expense::where('status', ExpenseStatus::Pending->value)->count();
+        $pendingExpenseAmount = (float) Expense::where('status', ExpenseStatus::Pending->value)->sum('amount');
 
-        // Chart Data (Top Projects by Budget)
-        $projectsParams = Project::withSum('expenses', 'amount')->orderByDesc('budget')->take(8)->get();
-        $portfolioLabels = $projectsParams->pluck('name')->toArray();
-        $portfolioBudgets = $projectsParams->pluck('budget')->toArray();
-        $portfolioExpenses = $projectsParams->pluck('expenses_sum_amount')->map(fn ($v) => $v ?? 0)->toArray();
+        // Recent Approved Transactions with vouchers
+        $recentTransactions = Expense::with(['project', 'user'])
+            ->whereIn('status', [ExpenseStatus::Approved->value, 'approved', 'Approved'])
+            ->latest('expense_date')
+            ->take(6)
+            ->get();
 
-        return Inertia::render('Dashboards/FinanceDashboard', compact(
-            'totalProjects',
-            'totalBudget',
-            'totalExpenses',
-            'remainingBudget',
-            'usagePercentage',
-            'recentProjects',
-            'portfolioLabels',
-            'portfolioBudgets',
-            'portfolioExpenses'
-        ));
+        // Expense Categories Breakdown
+        $expenseCategories = DB::table('expenses')
+            ->whereIn('status', [ExpenseStatus::Approved->value, 'approved', 'Approved'])
+            ->whereNull('deleted_at')
+            ->select('category', DB::raw('SUM(amount) as total'))
+            ->groupBy('category')
+            ->orderByDesc('total')
+            ->get()
+            ->map(fn ($c) => [
+                'category' => ucfirst((string) ($c->category ?: 'General')),
+                'total' => (float) $c->total,
+                'total_formatted' => number_format((float) $c->total, 2),
+            ]);
+
+        // Trailing 6-month monthly cash outflow
+        $monthlyCashFlow = [];
+        $monthlyBaseline = $totalBudget > 0 ? round($totalBudget / 12, 2) : 500000;
+        for ($i = 5; $i >= 0; $i--) {
+            $monthDate = now()->subMonths($i);
+            $monthSpent = (float) Expense::whereIn('status', [ExpenseStatus::Approved->value, 'approved', 'Approved'])
+                ->whereYear('expense_date', $monthDate->year)
+                ->whereMonth('expense_date', $monthDate->month)
+                ->whereNull('deleted_at')
+                ->sum('amount');
+
+            $monthlyCashFlow[] = [
+                'month' => $monthDate->format('M'),
+                'actual' => round($monthSpent, 2),
+                'baseline' => $monthlyBaseline,
+            ];
+        }
+
+        // Projects with actual allocated vs spent
+        $projectsParams = Project::with(['expenses' => function ($q) {
+            $q->whereIn('status', [ExpenseStatus::Approved->value, 'approved', 'Approved']);
+        }])->orderByDesc('budget')->take(8)->get();
+
+        $projectBreakdown = $projectsParams->map(function ($p) {
+            $spent = (float) $p->expenses->sum('amount');
+            $budget = (float) ($p->budget ?? 0);
+            $usagePct = $budget > 0 ? min(100, round(($spent / $budget) * 100, 1)) : 0;
+
+            return [
+                'id' => $p->id,
+                'name' => $p->name,
+                'location' => $p->location ?: 'Site Operations',
+                'status' => $p->status ?: 'active',
+                'budget' => $budget,
+                'spent' => $spent,
+                'remaining' => max(0, $budget - $spent),
+                'usage_pct' => $usagePct,
+                'status_label' => $usagePct > 90 ? 'Critical' : ($usagePct > 75 ? 'Caution' : 'On Track'),
+            ];
+        });
+
+        // 30-Day Outflow run rate
+        $last30DaysSpend = (float) Expense::whereIn('status', [ExpenseStatus::Approved->value, 'approved', 'Approved'])
+            ->where('expense_date', '>=', now()->subDays(30))
+            ->whereNull('deleted_at')
+            ->sum('amount');
+        $avgWeeklyBurn = round($last30DaysSpend / 4.2, 2);
+
+        return Inertia::render('Dashboards/FinanceDashboard', [
+            'totalProjects' => $totalProjects,
+            'totalBudget' => $totalBudget,
+            'totalExpenses' => $totalExpenses,
+            'remainingBudget' => $remainingBudget,
+            'usagePercentage' => $usagePercentage,
+            'avgWeeklyBurn' => $avgWeeklyBurn,
+            'pendingExpenseCount' => $pendingExpenseCount,
+            'pendingExpenseAmount' => $pendingExpenseAmount,
+            'pendingExpenses' => $pendingExpenses,
+            'recentTransactions' => $recentTransactions,
+            'expenseCategories' => $expenseCategories,
+            'monthlyCashFlow' => $monthlyCashFlow,
+            'projectBreakdown' => $projectBreakdown,
+            'portfolioLabels' => $projectBreakdown->pluck('name')->toArray(),
+            'portfolioBudgets' => $projectBreakdown->pluck('budget')->toArray(),
+            'portfolioExpenses' => $projectBreakdown->pluck('spent')->toArray(),
+            'recentProjects' => Project::latest()->take(3)->get(),
+        ]);
     }
 }
