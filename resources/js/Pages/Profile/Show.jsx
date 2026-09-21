@@ -58,9 +58,29 @@ export default function Show({ user = {}, status }) {
         }
     };
 
+    const roleString = (user?.role || (Array.isArray(user?.roles) ? user.roles[0] : '') || '').toLowerCase();
+    const isAdmin = roleString.includes('admin');
+    const isHr = !isAdmin && (roleString.includes('hr') || roleString.includes('human'));
+    const isInventory = !isAdmin && roleString.includes('inventory');
+    const isFinance = !isAdmin && roleString.includes('financ');
+
+    const dashboardUrl = (() => {
+        if (isHr) return '/hr';
+        if (isInventory) return '/inventory';
+        if (isFinance) return '/finance/dashboard';
+        return '/admin';
+    })();
+
+    const profileUpdateUrl = (() => {
+        if (isHr) return '/hr/profile/update';
+        if (isInventory) return '/inventory/profile/update';
+        if (isFinance) return '/finance/profile/update';
+        return '/admin/profile/update';
+    })();
+
     const handleSaveProfile = (e) => {
         e.preventDefault();
-        post('/admin/profile/update', {
+        post(profileUpdateUrl, {
             preserveScroll: true,
             onSuccess: () => {
                 reset('password', 'password_confirmation');
@@ -96,7 +116,7 @@ export default function Show({ user = {}, status }) {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/70 dark:border-slate-800">
                     <div className="flex items-center gap-2 text-xs">
                         <Link
-                            href="/admin"
+                            href={dashboardUrl}
                             className="inline-flex items-center gap-1.5 font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
                         >
                             <ArrowLeft className="w-3.5 h-3.5" />

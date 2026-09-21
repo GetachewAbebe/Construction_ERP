@@ -13,6 +13,26 @@ import {
 } from 'lucide-react';
 
 export default function Edit({ user = {}, status }) {
+    const roleString = (user?.role || (Array.isArray(user?.roles) ? user.roles[0] : '') || '').toLowerCase();
+    const isAdmin = roleString.includes('admin');
+    const isHr = !isAdmin && (roleString.includes('hr') || roleString.includes('human'));
+    const isInventory = !isAdmin && roleString.includes('inventory');
+    const isFinance = !isAdmin && roleString.includes('financ');
+
+    const profileUrl = (() => {
+        if (isHr) return '/hr/profile';
+        if (isInventory) return '/inventory/profile';
+        if (isFinance) return '/finance/profile';
+        return '/admin/profile';
+    })();
+
+    const profileUpdateUrl = (() => {
+        if (isHr) return '/hr/profile/update';
+        if (isInventory) return '/inventory/profile/update';
+        if (isFinance) return '/finance/profile/update';
+        return '/admin/profile/update';
+    })();
+
     const { data, setData, post, processing, errors } = useForm({
         _method: 'PUT',
         name: user?.name || '',
@@ -25,7 +45,7 @@ export default function Edit({ user = {}, status }) {
 
     const submit = (e) => {
         e.preventDefault();
-        post('/admin/profile/update', {
+        post(profileUpdateUrl, {
             preserveScroll: true,
         });
     };
@@ -36,7 +56,7 @@ export default function Edit({ user = {}, status }) {
                 {/* Back link */}
                 <div className="flex items-center justify-between gap-4">
                     <Link
-                        href="/admin/profile"
+                        href={profileUrl}
                         className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
                     >
                         <ArrowLeft className="w-4 h-4" />

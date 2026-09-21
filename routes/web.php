@@ -21,6 +21,11 @@ Route::get('/login', HomeController::class)->middleware('throttle:system_global'
 Route::post('/', [SimpleAuthController::class, 'login'])->middleware('throttle:auth')->name('login');
 Route::post('/login', [SimpleAuthController::class, 'login'])->middleware('throttle:auth');
 
+// Centralized Role-Based Dashboard Route
+Route::get('/dashboard', function () {
+    return redirect()->route(\Illuminate\Support\Facades\Auth::user()->getDashboardRouteName());
+})->middleware(['auth', 'prevent-back-history'])->name('dashboard');
+
 /**
  * --------------------------------------------------------------------------
  * PASSWORD RESET

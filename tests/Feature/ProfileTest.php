@@ -53,4 +53,17 @@ class ProfileTest extends TestCase
         $this->assertSame('User', $user->last_name);
         $this->assertSame('updated@example.com', $user->email);
     }
+
+    public function test_financial_manager_redirects_to_finance_dashboard(): void
+    {
+        Role::firstOrCreate(['name' => 'Financial Manager', 'guard_name' => 'web']);
+        $fm = User::factory()->create(['role' => 'Financial Manager']);
+        $fm->assignRole('Financial Manager');
+
+        $response = $this
+            ->actingAs($fm)
+            ->get(route('dashboard'));
+
+        $response->assertRedirect(route('finance.dashboard'));
+    }
 }
