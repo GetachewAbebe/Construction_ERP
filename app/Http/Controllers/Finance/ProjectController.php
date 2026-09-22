@@ -63,7 +63,15 @@ class ProjectController extends Controller
     public function show(Project $project)
     {
         // Chunk-load relations cleanly for detailed reporting views
-        $project->load(['expenses.user']);
+        $project->load([
+            'expenses.user',
+            'milestones.creator',
+        ]);
+
+        $project->append([
+            'physical_progress_percentage',
+            'milestone_summary',
+        ]);
 
         return \Inertia\Inertia::render('Finance/Projects/Show', compact('project'));
     }

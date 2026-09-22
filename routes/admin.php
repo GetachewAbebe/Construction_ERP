@@ -161,6 +161,10 @@ Route::middleware([
         Route::prefix('finance')->name('finance.')->group(function () {
             // Projects
             Route::resource('projects', App\Http\Controllers\Finance\ProjectController::class);
+            Route::post('/projects/{project}/milestones', [App\Http\Controllers\Finance\ProjectMilestoneController::class, 'store'])->name('projects.milestones.store');
+            Route::put('/projects/{project}/milestones/{milestone}', [App\Http\Controllers\Finance\ProjectMilestoneController::class, 'update'])->name('projects.milestones.update');
+            Route::patch('/projects/{project}/milestones/{milestone}/progress', [App\Http\Controllers\Finance\ProjectMilestoneController::class, 'updateProgress'])->name('projects.milestones.progress');
+            Route::delete('/projects/{project}/milestones/{milestone}', [App\Http\Controllers\Finance\ProjectMilestoneController::class, 'destroy'])->name('projects.milestones.destroy');
 
             // Expenses
             Route::resource('expenses', App\Http\Controllers\Finance\ExpenseController::class);

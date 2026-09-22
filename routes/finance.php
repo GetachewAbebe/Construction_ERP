@@ -30,6 +30,13 @@ Route::middleware([
         // Projects & Expenses
         Route::get('/expenses/export', [App\Http\Controllers\Finance\ExpenseController::class, 'exportCsv'])->name('expenses.export');
         Route::resource('projects', App\Http\Controllers\Finance\ProjectController::class);
+
+        // Project WBS & Milestones
+        Route::post('/projects/{project}/milestones', [App\Http\Controllers\Finance\ProjectMilestoneController::class, 'store'])->name('projects.milestones.store');
+        Route::put('/projects/{project}/milestones/{milestone}', [App\Http\Controllers\Finance\ProjectMilestoneController::class, 'update'])->name('projects.milestones.update');
+        Route::patch('/projects/{project}/milestones/{milestone}/progress', [App\Http\Controllers\Finance\ProjectMilestoneController::class, 'updateProgress'])->name('projects.milestones.progress');
+        Route::delete('/projects/{project}/milestones/{milestone}', [App\Http\Controllers\Finance\ProjectMilestoneController::class, 'destroy'])->name('projects.milestones.destroy');
+
         Route::resource('expenses', App\Http\Controllers\Finance\ExpenseController::class);
 
         // Expense Approval Workflow
