@@ -23,9 +23,11 @@ import {
     Target,
     Activity,
 } from 'lucide-react';
+import ProjectGanttChart from '@/Components/Projects/ProjectGanttChart';
 
 export default function Show({ project }) {
     const [activeTab, setActiveTab] = useState('wbs'); // 'wbs' | 'expenses' | 'overview'
+    const [wbsViewMode, setWbsViewMode] = useState('gantt'); // 'gantt' | 'table'
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [editingMilestone, setEditingMilestone] = useState(null);
     const [quickProgressMilestone, setQuickProgressMilestone] = useState(null);
@@ -408,6 +410,62 @@ export default function Show({ project }) {
                 {/* TAB 1: WORK BREAKDOWN STRUCTURE (WBS) */}
                 {activeTab === 'wbs' && (
                     <div className="space-y-6">
+                        {/* WBS View Switcher & Telemetry */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50 dark:bg-slate-800/40 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800">
+                            <div className="flex items-center gap-2.5">
+                                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">WBS Display:</span>
+                                <div className="inline-flex p-1 rounded-xl bg-slate-200/70 dark:bg-slate-800 text-xs font-semibold">
+                                    <button
+                                        type="button"
+                                        onClick={() => setWbsViewMode('gantt')}
+                                        className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                                            wbsViewMode === 'gantt'
+                                                ? 'bg-white dark:bg-slate-700 text-blue-900 dark:text-white shadow-xs'
+                                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                                        }`}
+                                    >
+                                        <Calendar className="w-3.5 h-3.5" />
+                                        <span>Gantt Schedule</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setWbsViewMode('table')}
+                                        className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                                            wbsViewMode === 'table'
+                                                ? 'bg-white dark:bg-slate-700 text-blue-900 dark:text-white shadow-xs'
+                                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                                        }`}
+                                    >
+                                        <Layers className="w-3.5 h-3.5" />
+                                        <span>Table Grid</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-3 text-xs text-slate-500 font-medium">
+                                <span><strong>{milestones.length}</strong> Phases</span>
+                                <span>•</span>
+                                <span><strong>{milestoneSummary.completed}</strong> Completed</span>
+                                <span>•</span>
+                                <span className="text-blue-900 dark:text-blue-400 font-bold">{physicalProgress}% Weighted Completion</span>
+                            </div>
+                        </div>
+
+                        {/* Interactive Gantt Schedule View */}
+                        {wbsViewMode === 'gantt' && (
+                            <ProjectGanttChart
+                                milestones={milestones}
+                                projectStartDate={project.start_date}
+                                projectEndDate={project.end_date}
+                                onEditMilestone={(m) => handleOpenEdit(m)}
+                                onAdjustProgress={(m) => {
+                                    setQuickProgressMilestone(m);
+                                    setQuickProgressValue(m.progress);
+                                }}
+                                onAddMilestone={() => setIsAddModalOpen(true)}
+                            />
+                        )}
+
                         {/* WBS Phase Stepper / Timeline */}
                         {milestones.length > 0 && (
                             <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs">
