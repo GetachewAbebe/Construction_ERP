@@ -23,7 +23,6 @@ import {
     Wrench,
     Activity,
     ExternalLink,
-    Check
 } from 'lucide-react';
 
 export default function AdminDashboard({
@@ -147,7 +146,7 @@ export default function AdminDashboard({
                 </div>
 
                 {/* EXECUTIVE APPROVALS HUB (Actionable Requisitions) */}
-                {pendingTotal > 0 ? (
+                {pendingTotal > 0 && (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* 1. Expense Approvals */}
                         <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/20 dark:border-amber-500/30 flex flex-col justify-between gap-3">
@@ -233,25 +232,6 @@ export default function AdminDashboard({
                                 <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
-                    </div>
-                ) : (
-                    <div className="p-4 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/40 flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
-                                <Check className="w-4 h-4" />
-                            </div>
-                            <div>
-                                <h4 className="text-xs sm:text-sm font-bold text-emerald-900 dark:text-emerald-200">
-                                    All Workflow Queues Clear
-                                </h4>
-                                <p className="text-[11px] text-emerald-700 dark:text-emerald-400">
-                                    No pending expense requisitions, loan requests, or leave approvals requiring executive action.
-                                </p>
-                            </div>
-                        </div>
-                        <span className="hidden sm:inline-block px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 text-[10px] font-bold">
-                            Operational 100%
-                        </span>
                     </div>
                 )}
 
