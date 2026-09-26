@@ -93,4 +93,111 @@ class PrintControllerTest extends TestCase
         $directResponse->assertOk()
             ->assertSee('MATERIAL GATE PASS');
     }
+
+    public function test_can_render_printable_purchase_order_and_qr_verify(): void
+    {
+        $user = User::factory()->create();
+        $vendor = \App\Models\Vendor::create([
+            'name' => 'National Steel Rolling Mill',
+            'code' => 'NSR-001',
+            'is_active' => true,
+        ]);
+        $project = Project::create([
+            'name' => 'Bole Commercial Complex',
+            'budget' => 50000000,
+        ]);
+
+        $po = \App\Models\PurchaseOrder::create([
+            'po_no' => 'PO-2026-0001',
+            'vendor_id' => $vendor->id,
+            'project_id' => $project->id,
+            'created_by' => $user->id,
+            'order_date' => now()->toDateString(),
+            'status' => 'issued',
+            'subtotal' => 100000,
+            'tax_rate' => 15,
+            'tax_amount' => 15000,
+            'total_amount' => 115000,
+        ]);
+
+        \App\Models\PurchaseOrderItem::create([
+            'purchase_order_id' => $po->id,
+            'item_name' => 'Reinforcement Steel Bar Ø20mm',
+            'unit_of_measurement' => 'tons',
+            'quantity' => 10,
+            'unit_price' => 10000,
+            'total_price' => 100000,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('prints.purchase-order', $po));
+        $response->assertOk()
+            ->assertSee('OFFICIAL PURCHASE ORDER')
+            ->assertSee('National Steel Rolling Mill')
+            ->assertSee('Reinforcement Steel Bar Ø20mm')
+            ->assertSee('SCAN TO VERIFY');
+
+        // Test public/field QR verification endpoint
+        $verifyResponse = $this->get(route('verify.purchase-order', $po));
+        $verifyResponse->assertOk()
+            ->assertSee('PO-2026-0001')
+            ->assertSee('National Steel Rolling Mill');
+    }
+
+    public function test_can_render_printable_goods_receiving_note_and_qr_verify(): void
+    {
+        $user = User::factory()->create();
+        $vendor = \App\Models\Vendor::create([
+            'name' => 'Muger Cement Enterprise',
+            'code' => 'MUG-001',
+            'is_active' => true,
+        ]);
+        $project = Project::create([
+            'name' => 'Kazanchis Site',
+            'budget' => 50000000,
+        ]);
+
+        $po = \App\Models\PurchaseOrder::create([
+            'po_no' => 'PO-2026-0002',
+            'vendor_id' => $vendor->id,
+            'project_id' => $project->id,
+            'created_by' => $user->id,
+            'order_date' => now()->toDateString(),
+            'status' => 'issued',
+            'total_amount' => 50000,
+        ]);
+
+        $grn = \App\Models\GoodsReceivingNote::create([
+            'grn_no' => 'GRN-2026-0001',
+            'purchase_order_id' => $po->id,
+            'project_id' => $project->id,
+            'vendor_id' => $vendor->id,
+            'received_by' => $user->id,
+            'received_date' => now()->toDateString(),
+            'delivery_note_no' => 'DN-99412',
+            'status' => 'received',
+        ]);
+
+        \App\Models\GoodsReceivingNoteItem::create([
+            'goods_receiving_note_id' => $grn->id,
+            'item_name' => 'Ordinary Portland Cement',
+            'unit_of_measurement' => 'bags',
+            'quantity_delivered' => 100,
+            'quantity_accepted' => 95,
+            'quantity_rejected' => 5,
+            'rejection_reason' => 'Torn bags',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('prints.goods-receiving', $grn));
+        $response->assertOk()
+            ->assertSee('Store Receiving Voucher')
+            ->assertSee('GRN-2026-0001')
+            ->assertSee('Ordinary Portland Cement')
+            ->assertSee('DN-99412');
+
+        // Test public QR verification endpoint
+        $verifyResponse = $this->get(route('verify.goods-receiving', $grn));
+        $verifyResponse->assertOk()
+            ->assertSee('GRN-2026-0001')
+            ->assertSee('Muger Cement Enterprise');
+    }
 }

@@ -65,6 +65,11 @@ Route::view('/about', 'about')->name('about');
 Route::get('/verify/gate-pass/{loan}', [\App\Http\Controllers\VerificationController::class, 'verifyGatePass'])->name('verify.gate-pass');
 Route::post('/verify/gate-pass/{loan}/confirm', [\App\Http\Controllers\VerificationController::class, 'confirmGatePassReceipt'])->name('verify.gate-pass.confirm');
 Route::get('/verify/expense-voucher/{expense}', [\App\Http\Controllers\VerificationController::class, 'verifyExpenseVoucher'])->name('verify.expense-voucher');
+Route::get('/verify/purchase-order/{order}', [\App\Http\Controllers\VerificationController::class, 'verifyPurchaseOrder'])->name('verify.purchase-order');
+Route::get('/verify/goods-receiving/{note}', [\App\Http\Controllers\VerificationController::class, 'verifyGoodsReceivingNote'])->name('verify.goods-receiving');
+Route::get('/verify/client-ipc/{certificate}', [\App\Http\Controllers\VerificationController::class, 'verifyClientIpc'])->name('verify.client-ipc');
+Route::get('/verify/muster-roll/{musterRollNo}', [\App\Http\Controllers\VerificationController::class, 'verifyMusterRoll'])->name('verify.muster-roll');
+Route::get('/verify/maintenance-order/{workOrderNo}', [\App\Http\Controllers\VerificationController::class, 'verifyMaintenanceOrder'])->name('verify.maintenance-order');
 
 /**
  * --------------------------------------------------------------------------
@@ -130,10 +135,26 @@ Route::middleware('auth')->group(function () {
     Route::delete('/equipment/{equipment}', [\App\Http\Controllers\Operations\EquipmentController::class, 'destroy'])->name('equipment.destroy');
     Route::post('/equipment/{equipment}/logs', [\App\Http\Controllers\Operations\EquipmentController::class, 'storeLog'])->name('equipment.logs.store');
 
+    // Fleet & Machinery Maintenance Work Orders
+    Route::get('/equipment/maintenance', [\App\Http\Controllers\Operations\MaintenanceWorkOrderController::class, 'index'])->name('operations.maintenance.index');
+    Route::get('/equipment/maintenance/create', [\App\Http\Controllers\Operations\MaintenanceWorkOrderController::class, 'create'])->name('operations.maintenance.create');
+    Route::post('/equipment/maintenance', [\App\Http\Controllers\Operations\MaintenanceWorkOrderController::class, 'store'])->name('operations.maintenance.store');
+    Route::get('/equipment/maintenance/{workOrder}', [\App\Http\Controllers\Operations\MaintenanceWorkOrderController::class, 'show'])->name('operations.maintenance.show');
+    Route::post('/equipment/maintenance/{workOrder}/complete', [\App\Http\Controllers\Operations\MaintenanceWorkOrderController::class, 'complete'])->name('operations.maintenance.complete');
+    Route::delete('/equipment/maintenance/{workOrder}', [\App\Http\Controllers\Operations\MaintenanceWorkOrderController::class, 'destroy'])->name('operations.maintenance.destroy');
+    Route::get('/equipment/maintenance/{workOrder}/print', [\App\Http\Controllers\Operations\MaintenanceWorkOrderController::class, 'print'])->name('operations.maintenance.print');
+
     Route::get('/projects/daily-reports', [\App\Http\Controllers\Operations\DailyReportController::class, 'index'])->name('projects.daily-reports.index');
     Route::post('/projects/daily-reports', [\App\Http\Controllers\Operations\DailyReportController::class, 'store'])->name('projects.daily-reports.store');
     Route::get('/projects/daily-reports/{report}', [\App\Http\Controllers\Operations\DailyReportController::class, 'show'])->name('projects.daily-reports.show');
     Route::get('/projects/daily-reports/{report}/print', [\App\Http\Controllers\Operations\DailyReportController::class, 'print'])->name('projects.daily-reports.print');
+
+    // Engineering Blueprints & Document Management (EDMS)
+    Route::get('/operations/documents', [\App\Http\Controllers\Operations\ProjectDocumentController::class, 'index'])->name('operations.documents.index');
+    Route::post('/projects/{project}/documents', [\App\Http\Controllers\Operations\ProjectDocumentController::class, 'store'])->name('projects.documents.store');
+    Route::get('/documents/{document}/download', [\App\Http\Controllers\Operations\ProjectDocumentController::class, 'download'])->name('documents.download');
+    Route::patch('/documents/{document}/status', [\App\Http\Controllers\Operations\ProjectDocumentController::class, 'updateStatus'])->name('documents.status');
+    Route::delete('/documents/{document}', [\App\Http\Controllers\Operations\ProjectDocumentController::class, 'destroy'])->name('documents.destroy');
 
     // Subcontractors & Progress Measurement Certificates
     Route::get('/contracts/subcontractors', [\App\Http\Controllers\Contracts\SubcontractorController::class, 'index'])->name('contracts.subcontractors.index');
@@ -143,10 +164,18 @@ Route::middleware('auth')->group(function () {
     // Print & Document Generation
     Route::get('/finance/expenses/{expense}/print', [App\Http\Controllers\PrintController::class, 'expenseVoucher'])->name('finance.expenses.print');
     Route::get('/inventory/loans/{loan}/print', [App\Http\Controllers\PrintController::class, 'loanGatePass'])->name('inventory.loans.print');
+    Route::get('/inventory/purchase-orders/{purchaseOrder}/print', [\App\Http\Controllers\Inventory\PurchaseOrderController::class, 'print'])->name('inventory.purchase-orders.print');
+    Route::get('/inventory/goods-receiving/{goodsReceiving}/print', [\App\Http\Controllers\Inventory\GoodsReceivingNoteController::class, 'print'])->name('inventory.goods-receiving.print');
+    Route::get('/finance/client-certificates/{clientCertificate}/print', [\App\Http\Controllers\Finance\ClientPaymentCertificateController::class, 'print'])->name('finance.client-certificates.print');
     Route::get('/prints/expenses/{expense}', [App\Http\Controllers\PrintController::class, 'expenseVoucher'])->name('prints.expense-voucher');
     Route::get('/prints/expense-voucher/{expense}', [App\Http\Controllers\PrintController::class, 'expenseVoucher']);
     Route::get('/prints/loans/{loan}', [App\Http\Controllers\PrintController::class, 'loanGatePass'])->name('prints.loan-gate-pass');
     Route::get('/prints/loan-gate-pass/{loan}', [App\Http\Controllers\PrintController::class, 'loanGatePass']);
+    Route::get('/prints/purchase-orders/{purchaseOrder}', [\App\Http\Controllers\Inventory\PurchaseOrderController::class, 'print'])->name('prints.purchase-order');
+    Route::get('/prints/goods-receiving/{goodsReceiving}', [\App\Http\Controllers\Inventory\GoodsReceivingNoteController::class, 'print'])->name('prints.goods-receiving');
+    Route::get('/prints/client-ipc/{clientCertificate}', [\App\Http\Controllers\Finance\ClientPaymentCertificateController::class, 'print'])->name('prints.client-ipc');
+    Route::get('/prints/muster-roll/{musterRoll}', [\App\Http\Controllers\Labor\MusterRollController::class, 'print'])->name('prints.muster-roll');
+    Route::get('/prints/maintenance-work-order/{workOrder}', [\App\Http\Controllers\Operations\MaintenanceWorkOrderController::class, 'print'])->name('prints.maintenance-work-order');
 });
 
 /**
@@ -168,3 +197,4 @@ require __DIR__.'/admin.php';
 require __DIR__.'/hr.php';
 require __DIR__.'/inventory.php';
 require __DIR__.'/finance.php';
+require __DIR__.'/labor.php';

@@ -53,4 +53,68 @@ class VerificationController extends Controller
             'expense' => $expense,
         ]);
     }
+
+    /**
+     * Mobile-optimized verification screen for Purchase Orders.
+     */
+    public function verifyPurchaseOrder(\App\Models\PurchaseOrder $order): View
+    {
+        $order->load(['vendor', 'project', 'creator', 'items']);
+
+        return view('verification.purchase-order', [
+            'order' => $order,
+        ]);
+    }
+
+    /**
+     * Mobile-optimized verification screen for Goods Receiving Notes.
+     */
+    public function verifyGoodsReceivingNote(\App\Models\GoodsReceivingNote $note): View
+    {
+        $note->load(['purchaseOrder', 'project', 'vendor', 'receiver', 'items']);
+
+        return view('verification.goods-receiving-note', [
+            'note' => $note,
+        ]);
+    }
+
+    /**
+     * Mobile-optimized verification screen for Client Interim Payment Certificates.
+     */
+    public function verifyClientIpc(\App\Models\ClientPaymentCertificate $certificate): View
+    {
+        $certificate->load(['project', 'preparer', 'approver']);
+
+        return view('verification.client-ipc', [
+            'certificate' => $certificate,
+        ]);
+    }
+
+    /**
+     * Mobile-optimized verification screen for Site Casual Labor Muster Rolls.
+     */
+    public function verifyMusterRoll(string $musterRollNo): View
+    {
+        $musterRoll = \App\Models\MusterRoll::where('muster_roll_no', $musterRollNo)
+            ->with(['project', 'supervisor', 'approvedBy', 'paidBy', 'items.casualLaborer'])
+            ->firstOrFail();
+
+        return view('verification.muster-roll', [
+            'musterRoll' => $musterRoll,
+        ]);
+    }
+
+    /**
+     * Mobile-optimized verification screen for Fleet Maintenance Work Orders.
+     */
+    public function verifyMaintenanceOrder(string $workOrderNo): View
+    {
+        $workOrder = \App\Models\MaintenanceWorkOrder::where('work_order_no', $workOrderNo)
+            ->with(['equipment', 'project', 'assignedMechanic', 'creator', 'completer', 'parts.inventoryItem'])
+            ->firstOrFail();
+
+        return view('verification.maintenance-work-order', [
+            'workOrder' => $workOrder,
+        ]);
+    }
 }

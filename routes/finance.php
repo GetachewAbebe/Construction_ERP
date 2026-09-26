@@ -39,6 +39,13 @@ Route::middleware([
 
         Route::resource('expenses', App\Http\Controllers\Finance\ExpenseController::class);
 
+        // Client Progress Billing (Client IPC & Retention)
+        Route::resource('client-certificates', App\Http\Controllers\Finance\ClientPaymentCertificateController::class);
+        Route::post('/client-certificates/{clientCertificate}/certify', [App\Http\Controllers\Finance\ClientPaymentCertificateController::class, 'certify'])
+            ->name('client-certificates.certify');
+        Route::post('/client-certificates/{clientCertificate}/payments', [App\Http\Controllers\Finance\ClientPaymentCertificateController::class, 'recordPayment'])
+            ->name('client-certificates.payments.store');
+
         // Expense Approval Workflow
         Route::post('/expenses/{expense}/approve', [App\Http\Controllers\Admin\ExpenseApprovalController::class, 'approve'])
             ->name('expenses.approve');

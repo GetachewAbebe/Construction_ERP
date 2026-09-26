@@ -71,6 +71,19 @@ class Equipment extends Model
         return $this->hasMany(EquipmentLog::class);
     }
 
+    /**
+     * @return HasMany<MaintenanceWorkOrder, $this>
+     */
+    public function workOrders(): HasMany
+    {
+        return $this->hasMany(MaintenanceWorkOrder::class)->orderByDesc('id');
+    }
+
+    public function getTotalMaintenanceCostAttribute(): float
+    {
+        return (float) $this->workOrders()->where('status', 'completed')->sum('total_cost');
+    }
+
     protected $appends = [
         'status_badge',
         'fuel_efficiency',

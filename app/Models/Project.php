@@ -52,6 +52,73 @@ class Project extends Model
         return $this->hasMany(ProjectMilestone::class)->orderBy('order')->orderBy('start_date');
     }
 
+    public function purchaseRequisitions(): HasMany
+    {
+        return $this->hasMany(PurchaseRequisition::class);
+    }
+
+    public function purchaseOrders(): HasMany
+    {
+        return $this->hasMany(PurchaseOrder::class);
+    }
+
+    public function goodsReceivingNotes(): HasMany
+    {
+        return $this->hasMany(GoodsReceivingNote::class);
+    }
+
+    public function clientCertificates(): HasMany
+    {
+        return $this->hasMany(ClientPaymentCertificate::class)->orderBy('ipc_sequence');
+    }
+
+    public function casualLaborers(): HasMany
+    {
+        return $this->hasMany(CasualLaborer::class);
+    }
+
+    public function musterRolls(): HasMany
+    {
+        return $this->hasMany(MusterRoll::class)->orderByDesc('date');
+    }
+
+    public function maintenanceWorkOrders(): HasMany
+    {
+        return $this->hasMany(MaintenanceWorkOrder::class)->orderByDesc('id');
+    }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(ProjectDocument::class)->orderByDesc('created_at');
+    }
+
+    public function getTotalCasualLaborCostAttribute(): float
+    {
+        return (float) $this->musterRolls()
+            ->whereIn('status', ['approved', 'paid'])
+            ->sum('total_net_amount');
+    }
+
+    public function getTotalCertifiedRevenueAttribute(): float
+    {
+        return (float) $this->clientCertificates()
+            ->whereIn('status', ['certified', 'partially_paid', 'paid'])
+            ->sum('total_certified_amount');
+    }
+
+    public function getTotalRetentionWithheldAttribute(): float
+    {
+        return (float) $this->clientCertificates()
+            ->whereIn('status', ['certified', 'partially_paid', 'paid'])
+            ->sum('retention_deduction');
+    }
+
+    public function getTotalRevenueCollectedAttribute(): float
+    {
+        return (float) $this->clientCertificates()
+            ->sum('amount_paid');
+    }
+
     public function getTotalExpensesAttribute()
     {
         return $this->expenses()->where('status', 'approved')->sum('amount');

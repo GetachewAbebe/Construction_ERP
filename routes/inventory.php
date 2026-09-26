@@ -40,6 +40,21 @@ Route::middleware([
         Route::delete('/items/{item}', [InventoryItemController::class, 'destroy'])->name('items.destroy');
 
         /**
+         * PROCUREMENT & SUPPLY CHAIN
+         */
+        // Purchase Requisitions
+        Route::resource('requisitions', App\Http\Controllers\Inventory\PurchaseRequisitionController::class);
+        Route::post('/requisitions/{requisition}/approve', [App\Http\Controllers\Inventory\PurchaseRequisitionController::class, 'approve'])->name('requisitions.approve');
+        Route::post('/requisitions/{requisition}/reject', [App\Http\Controllers\Inventory\PurchaseRequisitionController::class, 'reject'])->name('requisitions.reject');
+
+        // Purchase Orders
+        Route::resource('purchase-orders', App\Http\Controllers\Inventory\PurchaseOrderController::class)->except(['edit', 'update', 'destroy']);
+        Route::post('/purchase-orders/{purchaseOrder}/cancel', [App\Http\Controllers\Inventory\PurchaseOrderController::class, 'cancel'])->name('purchase-orders.cancel');
+
+        // Goods Receiving Notes (Store Receiving Voucher)
+        Route::resource('goods-receiving', App\Http\Controllers\Inventory\GoodsReceivingNoteController::class)->except(['edit', 'update', 'destroy']);
+
+        /**
          * VENDORS
          */
         Route::resource('vendors', App\Http\Controllers\Inventory\VendorController::class);

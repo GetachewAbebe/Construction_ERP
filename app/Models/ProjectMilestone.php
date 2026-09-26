@@ -73,6 +73,11 @@ class ProjectMilestone extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function documents(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ProjectDocument::class, 'milestone_id');
+    }
+
     public function getIsOverdueAttribute(): bool
     {
         if ($this->status === 'completed' || $this->progress >= 100) {

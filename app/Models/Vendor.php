@@ -89,4 +89,14 @@ class Vendor extends Model
 
         return $query;
     }
+
+    public function purchaseOrders()
+    {
+        return $this->hasMany(PurchaseOrder::class);
+    }
+
+    public function goodsReceivingNotes()
+    {
+        return $this->hasMany(GoodsReceivingNote::class);
+    }
 }

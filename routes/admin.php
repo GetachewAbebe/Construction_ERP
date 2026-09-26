@@ -42,6 +42,7 @@ Route::middleware([
     Route::prefix('admin/requests')->name('admin.requests.')->group(function () {
         Route::redirect('/leave', '/admin/requests/leave-approvals')->name('leave');
         Route::redirect('/purchases', '/admin/requests/finance')->name('purchases');
+        Route::get('/requisitions', [App\Http\Controllers\Inventory\PurchaseRequisitionController::class, 'index'])->name('requisitions');
         Route::get('/finance', [App\Http\Controllers\Admin\ExpenseApprovalController::class, 'index'])->name('finance');
         Route::post('/finance/{expense}/approve', [App\Http\Controllers\Admin\ExpenseApprovalController::class, 'approve'])->name('finance.approve');
         Route::post('/finance/{expense}/reject', [App\Http\Controllers\Admin\ExpenseApprovalController::class, 'reject'])->name('finance.reject');

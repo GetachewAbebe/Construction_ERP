@@ -28,7 +28,14 @@ import {
     UserPlus,
     PlusCircle,
     Clock,
+    ShoppingCart,
+    ClipboardList,
+    FileInput,
+    FileSpreadsheet,
+    Wrench,
+    Compass,
 } from 'lucide-react';
+import CalendarToggle from '@/Components/CalendarToggle';
 
 export default function AuthenticatedLayout({ title, header, children }) {
     const page = usePage();
@@ -153,6 +160,16 @@ export default function AuthenticatedLayout({ title, header, children }) {
                     active: Boolean(currentUrl.startsWith('/hr/employees')),
                 },
                 {
+                    label: 'Casual Workers',
+                    href: '/labor/workers',
+                    active: Boolean(currentUrl.startsWith('/labor/workers')),
+                },
+                {
+                    label: 'Site Muster Rolls',
+                    href: '/labor/muster-rolls',
+                    active: Boolean(currentUrl.startsWith('/labor/muster-rolls')),
+                },
+                {
                     label: 'Attendance',
                     href: '/hr/attendance',
                     active: Boolean(currentUrl.startsWith('/hr/attendance')),
@@ -173,6 +190,21 @@ export default function AuthenticatedLayout({ title, header, children }) {
                     active: Boolean(currentUrl === '/inventory' || currentUrl.startsWith('/inventory/dashboard')),
                 },
                 {
+                    label: 'Requisitions',
+                    href: '/inventory/requisitions',
+                    active: Boolean(currentUrl.startsWith('/inventory/requisitions')),
+                },
+                {
+                    label: 'Purchase Orders',
+                    href: '/inventory/purchase-orders',
+                    active: Boolean(currentUrl.startsWith('/inventory/purchase-orders')),
+                },
+                {
+                    label: 'Goods Receiving',
+                    href: '/inventory/goods-receiving',
+                    active: Boolean(currentUrl.startsWith('/inventory/goods-receiving')),
+                },
+                {
                     label: 'Warehouse Stock',
                     href: '/inventory/items',
                     active: Boolean(currentUrl.startsWith('/inventory/items')),
@@ -185,7 +217,12 @@ export default function AuthenticatedLayout({ title, header, children }) {
                 {
                     label: 'Equipment Fleet',
                     href: '/inventory/equipment',
-                    active: Boolean(currentUrl.startsWith('/inventory/equipment') || currentUrl.startsWith('/equipment')),
+                    active: Boolean(currentUrl.startsWith('/inventory/equipment') || (currentUrl.startsWith('/equipment') && !currentUrl.startsWith('/equipment/maintenance'))),
+                },
+                {
+                    label: 'Fleet Maintenance',
+                    href: '/equipment/maintenance',
+                    active: Boolean(currentUrl.startsWith('/equipment/maintenance')),
                 },
                 {
                     label: 'Suppliers & Vendors',
@@ -208,6 +245,11 @@ export default function AuthenticatedLayout({ title, header, children }) {
                     active: Boolean(currentUrl.startsWith('/finance/projects')),
                 },
                 {
+                    label: 'Client IPC (Billing)',
+                    href: '/finance/client-certificates',
+                    active: Boolean(currentUrl.startsWith('/finance/client-certificates')),
+                },
+                {
                     label: 'Expense Vouchers',
                     href: '/finance/expenses',
                     active: Boolean(currentUrl.startsWith('/finance/expenses')),
@@ -216,6 +258,11 @@ export default function AuthenticatedLayout({ title, header, children }) {
                     label: 'Trade Contracts',
                     href: '/contracts/subcontractors',
                     active: Boolean(currentUrl.startsWith('/contracts')),
+                },
+                {
+                    label: 'Site Muster Rolls',
+                    href: '/labor/muster-rolls',
+                    active: Boolean(currentUrl.startsWith('/labor/muster-rolls')),
                 },
                 {
                     label: 'Site Daily Logs',
@@ -277,6 +324,18 @@ export default function AuthenticatedLayout({ title, header, children }) {
                     color: 'text-blue-400',
                 },
                 {
+                    label: 'Record Site Muster Roll',
+                    href: '/labor/muster-rolls/create',
+                    icon: FileSpreadsheet,
+                    color: 'text-emerald-400',
+                },
+                {
+                    label: 'Register Casual Worker',
+                    href: '/labor/workers',
+                    icon: HardHat,
+                    color: 'text-amber-400',
+                },
+                {
                     label: 'Submit Leave Request',
                     href: '/hr/leaves/create',
                     icon: CalendarCheck,
@@ -300,34 +359,58 @@ export default function AuthenticatedLayout({ title, header, children }) {
         if (isInventory) {
             return [
                 {
-                    label: 'Register Machinery',
-                    href: '/inventory/equipment?action=register',
-                    icon: HardHat,
+                    label: 'Material Requisition (PR)',
+                    href: '/inventory/requisitions/create',
+                    icon: ClipboardList,
+                    color: 'text-sky-400',
+                },
+                {
+                    label: 'Issue Purchase Order (PO)',
+                    href: '/inventory/purchase-orders/create',
+                    icon: ShoppingCart,
                     color: 'text-indigo-400',
                 },
                 {
-                    label: 'Issue Asset Loan',
+                    label: 'Receive Materials (GRN)',
+                    href: '/inventory/goods-receiving/create',
+                    icon: FileInput,
+                    color: 'text-emerald-400',
+                },
+                {
+                    label: 'Issue Maintenance Work Order',
+                    href: '/equipment/maintenance/create',
+                    icon: Wrench,
+                    color: 'text-rose-400',
+                },
+                {
+                    label: 'Issue Gate Pass Loan',
                     href: '/inventory/loans/create',
                     icon: Package,
                     color: 'text-amber-400',
                 },
                 {
-                    label: 'Add Stock Item',
+                    label: 'Add Stock Catalog Item',
                     href: '/inventory/items/create',
                     icon: PlusCircle,
                     color: 'text-blue-400',
-                },
-                {
-                    label: 'Add New Vendor',
-                    href: '/inventory/vendors/create',
-                    icon: Truck,
-                    color: 'text-emerald-400',
                 },
             ];
         }
 
         if (isFinance) {
             return [
+                {
+                    label: 'Submit Client IPC Claim',
+                    href: '/finance/client-certificates/create',
+                    icon: FileText,
+                    color: 'text-indigo-400',
+                },
+                {
+                    label: 'Record Site Muster Roll',
+                    href: '/labor/muster-rolls/create',
+                    icon: FileSpreadsheet,
+                    color: 'text-emerald-400',
+                },
                 {
                     label: 'New Expense Voucher',
                     href: '/finance/expenses/create',
@@ -350,7 +433,13 @@ export default function AuthenticatedLayout({ title, header, children }) {
                     label: 'Trade Contracts & IPCs',
                     href: '/contracts/subcontractors',
                     icon: Briefcase,
-                    color: 'text-indigo-400',
+                    color: 'text-purple-400',
+                },
+                {
+                    label: 'Blueprints & EDMS',
+                    href: '/operations/documents',
+                    icon: Compass,
+                    color: 'text-cyan-400',
                 },
             ];
         }
@@ -377,6 +466,12 @@ export default function AuthenticatedLayout({ title, header, children }) {
                 icon: CalendarCheck,
                 color: 'text-blue-400',
                 badgeCount: counts?.pendingLeaves || 0,
+            },
+            {
+                label: 'Engineering Blueprints (EDMS)',
+                href: '/operations/documents',
+                icon: Compass,
+                color: 'text-cyan-400',
             },
             {
                 label: 'User Directory & Roles',
@@ -494,6 +589,9 @@ export default function AuthenticatedLayout({ title, header, children }) {
                                 <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
                             )}
                         </Link>
+
+                        {/* Dual-Calendar System Toggle */}
+                        <CalendarToggle />
 
                         {/* Theme Toggle */}
                         <button

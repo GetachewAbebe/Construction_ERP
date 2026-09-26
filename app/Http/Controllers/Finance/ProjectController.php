@@ -66,6 +66,9 @@ class ProjectController extends Controller
         $project->load([
             'expenses.user',
             'milestones.creator',
+            'documents.uploader',
+            'documents.approver',
+            'documents.milestone',
         ]);
 
         $project->append([

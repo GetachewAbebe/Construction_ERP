@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import CalendarDate from '@/Components/CalendarDate';
 import {
     Briefcase,
     ArrowLeft,
@@ -22,13 +23,19 @@ import {
     ChevronRight,
     Target,
     Activity,
+    Compass,
+    UploadCloud,
+    Download,
+    Archive,
+    FolderKanban,
 } from 'lucide-react';
 import ProjectGanttChart from '@/Components/Projects/ProjectGanttChart';
 
 export default function Show({ project }) {
-    const [activeTab, setActiveTab] = useState('wbs'); // 'wbs' | 'expenses' | 'overview'
+    const [activeTab, setActiveTab] = useState('wbs'); // 'wbs' | 'expenses' | 'overview' | 'documents'
     const [wbsViewMode, setWbsViewMode] = useState('gantt'); // 'gantt' | 'table'
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isDocModalOpen, setIsDocModalOpen] = useState(false);
     const [editingMilestone, setEditingMilestone] = useState(null);
     const [quickProgressMilestone, setQuickProgressMilestone] = useState(null);
     const [quickProgressValue, setQuickProgressValue] = useState(0);
@@ -36,6 +43,7 @@ export default function Show({ project }) {
     const budget = Number(project.budget) || 0;
     const expenses = project.expenses || [];
     const milestones = project.milestones || [];
+    const documents = project.documents || [];
     const physicalProgress = Number(project.physical_progress_percentage) || 0;
     const milestoneSummary = project.milestone_summary || {
         total: milestones.length,
@@ -108,6 +116,49 @@ export default function Show({ project }) {
                 resetAddForm();
             },
         });
+    };
+
+    // Upload Engineering Document Form
+    const {
+        data: docData,
+        setData: setDocData,
+        post: postDoc,
+        processing: docProcessing,
+        errors: docErrors,
+        reset: resetDocForm,
+    } = useForm({
+        title: '',
+        document_code: '',
+        document_type: 'architectural',
+        revision_number: 'Rev 0',
+        milestone_id: '',
+        file: null,
+        description: '',
+    });
+
+    const handleUploadDocument = (e) => {
+        e.preventDefault();
+        postDoc(`/projects/${project.id}/documents`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setIsDocModalOpen(false);
+                resetDocForm();
+            },
+        });
+    };
+
+    const handleUpdateDocStatus = (docId, newStatus) => {
+        router.patch(
+            `/documents/${docId}/status`,
+            { status: newStatus },
+            { preserveScroll: true }
+        );
+    };
+
+    const handleDeleteDoc = (docId, title) => {
+        if (confirm(`Are you sure you want to permanently remove "${title}"?`)) {
+            router.delete(`/documents/${docId}`, { preserveScroll: true });
+        }
     };
 
     const handleOpenEdit = (m) => {
@@ -404,6 +455,22 @@ export default function Show({ project }) {
                     >
                         <Briefcase className="w-4 h-4" />
                         <span>Project Parameters & Budget</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab('documents')}
+                        className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-colors cursor-pointer ${
+                            activeTab === 'documents'
+                                ? 'border-blue-900 text-blue-900 dark:border-blue-400 dark:text-blue-400'
+                                : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                        }`}
+                    >
+                        <Compass className="w-4 h-4" />
+                        <span>Blueprints & Documents (EDMS)</span>
+                        <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                            {documents.length}
+                        </span>
                     </button>
                 </div>
 
@@ -831,6 +898,165 @@ export default function Show({ project }) {
                         </div>
                     </div>
                 )}
+
+                {/* TAB 4: ENGINEERING BLUEPRINTS & SUBMITTALS (EDMS) */}
+                {activeTab === 'documents' && (
+                    <div className="space-y-6">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+                            <div>
+                                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                                    Project Blueprints & Technical Drawings
+                                </h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                    Approved engineering schematics, CAD revisions, and consultant submittals with Dual-Calendar tracking.
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setIsDocModalOpen(true)}
+                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs shadow-sm transition-colors cursor-pointer shrink-0"
+                            >
+                                <UploadCloud className="w-4 h-4" />
+                                <span>Upload Blueprint</span>
+                            </button>
+                        </div>
+
+                        {documents.length === 0 ? (
+                            <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-12 text-center bg-white/50 dark:bg-slate-900/50">
+                                <Compass className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+                                <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">
+                                    No Blueprints Registered for this Site
+                                </h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1 mb-4">
+                                    Upload architectural layouts, structural reinforcement plans, MEP drawings, or site submittals.
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsDocModalOpen(true)}
+                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs shadow-sm cursor-pointer"
+                                >
+                                    <UploadCloud className="w-4 h-4" />
+                                    <span>Upload First Blueprint</span>
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {documents.map((doc) => (
+                                    <div
+                                        key={doc.id}
+                                        className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs flex flex-col justify-between hover:border-blue-500/40 transition-all"
+                                    >
+                                        <div className="space-y-3">
+                                            {/* Badges */}
+                                            <div className="flex items-center justify-between gap-2">
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900">
+                                                        {doc.document_type.replace('_', ' ')}
+                                                    </span>
+                                                    <span className="px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                                                        {doc.revision_number}
+                                                    </span>
+                                                </div>
+
+                                                <span
+                                                    className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold capitalize ${
+                                                        doc.status === 'approved'
+                                                            ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900'
+                                                            : doc.status === 'under_review'
+                                                            ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900'
+                                                            : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                                                    }`}
+                                                >
+                                                    {doc.status.replace('_', ' ')}
+                                                </span>
+                                            </div>
+
+                                            {/* Code & Title */}
+                                            <div>
+                                                <div className="text-[11px] font-mono font-bold text-blue-600 dark:text-blue-400">
+                                                    {doc.document_code}
+                                                </div>
+                                                <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 mt-0.5">
+                                                    {doc.title}
+                                                </h4>
+                                            </div>
+
+                                            {/* Milestone Link if any */}
+                                            {doc.milestone && (
+                                                <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800 truncate">
+                                                    <FolderKanban className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                                    <span className="truncate">WBS: {doc.milestone.title}</span>
+                                                </div>
+                                            )}
+
+                                            {/* Metadata */}
+                                            <div className="bg-slate-50 dark:bg-slate-800/40 rounded-xl p-2.5 text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
+                                                <div className="flex items-center justify-between">
+                                                    <span>File:</span>
+                                                    <span className="font-medium text-slate-700 dark:text-slate-300 truncate max-w-[150px]" title={doc.file_name}>
+                                                        {doc.file_name}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center justify-between">
+                                                    <span>Size / By:</span>
+                                                    <span>{doc.formatted_file_size} • {doc.uploader?.name || 'User'}</span>
+                                                </div>
+                                                <div className="flex items-center justify-between pt-1 border-t border-slate-200/50 dark:border-slate-700/50">
+                                                    <span>Registered:</span>
+                                                    <CalendarDate date={doc.created_at} className="font-semibold text-slate-700 dark:text-slate-300" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="flex items-center justify-between gap-2 pt-4 mt-4 border-t border-slate-100 dark:border-slate-800">
+                                            <a
+                                                href={`/documents/${doc.id}/download`}
+                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs transition-colors shadow-xs"
+                                            >
+                                                <Download className="w-3.5 h-3.5" />
+                                                <span>Download</span>
+                                            </a>
+
+                                            <div className="flex items-center gap-1">
+                                                {doc.status !== 'approved' && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleUpdateDocStatus(doc.id, 'approved')}
+                                                        className="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 transition-colors"
+                                                        title="Approve Blueprint"
+                                                    >
+                                                        <CheckCircle2 className="w-4 h-4" />
+                                                    </button>
+                                                )}
+
+                                                {doc.status !== 'superseded' && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleUpdateDocStatus(doc.id, 'superseded')}
+                                                        className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                                        title="Mark Superseded"
+                                                    >
+                                                        <Archive className="w-4 h-4" />
+                                                    </button>
+                                                )}
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDeleteDoc(doc.id, doc.title)}
+                                                    className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors"
+                                                    title="Delete Blueprint"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* MODAL: ADD WBS MILESTONE */}
@@ -1223,6 +1449,173 @@ export default function Show({ project }) {
                                     className="px-4 py-1.5 rounded-xl bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs shadow-sm cursor-pointer"
                                 >
                                     Save Progress
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL: UPLOAD PROJECT BLUEPRINT */}
+            {isDocModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
+                    <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-6 overflow-hidden">
+                        <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                            <div className="flex items-center gap-2">
+                                <span className="p-2 rounded-xl bg-blue-900/10 text-blue-900 dark:text-blue-400">
+                                    <UploadCloud className="w-5 h-5" />
+                                </span>
+                                <div>
+                                    <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">
+                                        Upload Site Blueprint / Drawing
+                                    </h3>
+                                    <p className="text-[11px] text-slate-400">
+                                        Attach engineering drawings for {project.name}
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setIsDocModalOpen(false)}
+                                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                            >
+                                <XCircle className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleUploadDocument} className="space-y-4 pt-4">
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                        Document Title <span className="text-rose-500">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. Ground Floor Column Schedule"
+                                        value={docData.title}
+                                        onChange={(e) => setDocData('title', e.target.value)}
+                                        className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500"
+                                        required
+                                    />
+                                    {docErrors.title && <p className="text-[10px] text-rose-500 mt-1">{docErrors.title}</p>}
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                        Drawing Code (Optional)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. DWG-STR-GF-01"
+                                        value={docData.document_code}
+                                        onChange={(e) => setDocData('document_code', e.target.value)}
+                                        className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                        Discipline Type <span className="text-rose-500">*</span>
+                                    </label>
+                                    <select
+                                        value={docData.document_type}
+                                        onChange={(e) => setDocData('document_type', e.target.value)}
+                                        className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500"
+                                        required
+                                    >
+                                        <option value="architectural">Architectural Drawings</option>
+                                        <option value="structural">Structural Blueprints</option>
+                                        <option value="mep">MEP Drawings</option>
+                                        <option value="soil_geotechnical">Soil & Geotechnical</option>
+                                        <option value="boq_spec">BOQ & Tech Specs</option>
+                                        <option value="contract_agreement">Contract Agreements</option>
+                                        <option value="as_built">As-Built Drawings</option>
+                                        <option value="shop_drawing">Shop Drawings</option>
+                                        <option value="site_submittal">Material Submittals</option>
+                                        <option value="other">General Documents</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                        Revision Number
+                                    </label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. Rev 0, Rev 1.1"
+                                        value={docData.revision_number}
+                                        onChange={(e) => setDocData('revision_number', e.target.value)}
+                                        className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* WBS Milestone Link */}
+                            {milestones.length > 0 && (
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                        Linked WBS Milestone (Optional)
+                                    </label>
+                                    <select
+                                        value={docData.milestone_id}
+                                        onChange={(e) => setDocData('milestone_id', e.target.value)}
+                                        className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">No Milestone / General Site</option>
+                                        {milestones.map((m) => (
+                                            <option key={m.id} value={m.id}>
+                                                {m.wbs_code ? `[${m.wbs_code}] ` : ''}{m.title}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            {/* File Upload Input */}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                    Drawing File (PDF, CAD/DWG, DXF, Images, Docs) <span className="text-rose-500">*</span>
+                                </label>
+                                <input
+                                    type="file"
+                                    onChange={(e) => setDocData('file', e.target.files[0])}
+                                    className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-900 file:text-white hover:file:bg-blue-950"
+                                    required
+                                />
+                                {docErrors.file && <p className="text-[10px] text-rose-500 mt-1">{docErrors.file}</p>}
+                            </div>
+
+                            {/* Description */}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                    Notes & Revision Details
+                                </label>
+                                <textarea
+                                    rows="2"
+                                    placeholder="Scope changes, consultant remarks, or structural specifications..."
+                                    value={docData.description}
+                                    onChange={(e) => setDocData('description', e.target.value)}
+                                    className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
+                            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsDocModalOpen(false)}
+                                    className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={docProcessing}
+                                    className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs shadow-md transition-all cursor-pointer disabled:opacity-50"
+                                >
+                                    <UploadCloud className="w-4 h-4" />
+                                    <span>{docProcessing ? 'Uploading...' : 'Save Blueprint'}</span>
                                 </button>
                             </div>
                         </form>
